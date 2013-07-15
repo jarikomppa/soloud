@@ -38,7 +38,9 @@ namespace SoLoud
 	}
 
 	void WavProducer::getAudio(float *aBuffer, int aSamples)
-	{
+	{		
+		if (mParent->mData == NULL)
+			return;
 		int copysize = aSamples;
 		if (copysize + mOffset > mParent->mSamples)
 		{
@@ -100,7 +102,7 @@ namespace SoLoud
 	int read8(FILE * f)
 	{
 		char i;
-		fread(&i,1,2,f);
+		fread(&i,1,1,f);
 		return i;
 	}
 
@@ -144,7 +146,16 @@ namespace SoLoud
 			fclose(fp);
 			return;
 		}
-		if (read32(fp) != MAKEDWORD('d','a','t','a'))
+		int chunk = read32(fp);
+		if (chunk == MAKEDWORD('L','I','S','T'))
+		{
+			int size = read32(fp);
+			int i;
+			for (i = 0; i < size; i++)
+				read8(fp);
+			chunk = read32(fp);
+		}
+		if (chunk != MAKEDWORD('d','a','t','a'))
 		{
 			fclose(fp);
 			return;

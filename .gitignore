@@ -1,0 +1,8 @@
+Debug/
+*.XML
+_UpgradeReport_Files/
+*.ipch
+*.opensdf
+*.sdf
+*.old
+*.filters

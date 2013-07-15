@@ -56,7 +56,7 @@ namespace SoLoud
 		as.freq = 44100;
 		as.format = AUDIO_S16;
 		as.channels = 2;
-		as.samples = 4096;
+		as.samples = 2048;
 		as.callback = soloud_sdl_audiomixer;
 		as.userdata = (void*)aSoloud;
 

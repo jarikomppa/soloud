@@ -239,7 +239,7 @@ namespace SoLoud
 				}
 
 				// chear channel if the sound is over
-				if (mChannel[i]->hasEnded())
+				if (!(mChannel[i]->mFlags & AudioProducer::LOOPING) && mChannel[i]->hasEnded())
 				{
 					stopAbsolute(i);
 				}

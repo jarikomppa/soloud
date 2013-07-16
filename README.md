@@ -8,11 +8,11 @@ Zlib/LibPng licensed. Portable.
 Preface
 -------
 
-When looking to add audio to your game, you have basically the choise to toss a lot of money at
+When looking to add audio to your game, you have basically the choice to toss a lot of money at
 one of the fully-fledged engines (FMOD, BASS, WWISE, IrrKlang), try one of the free alternatives
 (SDL_Mixer, OpenAL), or roll your own.
 
-The choise depends a lot on what kind of project you're running. If it's a multi-platform 
+The choice depends a lot on what kind of project you're running. If it's a multi-platform 
 console title, outsourcing the audio engine and paying a lot of money for it makes sense. 
 
 Whichever way you go, you'll eventually hit some issues, where the audio engine doesn't do what

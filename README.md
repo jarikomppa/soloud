@@ -3,7 +3,9 @@ SoLoud
 
 Free, straightforward audio engine for games.
 
-Zlib/LibPng licensed. Portable. 
+![ScreenShot](https://raw.github.com/jarikomppa/soloud/master/soloud.png)
+
+Zlib/LibPng licensed. Portable. Small. Simple.
 
 Preface
 -------
@@ -21,8 +23,11 @@ you need, is buggy, or some such. As a paying customer, you'll probably get good
 The games I'm working on don't have such budgets; I've used FMOD for free projects in the past,
 and while it's nice, it's way, way too expensive for a hobbyist.
 
-I don't like OpenAL. SDL_Mixer has odd restrictions. While I could develop SDL_Mixer further,
-and fight over every single submit, I figured I'd just roll my own.
+I don't like OpenAL. 
+
+SDL_Mixer has odd restrictions. While I could develop SDL_Mixer further, and fight over every 
+single submit, I figured I'd just roll my own. Anyway, this way the audio engine can be used
+without SDL, too.
 
 Audio isn't supposed to be that hard. Right?
 

@@ -37,7 +37,7 @@ freely, subject to the following restrictions:
 SoLoud::Soloud gSL;
 //SoLoud::Sinewave gSW;
 SoLoud::Wav gSW;
-
+int audiohandle;
 
 SDL_Surface *screen;
 
@@ -61,7 +61,8 @@ void render()
 
 	float *buf = (float*)gSL.mMixerData;
 
-	gSL.setVolume((float)(sin(tick * 0.001)+1)/2);
+	gSL.setPan(audiohandle, (float)sin(tick * 0.001));
+	//gSL.setVolume(2);
 
 	int i, j;
 	for (i = 0; i < 400; i++)
@@ -92,10 +93,12 @@ void render()
 int main(int argc, char *argv[])
 {
 
-	gSL.init(8,44100,8192,1);
-	gSW.load("camera_in.wav", 0);
+	gSL.init(8,44100,4096*2,1);
+	gSW.load("jingle.ogg", 0);
 	gSW.setLooping(1);
-
+	audiohandle = gSL.play(gSW,1,0);
+	gSL.setVolume(2);
+	
 	// Initialize SDL's subsystems - in this case, only video.
 	if ( SDL_Init(SDL_INIT_VIDEO) < 0 ) 
 	{
@@ -105,20 +108,9 @@ int main(int argc, char *argv[])
 
 	SoLoud::sdl_init(&gSL);
 
-
-	gSL.play(gSW, 1.0f, -1.00f);
-	SDL_Delay(100);
-	gSL.play(gSW, 0.8f,  1.00f);
-	SDL_Delay(100);
-	gSL.play(gSW, 0.6f, -0.50f);
-	SDL_Delay(100);
-	gSL.play(gSW, 0.4f,  0.50f);
-	SDL_Delay(100);
-	gSL.play(gSW, 0.2f,  0.00f);
-
 	// Register SDL_Quit to be called at exit; makes sure things are
 	// cleaned up when we quit.
-	atexit(SDL_Quit);
+	atexit(SDL_Quit);	
 
 	// Attempt to create a 640x480 window with 32bit pixels.
 	screen = SDL_SetVideoMode(400, 256, 32, SDL_SWSURFACE);
@@ -147,9 +139,13 @@ int main(int argc, char *argv[])
 			case SDL_KEYUP:
 				// If escape is pressed, return (and thus, quit)
 				if (event.key.keysym.sym == SDLK_ESCAPE)
+				{
+					SoLoud::sdl_deinit(&gSL);
 					return 0;
+				}
 				break;
 			case SDL_QUIT:
+				SoLoud::sdl_deinit(&gSL);
 				return(0);
 			}
 		}

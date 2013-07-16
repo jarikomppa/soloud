@@ -43,6 +43,8 @@ namespace SoLoud
 
 	class Wav : public AudioFactory
 	{
+		void loadwav(FILE * fp, int aChannel);
+		void loadogg(FILE * fp, int aChannel);
 	public:
 		float *mData;
 		int mSamples;

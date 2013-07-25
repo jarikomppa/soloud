@@ -50,7 +50,9 @@ namespace SoLoud
 		float mLVolume;
 		float mRVolume;
 		float mVolume;
+		float mBaseSamplerate;
 		float mSamplerate;
+		float mRelativePlaySpeed;
 		virtual void getAudio(float *aBuffer, int aSamples) = 0;
 		virtual int hasEnded() = 0;
 	};
@@ -63,7 +65,8 @@ namespace SoLoud
 			SHOULD_LOOP = 1
 		};
 		int mFlags;
-		AudioFactory() { mFlags = 0; }
+		float mBaseSamplerate;
+		AudioFactory() { mFlags = 0; mBaseSamplerate = 44100; }
 		void setLooping(int aLoop);
 		virtual ~AudioFactory() {};
 		virtual AudioProducer *createProducer() = 0;
@@ -105,6 +108,8 @@ namespace SoLoud
 		int getActiveVoices();
 		int isValidChannelHandle(int aChannel);
 		float getPostClipScaler();
+		float getRelativePlaySpeed(int aChannel);
+		void setRelativePlaySpeed(int aChannel, float aSpeed);
 		void setPostClipScaler(float aScaler);
 		void setProtectChannel(int aChannel, int aProtect);
 		void setSamplerate(int aChannel, float aSamplerate);

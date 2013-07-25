@@ -48,7 +48,6 @@ namespace SoLoud
 	public:
 		float *mData;
 		int mSamples;
-		int mSamplerate;
 
 		Wav();
 		virtual ~Wav();

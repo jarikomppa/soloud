@@ -62,6 +62,7 @@ void render()
 	float *buf = (float*)gSL.mMixerData;
 
 	gSL.setPan(audiohandle, (float)sin(tick * 0.001));
+	gSL.setRelativePlaySpeed(audiohandle, (float)sin(tick * 0.003) * 0.1f + 1);
 	//gSL.setVolume(2);
 
 	int i, j;
@@ -93,9 +94,10 @@ void render()
 int main(int argc, char *argv[])
 {
 
-	gSL.init(8,44100,4096*2,1);
+	gSL.init(128,44100,4096*2,1);
 	gSW.load("jingle.ogg", 0);
 	gSW.setLooping(1);
+	int i;
 	audiohandle = gSL.play(gSW,1,0);
 	gSL.setVolume(2);
 	

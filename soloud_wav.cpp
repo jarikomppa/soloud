@@ -34,7 +34,6 @@ namespace SoLoud
 	WavProducer::WavProducer(Wav *aParent)
 	{
 		mParent = aParent;
-		mSamplerate = (float)aParent->mSamplerate;
 		mOffset = 0;
 	}
 
@@ -186,7 +185,7 @@ namespace SoLoud
 				}
 			}
 		}
-		mSamplerate = samplerate;
+		mBaseSamplerate = samplerate;
 		mSamples = samples;
 	}
 
@@ -199,7 +198,7 @@ namespace SoLoud
 		stb_vorbis *v = stb_vorbis_open_file(fp, 0, &e, NULL);
 		if (!v) return;
 		stb_vorbis_info info = stb_vorbis_get_info(v);
-		mSamplerate = info.sample_rate;
+		mBaseSamplerate = info.sample_rate;
 		int samples = 0;
 		while(1)
 		{
@@ -235,7 +234,6 @@ namespace SoLoud
 		delete[] mData;
 		mData = NULL;
 		mSamples = 0;
-		mSamplerate = 1;
 		FILE * fp = fopen(aFilename, "rb");
 		if (!fp) return;
 		int tag = read32(fp);

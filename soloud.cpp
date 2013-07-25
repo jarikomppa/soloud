@@ -101,7 +101,9 @@ namespace SoLoud
 		mChannel[ch] = aSound.createProducer();
 		mChannel[ch]->mPlayIndex = mPlayIndex;
 		mChannel[ch]->mFlags = 0;
+		mChannel[ch]->mBaseSamplerate = aSound.mBaseSamplerate;		
 		int handle = ch | (mChannel[ch]->mPlayIndex << 8);
+		setRelativePlaySpeed(handle, 1);
 		setPan(handle, aPan);
 		setVolume(handle, aVolume);
 		if (aSound.mFlags & AudioFactory::SHOULD_LOOP)
@@ -160,18 +162,34 @@ namespace SoLoud
 		return mChannel[ch]->mVolume;
 	}
 
+	float Soloud::getRelativePlaySpeed(int aChannel)
+	{
+		int ch = getAbsoluteChannelFromHandle(aChannel);
+		if (ch == -1) return 1;
+		return mChannel[ch]->mRelativePlaySpeed;
+	}
+
+	void Soloud::setRelativePlaySpeed(int aChannel, float aSpeed)
+	{
+		int ch = getAbsoluteChannelFromHandle(aChannel);
+		if (ch == -1) return;
+		mChannel[ch]->mRelativePlaySpeed = aSpeed;
+		mChannel[ch]->mSamplerate = mChannel[ch]->mBaseSamplerate * mChannel[ch]->mRelativePlaySpeed;
+	}
+
 	float Soloud::getSamplerate(int aChannel)
 	{
 		int ch = getAbsoluteChannelFromHandle(aChannel);
 		if (ch == -1) return 0;
-		return mChannel[ch]->mSamplerate;
+		return mChannel[ch]->mBaseSamplerate;
 	}
 
 	void Soloud::setSamplerate(int aChannel, float aSamplerate)
 	{
 		int ch = getAbsoluteChannelFromHandle(aChannel);
 		if (ch == -1) return;
-		mChannel[ch]->mSamplerate = aSamplerate;
+		mChannel[ch]->mBaseSamplerate = aSamplerate;
+		mChannel[ch]->mSamplerate = mChannel[ch]->mBaseSamplerate * mChannel[ch]->mRelativePlaySpeed;
 	}
 
 	int Soloud::getProtectChannel(int aChannel)

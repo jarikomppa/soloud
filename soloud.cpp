@@ -41,6 +41,16 @@ namespace SoLoud
 		}
 	}
 
+	float Soloud::getPostClipScaler()
+	{
+		return mPostClipScaler;
+	}
+
+	void Soloud::setPostClipScaler(float aScaler)
+	{
+		mPostClipScaler = aScaler;
+	}
+
 	void Soloud::init(int aChannels, int aSamplerate, int aBufferSize, int aFlags)
 	{
 		mGlobalVolume = 1;
@@ -48,11 +58,15 @@ namespace SoLoud
 		mChannelCount = aChannels;
 		int i;
 		for (i = 0; i < aChannels; i++)
+		{
 			mChannel[i] = 0;
+		}
 		mSamplerate = aSamplerate;
 		mScratchSize = 0;
+		mScratchNeeded = 1;
 		mBufferSize = aBufferSize;
 		mFlags = aFlags;
+		mPostClipScaler = 0.5f;
 	}
 
 	void Soloud::setVolume(float aVolume)
@@ -68,10 +82,14 @@ namespace SoLoud
 		for (i = 0; i < mChannelCount; i++)
 		{
 			if (mChannel[i] == NULL)
+			{
 				return i;
+			}
 			if (((mChannel[i]->mFlags & AudioProducer::PROTECTED) == 0) && 
 				mChannel[i]->mPlayIndex < lpi)
+			{
 				lpii = i;
+			}
 		}
 		stop(lpii);
 		return lpii;
@@ -110,6 +128,30 @@ namespace SoLoud
 			return ch;
 		return -1;		
 	}
+
+	int Soloud::getActiveVoices()
+	{
+		int i;
+		int c = 0;
+		for (i = 0; i < mChannelCount; i++)
+		{
+			if (mChannel[i]) 
+			{
+				c++;
+			}
+		}
+		return c;
+	}
+
+	int Soloud::isValidChannelHandle(int aChannel)
+	{
+		if (getAbsoluteChannelFromHandle(aChannel) != -1) 
+		{
+			return 1;
+		}
+		return 0;
+	}
+
 
 	float Soloud::getVolume(int aChannel)
 	{
@@ -265,7 +307,7 @@ namespace SoLoud
 				{
 					f =  0.87f * f - 0.1f * f * f * f;
 				}
-				aBuffer[i] = f;
+				aBuffer[i] = f * mPostClipScaler;
 			}
 		}
 		else
@@ -282,7 +324,7 @@ namespace SoLoud
 				{
 					f = 1.0f;
 				}
-				aBuffer[i] = f;
+				aBuffer[i] = f * mPostClipScaler;
 			}
 		}
 	}

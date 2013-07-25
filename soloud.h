@@ -81,6 +81,7 @@ namespace SoLoud
 		int mBufferSize;
 		int mFlags;
 		float mGlobalVolume;
+		float mPostClipScaler;
 		unsigned int mPlayIndex;
 	public:
 		void * mMixerData;
@@ -101,6 +102,10 @@ namespace SoLoud
 		float getVolume(int aChannel);
 		float getSamplerate(int aChannel);
 		int getProtectChannel(int aChannel);
+		int getActiveVoices();
+		int isValidChannelHandle(int aChannel);
+		float getPostClipScaler();
+		void setPostClipScaler(float aScaler);
 		void setProtectChannel(int aChannel, int aProtect);
 		void setSamplerate(int aChannel, float aSamplerate);
 		void setPan(int aChannel, float aPan);

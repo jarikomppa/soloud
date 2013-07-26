@@ -34,6 +34,7 @@ freely, subject to the following restrictions:
 
 namespace SoLoud
 {
+	SDL_mutex *gSoloudMutex;
 
 	void soloud_sdl_audiomixer(void *userdata, Uint8 *stream, int len)
 	{
@@ -50,8 +51,19 @@ namespace SoLoud
 		}
 	}
 
+	void soloud_sdl_lockmutex()
+	{
+		SDL_mutexP(gSoloudMutex);
+	}
+
+	void soloud_sdl_unlockmutex()
+	{
+		SDL_mutexV(gSoloudMutex);
+	}
+
 	int sdl_init(SoLoud::Soloud * aSoloud)
 	{
+		gSoloudMutex = SDL_CreateMutex();
 		SDL_AudioSpec as;
 		as.freq = 44100;
 		as.format = AUDIO_S16;
@@ -67,6 +79,9 @@ namespace SoLoud
 		}
 		aSoloud->mMixerData = new float[as2.samples*4];
 
+		aSoloud->lockMutex = soloud_sdl_lockmutex;
+		aSoloud->unlockMutex = soloud_sdl_unlockmutex;
+
 		SDL_PauseAudio(0);
 		return 0;
 	}
@@ -75,5 +90,6 @@ namespace SoLoud
 	{
 		delete[] (float*)aSoloud->mMixerData;
 		SDL_CloseAudio();
+		SDL_DestroyMutex(gSoloudMutex);
 	}
 };

@@ -32,9 +32,9 @@ freely, subject to the following restrictions:
 #define M_PI 3.14159265359
 #endif
 
-
 namespace SoLoud
 {
+	typedef void (*mutexCallFunction)();
 
 	class AudioProducer
 	{
@@ -91,6 +91,8 @@ namespace SoLoud
 		unsigned int mPlayIndex;
 	public:
 		void * mMixerData;
+		mutexCallFunction lockMutex;
+		mutexCallFunction unlockMutex;
 
 		Soloud();
 		~Soloud();

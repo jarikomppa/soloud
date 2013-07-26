@@ -53,6 +53,7 @@ namespace SoLoud
 		float mBaseSamplerate;
 		float mSamplerate;
 		float mRelativePlaySpeed;
+		void init(int aPlayIndex, float aBaseSamplerate, int aFactoryFlags);
 		virtual void getAudio(float *aBuffer, int aSamples) = 0;
 		virtual int hasEnded() = 0;
 	};

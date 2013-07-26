@@ -33,6 +33,8 @@ freely, subject to the following restrictions:
 #include "soloud.h"
 #include "soloud_sinewave.h"
 #include "soloud_wav.h"
+#include "soloud_filter.h"
+
 
 SoLoud::Soloud gSL;
 //SoLoud::Sinewave gSW;
@@ -98,7 +100,10 @@ int main(int argc, char *argv[])
 	gSW.load("jingle.ogg", 0);
 	gSW.setLooping(1);
 	int i;
-	audiohandle = gSL.play(gSW,1,0);
+
+	SoLoud::Filter gFL(&gSW);
+
+	audiohandle = gSL.play(gFL,1,0);
 	gSL.setVolume(2);
 	
 	// Initialize SDL's subsystems - in this case, only video.

@@ -95,21 +95,31 @@ namespace SoLoud
 		return lpii;
 	}
 
+	void AudioProducer::init(int aPlayIndex, float aBaseSamplerate, int aFactoryFlags)
+	{
+		mPlayIndex = aPlayIndex;
+		mBaseSamplerate = aBaseSamplerate;
+		mSamplerate = mBaseSamplerate;
+		mFlags = 0;
+
+		if (aFactoryFlags & AudioFactory::SHOULD_LOOP)
+		{
+			mFlags |= AudioProducer::LOOPING;
+		}
+	}
+
 	int Soloud::play(AudioFactory &aSound, float aVolume, float aPan)
 	{
 		int ch = findFreeChannel();
 		mChannel[ch] = aSound.createProducer();
-		mChannel[ch]->mPlayIndex = mPlayIndex;
-		mChannel[ch]->mFlags = 0;
-		mChannel[ch]->mBaseSamplerate = aSound.mBaseSamplerate;		
-		int handle = ch | (mChannel[ch]->mPlayIndex << 8);
-		setRelativePlaySpeed(handle, 1);
-		setPan(handle, aPan);
-		setVolume(handle, aVolume);
-		if (aSound.mFlags & AudioFactory::SHOULD_LOOP)
-		{
-			mChannel[ch]->mFlags |= AudioProducer::LOOPING;
-		}
+		int handle = ch | (mPlayIndex << 8);
+
+		mChannel[ch]->init(mPlayIndex, aSound.mBaseSamplerate, aSound.mFlags);
+
+		setPan(ch, aPan);
+		setVolume(ch, aVolume);
+		setRelativePlaySpeed(ch, 1);
+
 		mPlayIndex++;
 		int scratchneeded = (int)ceil((mChannel[ch]->mSamplerate / mSamplerate) * mBufferSize);
 		if (mScratchNeeded < scratchneeded)

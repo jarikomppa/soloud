@@ -41,6 +41,11 @@ namespace SoLoud
 	{		
 		if (mParent->mData == NULL)
 			return;
+		if (mOffset + aSamples > mParent->mSamples)
+		{
+			mOffset = mOffset;
+		}
+
 		int copysize = aSamples;
 		if (copysize + mOffset > mParent->mSamples)
 		{
@@ -57,7 +62,7 @@ namespace SoLoud
 			else
 			{
 				memset(aBuffer + copysize, 0, sizeof(float) * (aSamples - copysize));
-				mOffset += aSamples;
+				mOffset += aSamples - copysize;
 			}
 		}
 		else
@@ -185,7 +190,7 @@ namespace SoLoud
 				}
 			}
 		}
-		mBaseSamplerate = samplerate;
+		mBaseSamplerate = (float)samplerate;
 		mSamples = samples;
 	}
 
@@ -198,7 +203,7 @@ namespace SoLoud
 		stb_vorbis *v = stb_vorbis_open_file(fp, 0, &e, NULL);
 		if (!v) return;
 		stb_vorbis_info info = stb_vorbis_get_info(v);
-		mBaseSamplerate = info.sample_rate;
+		mBaseSamplerate = (float)info.sample_rate;
 		int samples = 0;
 		while(1)
 		{

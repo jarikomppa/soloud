@@ -41,8 +41,9 @@ namespace SoLoud
 	public:
 		enum FLAGS
 		{
-			PROTECTED = 1,
-			LOOPING = 2
+			LOOPING = 1,
+			STEREO = 2,
+			PROTECTED = 4
 		};
 		virtual ~AudioProducer() {};
 		unsigned int mPlayIndex;
@@ -63,7 +64,8 @@ namespace SoLoud
 	public:
 		enum FLAGS
 		{
-			SHOULD_LOOP = 1
+			SHOULD_LOOP = 1,
+			STEREO = 2
 		};
 		int mFlags;
 		float mBaseSamplerate;

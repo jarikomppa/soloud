@@ -106,6 +106,11 @@ namespace SoLoud
 		{
 			mFlags |= AudioProducer::LOOPING;
 		}
+
+		if (aFactoryFlags & AudioFactory::STEREO)
+		{
+			mFlags |= AudioProducer::STEREO;
+		}
 	}
 
 	int Soloud::play(AudioFactory &aSound, float aVolume, float aPan)
@@ -301,11 +306,24 @@ namespace SoLoud
 
 				int j;
 				float step = 0;
-				for (j = 0; j < aSamples; j++, step += stepratio)
+				if (mChannel[i]->mFlags & AudioProducer::STEREO)
 				{
-					float s = mScratch[(int)floor(step)];
-					aBuffer[j * 2 + 0] += s * lpan;
-					aBuffer[j * 2 + 1] += s * rpan;
+					for (j = 0; j < aSamples; j++, step += stepratio)
+					{
+						float s1 = mScratch[(int)floor(step)*2];
+						float s2 = mScratch[(int)floor(step)*2+1];
+						aBuffer[j * 2 + 0] += s1 * lpan;
+						aBuffer[j * 2 + 1] += s2 * rpan;
+					}
+				}
+				else
+				{
+					for (j = 0; j < aSamples; j++, step += stepratio)
+					{
+						float s = mScratch[(int)floor(step)];
+						aBuffer[j * 2 + 0] += s * lpan;
+						aBuffer[j * 2 + 1] += s * rpan;
+					}
 				}
 
 				// chear channel if the sound is over

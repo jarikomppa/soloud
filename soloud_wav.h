@@ -43,15 +43,15 @@ namespace SoLoud
 
 	class Wav : public AudioFactory
 	{
-		void loadwav(FILE * fp, int aChannel);
-		void loadogg(FILE * fp, int aChannel);
+		void loadwav(FILE * fp, int aStereo, int aChannel);
+		void loadogg(FILE * fp, int aStereo, int aChannel);
 	public:
 		float *mData;
 		int mSamples;
 
 		Wav();
 		virtual ~Wav();
-		void load(const char *aFilename, int aChannel);
+		void load(const char *aFilename, int aStereo = 0, int aChannel = 0);
 		virtual AudioProducer *createProducer();
 	};
 };

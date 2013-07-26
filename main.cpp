@@ -103,7 +103,8 @@ int main(int argc, char *argv[])
 
 	SoLoud::Filter gFL(&gSW);
 
-	audiohandle = gSL.play(gFL,1,0);
+	audiohandle = 1;
+	gSL.play(gSW,1,0);
 	gSL.setVolume(2);
 	
 	// Initialize SDL's subsystems - in this case, only video.

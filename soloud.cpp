@@ -122,9 +122,10 @@ namespace SoLoud
 
 		mChannel[ch]->init(mPlayIndex, aSound.mBaseSamplerate, aSound.mFlags);
 
-		setPan(ch, aPan);
-		setVolume(ch, aVolume);
-		setRelativePlaySpeed(ch, 1);
+		// TODO: mutex is locked at this point, but the following lock/unlock it too..
+		setPan(handle, aPan);
+		setVolume(handle, aVolume);
+		setRelativePlaySpeed(handle, 1);
 
 		mPlayIndex++;
 		int scratchneeded = (int)ceil((mChannel[ch]->mSamplerate / mSamplerate) * mBufferSize);
@@ -218,6 +219,13 @@ namespace SoLoud
 		}
 		mChannel[ch]->mRelativePlaySpeed = aSpeed;
 		mChannel[ch]->mSamplerate = mChannel[ch]->mBaseSamplerate * mChannel[ch]->mRelativePlaySpeed;
+		int scratchneeded = (int)ceil((mChannel[ch]->mSamplerate / mSamplerate) * mBufferSize);
+		if (mScratchNeeded < scratchneeded)
+		{
+			int pot = 1024;
+			while (pot < scratchneeded) pot <<= 1;
+			mScratchNeeded = pot;
+		}
 		if (unlockMutex) unlockMutex();
 	}
 

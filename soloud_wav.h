@@ -51,7 +51,7 @@ namespace SoLoud
 
 		Wav();
 		virtual ~Wav();
-		void load(const char *aFilename, int aStereo = 0, int aChannel = 0);
+		void load(const char *aFilename, int aStereo = 1, int aChannel = 0);
 		virtual AudioProducer *createProducer();
 	};
 };

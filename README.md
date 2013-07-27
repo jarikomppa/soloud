@@ -66,8 +66,14 @@ SoLoud audio engine consists of three kinds of objects:
 2. Audio Producers, which refer to the factories that created them, but include their own read pointers, volume, sample rate, etc.
 3. SoLoud engine itself, which handles the channel management and mixing.
 
-Currently there's a simple wav file loader, but nothing stops the audio sources to be just about anything. As a simple example,
-a sine wave audio source is provided.
+SoLoud is rather modular. In addition to the core, you only need to include the modules you want - if you want speech but no wave files, you don't need to include the wave module; if you have no need for speech, don't include the speech module. And so on.
+
+Current modules include:
+- Simple wav loader which also can load ogg files (decompressing them into memory; streaming support coming later). 
+- Speech synth
+- A simple sine wave audio example.
+- A simple audio-breaking filter example.
+- SDL back-end
 
 Usage example (actual docs TBD)
 -------------------------------

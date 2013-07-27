@@ -69,8 +69,8 @@ SoLoud audio engine consists of three kinds of objects:
 Currently there's a simple wav file loader, but nothing stops the audio sources to be just about anything. As a simple example,
 a sine wave audio source is provided.
 
-Usage example
--------------
+Usage example (actual docs TBD)
+-------------------------------
 ```C++
 // Headers; engine, wav loader
 #include "soloud.h"
@@ -87,16 +87,16 @@ SoLoud::Wav gSample;
 // Initialize engine. Channels, sample rate, buffer (in samples), flags.
 gSoLoud.init(8, 44100, 8192, 0);
 
-// Load a wave file. Filename, channel to load.
-gSample.load("pew_pew.wav", 0);
+// Load a wave file.
+gSample.load("pew_pew.wav");
 
 // Perform SDL initialization. For other back-ends, different call would be made.
 SoLoud::sdl_init(&gSoLoud);
 
 ...
 
-// Play sound. Sound, volume, panning (-1..+1)
-gSoLoud.play(gSample, 1.0f,  0.00f);
+// Play sound.
+gSoLoud.play(gSample);
 
 ...
 

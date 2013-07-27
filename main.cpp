@@ -105,7 +105,7 @@ int main(int argc, char *argv[])
 
 	audiohandle = 1;
 	gSL.play(gSW,1,0);
-	gSL.setVolume(2);
+	gSL.setGlobalVolume(2);
 	
 	// Initialize SDL's subsystems - in this case, only video.
 	if ( SDL_Init(SDL_INIT_VIDEO) < 0 ) 

@@ -60,6 +60,8 @@ namespace SoLoud
 		void init(int aPlayIndex, float aBaseSamplerate, int aFactoryFlags);
 		virtual void getAudio(float *aBuffer, int aSamples) = 0;
 		virtual int hasEnded() = 0;
+		virtual void seek(float aSeconds, float *mScratch, int mScratchSize);
+		virtual int rewind();
 	};
 
 	class AudioFactory
@@ -107,9 +109,12 @@ namespace SoLoud
 		};
 
 		void init(int aChannels, int aSamplerate, int aBufferSize, int aFlags);
-		void setVolume(float aVolume);
+		float getStreamTime(int aChannel);
+		void seek(int aChannel, float aSeconds);
+		void setGlobalVolume(float aVolume);
 		int findFreeChannel();
 		void setPause(int aChannel, int aPause);
+		void setPauseAll(int aPause);
 		int getPause(int aChannel);
 		int play(AudioFactory &aSound, float aVolume = 1.0f, float aPan = 0.0f, int aPaused = 0);
 		int getAbsoluteChannelFromHandle(int aChannel);

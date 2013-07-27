@@ -64,6 +64,36 @@ namespace SoLoud
 		}
 	}
 
+	int AudioProducer::rewind()
+	{
+		return 0;
+	}
+
+	void AudioProducer::seek(float aSeconds, float *mScratch, int mScratchSize)
+	{
+		float offset = aSeconds - mStreamTime;
+		if (offset < 0)
+		{
+			if (rewind() == 0)
+			{
+				// can't do generic seek backwards unless we can rewind.
+				return;
+			}
+			offset = aSeconds;
+		}
+		int samples_to_discard = (int)floor(mSamplerate * offset);
+
+		while (samples_to_discard)
+		{
+			int samples = mScratchSize / 2;
+			if (samples > samples_to_discard)
+				samples = samples_to_discard;
+			getAudio(mScratch, samples);
+			samples_to_discard -= samples;
+		}
+	}
+
+
 	///////////////////////////////////////////////////////////////////////////
 
 	AudioFactory::AudioFactory() 
@@ -142,7 +172,7 @@ namespace SoLoud
 		mPostClipScaler = aScaler;
 	}
 
-	void Soloud::setVolume(float aVolume)
+	void Soloud::setGlobalVolume(float aVolume)
 	{
 		mGlobalVolume = aVolume;
 	}		
@@ -260,6 +290,20 @@ namespace SoLoud
 		return v;
 	}
 
+	float Soloud::getStreamTime(int aChannel)
+	{
+		if (lockMutex) lockMutex();
+		int ch = getAbsoluteChannelFromHandle(aChannel);
+		if (ch == -1) 
+		{
+			if (unlockMutex) unlockMutex();
+			return 0;
+		}
+		float v = mChannel[ch]->mStreamTime;
+		if (unlockMutex) unlockMutex();
+		return v;
+	}
+
 	float Soloud::getRelativePlaySpeed(int aChannel)
 	{
 		if (lockMutex) lockMutex();
@@ -323,6 +367,19 @@ namespace SoLoud
 		if (unlockMutex) unlockMutex();
 	}
 
+	void Soloud::seek(int aChannel, float aSeconds)
+	{
+		if (lockMutex) lockMutex();
+		int ch = getAbsoluteChannelFromHandle(aChannel);
+		if (ch == -1) 
+		{
+			if (unlockMutex) unlockMutex();
+			return;
+		}
+		mChannel[ch]->seek(aSeconds, mScratch, mScratchSize);
+		if (unlockMutex) unlockMutex();
+	}
+
 	void Soloud::setPause(int aChannel, int aPause)
 	{
 		if (lockMutex) lockMutex();
@@ -342,6 +399,28 @@ namespace SoLoud
 		}
 		if (unlockMutex) unlockMutex();
 	}
+
+	void Soloud::setPauseAll(int aPause)
+	{
+		if (lockMutex) lockMutex();
+		int ch;
+		for (ch = 0; ch < mChannelCount; ch++)
+		{
+			if (mChannel[ch])
+			{
+				if (aPause)
+				{
+					mChannel[ch]->mFlags |= AudioProducer::PAUSED;
+				}
+				else
+				{
+					mChannel[ch]->mFlags &= ~AudioProducer::PAUSED;
+				}
+			}
+		}
+		if (unlockMutex) unlockMutex();
+	}
+
 
 	int Soloud::getPause(int aChannel)
 	{
@@ -460,6 +539,8 @@ namespace SoLoud
 
 	void Soloud::mix(float *aBuffer, int aSamples)
 	{
+		float buffertime = aSamples / (float)mSamplerate;
+
 		if (lockMutex) lockMutex();
 		if (mScratchSize < mScratchNeeded)
 		{
@@ -485,7 +566,8 @@ namespace SoLoud
 				float rpan = mChannel[i]->mRVolume * mChannel[i]->mVolume * mGlobalVolume;
 
 				float stepratio = mChannel[i]->mSamplerate / mSamplerate;
-				mChannel[i]->getAudio(mScratch, (int)ceil(aSamples * stepratio));					
+				mChannel[i]->getAudio(mScratch, (int)ceil(aSamples * stepratio));		
+				mChannel[i]->mStreamTime += buffertime;
 
 				int j;
 				float step = 0;

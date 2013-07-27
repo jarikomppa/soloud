@@ -28,6 +28,53 @@ freely, subject to the following restrictions:
 
 namespace SoLoud
 {
+	AudioProducer::AudioProducer()
+	{
+		mPlayIndex = 0;
+		mFlags = 0;
+		mLVolume = 1.0f / (float)sqrt(2.0);
+		mRVolume = 1.0f / (float)sqrt(2.0);
+		mVolume = 1.0f;
+		mBaseSamplerate = 44100.0f;
+		mSamplerate = 44100.0f;
+		mRelativePlaySpeed = 1.0f;
+		mStreamTime = 0.0f;
+	}
+
+	AudioProducer::~AudioProducer()
+	{
+	}
+
+	void AudioProducer::init(int aPlayIndex, float aBaseSamplerate, int aFactoryFlags)
+	{
+		mPlayIndex = aPlayIndex;
+		mBaseSamplerate = aBaseSamplerate;
+		mSamplerate = mBaseSamplerate;
+		mStreamTime = 0.0f;
+		mFlags = 0;
+
+		if (aFactoryFlags & AudioFactory::SHOULD_LOOP)
+		{
+			mFlags |= AudioProducer::LOOPING;
+		}
+
+		if (aFactoryFlags & AudioFactory::STEREO)
+		{
+			mFlags |= AudioProducer::STEREO;
+		}
+	}
+
+	///////////////////////////////////////////////////////////////////////////
+
+	AudioFactory::AudioFactory() 
+	{ 
+		mFlags = 0; 
+		mBaseSamplerate = 44100; 
+	}
+
+	AudioFactory::~AudioFactory() 
+	{
+	}
 
 	void AudioFactory::setLooping(int aLoop)
 	{
@@ -41,14 +88,30 @@ namespace SoLoud
 		}
 	}
 
-	float Soloud::getPostClipScaler()
+	///////////////////////////////////////////////////////////////////////////
+
+	Soloud::Soloud()
 	{
-		return mPostClipScaler;
+		mScratch = NULL;
+		mScratchSize = 0;
+		mScratchNeeded = 0;
+		mChannel = NULL;
+		mChannelCount = 0;
+		mSamplerate = 0;
+		mBufferSize = 0;
+		mFlags = 0;
+		mGlobalVolume = 0;
+		mPlayIndex = 0;
+		mMixerData = NULL;
+		lockMutex = NULL;
+		unlockMutex = NULL;
 	}
 
-	void Soloud::setPostClipScaler(float aScaler)
+	Soloud::~Soloud()
 	{
-		mPostClipScaler = aScaler;
+		stopAll();
+		delete[] mScratch;
+		delete[] mChannel;
 	}
 
 	void Soloud::init(int aChannels, int aSamplerate, int aBufferSize, int aFlags)
@@ -69,6 +132,16 @@ namespace SoLoud
 		mPostClipScaler = 0.5f;
 	}
 
+	float Soloud::getPostClipScaler()
+	{
+		return mPostClipScaler;
+	}
+
+	void Soloud::setPostClipScaler(float aScaler)
+	{
+		mPostClipScaler = aScaler;
+	}
+
 	void Soloud::setVolume(float aVolume)
 	{
 		mGlobalVolume = aVolume;
@@ -77,8 +150,8 @@ namespace SoLoud
 	int Soloud::findFreeChannel()
 	{
 		int i;
-		unsigned int lpi = 0xffffffff;
-		int lpii = -1;
+		unsigned int lowest_play_index_value = 0xffffffff;
+		int lowest_play_index = -1;
 		for (i = 0; i < mChannelCount; i++)
 		{
 			if (mChannel[i] == NULL)
@@ -86,37 +159,25 @@ namespace SoLoud
 				return i;
 			}
 			if (((mChannel[i]->mFlags & AudioProducer::PROTECTED) == 0) && 
-				mChannel[i]->mPlayIndex < lpi)
+				mChannel[i]->mPlayIndex < lowest_play_index_value)
 			{
-				lpii = i;
+				lowest_play_index_value = mChannel[i]->mPlayIndex;
+				lowest_play_index = i;
 			}
 		}
-		stop(lpii);
-		return lpii;
-	}
-
-	void AudioProducer::init(int aPlayIndex, float aBaseSamplerate, int aFactoryFlags)
-	{
-		mPlayIndex = aPlayIndex;
-		mBaseSamplerate = aBaseSamplerate;
-		mSamplerate = mBaseSamplerate;
-		mFlags = 0;
-
-		if (aFactoryFlags & AudioFactory::SHOULD_LOOP)
-		{
-			mFlags |= AudioProducer::LOOPING;
-		}
-
-		if (aFactoryFlags & AudioFactory::STEREO)
-		{
-			mFlags |= AudioProducer::STEREO;
-		}
+		stop(lowest_play_index);
+		return lowest_play_index;
 	}
 
 	int Soloud::play(AudioFactory &aSound, float aVolume, float aPan, int aPaused)
 	{
 		if (lockMutex) lockMutex();
 		int ch = findFreeChannel();
+		if (ch < 0) 
+		{
+			if (unlockMutex) unlockMutex();
+			return -1;
+		}
 		mChannel[ch] = aSound.createProducer();
 		int handle = ch | (mPlayIndex << 8);
 
@@ -499,27 +560,4 @@ namespace SoLoud
 		}
 	}
 
-	Soloud::Soloud()
-	{
-		mScratch = NULL;
-		mScratchSize = 0;
-		mScratchNeeded = 0;
-		mChannel = NULL;
-		mChannelCount = 0;
-		mSamplerate = 0;
-		mBufferSize = 0;
-		mFlags = 0;
-		mGlobalVolume = 0;
-		mPlayIndex = 0;
-		mMixerData = NULL;
-		lockMutex = NULL;
-		unlockMutex = NULL;
-	}
-
-	Soloud::~Soloud()
-	{
-		stopAll();
-		delete[] mScratch;
-		delete[] mChannel;
-	}
 };

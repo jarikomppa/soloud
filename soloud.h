@@ -46,7 +46,8 @@ namespace SoLoud
 			PROTECTED = 4,
 			PAUSED = 8
 		};
-		virtual ~AudioProducer() {};
+		AudioProducer();
+		virtual ~AudioProducer();
 		unsigned int mPlayIndex;
 		int mFlags;
 		float mLVolume;
@@ -55,6 +56,7 @@ namespace SoLoud
 		float mBaseSamplerate;
 		float mSamplerate;
 		float mRelativePlaySpeed;
+		float mStreamTime;
 		void init(int aPlayIndex, float aBaseSamplerate, int aFactoryFlags);
 		virtual void getAudio(float *aBuffer, int aSamples) = 0;
 		virtual int hasEnded() = 0;
@@ -70,9 +72,10 @@ namespace SoLoud
 		};
 		int mFlags;
 		float mBaseSamplerate;
-		AudioFactory() { mFlags = 0; mBaseSamplerate = 44100; }
+
+		AudioFactory();
 		void setLooping(int aLoop);
-		virtual ~AudioFactory() {};
+		virtual ~AudioFactory();
 		virtual AudioProducer *createProducer() = 0;
 	};
 

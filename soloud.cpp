@@ -113,7 +113,7 @@ namespace SoLoud
 		}
 	}
 
-	int Soloud::play(AudioFactory &aSound, float aVolume, float aPan)
+	int Soloud::play(AudioFactory &aSound, float aVolume, float aPan, int aPaused)
 	{
 		if (lockMutex) lockMutex();
 		int ch = findFreeChannel();
@@ -121,6 +121,11 @@ namespace SoLoud
 		int handle = ch | (mPlayIndex << 8);
 
 		mChannel[ch]->init(mPlayIndex, aSound.mBaseSamplerate, aSound.mFlags);
+
+		if (aPaused)
+		{
+			mChannel[ch]->mFlags |= AudioProducer::PAUSED;
+		}
 
 		// TODO: mutex is locked at this point, but the following lock/unlock it too..
 		setPan(handle, aPan);
@@ -257,6 +262,40 @@ namespace SoLoud
 		if (unlockMutex) unlockMutex();
 	}
 
+	void Soloud::setPause(int aChannel, int aPause)
+	{
+		if (lockMutex) lockMutex();
+		int ch = getAbsoluteChannelFromHandle(aChannel);
+		if (ch == -1) 
+		{
+			if (unlockMutex) unlockMutex();
+			return;
+		}
+		if (aPause)
+		{
+			mChannel[ch]->mFlags |= AudioProducer::PAUSED;
+		}
+		else
+		{
+			mChannel[ch]->mFlags &= ~AudioProducer::PAUSED;
+		}
+		if (unlockMutex) unlockMutex();
+	}
+
+	int Soloud::getPause(int aChannel)
+	{
+		if (lockMutex) lockMutex();
+		int ch = getAbsoluteChannelFromHandle(aChannel);
+		if (ch == -1) 
+		{
+			if (unlockMutex) unlockMutex();
+			return 0;
+		}
+		int v = !!(mChannel[ch]->mFlags & AudioProducer::PAUSED);
+		if (unlockMutex) unlockMutex();
+		return v;
+	}
+
 	int Soloud::getProtectChannel(int aChannel)
 	{
 		if (lockMutex) lockMutex();
@@ -379,7 +418,7 @@ namespace SoLoud
 		// Accumulate sound sources
 		for (i = 0; i < mChannelCount; i++)
 		{
-			if (mChannel[i])
+			if (mChannel[i] && !(mChannel[i]->mFlags & AudioProducer::PAUSED))
 			{
 				float lpan = mChannel[i]->mLVolume * mChannel[i]->mVolume * mGlobalVolume;
 				float rpan = mChannel[i]->mRVolume * mChannel[i]->mVolume * mGlobalVolume;

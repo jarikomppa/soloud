@@ -43,7 +43,8 @@ namespace SoLoud
 		{
 			LOOPING = 1,
 			STEREO = 2,
-			PROTECTED = 4
+			PROTECTED = 4,
+			PAUSED = 8
 		};
 		virtual ~AudioProducer() {};
 		unsigned int mPlayIndex;
@@ -105,7 +106,9 @@ namespace SoLoud
 		void init(int aChannels, int aSamplerate, int aBufferSize, int aFlags);
 		void setVolume(float aVolume);
 		int findFreeChannel();
-		int play(AudioFactory &aSound, float aVolume, float aPan);
+		void setPause(int aChannel, int aPause);
+		int getPause(int aChannel);
+		int play(AudioFactory &aSound, float aVolume = 1.0f, float aPan = 0.0f, int aPaused = 0);
 		int getAbsoluteChannelFromHandle(int aChannel);
 		float getVolume(int aChannel);
 		float getSamplerate(int aChannel);

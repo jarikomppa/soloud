@@ -34,11 +34,14 @@ freely, subject to the following restrictions:
 #include "soloud_sinewave.h"
 #include "soloud_wav.h"
 #include "soloud_filter.h"
+#include "soloud_speech.h"
 
 
-SoLoud::Soloud gSL;
-//SoLoud::Sinewave gSW;
-SoLoud::Wav gSW;
+SoLoud::Soloud gSoloud;
+SoLoud::Sinewave gSinewave;
+SoLoud::Wav gWave;
+SoLoud::Speech *gSpeech;
+SoLoud::Filter *gFilter;
 int audiohandle;
 
 SDL_Surface *screen;
@@ -61,11 +64,10 @@ void render()
 	// Ask SDL for the time in milliseconds
 	int tick = SDL_GetTicks();
 
-	float *buf = (float*)gSL.mMixerData;
+	float *buf = (float*)gSoloud.mMixerData;
 
-	gSL.setPan(audiohandle, (float)sin(tick * 0.001));
-	gSL.setRelativePlaySpeed(audiohandle, (float)sin(tick * 0.003) * 0.1f + 1);
-	//gSL.setVolume(2);
+	gSoloud.setPan(audiohandle, (float)sin(tick * 0.001));
+	gSoloud.setRelativePlaySpeed(audiohandle, (float)sin(tick * 0.003) * 0.1f + 1);
 
 	int i, j;
 	for (i = 0; i < 400; i++)
@@ -96,16 +98,15 @@ void render()
 int main(int argc, char *argv[])
 {
 
-	gSL.init(128,44100,4096*2,1);
-	gSW.load("jingle.ogg", 0);
-	gSW.setLooping(1);
+	gSoloud.init(128,44100,4096*2,1);
+	gWave.load("jingle.ogg", 0);
+	gWave.setLooping(1);
 	int i;
 
-	SoLoud::Filter gFL(&gSW);
-
-	audiohandle = 1;
-	gSL.play(gSW,1,0);
-	gSL.setGlobalVolume(2);
+	gSpeech = new SoLoud::Speech("    1 2 3     1 2 3     testing testing     welcome to so loud");
+	gFilter = new SoLoud::Filter(gSpeech);
+	gSoloud.play(gWave,1,0);
+	gSoloud.setGlobalVolume(2);
 	
 	// Initialize SDL's subsystems - in this case, only video.
 	if ( SDL_Init(SDL_INIT_VIDEO) < 0 ) 
@@ -114,7 +115,7 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
-	SoLoud::sdl_init(&gSL);
+	SoLoud::sdl_init(&gSoloud);
 
 	// Register SDL_Quit to be called at exit; makes sure things are
 	// cleaned up when we quit.
@@ -129,6 +130,8 @@ int main(int argc, char *argv[])
 		fprintf(stderr, "Unable to set 640x480 video: %s\n", SDL_GetError());
 		exit(1);
 	}
+
+	gSoloud.play(*gFilter);
 
 	// Main loop: loop forever.
 	while (1)
@@ -148,12 +151,12 @@ int main(int argc, char *argv[])
 				// If escape is pressed, return (and thus, quit)
 				if (event.key.keysym.sym == SDLK_ESCAPE)
 				{
-					SoLoud::sdl_deinit(&gSL);
+					SoLoud::sdl_deinit(&gSoloud);
 					return 0;
 				}
 				break;
 			case SDL_QUIT:
-				SoLoud::sdl_deinit(&gSL);
+				SoLoud::sdl_deinit(&gSoloud);
 				return(0);
 			}
 		}

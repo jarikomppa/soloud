@@ -88,8 +88,8 @@ namespace SoLoud
 	
 	void sdl_deinit(SoLoud::Soloud *aSoloud)
 	{
-		delete[] (float*)aSoloud->mMixerData;
 		SDL_CloseAudio();
+		delete[] (float*)aSoloud->mMixerData;
 		SDL_DestroyMutex(gSoloudMutex);
 	}
 };

@@ -13,7 +13,8 @@ checks by several open source organizations, so it
 "should" be pretty safe.
 
 The primary copyright claims seem to have to do
-with text-to-speech dictionary use.
+with text-to-speech dictionary use, which I've
+removed completely.
 
 I've done some serious refactoring, clean-up and 
 feature removal on the source, as all I need is 

@@ -75,35 +75,36 @@ Current modules include:
 - A simple audio-breaking filter example.
 - SDL back-end
 
-Simplest Possible Usage example (actual docs TBD)
+Simplest Possible Usage Example (actual docs TBD)
 -------------------------------
 ```C++
-// Headers; engine, wav loader
+// Headers; SDL, core, wav loader
+#include <sdl.h>
 #include "soloud.h"
 #include "soloud_wav.h"
 
-...
+int main(int parc, char ** pars)
+{ 
+  SoLoud::Soloud soloud; // Engine core
+  SoLoud::Wav sample;    // One sample
 
-// Couple globals. Don't need to be global.
-SoLoud::Soloud gSoLoud;
-SoLoud::Wav gSample;
+  SDL_Init(SDL_INIT_VIDEO);  // SDL init..
+  SoLoud::sdl_init(&soloud); // SoLoud's SDL init call
 
-...
+  sample.load("pew_pew.wav"); // Load a wave file
+  soloud.play(sample);        // Play it
+  
+  // Loop while it's playing..
+  while (soloud.getActiveVoices()) 
+  {
+    SDL_Delay(100);
+  }
 
-// Load a wave file.
-gSample.load("pew_pew.wav");
-
-// Perform SDL initialization. For other back-ends, different call would be made.
-SoLoud::sdl_init(&gSoLoud);
-
-...
-
-// Play sound, whenever needed, as often as you like; fire and forget.
-gSoLoud.play(gSample);
-
-...
-
-// Cleanup.
-SoLoud::sdl_deinit(&gSL);
-
+  // Cleanup
+  SoLoud::sdl_deinit(&soloud);
+  SDL_Quit();
+  
+  // All done
+  return 0;
+}
 ```

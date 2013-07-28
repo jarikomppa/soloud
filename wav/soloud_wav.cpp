@@ -258,7 +258,10 @@ namespace SoLoud
 
 		int readchannels = 1;
 		if (aStereo)
+		{
 			readchannels = 2;
+			mFlags |= STEREO;
+		}
 
 		mData = new float[samples * readchannels];
 		mSamples = samples;

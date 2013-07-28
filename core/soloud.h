@@ -95,6 +95,7 @@ namespace SoLoud
 		float mGlobalVolume;
 		float mPostClipScaler;
 		unsigned int mPlayIndex;
+		int findFreeChannel();
 	public:
 		void * mMixerData;
 		mutexCallFunction lockMutex;
@@ -109,22 +110,27 @@ namespace SoLoud
 		};
 
 		void init(int aChannels, int aSamplerate, int aBufferSize, int aFlags);
-		float getStreamTime(int aChannel);
-		void seek(int aChannel, float aSeconds);
-		void setGlobalVolume(float aVolume);
-		int findFreeChannel();
-		void setPause(int aChannel, int aPause);
-		void setPauseAll(int aPause);
-		int getPause(int aChannel);
+		void mix(float *aBuffer, int aSamples);
+
 		int play(AudioFactory &aSound, float aVolume = 1.0f, float aPan = 0.0f, int aPaused = 0);
+		void seek(int aChannel, float aSeconds);
+		void stop(int aChannel);
+		void stopAbsolute(int aAbsoluteChannel);
+		void stopAll();
+
+		float getStreamTime(int aChannel);
+		int getPause(int aChannel);
 		int getAbsoluteChannelFromHandle(int aChannel);
 		float getVolume(int aChannel);
 		float getSamplerate(int aChannel);
 		int getProtectChannel(int aChannel);
-		int getActiveVoices();
+		int getActiveVoiceCount();
 		int isValidChannelHandle(int aChannel);
 		float getPostClipScaler();
 		float getRelativePlaySpeed(int aChannel);
+		void setGlobalVolume(float aVolume);
+		void setPause(int aChannel, int aPause);
+		void setPauseAll(int aPause);
 		void setRelativePlaySpeed(int aChannel, float aSpeed);
 		void setPostClipScaler(float aScaler);
 		void setProtectChannel(int aChannel, int aProtect);
@@ -132,10 +138,6 @@ namespace SoLoud
 		void setPan(int aChannel, float aPan);
 		void setPanAbsolute(int aChannel, float aLVolume, float aRVolume);
 		void setVolume(int aChannel, float aVolume);
-		void stop(int aChannel);
-		void stopAbsolute(int aAbsoluteChannel);
-		void stopAll();
-		void mix(float *aBuffer, int aSamples);
 	};
 
 	int sdl_init(SoLoud::Soloud *aSoloud, int aChannels = 32, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 2048);

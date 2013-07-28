@@ -95,7 +95,7 @@ int main(int parc, char ** pars)
   soloud.play(sample);        // Play it
   
   // Loop while it's playing..
-  while (soloud.getActiveVoices()) 
+  while (soloud.getActiveVoiceCount() > 0) 
   {
     SDL_Delay(100);
   }

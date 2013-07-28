@@ -247,7 +247,7 @@ namespace SoLoud
 		return -1;		
 	}
 
-	int Soloud::getActiveVoices()
+	int Soloud::getActiveVoiceCount()
 	{
 		if (lockMutex) lockMutex();
 		int i;

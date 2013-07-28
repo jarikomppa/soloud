@@ -66,8 +66,8 @@ void render()
 
 	float *buf = (float*)gSoloud.mMixerData;
 
-	gSoloud.setPan(audiohandle, (float)sin(tick * 0.001));
-	gSoloud.setRelativePlaySpeed(audiohandle, (float)sin(tick * 0.003) * 0.1f + 1);
+	//gSoloud.setPan(audiohandle, (float)sin(tick * 0.001));
+	//gSoloud.setRelativePlaySpeed(audiohandle, (float)sin(tick * 0.003) * 0.1f + 1);
 
 	int i, j;
 	for (i = 0; i < 400; i++)
@@ -127,9 +127,11 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
-	gSoloud.play(gWave,1,0);
+	int songhandle = gSoloud.play(gWave,1,0);
+	gSoloud.fadeVolume(songhandle, 0, 1, 5);
 	gSoloud.setGlobalVolume(2);
-	gSoloud.play(*gFilter);
+	int voicehandle = gSoloud.play(*gFilter);
+	gSoloud.fadePan(voicehandle, -1, 1, 5);
 
 	// Main loop: loop forever.
 	while (1)

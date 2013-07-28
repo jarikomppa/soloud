@@ -36,6 +36,21 @@ namespace SoLoud
 {
 	typedef void (*mutexCallFunction)();
 
+	class Fader
+	{
+	public:
+		float mFrom;
+		float mTo;
+		float mDelta;
+		float mTime;
+		float mStartTime;
+		float mEndTime;
+		int mActive;
+		Fader();
+		void set(float aFrom, float aTo, float aTime, float aStartTime);
+		float get(float aCurrentTime);
+	}; 
+
 	class AudioProducer
 	{
 	public:
@@ -57,6 +72,9 @@ namespace SoLoud
 		float mSamplerate;
 		float mRelativePlaySpeed;
 		float mStreamTime;
+		Fader mPanFader;
+		Fader mVolumeFader;
+		Fader mRelativePlaySpeedFader;
 		void init(int aPlayIndex, float aBaseSamplerate, int aFactoryFlags);
 		virtual void getAudio(float *aBuffer, int aSamples) = 0;
 		virtual int hasEnded() = 0;
@@ -95,7 +113,13 @@ namespace SoLoud
 		float mGlobalVolume;
 		float mPostClipScaler;
 		unsigned int mPlayIndex;
+		Fader mGlobalVolumeFader;
 		int findFreeChannel();
+		float mStreamTime;
+		int getChannelFromHandle(int aChannelHandle);
+		void stopChannel(int aChannel);
+		void setChannelPan(int aChannel, float aPan);
+		void setChannelRelativePlaySpeed(int aChannel, float aSpeed);
 	public:
 		void * mMixerData;
 		mutexCallFunction lockMutex;
@@ -113,31 +137,34 @@ namespace SoLoud
 		void mix(float *aBuffer, int aSamples);
 
 		int play(AudioFactory &aSound, float aVolume = 1.0f, float aPan = 0.0f, int aPaused = 0);
-		void seek(int aChannel, float aSeconds);
-		void stop(int aChannel);
-		void stopAbsolute(int aAbsoluteChannel);
+		void seek(int aChannelHandle, float aSeconds);
+		void stop(int aChannelHandle);
 		void stopAll();
 
-		float getStreamTime(int aChannel);
-		int getPause(int aChannel);
-		int getAbsoluteChannelFromHandle(int aChannel);
-		float getVolume(int aChannel);
-		float getSamplerate(int aChannel);
-		int getProtectChannel(int aChannel);
+		float getStreamTime(int aChannelHandle);
+		int getPause(int aChannelHandle);
+		float getVolume(int aChannelHandle);
+		float getSamplerate(int aChannelHandle);
+		int getProtectChannel(int aChannelHandle);
 		int getActiveVoiceCount();
-		int isValidChannelHandle(int aChannel);
+		int isValidChannelHandle(int aChannelHandle);
 		float getPostClipScaler();
-		float getRelativePlaySpeed(int aChannel);
+		float getRelativePlaySpeed(int aChannelHandle);
 		void setGlobalVolume(float aVolume);
-		void setPause(int aChannel, int aPause);
+		void setPause(int aChannelHandle, int aPause);
 		void setPauseAll(int aPause);
-		void setRelativePlaySpeed(int aChannel, float aSpeed);
+		void setRelativePlaySpeed(int aChannelHandle, float aSpeed);
 		void setPostClipScaler(float aScaler);
-		void setProtectChannel(int aChannel, int aProtect);
-		void setSamplerate(int aChannel, float aSamplerate);
-		void setPan(int aChannel, float aPan);
-		void setPanAbsolute(int aChannel, float aLVolume, float aRVolume);
-		void setVolume(int aChannel, float aVolume);
+		void setProtectChannel(int aChannelHandle, int aProtect);
+		void setSamplerate(int aChannelHandle, float aSamplerate);
+		void setPan(int aChannelHandle, float aPan);
+		void setPanAbsolute(int aChannelHandle, float aLVolume, float aRVolume);
+		void setVolume(int aChannelHandle, float aVolume);
+
+		void fadeVolume(int aChannelHandle, float aFrom, float aTo, float aTime);
+		void fadePan(int aChannelHandle, float aFrom, float aTo, float aTime);
+		void fadeRelativePlaySpeed(int aChannelHandle, float aFrom, float aTo, float aTime);
+		void fadeGlobalVolume(float aFrom, float aTo, float aTime);
 	};
 
 	int sdl_init(SoLoud::Soloud *aSoloud, int aChannels = 32, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 2048);

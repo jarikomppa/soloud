@@ -61,14 +61,14 @@ namespace SoLoud
 		SDL_mutexV(gSoloudMutex);
 	}
 
-	int sdl_init(SoLoud::Soloud * aSoloud)
+	int sdl_init(SoLoud::Soloud *aSoloud, int aChannels, int aFlags, int aSamplerate, int aBuffer)
 	{
 		gSoloudMutex = SDL_CreateMutex();
 		SDL_AudioSpec as;
-		as.freq = 44100;
+		as.freq = aSamplerate;
 		as.format = AUDIO_S16;
 		as.channels = 2;
-		as.samples = 2048;
+		as.samples = aBuffer;
 		as.callback = soloud_sdl_audiomixer;
 		as.userdata = (void*)aSoloud;
 
@@ -78,6 +78,8 @@ namespace SoLoud
 			return 1;
 		}
 		aSoloud->mMixerData = new float[as2.samples*4];
+
+		aSoloud->init(aChannels, as2.freq, as2.samples * 2, aFlags);
 
 		aSoloud->lockMutex = soloud_sdl_lockmutex;
 		aSoloud->unlockMutex = soloud_sdl_unlockmutex;

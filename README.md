@@ -75,7 +75,7 @@ Current modules include:
 - A simple audio-breaking filter example.
 - SDL back-end
 
-Usage example (actual docs TBD)
+Simplest Possible Usage example (actual docs TBD)
 -------------------------------
 ```C++
 // Headers; engine, wav loader
@@ -90,9 +90,6 @@ SoLoud::Wav gSample;
 
 ...
 
-// Initialize engine. Channels, sample rate, buffer (in samples), flags.
-gSoLoud.init(8, 44100, 8192, 0);
-
 // Load a wave file.
 gSample.load("pew_pew.wav");
 
@@ -101,7 +98,7 @@ SoLoud::sdl_init(&gSoLoud);
 
 ...
 
-// Play sound.
+// Play sound, whenever needed, as often as you like; fire and forget.
 gSoLoud.play(gSample);
 
 ...

@@ -97,16 +97,12 @@ void render()
 // Entry point
 int main(int argc, char *argv[])
 {
-
-	gSoloud.init(128,44100,4096*2,1);
-	gWave.load("jingle.ogg", 0);
+	gWave.load("jingle.ogg");
 	gWave.setLooping(1);
 	int i;
 
 	gSpeech = new SoLoud::Speech("    1 2 3     1 2 3     testing testing     welcome to so loud");
 	gFilter = new SoLoud::Filter(gSpeech);
-	gSoloud.play(gWave,1,0);
-	gSoloud.setGlobalVolume(2);
 	
 	// Initialize SDL's subsystems - in this case, only video.
 	if ( SDL_Init(SDL_INIT_VIDEO) < 0 ) 
@@ -131,6 +127,8 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
+	gSoloud.play(gWave,1,0);
+	gSoloud.setGlobalVolume(2);
 	gSoloud.play(*gFilter);
 
 	// Main loop: loop forever.

@@ -138,7 +138,7 @@ namespace SoLoud
 		void mix(float *aBuffer, int aSamples);
 	};
 
-	int sdl_init(SoLoud::Soloud *aSoloud);
+	int sdl_init(SoLoud::Soloud *aSoloud, int aChannels = 32, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 2048);
 	void sdl_deinit(SoLoud::Soloud *aSoloud);
 };
 

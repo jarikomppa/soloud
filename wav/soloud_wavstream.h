@@ -29,6 +29,8 @@ freely, subject to the following restrictions:
 #include "soloud.h"
 
 
+struct stb_vorbis;
+
 namespace SoLoud
 {
 	class WavStream;
@@ -38,6 +40,10 @@ namespace SoLoud
 		WavStream *mParent;
 		int mOffset;
 		FILE *mFile;
+		stb_vorbis *mOgg;
+		int mOggFrameSize;
+		int mOggFrameOffset;
+		float **mOggOutputs;
 	public:
 		WavStreamProducer(WavStream *aParent);
 		virtual void getAudio(float *aBuffer, int aSamples);

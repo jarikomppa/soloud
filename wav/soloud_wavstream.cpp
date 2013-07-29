@@ -38,12 +38,32 @@ namespace SoLoud
 		mFile = fopen(aParent->mFilename, "rb");
 		if (mFile)
 		{
-			fseek(mFile, aParent->mDataOffset, SEEK_SET);
+			if (mParent->mOgg)
+			{
+				int e;
+				mOgg = stb_vorbis_open_file(mFile, 0, &e, NULL);
+				if (!mOgg)
+				{
+					fclose(mFile);
+					mFile = 0;
+				}
+				mOggFrameSize = 0;
+				mOggFrameOffset = 0;
+				mOggOutputs = 0;
+			}
+			else
+			{		
+				fseek(mFile, aParent->mDataOffset, SEEK_SET);
+			}
 		}
 	}
 
 	WavStreamProducer::~WavStreamProducer()
 	{
+		if (mOgg)
+		{
+			stb_vorbis_close(mOgg);
+		}
 		if (mFile)
 		{
 			fclose(mFile);
@@ -71,7 +91,7 @@ namespace SoLoud
 		return i;
 	}
 
-	static void getData(FILE * aFile, float * aBuffer, int aSamples, int aChannels, int aSrcChannels, int aChannelOffset, int aBits)
+	static void getWavData(FILE * aFile, float * aBuffer, int aSamples, int aChannels, int aSrcChannels, int aChannelOffset, int aBits)
 	{
 		int i, j;
 		if (aBits == 8)
@@ -125,8 +145,35 @@ namespace SoLoud
 		}
 	}
 
+	static int getOggData(float **aOggOutputs, float *aBuffer, int aSamples, int aFrameSize, int &aFrameOffset, int aChannelOffset, int aChannels)
+	{			
+		if (aFrameSize == 0)
+			return 0;
+		int samples = aSamples;
+		if (aFrameSize - aFrameOffset < samples)
+		{
+			samples = aFrameSize - aFrameOffset;
+		}
+
+		if (aChannels == 1)
+		{
+			memcpy(aBuffer, aOggOutputs[aChannelOffset] + aFrameOffset, sizeof(float) * samples);
+		}
+		else
+		{
+			int i;
+			for (i = 0; i < samples; i++)
+			{
+				aBuffer[i * 2] = aOggOutputs[aChannelOffset][i + aFrameOffset];
+				aBuffer[i * 2 + 1] = aOggOutputs[aChannelOffset + 1][i + aFrameOffset];
+			}
+		}
+		aFrameOffset += samples;
+		return samples;
+	}
+
 	void WavStreamProducer::getAudio(float *aBuffer, int aSamples)
-	{		
+	{			
 		int channels = 1;
 		if (mFlags & STEREO)
 			channels = 2;
@@ -134,9 +181,43 @@ namespace SoLoud
 		if (mFile == NULL)
 			return;
 
-		if (mParent->mOgg)
+		if (mOgg)
 		{
-			memset(aBuffer, 0, sizeof(float) * aSamples * channels);
+			int offset = 0;			
+			if (mOggFrameOffset < mOggFrameSize)
+			{
+				int b = getOggData(mOggOutputs, aBuffer, aSamples, mOggFrameSize, mOggFrameOffset, mParent->mChannelOffset, channels);
+				offset += b;
+				mOffset += b;
+			}
+
+			while (offset < aSamples)
+			{
+				mOggFrameSize = stb_vorbis_get_frame_float(mOgg, NULL, &mOggOutputs);
+				mOggFrameOffset = 0;
+				int b;
+				b = getOggData(mOggOutputs, aBuffer + offset * channels, aSamples - offset, mOggFrameSize, mOggFrameOffset, mParent->mChannelOffset, channels);
+				offset += b;
+				mOffset += b;
+				if (mOffset >= mParent->mSampleCount)
+				{
+					if (mFlags & AudioProducer::LOOPING)
+					{
+						stb_vorbis_close(mOgg);
+						fseek(mFile, 0, SEEK_SET);
+						int e;
+						mOgg = stb_vorbis_open_file(mFile, 0, &e, NULL);
+						mOffset = aSamples - offset;
+						mStreamTime = mOffset / mSamplerate;
+					}
+					else
+					{
+						memset(aBuffer + offset * channels, 0, sizeof(float) * (aSamples - offset) * channels);
+						mOffset += aSamples - offset;
+						offset = aSamples;
+					}
+				}
+			}
 		}
 		else
 		{
@@ -146,14 +227,14 @@ namespace SoLoud
 				copysize = mParent->mSampleCount - mOffset;
 			}
 
-			getData(mFile, aBuffer, copysize, channels, mParent->mChannels, mParent->mChannelOffset, mParent->mBits);
+			getWavData(mFile, aBuffer, copysize, channels, mParent->mChannels, mParent->mChannelOffset, mParent->mBits);
 		
 			if (copysize != aSamples)
 			{
 				if (mFlags & AudioProducer::LOOPING)
 				{
 					fseek(mFile, mParent->mDataOffset, SEEK_SET);
-					getData(mFile, aBuffer + copysize * channels, aSamples - copysize, channels, mParent->mChannels, mParent->mChannelOffset, mParent->mBits);
+					getWavData(mFile, aBuffer + copysize * channels, aSamples - copysize, channels, mParent->mChannels, mParent->mChannelOffset, mParent->mBits);
 					mOffset = aSamples - copysize;
 					mStreamTime = mOffset / mSamplerate;
 				}

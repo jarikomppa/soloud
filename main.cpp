@@ -99,7 +99,7 @@ void render()
 // Entry point
 int main(int argc, char *argv[])
 {
-	gWaveStream.load("jingle.wav");
+	gWaveStream.load("jingle.ogg");
 	gWaveStream.setLooping(1);
 	int i;
 

@@ -53,6 +53,7 @@ namespace SoLoud
 	public:
 		SpeechProducer(Speech *aParent);
 		virtual void getAudio(float *aBuffer, int aSamples);
+		virtual int rewind();
 		virtual int hasEnded();
 	};
 };

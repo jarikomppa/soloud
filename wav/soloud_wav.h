@@ -38,6 +38,7 @@ namespace SoLoud
 	public:
 		WavProducer(Wav *aParent);
 		virtual void getAudio(float *aBuffer, int aSamples);
+		virtual int rewind();
 		virtual int hasEnded();
 	};
 

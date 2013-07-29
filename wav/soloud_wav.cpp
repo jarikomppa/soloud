@@ -60,6 +60,7 @@ namespace SoLoud
 			{
 				memcpy(aBuffer + copysize * channels, mParent->mData, sizeof(float) * (aSamples - copysize) * channels);
 				mOffset = aSamples - copysize;
+				mStreamTime = mOffset / mSamplerate;
 			}
 			else
 			{
@@ -71,6 +72,13 @@ namespace SoLoud
 		{
 			mOffset += aSamples;
 		}
+	}
+
+	int WavProducer::rewind()
+	{
+		mOffset = 0;
+		mStreamTime = 0;
+		return 1;
 	}
 
 	int WavProducer::hasEnded()

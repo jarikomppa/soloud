@@ -84,6 +84,7 @@ namespace SoLoud
 				mSynth.initsynth(mParent->mElement.getSize(), (unsigned char *)mParent->mElement.getData());
 				mOffset = 10;
 				mSampleCount = 10;
+				mStreamTime = 0;
 			}
 		}
 
@@ -91,6 +92,16 @@ namespace SoLoud
 		{
 			memset(aBuffer + samples_out, 0, sizeof(float) * (aSamples - samples_out));				
 		}
+	}
+
+	int SpeechProducer::rewind()
+	{
+		mSynth.init();
+		mSynth.initsynth(mParent->mElement.getSize(), (unsigned char *)mParent->mElement.getData());
+		mOffset = 10;
+		mSampleCount = 10;
+		mStreamTime = 0;
+		return 1;
 	}
 
 	int SpeechProducer::hasEnded()

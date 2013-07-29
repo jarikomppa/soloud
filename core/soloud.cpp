@@ -122,6 +122,8 @@ namespace SoLoud
 			getAudio(mScratch, samples);
 			samples_to_discard -= samples;
 		}
+
+		mStreamTime = aSeconds;
 	}
 
 
@@ -644,6 +646,7 @@ namespace SoLoud
 
 	void Soloud::fadeGlobalVolume(float aFrom, float aTo, float aTime)
 	{
+		mStreamTime = 0; // avoid rollover (~6 days)
 		mGlobalVolumeFader.set(aFrom, aTo, aTime, mStreamTime);
 	}
 

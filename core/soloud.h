@@ -120,6 +120,7 @@ namespace SoLoud
 		void stopChannel(int aChannel);
 		void setChannelPan(int aChannel, float aPan);
 		void setChannelRelativePlaySpeed(int aChannel, float aSpeed);
+		void setChannelVolume(int aChannel, float aVolume);
 	public:
 		void * mMixerData;
 		mutexCallFunction lockMutex;

@@ -207,6 +207,7 @@ namespace SoLoud
 
 	void Soloud::setGlobalVolume(float aVolume)
 	{
+		mGlobalVolumeFader.mActive = 0;
 		mGlobalVolume = aVolume;
 	}		
 
@@ -251,10 +252,9 @@ namespace SoLoud
 			mChannel[ch]->mFlags |= AudioProducer::PAUSED;
 		}
 
-		// TODO: mutex is locked at this point, but the following lock/unlock it too..
-		setPan(handle, aPan);
-		setVolume(handle, aVolume);
-		setRelativePlaySpeed(handle, 1);
+		setChannelPan(ch, aPan);
+		setChannelVolume(ch, aVolume);
+		setChannelRelativePlaySpeed(ch, 1);
 
 		mPlayIndex++;
 		int scratchneeded = (int)ceil((mChannel[ch]->mSamplerate / mSamplerate) * mBufferSize);
@@ -376,6 +376,7 @@ namespace SoLoud
 			if (unlockMutex) unlockMutex();
 			return;
 		}
+		mChannel[ch]->mRelativePlaySpeedFader.mActive = 0;
 		setChannelRelativePlaySpeed(ch, aSpeed);
 		if (unlockMutex) unlockMutex();
 	}
@@ -542,9 +543,18 @@ namespace SoLoud
 			if (unlockMutex) unlockMutex();
 			return;
 		}
+		mChannel[ch]->mPanFader.mActive = 0;
 		mChannel[ch]->mLVolume = aLVolume;
 		mChannel[ch]->mRVolume = aRVolume;
 		if (unlockMutex) unlockMutex();
+	}
+
+	void Soloud::setChannelVolume(int aChannel, float aVolume)
+	{
+		if (mChannel[aChannel])
+		{
+			mChannel[aChannel]->mVolume = aVolume;
+		}
 	}
 
 	void Soloud::setVolume(int aChannelHandle, float aVolume)
@@ -556,7 +566,8 @@ namespace SoLoud
 			if (unlockMutex) unlockMutex();
 			return;
 		}
-		mChannel[ch]->mVolume = aVolume;
+		mChannel[ch]->mVolumeFader.mActive = 0;
+		setChannelVolume(ch, aVolume);
 		if (unlockMutex) unlockMutex();
 	}
 

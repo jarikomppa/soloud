@@ -26,81 +26,30 @@ freely, subject to the following restrictions:
 #include <stdio.h>
 #include <stdlib.h>
 #include "soloud.h"
-#include "soloud_wav.h"
+#include "soloud_wavstream.h"
 #include "stb_vorbis.h"
 
 namespace SoLoud
 {
-	WavProducer::WavProducer(Wav *aParent)
+	WavStreamProducer::WavStreamProducer(WavStream *aParent)
 	{
 		mParent = aParent;
 		mOffset = 0;
-	}
-
-	void WavProducer::getAudio(float *aBuffer, int aSamples)
-	{		
-		if (mParent->mData == NULL)
-			return;
-
-		int channels = 1;
-		if (mFlags & STEREO)
-			channels = 2;
-
-		int copysize = aSamples;
-		if (copysize + mOffset > mParent->mSampleCount)
+		mFile = fopen(aParent->mFilename, "rb");
+		if (mFile)
 		{
-			copysize = mParent->mSampleCount - mOffset;
-		}
-
-		memcpy(aBuffer, mParent->mData + mOffset * channels, sizeof(float) * copysize * channels);
-		
-		if (copysize != aSamples)
-		{
-			if (mFlags & AudioProducer::LOOPING)
-			{
-				memcpy(aBuffer + copysize * channels, mParent->mData, sizeof(float) * (aSamples - copysize) * channels);
-				mOffset = aSamples - copysize;
-				mStreamTime = mOffset / mSamplerate;
-			}
-			else
-			{
-				memset(aBuffer + copysize * channels, 0, sizeof(float) * (aSamples - copysize) * channels);
-				mOffset += aSamples - copysize;
-			}
-		}
-		else
-		{
-			mOffset += aSamples;
+			fseek(mFile, aParent->mDataOffset, SEEK_SET);
 		}
 	}
 
-	int WavProducer::rewind()
+	WavStreamProducer::~WavStreamProducer()
 	{
-		mOffset = 0;
-		mStreamTime = 0;
-		return 1;
-	}
-
-	int WavProducer::hasEnded()
-	{
-		if (mOffset >= mParent->mSampleCount)
+		if (mFile)
 		{
-			return 1;
+			fclose(mFile);
 		}
-		return 0;
 	}
 
-	Wav::Wav()
-	{
-		mData = NULL;
-		mSampleCount = 0;
-	}
-	
-	Wav::~Wav()
-	{
-		delete[] mData;
-	}
-	
 	static int read32(FILE * f)
 	{
 		int i;
@@ -122,9 +71,139 @@ namespace SoLoud
 		return i;
 	}
 
+	static void getData(FILE * aFile, float * aBuffer, int aSamples, int aChannels, int aSrcChannels, int aChannelOffset, int aBits)
+	{
+		int i, j;
+		if (aBits == 8)
+		{
+			for (i = 0; i < aSamples; i++)
+			{
+				for (j = 0; j < aSrcChannels; j++)
+				{
+					if (j == aChannelOffset)
+					{
+						aBuffer[i * aChannels] = read8(aFile) / (float)0x80;
+					}
+					else
+					{
+						if (aChannels > 1 && j == aChannelOffset + 1)
+						{
+							aBuffer[i * aChannels + 1] = read8(aFile) / (float)0x80;
+						}
+						else
+						{
+							read8(aFile);
+						}
+					}
+				}
+			}
+		}
+		else
+		if (aBits == 16)
+		{
+			for (i = 0; i < aSamples; i++)
+			{
+				for (j = 0; j < aSrcChannels; j++)
+				{
+					if (j == aChannelOffset)
+					{
+						aBuffer[i * aChannels] = read16(aFile) / (float)0x8000;
+					}
+					else
+					{
+						if (aChannels > 1 && j == aChannelOffset + 1)
+						{
+							aBuffer[i * aChannels + 1] = read16(aFile) / (float)0x8000;
+						}
+						else
+						{
+							read16(aFile);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	void WavStreamProducer::getAudio(float *aBuffer, int aSamples)
+	{		
+		int channels = 1;
+		if (mFlags & STEREO)
+			channels = 2;
+
+		if (mFile == NULL)
+			return;
+
+		if (mParent->mOgg)
+		{
+			memset(aBuffer, 0, sizeof(float) * aSamples * channels);
+		}
+		else
+		{
+			int copysize = aSamples;
+			if (copysize + mOffset > mParent->mSampleCount)
+			{
+				copysize = mParent->mSampleCount - mOffset;
+			}
+
+			getData(mFile, aBuffer, copysize, channels, mParent->mChannels, mParent->mChannelOffset, mParent->mBits);
+		
+			if (copysize != aSamples)
+			{
+				if (mFlags & AudioProducer::LOOPING)
+				{
+					fseek(mFile, mParent->mDataOffset, SEEK_SET);
+					getData(mFile, aBuffer + copysize * channels, aSamples - copysize, channels, mParent->mChannels, mParent->mChannelOffset, mParent->mBits);
+					mOffset = aSamples - copysize;
+					mStreamTime = mOffset / mSamplerate;
+				}
+				else
+				{
+					memset(aBuffer + copysize * channels, 0, sizeof(float) * (aSamples - copysize) * channels);
+					mOffset += aSamples - copysize;
+				}
+			}
+			else
+			{
+				mOffset += aSamples;
+			}
+		}
+	}
+
+	int WavStreamProducer::rewind()
+	{
+		if (mFile)
+		{
+			fseek(mFile, mParent->mDataOffset, SEEK_SET);
+		}
+		mOffset = 0;
+		mStreamTime = 0;
+		return 1;
+	}
+
+	int WavStreamProducer::hasEnded()
+	{
+		if (mOffset >= mParent->mSampleCount)
+		{
+			return 1;
+		}
+		return 0;
+	}
+
+	WavStream::WavStream()
+	{
+		mFilename = 0;
+		mSampleCount = 0;
+	}
+	
+	WavStream::~WavStream()
+	{
+		delete[] mFilename;
+	}
+	
 #define MAKEDWORD(a,b,c,d) (((d) << 24) | ((c) << 16) | ((b) << 8) | (a))
 
-	void Wav::loadwav(FILE * fp, int aStereo, int aChannel)
+	void WavStream::loadwav(FILE * fp, int aStereo, int aChannel)
 	{
 		int wavsize = read32(fp);
 		if (read32(fp) != MAKEDWORD('W','A','V','E'))
@@ -178,63 +257,16 @@ namespace SoLoud
 		
 		int samples = (subchunk2size / (bitspersample / 8)) / channels;
 		
-		mData = new float[samples * readchannels];
-		
-		int i, j;
-		if (bitspersample == 8)
-		{
-			for (i = 0; i < samples; i++)
-			{
-				for (j = 0; j < channels; j++)
-				{
-					if (j == aChannel)
-					{
-						mData[i * readchannels] = read8(fp) / (float)0x80;
-					}
-					else
-					{
-						if (readchannels > 1 && j == aChannel + 1)
-						{
-							mData[i * readchannels+1] = read8(fp) / (float)0x80;
-						}
-						else
-						{
-							read8(fp);
-						}
-					}
-				}
-			}
-		}
-		else
-		if (bitspersample == 16)
-		{
-			for (i = 0; i < samples; i++)
-			{
-				for (j = 0; j < channels; j++)
-				{
-					if (j == aChannel)
-					{
-						mData[i * readchannels] = read16(fp) / (float)0x8000;
-					}
-					else
-					{
-						if (readchannels > 1 && j == aChannel + 1)
-						{
-							mData[i * readchannels + 1] = read16(fp) / (float)0x8000;
-						}
-						else
-						{
-							read16(fp);
-						}
-					}
-				}
-			}
-		}
+		mDataOffset = ftell(fp);
+		mChannelOffset = aChannel;
+		mBits = bitspersample;
+		mChannels = channels;	
 		mBaseSamplerate = (float)samplerate;
 		mSampleCount = samples;
+		mOgg = 0;
 	}
 
-	void Wav::loadogg(FILE * fp, int aStereo, int aChannel)
+	void WavStream::loadogg(FILE * fp, int aStereo, int aChannel)
 	{
 		// There's no way to know how many samples the ogg has beforehand (via stb, anyway), 
 		// so we have to decode twice.
@@ -254,7 +286,11 @@ namespace SoLoud
 				break;
 		}
 		stb_vorbis_close(v);
+		mOgg = 1;
 
+		mSampleCount = samples;
+		
+/*
 		// and now, again, with feeling
 		fseek(fp, 0, SEEK_SET);
 		v = stb_vorbis_open_file(fp, 0, &e, NULL);
@@ -268,7 +304,6 @@ namespace SoLoud
 		}
 
 		mData = new float[samples * readchannels];
-		mSampleCount = samples;
 		samples = 0;
 		while(1)
 		{
@@ -292,12 +327,13 @@ namespace SoLoud
 			samples += n;
 		}
 		stb_vorbis_close(v);
+*/
 	}
 
-	void Wav::load(const char *aFilename, int aStereo, int aChannel)
+	void WavStream::load(const char *aFilename, int aStereo, int aChannel)
 	{
-		delete[] mData;
-		mData = NULL;
+		delete[] mFilename;
+		mFilename = 0;
 		mSampleCount = 0;
 		FILE * fp = fopen(aFilename, "rb");
 		if (!fp) return;
@@ -310,11 +346,17 @@ namespace SoLoud
 		{
 			loadwav(fp, aStereo, aChannel);
 		}
+
+		int len = strlen(aFilename);
+		mFilename = new char[len+1];
+		memcpy(mFilename, aFilename, len);
+		mFilename[len] = 0;
+
 		fclose(fp);
 	}
 
-	AudioProducer *Wav::createProducer()
+	AudioProducer *WavStream::createProducer()
 	{
-		return new WavProducer(this);
+		return new WavStreamProducer(this);
 	}
 };

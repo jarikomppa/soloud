@@ -33,6 +33,7 @@ freely, subject to the following restrictions:
 #include "soloud.h"
 #include "soloud_sinewave.h"
 #include "soloud_wav.h"
+#include "soloud_wavstream.h"
 #include "soloud_filter.h"
 #include "soloud_speech.h"
 
@@ -40,6 +41,7 @@ freely, subject to the following restrictions:
 SoLoud::Soloud gSoloud;
 SoLoud::Sinewave gSinewave;
 SoLoud::Wav gWave;
+SoLoud::WavStream gWaveStream;
 SoLoud::Speech *gSpeech;
 SoLoud::Filter *gFilter;
 int audiohandle;
@@ -97,8 +99,8 @@ void render()
 // Entry point
 int main(int argc, char *argv[])
 {
-	gWave.load("jingle.ogg");
-	gWave.setLooping(1);
+	gWaveStream.load("jingle.wav");
+	gWaveStream.setLooping(1);
 	int i;
 
 	gSpeech = new SoLoud::Speech("    1 2 3     1 2 3     testing testing     welcome to so loud");
@@ -127,7 +129,7 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
-	int songhandle = gSoloud.play(gWave,1,0);
+	int songhandle = gSoloud.play(gWaveStream,1,0);
 	gSoloud.fadeVolume(songhandle, 0, 1, 5);
 	gSoloud.setGlobalVolume(2);
 	int voicehandle = gSoloud.play(*gFilter);

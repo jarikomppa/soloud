@@ -61,6 +61,11 @@ class Slope
 public:
 	float mValue;                   /* boundary value */
 	int mTime;                      /* transition time */
+	Slope() 
+	{
+		mValue = 0;
+		mTime = 0;
+	}
 };
 
 

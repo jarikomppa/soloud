@@ -1087,15 +1087,14 @@ static void phone_cat(darray *arg, char *s)
 
 static int find_rule(darray *arg, char *word, int index, Rule *rules)
 {
-	Rule *rule;
-	char *left,
-		*match,
-		*right,
-		*output;
-	int remainder;
-
 	for (;;)                         /* Search for the rule */
 	{
+		Rule *rule;
+		char *left,
+			*match,
+			*right,
+			*output;
+		int remainder;
 		rule = rules++;
 		match = (*rule)[1];
 

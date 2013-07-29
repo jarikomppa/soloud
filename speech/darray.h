@@ -13,8 +13,8 @@ public:
 	~darray();
 	char *getDataInPos(int aPosition);
 	void put(int aData);
-	int getSize() { return mUsed; }
-	char *getData() { return mData; }
+	int getSize() const { return mUsed; }
+	char *getData() { return mData; } 
 };
 
 #endif

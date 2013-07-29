@@ -47,7 +47,7 @@ namespace SoLoud
 		void loadogg(FILE * fp, int aStereo, int aChannel);
 	public:
 		float *mData;
-		int mSamples;
+		int mSampleCount;
 
 		Wav();
 		virtual ~Wav();

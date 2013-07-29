@@ -114,9 +114,9 @@ namespace SoLoud
 		float mPostClipScaler;
 		unsigned int mPlayIndex;
 		Fader mGlobalVolumeFader;
-		int findFreeChannel();
 		float mStreamTime;
-		int getChannelFromHandle(int aChannelHandle);
+		int findFreeChannel();
+		int getChannelFromHandle(int aChannelHandle) const;
 		void stopChannel(int aChannel);
 		void setChannelPan(int aChannel, float aPan);
 		void setChannelRelativePlaySpeed(int aChannel, float aSpeed);
@@ -141,15 +141,16 @@ namespace SoLoud
 		void stop(int aChannelHandle);
 		void stopAll();
 
-		float getStreamTime(int aChannelHandle);
-		int getPause(int aChannelHandle);
-		float getVolume(int aChannelHandle);
-		float getSamplerate(int aChannelHandle);
-		int getProtectChannel(int aChannelHandle);
-		int getActiveVoiceCount();
-		int isValidChannelHandle(int aChannelHandle);
-		float getPostClipScaler();
-		float getRelativePlaySpeed(int aChannelHandle);
+		float getStreamTime(int aChannelHandle) const;
+		int getPause(int aChannelHandle) const;
+		float getVolume(int aChannelHandle) const;
+		float getSamplerate(int aChannelHandle) const;
+		int getProtectChannel(int aChannelHandle) const;
+		int getActiveVoiceCount() const; 
+		int isValidChannelHandle(int aChannelHandle) const;
+		float getPostClipScaler() const;
+		float getRelativePlaySpeed(int aChannelHandle) const;
+
 		void setGlobalVolume(float aVolume);
 		void setPause(int aChannelHandle, int aPause);
 		void setPauseAll(int aPause);

@@ -267,7 +267,39 @@ klatt_frame::klatt_frame() :
 };
 
 
-klatt::klatt() : mTimeCount(0)
+klatt::klatt() : 
+	mF0Flutter(0), 
+	mSampleRate(0), 
+	mNspFr(0),
+	mF0FundamentalFreq(0),
+	mVoicingAmpdb(0),
+	mSkewnessOfAlternatePeriods(0),
+	mTimeCount(0), 
+	mNPer(0),
+	mT0(0),
+	mNOpen(0),
+	mNMod(0),
+	mAmpVoice(0),
+	mAmpBypas(0),
+	mAmpAspir(0),
+	mAmpFrica(0),
+	mAmpBreth(0),
+	mSkew(0),
+	mNatglotA(0),
+	mNatglotB(0),
+	mVWave(0),
+	mVLast(0),
+	mNLast(0),
+	mGlotLast(0),
+	mDecay(0),
+	mOneMd(0),
+	mElementCount(0),
+	mElement(0),
+	mElementIndex(0),
+	mLastElement(0),
+	mTStress(0),
+	mNTStress(0),
+	mTop(0)
 {
 }
 
@@ -299,11 +331,11 @@ spectral zero around 800 Hz, magic constants a,b reset pitch-synch
 
 float klatt::natural_source(int aNper)
 {
-	float lgtemp;
 	// See if glottis open 
 
 	if (aNper < mNOpen)
 	{
+		float lgtemp;
 		mNatglotA -= mNatglotB;
 		mVWave += mNatglotA;
 		lgtemp = mVWave * 0.028f;        /* function of samp_rate ? */
@@ -373,8 +405,6 @@ void klatt::pitch_synch_par_reset(klatt_frame *frame, int ns)
 		30, 30, 30, 30, 29, 29, 29, 29, 28, 28,
 		28, 28, 27, 27
 	};
-	int temp;
-	float temp1;
 
 	if (mF0FundamentalFreq > 0)
 	{
@@ -416,6 +446,9 @@ void klatt::pitch_synch_par_reset(klatt_frame *frame, int ns)
 		mNatglotA = (mNatglotB * mNOpen) * .333f;
 
 		/* Reset width of "impulsive" glottal pulse */
+
+		int temp;
+		float temp1;
 
 		temp = mSampleRate / mNOpen;
 		mCritDampedGlotLowPassFilter.initResonator(0L, temp, mSampleRate);
@@ -573,8 +606,6 @@ Synthesize globals->mNspFr samples of waveform and store in jwave[].
 
 void klatt::parwave(klatt_frame *frame, short int *jwave)
 {
-	int ns;
-	float out = 0.0;
 	/* Output of cascade branch, also final output  */
 
 	/* Initialize synthesizer and get specification for current speech
@@ -590,6 +621,7 @@ void klatt::parwave(klatt_frame *frame, short int *jwave)
 
 	/* MAIN LOOP, for each output sample of current frame: */
 
+	int ns;
 	for (ns = 0; ns < mNspFr; ns++)
 	{
 		static unsigned int seed = 5; /* Fixed staring value */
@@ -697,8 +729,8 @@ void klatt::parwave(klatt_frame *frame, short int *jwave)
 		*/
 		par_glotout = mNasalZero.antiresonate(par_glotout);
 		par_glotout = mNasalPole.resonate(par_glotout);
-		/* And just use mParallelFormant1 NOT mParallelResoNasalPole */
-		out = mParallelFormant1.resonate(par_glotout);
+		/* And just use mParallelFormant1 NOT mParallelResoNasalPole */		
+		float out = mParallelFormant1.resonate(par_glotout);
 		/* Sound sourc for other parallel resonators is frication
 		plus first difference of voicing waveform.
 		*/

@@ -32,6 +32,7 @@ namespace SoLoud
 
 	Fader::Fader()
 	{
+		mFrom = mTo = mDelta = mTime = mStartTime = mEndTime = 0;
 		mActive = 0;
 	}
 
@@ -163,6 +164,7 @@ namespace SoLoud
 		mGlobalVolume = 0;
 		mPlayIndex = 0;
 		mMixerData = NULL;
+		mPostClipScaler = 0;
 		lockMutex = NULL;
 		unlockMutex = NULL;
 		mStreamTime = 0;
@@ -193,7 +195,7 @@ namespace SoLoud
 		mPostClipScaler = 0.5f;
 	}
 
-	float Soloud::getPostClipScaler()
+	float Soloud::getPostClipScaler() const
 	{
 		return mPostClipScaler;
 	}
@@ -266,7 +268,7 @@ namespace SoLoud
 		return handle;
 	}	
 
-	int Soloud::getChannelFromHandle(int aChannelHandle)
+	int Soloud::getChannelFromHandle(int aChannelHandle) const
 	{
 		int ch = aChannelHandle & 0xff;
 		unsigned int idx = aChannelHandle >> 8;
@@ -278,7 +280,7 @@ namespace SoLoud
 		return -1;		
 	}
 
-	int Soloud::getActiveVoiceCount()
+	int Soloud::getActiveVoiceCount() const
 	{
 		if (lockMutex) lockMutex();
 		int i;
@@ -294,7 +296,7 @@ namespace SoLoud
 		return c;
 	}
 
-	int Soloud::isValidChannelHandle(int aChannelHandle)
+	int Soloud::isValidChannelHandle(int aChannelHandle) const
 	{
 		if (lockMutex) lockMutex();
 		if (getChannelFromHandle(aChannelHandle) != -1) 
@@ -307,7 +309,7 @@ namespace SoLoud
 	}
 
 
-	float Soloud::getVolume(int aChannelHandle)
+	float Soloud::getVolume(int aChannelHandle) const
 	{
 		if (lockMutex) lockMutex();
 		int ch = getChannelFromHandle(aChannelHandle);
@@ -321,7 +323,7 @@ namespace SoLoud
 		return v;
 	}
 
-	float Soloud::getStreamTime(int aChannelHandle)
+	float Soloud::getStreamTime(int aChannelHandle) const
 	{
 		if (lockMutex) lockMutex();
 		int ch = getChannelFromHandle(aChannelHandle);
@@ -335,7 +337,7 @@ namespace SoLoud
 		return v;
 	}
 
-	float Soloud::getRelativePlaySpeed(int aChannelHandle)
+	float Soloud::getRelativePlaySpeed(int aChannelHandle) const
 	{
 		if (lockMutex) lockMutex();
 		int ch = getChannelFromHandle(aChannelHandle);
@@ -378,7 +380,7 @@ namespace SoLoud
 		if (unlockMutex) unlockMutex();
 	}
 
-	float Soloud::getSamplerate(int aChannelHandle)
+	float Soloud::getSamplerate(int aChannelHandle) const
 	{
 		if (lockMutex) lockMutex();
 		int ch = getChannelFromHandle(aChannelHandle);
@@ -461,7 +463,7 @@ namespace SoLoud
 	}
 
 
-	int Soloud::getPause(int aChannelHandle)
+	int Soloud::getPause(int aChannelHandle) const
 	{
 		if (lockMutex) lockMutex();
 		int ch = getChannelFromHandle(aChannelHandle);
@@ -475,7 +477,7 @@ namespace SoLoud
 		return v;
 	}
 
-	int Soloud::getProtectChannel(int aChannelHandle)
+	int Soloud::getProtectChannel(int aChannelHandle) const
 	{
 		if (lockMutex) lockMutex();
 		int ch = getChannelFromHandle(aChannelHandle);

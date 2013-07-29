@@ -46,15 +46,10 @@ namespace SoLoud
 		if (mFlags & STEREO)
 			channels = 2;
 
-		if (mOffset + aSamples > mParent->mSamples)
-		{
-			mOffset = mOffset;
-		}
-
 		int copysize = aSamples;
-		if (copysize + mOffset > mParent->mSamples)
+		if (copysize + mOffset > mParent->mSampleCount)
 		{
-			copysize = mParent->mSamples - mOffset;
+			copysize = mParent->mSampleCount - mOffset;
 		}
 
 		memcpy(aBuffer, mParent->mData + mOffset * channels, sizeof(float) * copysize * channels);
@@ -80,7 +75,7 @@ namespace SoLoud
 
 	int WavProducer::hasEnded()
 	{
-		if (mOffset >= mParent->mSamples)
+		if (mOffset >= mParent->mSampleCount)
 		{
 			return 1;
 		}
@@ -90,6 +85,7 @@ namespace SoLoud
 	Wav::Wav()
 	{
 		mData = NULL;
+		mSampleCount = 0;
 	}
 	
 	Wav::~Wav()
@@ -227,7 +223,7 @@ namespace SoLoud
 			}
 		}
 		mBaseSamplerate = (float)samplerate;
-		mSamples = samples;
+		mSampleCount = samples;
 	}
 
 	void Wav::loadogg(FILE * fp, int aStereo, int aChannel)
@@ -264,7 +260,7 @@ namespace SoLoud
 		}
 
 		mData = new float[samples * readchannels];
-		mSamples = samples;
+		mSampleCount = samples;
 		samples = 0;
 		while(1)
 		{
@@ -294,7 +290,7 @@ namespace SoLoud
 	{
 		delete[] mData;
 		mData = NULL;
-		mSamples = 0;
+		mSampleCount = 0;
 		FILE * fp = fopen(aFilename, "rb");
 		if (!fp) return;
 		int tag = read32(fp);

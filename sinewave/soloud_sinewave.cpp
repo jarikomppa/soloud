@@ -27,14 +27,14 @@ freely, subject to the following restrictions:
 namespace SoLoud
 {
 
-	SinewaveProducer::SinewaveProducer(Sinewave *aParent)
+	SinewaveInstance::SinewaveInstance(Sinewave *aParent)
 	{
 		mParent = aParent;
 		mOffset = 0;
 		mSamplerate = 10000;
 	}
 
-	void SinewaveProducer::getAudio(float *aBuffer, int aSamples)
+	void SinewaveInstance::getAudio(float *aBuffer, int aSamples)
 	{
 		int i;
 		for (i = 0; i < aSamples; i++)
@@ -44,14 +44,14 @@ namespace SoLoud
 		}
 	}
 
-	int SinewaveProducer::hasEnded()
+	int SinewaveInstance::hasEnded()
 	{
 		return 0;
 	}
 
-	AudioProducer * Sinewave::createProducer() 
+	AudioInstance * Sinewave::createInstance() 
 	{
-		return new SinewaveProducer(this);
+		return new SinewaveInstance(this);
 	}
 
 };

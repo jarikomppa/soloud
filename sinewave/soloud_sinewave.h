@@ -31,21 +31,21 @@ namespace SoLoud
 {
 	class Sinewave;
 
-	class SinewaveProducer : public AudioProducer
+	class SinewaveInstance : public AudioInstance
 	{
 		Sinewave *mParent;
 		int mOffset;
 	public:
-		SinewaveProducer(Sinewave *aParent);
+		SinewaveInstance(Sinewave *aParent);
 		virtual void getAudio(float *aBuffer, int aSamples);
 		virtual int hasEnded();
 	};
 
-	class Sinewave : public AudioFactory
+	class Sinewave : public AudioSource
 	{
 	public:
 		float mFreq;
-		virtual AudioProducer *createProducer();
+		virtual AudioInstance *createInstance();
 	};
 };
 

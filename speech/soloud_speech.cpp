@@ -28,7 +28,7 @@ freely, subject to the following restrictions:
 
 namespace SoLoud
 {
-	SpeechProducer::SpeechProducer(Speech *aParent)
+	SpeechInstance::SpeechInstance(Speech *aParent)
 	{
 		mParent = aParent;			
 		mSynth.init();
@@ -47,7 +47,7 @@ namespace SoLoud
 		}
 	}
 
-	void SpeechProducer::getAudio(float *aBuffer, int aSamples)
+	void SpeechInstance::getAudio(float *aBuffer, int aSamples)
 	{
 		int samples_out = 0;
 		if (mSampleCount > mOffset)
@@ -78,7 +78,7 @@ namespace SoLoud
 				samples_out += copycount;				
 			}
 			else
-			if (mSampleCount < 0 && mFlags & AudioProducer::LOOPING)
+			if (mSampleCount < 0 && mFlags & AudioInstance::LOOPING)
 			{
 				mSynth.init();
 				mSynth.initsynth(mParent->mElement.getSize(), (unsigned char *)mParent->mElement.getData());
@@ -94,7 +94,7 @@ namespace SoLoud
 		}
 	}
 
-	int SpeechProducer::rewind()
+	int SpeechInstance::rewind()
 	{
 		mSynth.init();
 		mSynth.initsynth(mParent->mElement.getSize(), (unsigned char *)mParent->mElement.getData());
@@ -104,7 +104,7 @@ namespace SoLoud
 		return 1;
 	}
 
-	int SpeechProducer::hasEnded()
+	int SpeechInstance::hasEnded()
 	{
 			
 		if (mSampleCount < 0)
@@ -124,8 +124,8 @@ namespace SoLoud
 	{
 	}
 
-	AudioProducer *Speech::createProducer()
+	AudioInstance *Speech::createInstance()
 	{
-		return new SpeechProducer(this);
+		return new SpeechInstance(this);
 	}	
 };

@@ -29,23 +29,23 @@ namespace SoLoud
 {
 	class Filter;
 
-	class FilterProducer : public AudioProducer
+	class FilterInstance : public AudioInstance
 	{
-		AudioProducer *mSource;
+		AudioInstance *mSource;
 		int mOffset;
 	public:
-		FilterProducer(AudioFactory *aSource);
+		FilterInstance(AudioSource *aSource);
 		virtual void getAudio(float *aBuffer, int aSamples);
 		virtual int hasEnded();
-		virtual ~FilterProducer();
+		virtual ~FilterInstance();
 	};
 
-	class Filter : public AudioFactory
+	class Filter : public AudioSource
 	{
 	public:
-		AudioFactory *mSource;
-		Filter(AudioFactory *aSource);
-		virtual AudioProducer *createProducer();
+		AudioSource *mSource;
+		Filter(AudioSource *aSource);
+		virtual AudioInstance *createInstance();
 	};
 }
 

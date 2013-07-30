@@ -31,13 +31,13 @@ freely, subject to the following restrictions:
 
 namespace SoLoud
 {
-	WavProducer::WavProducer(Wav *aParent)
+	WavInstance::WavInstance(Wav *aParent)
 	{
 		mParent = aParent;
 		mOffset = 0;
 	}
 
-	void WavProducer::getAudio(float *aBuffer, int aSamples)
+	void WavInstance::getAudio(float *aBuffer, int aSamples)
 	{		
 		if (mParent->mData == NULL)
 			return;
@@ -56,7 +56,7 @@ namespace SoLoud
 		
 		if (copysize != aSamples)
 		{
-			if (mFlags & AudioProducer::LOOPING)
+			if (mFlags & AudioInstance::LOOPING)
 			{
 				memcpy(aBuffer + copysize * channels, mParent->mData, sizeof(float) * (aSamples - copysize) * channels);
 				mOffset = aSamples - copysize;
@@ -74,14 +74,14 @@ namespace SoLoud
 		}
 	}
 
-	int WavProducer::rewind()
+	int WavInstance::rewind()
 	{
 		mOffset = 0;
 		mStreamTime = 0;
 		return 1;
 	}
 
-	int WavProducer::hasEnded()
+	int WavInstance::hasEnded()
 	{
 		if (mOffset >= mParent->mSampleCount)
 		{
@@ -313,8 +313,8 @@ namespace SoLoud
 		fclose(fp);
 	}
 
-	AudioProducer *Wav::createProducer()
+	AudioInstance *Wav::createInstance()
 	{
-		return new WavProducer(this);
+		return new WavInstance(this);
 	}
 };

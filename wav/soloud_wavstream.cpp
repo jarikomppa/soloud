@@ -31,7 +31,7 @@ freely, subject to the following restrictions:
 
 namespace SoLoud
 {
-	WavStreamProducer::WavStreamProducer(WavStream *aParent)
+	WavStreamInstance::WavStreamInstance(WavStream *aParent)
 	{
 		mParent = aParent;
 		mOffset = 0;
@@ -58,7 +58,7 @@ namespace SoLoud
 		}
 	}
 
-	WavStreamProducer::~WavStreamProducer()
+	WavStreamInstance::~WavStreamInstance()
 	{
 		if (mOgg)
 		{
@@ -172,7 +172,7 @@ namespace SoLoud
 		return samples;
 	}
 
-	void WavStreamProducer::getAudio(float *aBuffer, int aSamples)
+	void WavStreamInstance::getAudio(float *aBuffer, int aSamples)
 	{			
 		int channels = 1;
 		if (mFlags & STEREO)
@@ -201,7 +201,7 @@ namespace SoLoud
 				mOffset += b;
 				if (mOffset >= mParent->mSampleCount)
 				{
-					if (mFlags & AudioProducer::LOOPING)
+					if (mFlags & AudioInstance::LOOPING)
 					{
 						stb_vorbis_close(mOgg);
 						fseek(mFile, 0, SEEK_SET);
@@ -231,7 +231,7 @@ namespace SoLoud
 		
 			if (copysize != aSamples)
 			{
-				if (mFlags & AudioProducer::LOOPING)
+				if (mFlags & AudioInstance::LOOPING)
 				{
 					fseek(mFile, mParent->mDataOffset, SEEK_SET);
 					getWavData(mFile, aBuffer + copysize * channels, aSamples - copysize, channels, mParent->mChannels, mParent->mChannelOffset, mParent->mBits);
@@ -251,7 +251,7 @@ namespace SoLoud
 		}
 	}
 
-	int WavStreamProducer::rewind()
+	int WavStreamInstance::rewind()
 	{
 		if (mFile)
 		{
@@ -262,7 +262,7 @@ namespace SoLoud
 		return 1;
 	}
 
-	int WavStreamProducer::hasEnded()
+	int WavStreamInstance::hasEnded()
 	{
 		if (mOffset >= mParent->mSampleCount)
 		{
@@ -436,8 +436,8 @@ namespace SoLoud
 		fclose(fp);
 	}
 
-	AudioProducer *WavStream::createProducer()
+	AudioInstance *WavStream::createInstance()
 	{
-		return new WavStreamProducer(this);
+		return new WavStreamInstance(this);
 	}
 };

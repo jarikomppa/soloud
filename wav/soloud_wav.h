@@ -31,18 +31,18 @@ namespace SoLoud
 {
 	class Wav;
 
-	class WavProducer : public AudioProducer
+	class WavInstance : public AudioInstance
 	{
 		Wav *mParent;
 		int mOffset;
 	public:
-		WavProducer(Wav *aParent);
+		WavInstance(Wav *aParent);
 		virtual void getAudio(float *aBuffer, int aSamples);
 		virtual int rewind();
 		virtual int hasEnded();
 	};
 
-	class Wav : public AudioFactory
+	class Wav : public AudioSource
 	{
 		void loadwav(FILE * fp, int aStereo, int aChannel);
 		void loadogg(FILE * fp, int aStereo, int aChannel);
@@ -53,7 +53,7 @@ namespace SoLoud
 		Wav();
 		virtual ~Wav();
 		void load(const char *aFilename, int aStereo = 1, int aChannel = 0);
-		virtual AudioProducer *createProducer();
+		virtual AudioInstance *createInstance();
 	};
 };
 

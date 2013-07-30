@@ -35,7 +35,7 @@ namespace SoLoud
 {
 	class WavStream;
 
-	class WavStreamProducer : public AudioProducer
+	class WavStreamInstance : public AudioInstance
 	{
 		WavStream *mParent;
 		int mOffset;
@@ -45,14 +45,14 @@ namespace SoLoud
 		int mOggFrameOffset;
 		float **mOggOutputs;
 	public:
-		WavStreamProducer(WavStream *aParent);
+		WavStreamInstance(WavStream *aParent);
 		virtual void getAudio(float *aBuffer, int aSamples);
 		virtual int rewind();
 		virtual int hasEnded();
-		virtual ~WavStreamProducer();
+		virtual ~WavStreamInstance();
 	};
 
-	class WavStream : public AudioFactory
+	class WavStream : public AudioSource
 	{
 		void loadwav(FILE * fp, int aStereo, int aChannel);
 		void loadogg(FILE * fp, int aStereo, int aChannel);
@@ -68,7 +68,7 @@ namespace SoLoud
 		WavStream();
 		virtual ~WavStream();
 		void load(const char *aFilename, int aStereo = 1, int aChannel = 0);
-		virtual AudioProducer *createProducer();
+		virtual AudioInstance *createInstance();
 	};
 };
 

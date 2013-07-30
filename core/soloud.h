@@ -51,7 +51,7 @@ namespace SoLoud
 		float get(float aCurrentTime);
 	}; 
 
-	class AudioProducer
+	class AudioInstance
 	{
 	public:
 		enum FLAGS
@@ -61,8 +61,8 @@ namespace SoLoud
 			PROTECTED = 4,
 			PAUSED = 8
 		};
-		AudioProducer();
-		virtual ~AudioProducer();
+		AudioInstance();
+		virtual ~AudioInstance();
 		unsigned int mPlayIndex;
 		int mFlags;
 		float mLVolume;
@@ -75,14 +75,14 @@ namespace SoLoud
 		Fader mPanFader;
 		Fader mVolumeFader;
 		Fader mRelativePlaySpeedFader;
-		void init(int aPlayIndex, float aBaseSamplerate, int aFactoryFlags);
+		void init(int aPlayIndex, float aBaseSamplerate, int aSourceFlags);
 		virtual void getAudio(float *aBuffer, int aSamples) = 0;
 		virtual int hasEnded() = 0;
 		virtual void seek(float aSeconds, float *mScratch, int mScratchSize);
 		virtual int rewind();
 	};
 
-	class AudioFactory
+	class AudioSource
 	{
 	public:
 		enum FLAGS
@@ -93,10 +93,10 @@ namespace SoLoud
 		int mFlags;
 		float mBaseSamplerate;
 
-		AudioFactory();
+		AudioSource();
 		void setLooping(int aLoop);
-		virtual ~AudioFactory();
-		virtual AudioProducer *createProducer() = 0;
+		virtual ~AudioSource();
+		virtual AudioInstance *createInstance() = 0;
 	};
 
 
@@ -105,7 +105,7 @@ namespace SoLoud
 		float *mScratch;
 		int mScratchSize;
 		int mScratchNeeded;
-		AudioProducer **mChannel;
+		AudioInstance **mChannel;
 		int mChannelCount;
 		int mSamplerate;
 		int mBufferSize;
@@ -137,7 +137,7 @@ namespace SoLoud
 		void init(int aChannels, int aSamplerate, int aBufferSize, int aFlags);
 		void mix(float *aBuffer, int aSamples);
 
-		int play(AudioFactory &aSound, float aVolume = 1.0f, float aPan = 0.0f, int aPaused = 0);
+		int play(AudioSource &aSound, float aVolume = 1.0f, float aPan = 0.0f, int aPaused = 0);
 		void seek(int aChannelHandle, float aSeconds);
 		void stop(int aChannelHandle);
 		void stopAll();

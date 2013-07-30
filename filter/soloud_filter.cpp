@@ -27,14 +27,14 @@ freely, subject to the following restrictions:
 
 namespace SoLoud
 {
-	FilterProducer::FilterProducer(AudioFactory *aSource)
+	FilterInstance::FilterInstance(AudioSource *aSource)
 	{
 		mOffset = 0;
-		mSource = aSource->createProducer();
+		mSource = aSource->createInstance();
 		mSource->init(0, aSource->mBaseSamplerate, aSource->mFlags);
 	}
 
-	void FilterProducer::getAudio(float *aBuffer, int aSamples)
+	void FilterInstance::getAudio(float *aBuffer, int aSamples)
 	{
 		mSource->getAudio(aBuffer, aSamples);
 
@@ -43,24 +43,24 @@ namespace SoLoud
 			aBuffer[i] *= sin(mOffset*0.1f*mBaseSamplerate/mSamplerate);					
 	}
 
-	int FilterProducer::hasEnded()
+	int FilterInstance::hasEnded()
 	{
 		return mSource->hasEnded();
 	}
 
-	FilterProducer::~FilterProducer()
+	FilterInstance::~FilterInstance()
 	{
 		delete mSource;
 	}
 
-	Filter::Filter(AudioFactory *aSource)
+	Filter::Filter(AudioSource *aSource)
 	{
 		mSource = aSource;
 		mBaseSamplerate = aSource->mBaseSamplerate;
 	}
 
-	AudioProducer *Filter::createProducer()
+	AudioInstance *Filter::createInstance()
 	{
-		return new FilterProducer(mSource);
+		return new FilterInstance(mSource);
 	}
 }

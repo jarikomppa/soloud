@@ -59,7 +59,7 @@ namespace SoLoud
 
 	///////////////////////////////////////////////////////////////////////////
 
-	AudioProducer::AudioProducer()
+	AudioInstance::AudioInstance()
 	{
 		mPlayIndex = 0;
 		mFlags = 0;
@@ -72,11 +72,11 @@ namespace SoLoud
 		mStreamTime = 0.0f;
 	}
 
-	AudioProducer::~AudioProducer()
+	AudioInstance::~AudioInstance()
 	{
 	}
 
-	void AudioProducer::init(int aPlayIndex, float aBaseSamplerate, int aFactoryFlags)
+	void AudioInstance::init(int aPlayIndex, float aBaseSamplerate, int aSourceFlags)
 	{
 		mPlayIndex = aPlayIndex;
 		mBaseSamplerate = aBaseSamplerate;
@@ -84,23 +84,23 @@ namespace SoLoud
 		mStreamTime = 0.0f;
 		mFlags = 0;
 
-		if (aFactoryFlags & AudioFactory::SHOULD_LOOP)
+		if (aSourceFlags & AudioSource::SHOULD_LOOP)
 		{
-			mFlags |= AudioProducer::LOOPING;
+			mFlags |= AudioInstance::LOOPING;
 		}
 
-		if (aFactoryFlags & AudioFactory::STEREO)
+		if (aSourceFlags & AudioSource::STEREO)
 		{
-			mFlags |= AudioProducer::STEREO;
+			mFlags |= AudioInstance::STEREO;
 		}
 	}
 
-	int AudioProducer::rewind()
+	int AudioInstance::rewind()
 	{
 		return 0;
 	}
 
-	void AudioProducer::seek(float aSeconds, float *mScratch, int mScratchSize)
+	void AudioInstance::seek(float aSeconds, float *mScratch, int mScratchSize)
 	{
 		float offset = aSeconds - mStreamTime;
 		if (offset < 0)
@@ -129,17 +129,17 @@ namespace SoLoud
 
 	///////////////////////////////////////////////////////////////////////////
 
-	AudioFactory::AudioFactory() 
+	AudioSource::AudioSource() 
 	{ 
 		mFlags = 0; 
 		mBaseSamplerate = 44100; 
 	}
 
-	AudioFactory::~AudioFactory() 
+	AudioSource::~AudioSource() 
 	{
 	}
 
-	void AudioFactory::setLooping(int aLoop)
+	void AudioSource::setLooping(int aLoop)
 	{
 		if (aLoop)
 		{
@@ -182,7 +182,7 @@ namespace SoLoud
 	void Soloud::init(int aChannels, int aSamplerate, int aBufferSize, int aFlags)
 	{
 		mGlobalVolume = 1;
-		mChannel = new AudioProducer*[aChannels];
+		mChannel = new AudioInstance*[aChannels];
 		mChannelCount = aChannels;
 		int i;
 		for (i = 0; i < aChannels; i++)
@@ -224,7 +224,7 @@ namespace SoLoud
 			{
 				return i;
 			}
-			if (((mChannel[i]->mFlags & AudioProducer::PROTECTED) == 0) && 
+			if (((mChannel[i]->mFlags & AudioInstance::PROTECTED) == 0) && 
 				mChannel[i]->mPlayIndex < lowest_play_index_value)
 			{
 				lowest_play_index_value = mChannel[i]->mPlayIndex;
@@ -235,7 +235,7 @@ namespace SoLoud
 		return lowest_play_index;
 	}
 
-	int Soloud::play(AudioFactory &aSound, float aVolume, float aPan, int aPaused)
+	int Soloud::play(AudioSource &aSound, float aVolume, float aPan, int aPaused)
 	{
 		if (lockMutex) lockMutex();
 		int ch = findFreeChannel();
@@ -244,14 +244,14 @@ namespace SoLoud
 			if (unlockMutex) unlockMutex();
 			return -1;
 		}
-		mChannel[ch] = aSound.createProducer();
+		mChannel[ch] = aSound.createInstance();
 		int handle = ch | (mPlayIndex << 8);
 
 		mChannel[ch]->init(mPlayIndex, aSound.mBaseSamplerate, aSound.mFlags);
 
 		if (aPaused)
 		{
-			mChannel[ch]->mFlags |= AudioProducer::PAUSED;
+			mChannel[ch]->mFlags |= AudioInstance::PAUSED;
 		}
 
 		setChannelPan(ch, aPan);
@@ -435,11 +435,11 @@ namespace SoLoud
 		}
 		if (aPause)
 		{
-			mChannel[ch]->mFlags |= AudioProducer::PAUSED;
+			mChannel[ch]->mFlags |= AudioInstance::PAUSED;
 		}
 		else
 		{
-			mChannel[ch]->mFlags &= ~AudioProducer::PAUSED;
+			mChannel[ch]->mFlags &= ~AudioInstance::PAUSED;
 		}
 		if (unlockMutex) unlockMutex();
 	}
@@ -454,11 +454,11 @@ namespace SoLoud
 			{
 				if (aPause)
 				{
-					mChannel[ch]->mFlags |= AudioProducer::PAUSED;
+					mChannel[ch]->mFlags |= AudioInstance::PAUSED;
 				}
 				else
 				{
-					mChannel[ch]->mFlags &= ~AudioProducer::PAUSED;
+					mChannel[ch]->mFlags &= ~AudioInstance::PAUSED;
 				}
 			}
 		}
@@ -475,7 +475,7 @@ namespace SoLoud
 			if (unlockMutex) unlockMutex();
 			return 0;
 		}
-		int v = !!(mChannel[ch]->mFlags & AudioProducer::PAUSED);
+		int v = !!(mChannel[ch]->mFlags & AudioInstance::PAUSED);
 		if (unlockMutex) unlockMutex();
 		return v;
 	}
@@ -489,7 +489,7 @@ namespace SoLoud
 			if (unlockMutex) unlockMutex();
 			return 0;
 		}
-		int v = !!(mChannel[ch]->mFlags & AudioProducer::PROTECTED);
+		int v = !!(mChannel[ch]->mFlags & AudioInstance::PROTECTED);
 		if (unlockMutex) unlockMutex();
 		return v;
 	}
@@ -505,11 +505,11 @@ namespace SoLoud
 		}
 		if (aProtect)
 		{
-			mChannel[ch]->mFlags |= AudioProducer::PROTECTED;
+			mChannel[ch]->mFlags |= AudioInstance::PROTECTED;
 		}
 		else
 		{
-			mChannel[ch]->mFlags &= ~AudioProducer::PROTECTED;
+			mChannel[ch]->mFlags &= ~AudioInstance::PROTECTED;
 		}
 		if (unlockMutex) unlockMutex();
 	}
@@ -666,7 +666,7 @@ namespace SoLoud
 		int i;
 		for (i = 0; i < mChannelCount; i++)
 		{
-			if (mChannel[i] && !(mChannel[i]->mFlags & AudioProducer::PAUSED))
+			if (mChannel[i] && !(mChannel[i]->mFlags & AudioInstance::PAUSED))
 			{
 				mChannel[i]->mStreamTime += buffertime;
 
@@ -706,7 +706,7 @@ namespace SoLoud
 		// Accumulate sound sources
 		for (i = 0; i < mChannelCount; i++)
 		{
-			if (mChannel[i] && !(mChannel[i]->mFlags & AudioProducer::PAUSED))
+			if (mChannel[i] && !(mChannel[i]->mFlags & AudioInstance::PAUSED))
 			{
 				float lpan = mChannel[i]->mLVolume * mChannel[i]->mVolume * mGlobalVolume;
 				float rpan = mChannel[i]->mRVolume * mChannel[i]->mVolume * mGlobalVolume;
@@ -716,7 +716,7 @@ namespace SoLoud
 
 				int j;
 				float step = 0;
-				if (mChannel[i]->mFlags & AudioProducer::STEREO)
+				if (mChannel[i]->mFlags & AudioInstance::STEREO)
 				{
 					for (j = 0; j < aSamples; j++, step += stepratio)
 					{
@@ -737,7 +737,7 @@ namespace SoLoud
 				}
 
 				// chear channel if the sound is over
-				if (!(mChannel[i]->mFlags & AudioProducer::LOOPING) && mChannel[i]->hasEnded())
+				if (!(mChannel[i]->mFlags & AudioInstance::LOOPING) && mChannel[i]->hasEnded())
 				{
 					stopChannel(i);
 				}

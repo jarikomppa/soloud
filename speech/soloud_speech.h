@@ -33,17 +33,17 @@ namespace SoLoud
 {
 	class Speech;
 
-	class Speech : public AudioFactory
+	class Speech : public AudioSource
 	{
 	public:
 		int mFrames;
 		darray mElement;
 		Speech(char * aText);
 		virtual ~Speech();
-		virtual AudioProducer *createProducer();
+		virtual AudioInstance *createInstance();
 	};
 
-	class SpeechProducer : public AudioProducer
+	class SpeechInstance : public AudioInstance
 	{
 		klatt mSynth;
 		Speech *mParent;
@@ -51,7 +51,7 @@ namespace SoLoud
 		int mSampleCount;
 		int mOffset;
 	public:
-		SpeechProducer(Speech *aParent);
+		SpeechInstance(Speech *aParent);
 		virtual void getAudio(float *aBuffer, int aSamples);
 		virtual int rewind();
 		virtual int hasEnded();

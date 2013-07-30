@@ -11,6 +11,7 @@ protected:
 public:
 	darray();
 	~darray();
+	void clear();
 	char *getDataInPos(int aPosition);
 	void put(int aData);
 	int getSize() const { return mUsed; }

@@ -29,13 +29,23 @@ namespace SoLoud
 {
 	FilterInstance::FilterInstance(AudioSource *aSource)
 	{
-		mOffset = 0;
-		mSource = aSource->createInstance();
-		mSource->init(0, aSource->mBaseSamplerate, aSource->mFlags);
+		if (aSource)
+		{
+			mOffset = 0;
+			mSource = aSource->createInstance();
+			mSource->init(0, aSource->mBaseSamplerate, aSource->mFlags);
+		}
+		else
+		{
+			mSource = NULL;
+		}
 	}
 
 	void FilterInstance::getAudio(float *aBuffer, int aSamples)
 	{
+		if (!mSource)
+			return;
+
 		mSource->getAudio(aBuffer, aSamples);
 
 		int i;			
@@ -45,6 +55,8 @@ namespace SoLoud
 
 	int FilterInstance::hasEnded()
 	{
+		if (!mSource)
+			return 1;
 		return mSource->hasEnded();
 	}
 
@@ -53,10 +65,15 @@ namespace SoLoud
 		delete mSource;
 	}
 
-	Filter::Filter(AudioSource *aSource)
+	void Filter::setSource(AudioSource *aSource)
 	{
 		mSource = aSource;
 		mBaseSamplerate = aSource->mBaseSamplerate;
+	}
+
+	Filter::Filter()
+	{
+		mSource = NULL;
 	}
 
 	AudioInstance *Filter::createInstance()

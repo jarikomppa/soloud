@@ -112,11 +112,16 @@ namespace SoLoud
 		return 0;
 	}	
 
-	Speech::Speech(char * aText)
+	void Speech::setText(char *aText)
 	{
+		mElement.clear();
 		darray phone;
 		xlate_string(aText, &phone);
 		mFrames = klatt::phone_to_elm(phone.getData(), phone.getSize(), &mElement);
+	}
+
+	Speech::Speech()
+	{
 		mBaseSamplerate = 11025;
 	}
 

@@ -42,8 +42,8 @@ SoLoud::Soloud gSoloud;
 SoLoud::Sinewave gSinewave;
 SoLoud::Wav gWave;
 SoLoud::WavStream gWaveStream;
-SoLoud::Speech *gSpeech;
-SoLoud::Filter *gFilter;
+SoLoud::Speech gSpeech;
+SoLoud::Filter gFilter;
 int audiohandle;
 
 SDL_Surface *screen;
@@ -103,8 +103,8 @@ int main(int argc, char *argv[])
 	gWaveStream.setLooping(1);
 	int i;
 
-	gSpeech = new SoLoud::Speech("    1 2 3     1 2 3     testing testing     welcome to so loud");
-	gFilter = new SoLoud::Filter(gSpeech);
+	gSpeech.setText("    1 2 3     1 2 3     testing testing     welcome to so loud");
+	gFilter.setSource(&gSpeech);
 	
 	// Initialize SDL's subsystems - in this case, only video.
 	if ( SDL_Init(SDL_INIT_VIDEO) < 0 ) 
@@ -132,7 +132,7 @@ int main(int argc, char *argv[])
 	int songhandle = gSoloud.play(gWaveStream,1,0);
 	gSoloud.fadeVolume(songhandle, 0, 1, 5);
 	gSoloud.setGlobalVolume(2);
-	int voicehandle = gSoloud.play(*gFilter);
+	int voicehandle = gSoloud.play(gFilter);
 	gSoloud.fadePan(voicehandle, -1, 1, 5);
 
 	// Main loop: loop forever.

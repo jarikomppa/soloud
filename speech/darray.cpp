@@ -8,10 +8,17 @@ darray::darray()
 	mData = NULL;
 }
 
-darray::~darray()
+void darray::clear()
 {
 	free(mData);
+	mAllocChunk = 128;
+	mAllocated = mUsed = 0;
 	mData = NULL;
+}
+
+darray::~darray()
+{
+	clear();
 }
 
 char * darray::getDataInPos(int aPosition)

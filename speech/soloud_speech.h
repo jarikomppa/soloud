@@ -38,7 +38,8 @@ namespace SoLoud
 	public:
 		int mFrames;
 		darray mElement;
-		Speech(char * aText);
+		Speech();
+		void setText(char *aText);
 		virtual ~Speech();
 		virtual AudioInstance *createInstance();
 	};

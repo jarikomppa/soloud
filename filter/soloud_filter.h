@@ -42,9 +42,10 @@ namespace SoLoud
 
 	class Filter : public AudioSource
 	{
-	public:
 		AudioSource *mSource;
-		Filter(AudioSource *aSource);
+	public:
+		void setSource(AudioSource *aSource);
+		Filter();
 		virtual AudioInstance *createInstance();
 	};
 }

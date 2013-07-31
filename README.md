@@ -7,6 +7,8 @@ Free, straightforward audio engine for games.
 
 Zlib/LibPng licensed. Portable. Small. Simple.
 
+Official site can be found at: http://soloud-audio.com
+
 Preface
 -------
 

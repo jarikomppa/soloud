@@ -123,8 +123,8 @@ namespace SoLoud
 		void setChannelVolume(int aChannel, float aVolume);
 	public:
 		void * mMixerData;
-		mutexCallFunction lockMutex;
-		mutexCallFunction unlockMutex;
+		mutexCallFunction mLockMutexFunc;
+		mutexCallFunction mUnlockMutexFunc;
 
 		Soloud();
 		~Soloud();

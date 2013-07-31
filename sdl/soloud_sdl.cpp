@@ -81,8 +81,8 @@ namespace SoLoud
 
 		aSoloud->init(aChannels, as2.freq, as2.samples * 2, aFlags);
 
-		aSoloud->lockMutex = soloud_sdl_lockmutex;
-		aSoloud->unlockMutex = soloud_sdl_unlockmutex;
+		aSoloud->mLockMutexFunc = soloud_sdl_lockmutex;
+		aSoloud->mUnlockMutexFunc = soloud_sdl_unlockmutex;
 
 		SDL_PauseAudio(0);
 		return 0;

@@ -22,41 +22,38 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#include "soloud_sinewave.h"
+#include <stdlib.h>
+#if defined(_MSC_VER)
+#include "SDL.h"
+#else
+#include "SDL/SDL.h"
+#endif
+#include <math.h>
 
-namespace SoLoud
+#include "soloud.h"
+#include "soloud_speech.h"
+
+// Entry point
+int main(int argc, char *argv[])
 {
 
-	SinewaveInstance::SinewaveInstance(Sinewave *aParent)
+	SDL_Init(0);
+
+	SoLoud::Soloud soloud;
+	SoLoud::Speech speech;
+
+	speech.setText("Hello world. You will be assimilated.");
+
+	SoLoud::sdl_init(&soloud);
+
+	soloud.play(speech);
+
+	while (soloud.getActiveVoiceCount())
 	{
-		mParent = aParent;
-		mOffset = 0;
-		mSamplerate = 44100;
+		SDL_Delay(100);
 	}
 
-	void SinewaveInstance::getAudio(float *aBuffer, int aSamples)
-	{
-		int i;
-		for (i = 0; i < aSamples; i++)
-		{
-			aBuffer[i] = sin(mParent->mFreq * mOffset);
-			mOffset++;
-		}
-	}
-
-	int SinewaveInstance::hasEnded()
-	{
-		return 0;
-	}
-	
-	Sinewave::Sinewave()
-	{
-		mFreq = 440 * M_PI * 2 / 44100;
-	}
-
-	AudioInstance * Sinewave::createInstance() 
-	{
-		return new SinewaveInstance(this);
-	}
-
-};
+	SoLoud::sdl_deinit(&soloud);
+	SDL_Quit();
+	return 0;
+}

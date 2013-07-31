@@ -45,6 +45,7 @@ namespace SoLoud
 	{
 	public:
 		float mFreq;
+		Sinewave();
 		virtual AudioInstance *createInstance();
 	};
 };

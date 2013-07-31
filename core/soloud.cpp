@@ -202,6 +202,11 @@ namespace SoLoud
 		return mPostClipScaler;
 	}
 
+	float Soloud::getGlobalVolume() const
+	{
+		return mGlobalVolume;
+	}
+
 	void Soloud::setPostClipScaler(float aScaler)
 	{
 		mPostClipScaler = aScaler;

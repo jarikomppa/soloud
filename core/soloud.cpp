@@ -51,7 +51,7 @@ namespace SoLoud
 	{
 		if (aCurrentTime > mEndTime)
 		{
-			mActive = 0;
+			mActive = -1;
 			return mTo;
 		}
 		return mFrom + mDelta * ((aCurrentTime - mStartTime) / mTime);
@@ -433,14 +433,9 @@ namespace SoLoud
 			if (mUnlockMutexFunc) mUnlockMutexFunc();
 			return;
 		}
-		if (aPause)
-		{
-			mChannel[ch]->mFlags |= AudioInstance::PAUSED;
-		}
-		else
-		{
-			mChannel[ch]->mFlags &= ~AudioInstance::PAUSED;
-		}
+
+		setChannelPause(ch, aPause);
+
 		if (mUnlockMutexFunc) mUnlockMutexFunc();
 	}
 
@@ -450,17 +445,7 @@ namespace SoLoud
 		int ch;
 		for (ch = 0; ch < mChannelCount; ch++)
 		{
-			if (mChannel[ch])
-			{
-				if (aPause)
-				{
-					mChannel[ch]->mFlags |= AudioInstance::PAUSED;
-				}
-				else
-				{
-					mChannel[ch]->mFlags &= ~AudioInstance::PAUSED;
-				}
-			}
+			setChannelPause(ch, aPause);
 		}
 		if (mUnlockMutexFunc) mUnlockMutexFunc();
 	}
@@ -512,6 +497,23 @@ namespace SoLoud
 			mChannel[ch]->mFlags &= ~AudioInstance::PROTECTED;
 		}
 		if (mUnlockMutexFunc) mUnlockMutexFunc();
+	}
+
+	void Soloud::setChannelPause(int aChannel, int aPause)
+	{
+		if (mChannel[aChannel])
+		{
+			mChannel[aChannel]->mPauseScheduler.mActive = 0;
+
+			if (aPause)
+			{
+				mChannel[aChannel]->mFlags |= AudioInstance::PAUSED;
+			}
+			else
+			{
+				mChannel[aChannel]->mFlags &= ~AudioInstance::PAUSED;
+			}
+		}
 	}
 
 	void Soloud::setChannelPan(int aChannel, float aPan)
@@ -605,6 +607,32 @@ namespace SoLoud
 		if (mUnlockMutexFunc) mUnlockMutexFunc();
 	}
 
+	void Soloud::schedulePause(int aChannelHandle, float aTime)
+	{
+		if (mLockMutexFunc) mLockMutexFunc();
+		int ch = getChannelFromHandle(aChannelHandle);
+		if (ch == -1) 
+		{
+			if (mUnlockMutexFunc) mUnlockMutexFunc();
+			return;
+		}
+		mChannel[ch]->mPauseScheduler.set(1, 0, aTime, mChannel[ch]->mStreamTime);
+		if (mUnlockMutexFunc) mUnlockMutexFunc();
+	}
+
+	void Soloud::scheduleStop(int aChannelHandle, float aTime)
+	{
+		if (mLockMutexFunc) mLockMutexFunc();
+		int ch = getChannelFromHandle(aChannelHandle);
+		if (ch == -1) 
+		{
+			if (mUnlockMutexFunc) mUnlockMutexFunc();
+			return;
+		}
+		mChannel[ch]->mStopScheduler.set(1, 0, aTime, mChannel[ch]->mStreamTime);
+		if (mUnlockMutexFunc) mUnlockMutexFunc();
+	}
+
 	void Soloud::fadeVolume(int aChannelHandle, float aFrom, float aTo, float aTime)
 	{
 		if (mLockMutexFunc) mLockMutexFunc();
@@ -670,21 +698,41 @@ namespace SoLoud
 			{
 				mChannel[i]->mStreamTime += buffertime;
 
-				if (mChannel[i]->mVolumeFader.mActive)
+				if (mChannel[i]->mVolumeFader.mActive == 1)
 				{
 					mChannel[i]->mVolume = mChannel[i]->mVolumeFader.get(mChannel[i]->mStreamTime);
 				}
 
-				if (mChannel[i]->mRelativePlaySpeedFader.mActive)
+				if (mChannel[i]->mRelativePlaySpeedFader.mActive == 1)
 				{
 					float speed = mChannel[i]->mRelativePlaySpeedFader.get(mChannel[i]->mStreamTime);
 					setChannelRelativePlaySpeed(i, speed);
 				}
 
-				if (mChannel[i]->mPanFader.mActive)
+				if (mChannel[i]->mPanFader.mActive == 1)
 				{
 					float pan = mChannel[i]->mPanFader.get(mChannel[i]->mStreamTime);
 					setChannelPan(i, pan);
+				}
+
+				if (mChannel[i]->mPauseScheduler.mActive)
+				{
+					mChannel[i]->mPauseScheduler.get(mChannel[i]->mStreamTime);
+					if (mChannel[i]->mPauseScheduler.mActive == -1)
+					{
+						mChannel[i]->mPauseScheduler.mActive = 0;
+						setChannelPause(i, 1);
+					}
+				}
+
+				if (mChannel[i]->mStopScheduler.mActive)
+				{
+					mChannel[i]->mStopScheduler.get(mChannel[i]->mStreamTime);
+					if (mChannel[i]->mStopScheduler.mActive == -1)
+					{
+						mChannel[i]->mStopScheduler.mActive = 0;
+						stopChannel(i);
+					}
 				}
 			}
 		}

@@ -75,6 +75,8 @@ namespace SoLoud
 		Fader mPanFader;
 		Fader mVolumeFader;
 		Fader mRelativePlaySpeedFader;
+		Fader mPauseScheduler;
+		Fader mStopScheduler;
 		void init(int aPlayIndex, float aBaseSamplerate, int aSourceFlags);
 		virtual void getAudio(float *aBuffer, int aSamples) = 0;
 		virtual int hasEnded() = 0;
@@ -121,6 +123,7 @@ namespace SoLoud
 		void setChannelPan(int aChannel, float aPan);
 		void setChannelRelativePlaySpeed(int aChannel, float aSpeed);
 		void setChannelVolume(int aChannel, float aVolume);
+		void setChannelPause(int aChannel, int aPause);
 	public:
 		void * mMixerData;
 		mutexCallFunction mLockMutexFunc;
@@ -167,6 +170,8 @@ namespace SoLoud
 		void fadePan(int aChannelHandle, float aFrom, float aTo, float aTime);
 		void fadeRelativePlaySpeed(int aChannelHandle, float aFrom, float aTo, float aTime);
 		void fadeGlobalVolume(float aFrom, float aTo, float aTime);
+		void schedulePause(int aChannelHandle, float aTime);
+		void scheduleStop(int aChannelHandle, float aTime);
 	};
 
 	int sdl_init(SoLoud::Soloud *aSoloud, int aChannels = 32, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 2048);

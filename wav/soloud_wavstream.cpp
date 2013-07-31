@@ -35,6 +35,10 @@ namespace SoLoud
 	{
 		mParent = aParent;
 		mOffset = 0;
+		mOgg = 0;
+		mFile = 0;
+		if (aParent->mFilename == NULL)
+			return;
 		mFile = fopen(aParent->mFilename, "rb");
 		if (mFile)
 		{

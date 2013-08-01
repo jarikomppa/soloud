@@ -207,10 +207,7 @@ namespace SoLoud
 				{
 					if (mFlags & AudioInstance::LOOPING)
 					{
-						stb_vorbis_close(mOgg);
-						fseek(mFile, 0, SEEK_SET);
-						int e;
-						mOgg = stb_vorbis_open_file(mFile, 0, &e, NULL);
+						stb_vorbis_seek_start(mOgg);
 						mOffset = aSamples - offset;
 						mStreamTime = mOffset / mSamplerate;
 					}
@@ -257,6 +254,11 @@ namespace SoLoud
 
 	int WavStreamInstance::rewind()
 	{
+		if (mOgg)
+		{
+			stb_vorbis_seek_start(mOgg);
+		}
+		else
 		if (mFile)
 		{
 			fseek(mFile, mParent->mDataOffset, SEEK_SET);
@@ -353,66 +355,17 @@ namespace SoLoud
 
 	void WavStream::loadogg(FILE * fp, int aStereo, int aChannel)
 	{
-		// There's no way to know how many samples the ogg has beforehand (via stb, anyway), 
-		// so we have to decode twice.
 		fseek(fp,0,SEEK_SET);
 		int e;
 		stb_vorbis *v = stb_vorbis_open_file(fp, 0, &e, NULL);
 		if (!v) return;
 		stb_vorbis_info info = stb_vorbis_get_info(v);
 		mBaseSamplerate = (float)info.sample_rate;
-		int samples = 0;
-		while(1)
-		{
-			float **outputs;
-			int n = stb_vorbis_get_frame_float(v, NULL, &outputs);
-			samples += n;
-			if (n == 0)
-				break;
-		}
+		int samples = stb_vorbis_stream_length_in_samples(v);
 		stb_vorbis_close(v);
 		mOgg = 1;
 
-		mSampleCount = samples;
-		
-/*
-		// and now, again, with feeling
-		fseek(fp, 0, SEEK_SET);
-		v = stb_vorbis_open_file(fp, 0, &e, NULL);
-		if (!v) return;
-
-		int readchannels = 1;
-		if (aStereo)
-		{
-			readchannels = 2;
-			mFlags |= STEREO;
-		}
-
-		mData = new float[samples * readchannels];
-		samples = 0;
-		while(1)
-		{
-			float **outputs;
-			int n = stb_vorbis_get_frame_float(v, NULL, &outputs);
-			if (n == 0)
-				break;
-			if (readchannels == 1)
-			{
-				memcpy(mData + samples, outputs[aChannel],sizeof(float) * n);
-			}
-			else
-			{
-				int i;
-				for (i = 0; i < n; i++)
-				{
-					mData[(samples + i) * 2] = outputs[aChannel][i];
-					mData[(samples + i) * 2 + 1] = outputs[aChannel + 1][i];
-				}
-			}
-			samples += n;
-		}
-		stb_vorbis_close(v);
-*/
+		mSampleCount = samples;		
 	}
 
 	void WavStream::load(const char *aFilename, int aStereo, int aChannel)

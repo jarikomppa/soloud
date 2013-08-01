@@ -60,7 +60,7 @@ void render()
 	// Ask SDL for the time in milliseconds
 	int tick = SDL_GetTicks();
 
-	float *buf = (float*)gSoloud.mMixerData;
+	float *buf = (float*)gSoloud.mBackendData;
 
 	int i, j;
 	for (i = 0; i < 400; i++)
@@ -145,14 +145,14 @@ int main(int argc, char *argv[])
 					break;
 				case SDLK_2:
 					gSoloud.setPause(gMusichandle1, 0);
-					gSoloud.fadeVolume(gMusichandle1, 0, 1, 2);
-					gSoloud.fadeVolume(gMusichandle2, 1, 0, 2);
+					gSoloud.fadeVolume(gMusichandle1, gSoloud.getVolume(gMusichandle1), 1, 2);
+					gSoloud.fadeVolume(gMusichandle2, gSoloud.getVolume(gMusichandle2), 0, 2);
 					gSoloud.schedulePause(gMusichandle2, 2);
 					break;
 				case SDLK_3:
 					gSoloud.setPause(gMusichandle2, 0);
-					gSoloud.fadeVolume(gMusichandle2, 0, 1, 2);
-					gSoloud.fadeVolume(gMusichandle1, 1, 0, 2);
+					gSoloud.fadeVolume(gMusichandle2, gSoloud.getVolume(gMusichandle2), 1, 2);
+					gSoloud.fadeVolume(gMusichandle1, gSoloud.getVolume(gMusichandle1), 0, 2);
 					gSoloud.schedulePause(gMusichandle1, 2);
 					break;
 				}

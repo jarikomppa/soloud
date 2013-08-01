@@ -32,12 +32,13 @@ namespace SoLoud
 
 	Fader::Fader()
 	{
-		mFrom = mTo = mDelta = mTime = mStartTime = mEndTime = 0;
+		mCurrent = mFrom = mTo = mDelta = mTime = mStartTime = mEndTime = 0;
 		mActive = 0;
 	}
 
 	void Fader::set(float aFrom, float aTo, float aTime, float aStartTime)
 	{
+		mCurrent = mFrom;
 		mFrom = aFrom;
 		mTo = aTo;
 		mTime = aTime;
@@ -49,12 +50,24 @@ namespace SoLoud
 
 	float Fader::get(float aCurrentTime)
 	{
+		if (mStartTime > aCurrentTime)
+		{
+			// Time rolled over.
+			// Figure out where we were..
+			float p = (mCurrent - mFrom) / mDelta; // 0..1
+			mFrom = mCurrent;
+			mStartTime = aCurrentTime;
+			mTime = mTime * (1 - p); // time left
+			mDelta = mTo - mFrom;
+			mEndTime = mStartTime + mTime;
+		}
 		if (aCurrentTime > mEndTime)
 		{
 			mActive = -1;
 			return mTo;
 		}
-		return mFrom + mDelta * ((aCurrentTime - mStartTime) / mTime);
+		mCurrent = mFrom + mDelta * ((aCurrentTime - mStartTime) / mTime);
+		return mCurrent;
 	}
 
 	///////////////////////////////////////////////////////////////////////////
@@ -165,7 +178,8 @@ namespace SoLoud
 		mFlags = 0;
 		mGlobalVolume = 0;
 		mPlayIndex = 0;
-		mMixerData = NULL;
+		mBackendData = NULL;
+		mMutex = NULL;
 		mPostClipScaler = 0;
 		mLockMutexFunc = NULL;
 		mUnlockMutexFunc = NULL;
@@ -242,11 +256,11 @@ namespace SoLoud
 
 	int Soloud::play(AudioSource &aSound, float aVolume, float aPan, int aPaused)
 	{
-		if (mLockMutexFunc) mLockMutexFunc();
+		if (mLockMutexFunc) mLockMutexFunc(mMutex);
 		int ch = findFreeChannel();
 		if (ch < 0) 
 		{
-			if (mUnlockMutexFunc) mUnlockMutexFunc();
+			if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 			return -1;
 		}
 		mChannel[ch] = aSound.createInstance();
@@ -271,7 +285,7 @@ namespace SoLoud
 			while (pot < scratchneeded) pot <<= 1;
 			mScratchNeeded = pot;
 		}
-		if (mUnlockMutexFunc) mUnlockMutexFunc();
+		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 		return handle;
 	}	
 
@@ -289,7 +303,7 @@ namespace SoLoud
 
 	int Soloud::getActiveVoiceCount() const
 	{
-		if (mLockMutexFunc) mLockMutexFunc();
+		if (mLockMutexFunc) mLockMutexFunc(mMutex);
 		int i;
 		int c = 0;
 		for (i = 0; i < mChannelCount; i++)
@@ -299,62 +313,62 @@ namespace SoLoud
 				c++;
 			}
 		}
-		if (mUnlockMutexFunc) mUnlockMutexFunc();
+		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 		return c;
 	}
 
 	int Soloud::isValidChannelHandle(int aChannelHandle) const
 	{
-		if (mLockMutexFunc) mLockMutexFunc();
+		if (mLockMutexFunc) mLockMutexFunc(mMutex);
 		if (getChannelFromHandle(aChannelHandle) != -1) 
 		{
-			if (mUnlockMutexFunc) mUnlockMutexFunc();
+			if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 			return 1;
 		}
-		if (mUnlockMutexFunc) mUnlockMutexFunc();
+		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 		return 0;
 	}
 
 
 	float Soloud::getVolume(int aChannelHandle) const
 	{
-		if (mLockMutexFunc) mLockMutexFunc();
+		if (mLockMutexFunc) mLockMutexFunc(mMutex);
 		int ch = getChannelFromHandle(aChannelHandle);
 		if (ch == -1) 
 		{
-			if (mUnlockMutexFunc) mUnlockMutexFunc();
+			if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 			return 0;
 		}
 		float v = mChannel[ch]->mVolume;
-		if (mUnlockMutexFunc) mUnlockMutexFunc();
+		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 		return v;
 	}
 
 	float Soloud::getStreamTime(int aChannelHandle) const
 	{
-		if (mLockMutexFunc) mLockMutexFunc();
+		if (mLockMutexFunc) mLockMutexFunc(mMutex);
 		int ch = getChannelFromHandle(aChannelHandle);
 		if (ch == -1) 
 		{
-			if (mUnlockMutexFunc) mUnlockMutexFunc();
+			if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 			return 0;
 		}
 		float v = mChannel[ch]->mStreamTime;
-		if (mUnlockMutexFunc) mUnlockMutexFunc();
+		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 		return v;
 	}
 
 	float Soloud::getRelativePlaySpeed(int aChannelHandle) const
 	{
-		if (mLockMutexFunc) mLockMutexFunc();
+		if (mLockMutexFunc) mLockMutexFunc(mMutex);
 		int ch = getChannelFromHandle(aChannelHandle);
 		if (ch == -1) 
 		{
-			if (mUnlockMutexFunc) mUnlockMutexFunc();
+			if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 			return 1;
 		}
 		float v = mChannel[ch]->mRelativePlaySpeed;
-		if (mUnlockMutexFunc) mUnlockMutexFunc();
+		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 		return v;
 	}
 
@@ -376,121 +390,121 @@ namespace SoLoud
 
 	void Soloud::setRelativePlaySpeed(int aChannelHandle, float aSpeed)
 	{
-		if (mLockMutexFunc) mLockMutexFunc();
+		if (mLockMutexFunc) mLockMutexFunc(mMutex);
 		int ch = getChannelFromHandle(aChannelHandle);
 		if (ch == -1) 
 		{
-			if (mUnlockMutexFunc) mUnlockMutexFunc();
+			if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 			return;
 		}
 		mChannel[ch]->mRelativePlaySpeedFader.mActive = 0;
 		setChannelRelativePlaySpeed(ch, aSpeed);
-		if (mUnlockMutexFunc) mUnlockMutexFunc();
+		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 	}
 
 	float Soloud::getSamplerate(int aChannelHandle) const
 	{
-		if (mLockMutexFunc) mLockMutexFunc();
+		if (mLockMutexFunc) mLockMutexFunc(mMutex);
 		int ch = getChannelFromHandle(aChannelHandle);
 		if (ch == -1) 
 		{
-			if (mUnlockMutexFunc) mUnlockMutexFunc();
+			if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 			return 0;
 		}
 		float v = mChannel[ch]->mBaseSamplerate;
-		if (mUnlockMutexFunc) mUnlockMutexFunc();
+		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 		return v;
 	}
 
 	void Soloud::setSamplerate(int aChannelHandle, float aSamplerate)
 	{
-		if (mLockMutexFunc) mLockMutexFunc();
+		if (mLockMutexFunc) mLockMutexFunc(mMutex);
 		int ch = getChannelFromHandle(aChannelHandle);
 		if (ch == -1) 
 		{
-			if (mUnlockMutexFunc) mUnlockMutexFunc();
+			if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 			return;
 		}
 		mChannel[ch]->mBaseSamplerate = aSamplerate;
 		mChannel[ch]->mSamplerate = mChannel[ch]->mBaseSamplerate * mChannel[ch]->mRelativePlaySpeed;
-		if (mUnlockMutexFunc) mUnlockMutexFunc();
+		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 	}
 
 	void Soloud::seek(int aChannelHandle, float aSeconds)
 	{
-		if (mLockMutexFunc) mLockMutexFunc();
+		if (mLockMutexFunc) mLockMutexFunc(mMutex);
 		int ch = getChannelFromHandle(aChannelHandle);
 		if (ch == -1) 
 		{
-			if (mUnlockMutexFunc) mUnlockMutexFunc();
+			if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 			return;
 		}
 		mChannel[ch]->seek(aSeconds, mScratch, mScratchSize);
-		if (mUnlockMutexFunc) mUnlockMutexFunc();
+		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 	}
 
 	void Soloud::setPause(int aChannelHandle, int aPause)
 	{
-		if (mLockMutexFunc) mLockMutexFunc();
+		if (mLockMutexFunc) mLockMutexFunc(mMutex);
 		int ch = getChannelFromHandle(aChannelHandle);
 		if (ch == -1) 
 		{
-			if (mUnlockMutexFunc) mUnlockMutexFunc();
+			if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 			return;
 		}
 
 		setChannelPause(ch, aPause);
 
-		if (mUnlockMutexFunc) mUnlockMutexFunc();
+		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 	}
 
 	void Soloud::setPauseAll(int aPause)
 	{
-		if (mLockMutexFunc) mLockMutexFunc();
+		if (mLockMutexFunc) mLockMutexFunc(mMutex);
 		int ch;
 		for (ch = 0; ch < mChannelCount; ch++)
 		{
 			setChannelPause(ch, aPause);
 		}
-		if (mUnlockMutexFunc) mUnlockMutexFunc();
+		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 	}
 
 
 	int Soloud::getPause(int aChannelHandle) const
 	{
-		if (mLockMutexFunc) mLockMutexFunc();
+		if (mLockMutexFunc) mLockMutexFunc(mMutex);
 		int ch = getChannelFromHandle(aChannelHandle);
 		if (ch == -1) 
 		{
-			if (mUnlockMutexFunc) mUnlockMutexFunc();
+			if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 			return 0;
 		}
 		int v = !!(mChannel[ch]->mFlags & AudioInstance::PAUSED);
-		if (mUnlockMutexFunc) mUnlockMutexFunc();
+		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 		return v;
 	}
 
 	int Soloud::getProtectChannel(int aChannelHandle) const
 	{
-		if (mLockMutexFunc) mLockMutexFunc();
+		if (mLockMutexFunc) mLockMutexFunc(mMutex);
 		int ch = getChannelFromHandle(aChannelHandle);
 		if (ch == -1) 
 		{
-			if (mUnlockMutexFunc) mUnlockMutexFunc();
+			if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 			return 0;
 		}
 		int v = !!(mChannel[ch]->mFlags & AudioInstance::PROTECTED);
-		if (mUnlockMutexFunc) mUnlockMutexFunc();
+		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 		return v;
 	}
 
 	void Soloud::setProtectChannel(int aChannelHandle, int aProtect)
 	{
-		if (mLockMutexFunc) mLockMutexFunc();
+		if (mLockMutexFunc) mLockMutexFunc(mMutex);
 		int ch = getChannelFromHandle(aChannelHandle);
 		if (ch == -1) 
 		{
-			if (mUnlockMutexFunc) mUnlockMutexFunc();
+			if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 			return;
 		}
 		if (aProtect)
@@ -501,7 +515,7 @@ namespace SoLoud
 		{
 			mChannel[ch]->mFlags &= ~AudioInstance::PROTECTED;
 		}
-		if (mUnlockMutexFunc) mUnlockMutexFunc();
+		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 	}
 
 	void Soloud::setChannelPause(int aChannel, int aPause)
@@ -532,30 +546,30 @@ namespace SoLoud
 
 	void Soloud::setPan(int aChannelHandle, float aPan)
 	{		
-		if (mLockMutexFunc) mLockMutexFunc();
+		if (mLockMutexFunc) mLockMutexFunc(mMutex);
 		int ch = getChannelFromHandle(aChannelHandle);
 		if (ch == -1) 
 		{
-			if (mUnlockMutexFunc) mUnlockMutexFunc();
+			if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 			return;
 		}
 		setChannelPan(ch, aPan);
-		if (mUnlockMutexFunc) mUnlockMutexFunc();
+		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 	}
 
 	void Soloud::setPanAbsolute(int aChannelHandle, float aLVolume, float aRVolume)
 	{
-		if (mLockMutexFunc) mLockMutexFunc();
+		if (mLockMutexFunc) mLockMutexFunc(mMutex);
 		int ch = getChannelFromHandle(aChannelHandle);
 		if (ch == -1) 
 		{
-			if (mUnlockMutexFunc) mUnlockMutexFunc();
+			if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 			return;
 		}
 		mChannel[ch]->mPanFader.mActive = 0;
 		mChannel[ch]->mLVolume = aLVolume;
 		mChannel[ch]->mRVolume = aRVolume;
-		if (mUnlockMutexFunc) mUnlockMutexFunc();
+		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 	}
 
 	void Soloud::setChannelVolume(int aChannel, float aVolume)
@@ -568,16 +582,16 @@ namespace SoLoud
 
 	void Soloud::setVolume(int aChannelHandle, float aVolume)
 	{
-		if (mLockMutexFunc) mLockMutexFunc();
+		if (mLockMutexFunc) mLockMutexFunc(mMutex);
 		int ch = getChannelFromHandle(aChannelHandle);
 		if (ch == -1) 
 		{
-			if (mUnlockMutexFunc) mUnlockMutexFunc();
+			if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 			return;
 		}
 		mChannel[ch]->mVolumeFader.mActive = 0;
 		setChannelVolume(ch, aVolume);
-		if (mUnlockMutexFunc) mUnlockMutexFunc();
+		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 	}
 
 	void Soloud::stop(int aChannelHandle)
@@ -587,9 +601,9 @@ namespace SoLoud
 		{
 			return;
 		}
-		if (mLockMutexFunc) mLockMutexFunc();
+		if (mLockMutexFunc) mLockMutexFunc(mMutex);
 		stopChannel(ch);
-		if (mUnlockMutexFunc) mUnlockMutexFunc();
+		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 	}
 
 	void Soloud::stopChannel(int aChannel)
@@ -604,77 +618,77 @@ namespace SoLoud
 	void Soloud::stopAll()
 	{
 		int i;
-		if (mLockMutexFunc) mLockMutexFunc();
+		if (mLockMutexFunc) mLockMutexFunc(mMutex);
 		for (i = 0; i < mChannelCount; i++)
 		{
 			stopChannel(i);
 		}
-		if (mUnlockMutexFunc) mUnlockMutexFunc();
+		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 	}
 
 	void Soloud::schedulePause(int aChannelHandle, float aTime)
 	{
-		if (mLockMutexFunc) mLockMutexFunc();
+		if (mLockMutexFunc) mLockMutexFunc(mMutex);
 		int ch = getChannelFromHandle(aChannelHandle);
 		if (ch == -1) 
 		{
-			if (mUnlockMutexFunc) mUnlockMutexFunc();
+			if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 			return;
 		}
 		mChannel[ch]->mPauseScheduler.set(1, 0, aTime, mChannel[ch]->mStreamTime);
-		if (mUnlockMutexFunc) mUnlockMutexFunc();
+		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 	}
 
 	void Soloud::scheduleStop(int aChannelHandle, float aTime)
 	{
-		if (mLockMutexFunc) mLockMutexFunc();
+		if (mLockMutexFunc) mLockMutexFunc(mMutex);
 		int ch = getChannelFromHandle(aChannelHandle);
 		if (ch == -1) 
 		{
-			if (mUnlockMutexFunc) mUnlockMutexFunc();
+			if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 			return;
 		}
 		mChannel[ch]->mStopScheduler.set(1, 0, aTime, mChannel[ch]->mStreamTime);
-		if (mUnlockMutexFunc) mUnlockMutexFunc();
+		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 	}
 
 	void Soloud::fadeVolume(int aChannelHandle, float aFrom, float aTo, float aTime)
 	{
-		if (mLockMutexFunc) mLockMutexFunc();
+		if (mLockMutexFunc) mLockMutexFunc(mMutex);
 		int ch = getChannelFromHandle(aChannelHandle);
 		if (ch == -1) 
 		{
-			if (mUnlockMutexFunc) mUnlockMutexFunc();
+			if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 			return;
 		}
 		mChannel[ch]->mVolumeFader.set(aFrom, aTo, aTime, mChannel[ch]->mStreamTime);
-		if (mUnlockMutexFunc) mUnlockMutexFunc();
+		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 	}
 
 	void Soloud::fadePan(int aChannelHandle, float aFrom, float aTo, float aTime)
 	{
-		if (mLockMutexFunc) mLockMutexFunc();
+		if (mLockMutexFunc) mLockMutexFunc(mMutex);
 		int ch = getChannelFromHandle(aChannelHandle);
 		if (ch == -1) 
 		{
-			if (mUnlockMutexFunc) mUnlockMutexFunc();
+			if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 			return;
 		}
 		mChannel[ch]->mPanFader.set(aFrom, aTo, aTime, mChannel[ch]->mStreamTime);
-		if (mUnlockMutexFunc) mUnlockMutexFunc();
+		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 	}
 
 	void Soloud::fadeRelativePlaySpeed(int aChannelHandle, float aFrom, float aTo, float aTime)
 	{
-		if (mLockMutexFunc) mLockMutexFunc();
+		if (mLockMutexFunc) mLockMutexFunc(mMutex);
 		int ch = getChannelFromHandle(aChannelHandle);
 		if (ch == -1) 
 		{
-			if (mUnlockMutexFunc) mUnlockMutexFunc();
+			if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 			return;
 		}
 		mChannel[ch]->mRelativePlaySpeedFader.set(aFrom, aTo, aTime, mChannel[ch]->mStreamTime);
-		if (mUnlockMutexFunc) mUnlockMutexFunc();
+		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 	}
 
 	void Soloud::fadeGlobalVolume(float aFrom, float aTo, float aTime)
@@ -693,7 +707,7 @@ namespace SoLoud
 			mGlobalVolume = mGlobalVolumeFader.get(mStreamTime);
 		}
 
-		if (mLockMutexFunc) mLockMutexFunc();
+		if (mLockMutexFunc) mLockMutexFunc(mMutex);
 
 		// Process faders. May change scratch size.
 		int i;
@@ -797,7 +811,7 @@ namespace SoLoud
 			}
 		}
 
-		if (mUnlockMutexFunc) mUnlockMutexFunc();
+		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 
 		// Clip
 		if (mFlags & CLIP_ROUNDOFF)

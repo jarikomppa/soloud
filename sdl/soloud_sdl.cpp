@@ -21,7 +21,6 @@ freely, subject to the following restrictions:
    3. This notice may not be removed or altered from any source
    distribution.
 */
-
 #include <stdlib.h>
 #if defined(_MSC_VER)
 #include "SDL.h"
@@ -34,14 +33,12 @@ freely, subject to the following restrictions:
 
 namespace SoLoud
 {
-	SDL_mutex *gSoloudMutex;
-
 	void soloud_sdl_audiomixer(void *userdata, Uint8 *stream, int len)
 	{
 		int samples = len / 4;
 		short *buf = (short*)stream;
 		SoLoud::Soloud *soloud = (SoLoud::Soloud *)userdata;
-		float *mixdata = (float*)(soloud->mMixerData);
+		float *mixdata = (float*)(soloud->mBackendData);
 		soloud->mix(mixdata, samples);
 
 		int i;
@@ -51,19 +48,19 @@ namespace SoLoud
 		}
 	}
 
-	void soloud_sdl_lockmutex()
+	void soloud_sdl_lockmutex(void *aMutexPtr)
 	{
-		SDL_mutexP(gSoloudMutex);
+		SDL_mutexP((SDL_mutex*)aMutexPtr);
 	}
 
-	void soloud_sdl_unlockmutex()
+	void soloud_sdl_unlockmutex(void *aMutexPtr)
 	{
-		SDL_mutexV(gSoloudMutex);
+		SDL_mutexV((SDL_mutex*)aMutexPtr);
 	}
 
 	int sdl_init(SoLoud::Soloud *aSoloud, int aChannels, int aFlags, int aSamplerate, int aBuffer)
 	{
-		gSoloudMutex = SDL_CreateMutex();
+		aSoloud->mMutex = SDL_CreateMutex();
 		SDL_AudioSpec as;
 		as.freq = aSamplerate;
 		as.format = AUDIO_S16;
@@ -77,7 +74,7 @@ namespace SoLoud
 		{
 			return 1;
 		}
-		aSoloud->mMixerData = new float[as2.samples*4];
+		aSoloud->mBackendData = new float[as2.samples*4];
 
 		aSoloud->init(aChannels, as2.freq, as2.samples * 2, aFlags);
 
@@ -91,7 +88,7 @@ namespace SoLoud
 	void sdl_deinit(SoLoud::Soloud *aSoloud)
 	{
 		SDL_CloseAudio();
-		delete[] (float*)aSoloud->mMixerData;
-		SDL_DestroyMutex(gSoloudMutex);
+		delete[] (float*)aSoloud->mBackendData;
+		SDL_DestroyMutex((SDL_mutex*)aSoloud->mMutex);
 	}
 };

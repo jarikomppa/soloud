@@ -236,29 +236,13 @@ namespace SoLoud
 
 	void Wav::loadogg(FILE * fp, int aStereo, int aChannel)
 	{
-		// There's no way to know how many samples the ogg has beforehand (via stb, anyway), 
-		// so we have to decode twice.
 		fseek(fp,0,SEEK_SET);
 		int e;
 		stb_vorbis *v = stb_vorbis_open_file(fp, 0, &e, NULL);
 		if (!v) return;
 		stb_vorbis_info info = stb_vorbis_get_info(v);
 		mBaseSamplerate = (float)info.sample_rate;
-		int samples = 0;
-		while(1)
-		{
-			float **outputs;
-			int n = stb_vorbis_get_frame_float(v, NULL, &outputs);
-			samples += n;
-			if (n == 0)
-				break;
-		}
-		stb_vorbis_close(v);
-
-		// and now, again, with feeling
-		fseek(fp, 0, SEEK_SET);
-		v = stb_vorbis_open_file(fp, 0, &e, NULL);
-		if (!v) return;
+		int samples = stb_vorbis_stream_length_in_samples(v);
 
 		int readchannels = 1;
 		if (aStereo)

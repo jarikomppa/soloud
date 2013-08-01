@@ -34,7 +34,7 @@ freely, subject to the following restrictions:
 
 namespace SoLoud
 {
-	typedef void (*mutexCallFunction)();
+	typedef void (*mutexCallFunction)(void *aMutexPtr);
 
 	// Helper class to process faders
 	class Fader
@@ -52,6 +52,8 @@ namespace SoLoud
 		float mStartTime;
 		// Time fading will end
 		float mEndTime;
+		// Current value. Used in case time rolls over.
+		float mCurrent;
 		// Active flag; 0 means disabled, 1 is active, -1 means was active, but stopped
 		int mActive;
 		// Ctor
@@ -191,8 +193,10 @@ namespace SoLoud
 		// Set channel (not handle) pause state.
 		void setChannelPause(int aChannel, int aPause);
 	public:
-		// Mixer data; content is up to the back-end implementation.
-		void * mMixerData;
+		// Back-end data; content is up to the back-end implementation.
+		void * mBackendData;
+		// Pointer for the mutex, usable by the back-end.
+		void * mMutex;
 		// Mutex lock for thread safety. Set by the back-end. If NULL, not called.
 		mutexCallFunction mLockMutexFunc;
 		// Mutex unlock for thread safety. Set by the back-end. If NULL, not called.

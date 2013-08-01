@@ -56,7 +56,7 @@ void render()
 	// Ask SDL for the time in milliseconds
 	int tick = SDL_GetTicks();
 
-	float *buf = (float*)gSoloud.mMixerData;
+	float *buf = (float*)gSoloud.mBackendData;
 
 	int i, j;
 	for (i = 0; i < 400; i++)

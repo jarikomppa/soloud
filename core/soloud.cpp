@@ -76,6 +76,7 @@ namespace SoLoud
 	{
 		mPlayIndex = 0;
 		mFlags = 0;
+		mPan = 0;
 		mLVolume = 1.0f / (float)sqrt(2.0);
 		mRVolume = 1.0f / (float)sqrt(2.0);
 		mVolume = 1.0f;
@@ -204,8 +205,9 @@ namespace SoLoud
 			mChannel[i] = 0;
 		}
 		mSamplerate = aSamplerate;
-		mScratchSize = 0;
-		mScratchNeeded = 1;
+		mScratchSize = 2048;
+		mScratchNeeded = 2048;
+		mScratch = new float[mScratchSize * 2];
 		mBufferSize = aBufferSize;
 		mFlags = aFlags;
 		mPostClipScaler = 0.5f;
@@ -340,6 +342,20 @@ namespace SoLoud
 			return 0;
 		}
 		float v = mChannel[ch]->mVolume;
+		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+		return v;
+	}
+
+	float Soloud::getPan(int aChannelHandle) const
+	{
+		if (mLockMutexFunc) mLockMutexFunc(mMutex);
+		int ch = getChannelFromHandle(aChannelHandle);
+		if (ch == -1) 
+		{
+			if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+			return 0;
+		}
+		float v = mChannel[ch]->mPan;
 		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 		return v;
 	}
@@ -539,6 +555,7 @@ namespace SoLoud
 	{
 		if (mChannel[aChannel])
 		{
+			mChannel[aChannel]->mPan = aPan;
 			mChannel[aChannel]->mLVolume = (float)cos((aPan + 1) * M_PI / 4);
 			mChannel[aChannel]->mRVolume = (float)sin((aPan + 1) * M_PI / 4);
 		}

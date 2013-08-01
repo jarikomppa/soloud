@@ -87,6 +87,8 @@ namespace SoLoud
 		unsigned int mPlayIndex;
 		// Flags; see AudioInstance::FLAGS
 		int mFlags;
+		// Pan value, for getPan()
+		float mPan;
 		// Left channel volume (panning)
 		float mLVolume;
 		// Right channel volume (panning)
@@ -237,6 +239,8 @@ namespace SoLoud
 		int getPause(int aChannelHandle) const;
 		// Get current volume.
 		float getVolume(int aChannelHandle) const;
+		// Get current pan.
+		float getPan(int aChannelHandle) const;
 		// Get current sample rate.
 		float getSamplerate(int aChannelHandle) const;
 		// Get current channel protection state.

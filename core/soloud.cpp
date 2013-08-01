@@ -700,12 +700,15 @@ namespace SoLoud
 	void Soloud::mix(float *aBuffer, int aSamples)
 	{
 		float buffertime = aSamples / (float)mSamplerate;
+		float globalVolume[2];
 		mStreamTime += buffertime;
 
+		globalVolume[0] = mGlobalVolume;
 		if (mGlobalVolumeFader.mActive)
 		{
 			mGlobalVolume = mGlobalVolumeFader.get(mStreamTime);
 		}
+		globalVolume[1] = mGlobalVolume;
 
 		if (mLockMutexFunc) mLockMutexFunc(mMutex);
 
@@ -715,12 +718,18 @@ namespace SoLoud
 		{
 			if (mChannel[i] && !(mChannel[i]->mFlags & AudioInstance::PAUSED))
 			{
-				mChannel[i]->mStreamTime += buffertime;
+				float volume[2];
+				float panl[2];
+				float panr[2];
 
-				if (mChannel[i]->mVolumeFader.mActive == 1)
+				mChannel[i]->mActiveFader = 0;
+
+				if (mGlobalVolumeFader.mActive)
 				{
-					mChannel[i]->mVolume = mChannel[i]->mVolumeFader.get(mChannel[i]->mStreamTime);
+					mChannel[i]->mActiveFader = 1;
 				}
+
+				mChannel[i]->mStreamTime += buffertime;
 
 				if (mChannel[i]->mRelativePlaySpeedFader.mActive == 1)
 				{
@@ -728,11 +737,25 @@ namespace SoLoud
 					setChannelRelativePlaySpeed(i, speed);
 				}
 
+				volume[0] = mChannel[i]->mVolume;
+				if (mChannel[i]->mVolumeFader.mActive == 1)
+				{
+					mChannel[i]->mVolume = mChannel[i]->mVolumeFader.get(mChannel[i]->mStreamTime);
+					mChannel[i]->mActiveFader = 1;
+				}
+				volume[1] = mChannel[i]->mVolume;
+
+
+				panl[0] = mChannel[i]->mLVolume;
+				panr[0] = mChannel[i]->mRVolume;
 				if (mChannel[i]->mPanFader.mActive == 1)
 				{
 					float pan = mChannel[i]->mPanFader.get(mChannel[i]->mStreamTime);
 					setChannelPan(i, pan);
+					mChannel[i]->mActiveFader = 1;
 				}
+				panl[1] = mChannel[i]->mLVolume;
+				panr[1] = mChannel[i]->mRVolume;
 
 				if (mChannel[i]->mPauseScheduler.mActive)
 				{
@@ -742,6 +765,14 @@ namespace SoLoud
 						mChannel[i]->mPauseScheduler.mActive = 0;
 						setChannelPause(i, 1);
 					}
+				}
+
+				if (mChannel[i]->mActiveFader)
+				{
+					mChannel[i]->mFaderVolume[0*2+0] = panl[0] * volume[0] * globalVolume[0];
+					mChannel[i]->mFaderVolume[0*2+1] = panl[1] * volume[1] * globalVolume[1];
+					mChannel[i]->mFaderVolume[1*2+0] = panr[0] * volume[0] * globalVolume[0];
+					mChannel[i]->mFaderVolume[1*2+1] = panr[1] * volume[1] * globalVolume[1];
 				}
 
 				if (mChannel[i]->mStopScheduler.mActive)
@@ -775,31 +806,62 @@ namespace SoLoud
 		{
 			if (mChannel[i] && !(mChannel[i]->mFlags & AudioInstance::PAUSED))
 			{
-				float lpan = mChannel[i]->mLVolume * mChannel[i]->mVolume * mGlobalVolume;
-				float rpan = mChannel[i]->mRVolume * mChannel[i]->mVolume * mGlobalVolume;
 
 				float stepratio = mChannel[i]->mSamplerate / mSamplerate;
+				float step = 0;
+				int j;
+
 				mChannel[i]->getAudio(mScratch, (int)ceil(aSamples * stepratio));		
 
-				int j;
-				float step = 0;
-				if (mChannel[i]->mFlags & AudioInstance::STEREO)
+				if (mChannel[i]->mActiveFader)
 				{
-					for (j = 0; j < aSamples; j++, step += stepratio)
+					float lpan = mChannel[i]->mFaderVolume[0];
+					float rpan = mChannel[i]->mFaderVolume[2];
+					float lpani = (mChannel[i]->mFaderVolume[1] - mChannel[i]->mFaderVolume[0]) / aSamples;
+					float rpani = (mChannel[i]->mFaderVolume[1] - mChannel[i]->mFaderVolume[0]) / aSamples;
+
+					if (mChannel[i]->mFlags & AudioInstance::STEREO)
 					{
-						float s1 = mScratch[(int)floor(step)*2];
-						float s2 = mScratch[(int)floor(step)*2+1];
-						aBuffer[j * 2 + 0] += s1 * lpan;
-						aBuffer[j * 2 + 1] += s2 * rpan;
+						for (j = 0; j < aSamples; j++, step += stepratio, lpan += lpani, rpan += rpani)
+						{
+							float s1 = mScratch[(int)floor(step)*2];
+							float s2 = mScratch[(int)floor(step)*2+1];
+							aBuffer[j * 2 + 0] += s1 * lpan;
+							aBuffer[j * 2 + 1] += s2 * rpan;
+						}
+					}
+					else
+					{
+						for (j = 0; j < aSamples; j++, step += stepratio, lpan += lpani, rpan += rpani)
+						{
+							float s = mScratch[(int)floor(step)];
+							aBuffer[j * 2 + 0] += s * lpan;
+							aBuffer[j * 2 + 1] += s * rpan;
+						}
 					}
 				}
 				else
 				{
-					for (j = 0; j < aSamples; j++, step += stepratio)
+					float lpan = mChannel[i]->mLVolume * mChannel[i]->mVolume * mGlobalVolume;
+					float rpan = mChannel[i]->mRVolume * mChannel[i]->mVolume * mGlobalVolume;
+					if (mChannel[i]->mFlags & AudioInstance::STEREO)
 					{
-						float s = mScratch[(int)floor(step)];
-						aBuffer[j * 2 + 0] += s * lpan;
-						aBuffer[j * 2 + 1] += s * rpan;
+						for (j = 0; j < aSamples; j++, step += stepratio)
+						{
+							float s1 = mScratch[(int)floor(step)*2];
+							float s2 = mScratch[(int)floor(step)*2+1];
+							aBuffer[j * 2 + 0] += s1 * lpan;
+							aBuffer[j * 2 + 1] += s2 * rpan;
+						}
+					}
+					else
+					{
+						for (j = 0; j < aSamples; j++, step += stepratio)
+						{
+							float s = mScratch[(int)floor(step)];
+							aBuffer[j * 2 + 0] += s * lpan;
+							aBuffer[j * 2 + 1] += s * rpan;
+						}
 					}
 				}
 

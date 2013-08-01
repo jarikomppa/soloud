@@ -111,6 +111,10 @@ namespace SoLoud
 		Fader mPauseScheduler;
 		// Fader used to schedule stopping of the stream
 		Fader mStopScheduler;
+		// Affected by some fader
+		int mActiveFader;
+		// Fader-affected l/r volumes
+		float mFaderVolume[2 * 2];
 		// Initialize instance. Mostly internal use, but also needed from filters.
 		void init(int aPlayIndex, float aBaseSamplerate, int aSourceFlags);
 		// Get N samples from the stream to the buffer

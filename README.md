@@ -7,7 +7,7 @@ Free, straightforward audio engine for games.
 
 Zlib/LibPng licensed. Portable. Small. Simple.
 
-Official site can be found at: http://soloud-audio.com
+Official site can be found at http://soloud-audio.com with actual documentation and stuff.
 
 Preface
 -------
@@ -77,7 +77,7 @@ Current modules include:
 - A simple audio-breaking filter example.
 - SDL back-end
 
-Simplest Possible Usage Example (actual docs TBD)
+Simplest Possible Usage Example (See http://soloud-audio.com for docs)
 -------------------------------
 ```C++
 // Headers; SDL, core, wav loader

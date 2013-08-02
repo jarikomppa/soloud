@@ -31,7 +31,6 @@ namespace SoLoud
 	{
 		mParent = aParent;
 		mOffset = 0;
-		mSamplerate = 44100;
 	}
 
 	void SinewaveInstance::getAudio(float *aBuffer, int aSamples)
@@ -51,7 +50,8 @@ namespace SoLoud
 	
 	Sinewave::Sinewave()
 	{
-		mFreq = 440 * M_PI * 2 / 44100;
+		mBaseSamplerate = 4000;
+		mFreq = 440 * M_PI * 2 / mBaseSamplerate;
 	}
 
 	AudioInstance * Sinewave::createInstance() 

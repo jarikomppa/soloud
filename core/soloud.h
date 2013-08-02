@@ -117,6 +117,8 @@ namespace SoLoud
 		int mActiveFader;
 		// Fader-affected l/r volumes
 		float mFaderVolume[2 * 2];
+		// ID of the sound source that generated this instance
+		int mAudioSourceID;
 		// Initialize instance. Mostly internal use, but also needed from filters.
 		void init(int aPlayIndex, float aBaseSamplerate, int aSourceFlags);
 		// Get N samples from the stream to the buffer
@@ -144,6 +146,8 @@ namespace SoLoud
 		int mFlags;
 		// Base sample rate, used to initialize instances
 		float mBaseSamplerate;
+		// Sound source ID. Assigned by SoLoud the first time it's played.
+		int mAudioSourceID;
 
 		// CTor
 		AudioSource();
@@ -180,6 +184,8 @@ namespace SoLoud
 		float mPostClipScaler;
 		// Current play index. Used to create audio handles.
 		unsigned int mPlayIndex;
+		// Current sound source index. Used to create sound source IDs.
+		int mAudioSourceID;
 		// Fader for the global volume.
 		Fader mGlobalVolumeFader;
 		// Global stream time, for the global volume fader. Re-set when global volume fader is set.
@@ -232,6 +238,8 @@ namespace SoLoud
 		void stop(int aChannelHandle);
 		// Stop all channels.
 		void stopAll();
+		// Stop all channels that play this sound source
+		void stopSound(AudioSource &aSound);
 
 		// Get current play time, in seconds.
 		float getStreamTime(int aChannelHandle) const;

@@ -84,6 +84,7 @@ namespace SoLoud
 		mSamplerate = 44100.0f;
 		mRelativePlaySpeed = 1.0f;
 		mStreamTime = 0.0f;
+		mAudioSourceID = 0;
 	}
 
 	AudioInstance::~AudioInstance()
@@ -147,10 +148,12 @@ namespace SoLoud
 	{ 
 		mFlags = 0; 
 		mBaseSamplerate = 44100; 
+		mAudioSourceID = 0;
 	}
 
 	AudioSource::~AudioSource() 
 	{
+
 	}
 
 	void AudioSource::setLooping(int aLoop)
@@ -185,6 +188,7 @@ namespace SoLoud
 		mLockMutexFunc = NULL;
 		mUnlockMutexFunc = NULL;
 		mStreamTime = 0;
+		mAudioSourceID = 1;
 	}
 
 	Soloud::~Soloud()
@@ -265,7 +269,13 @@ namespace SoLoud
 			if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 			return -1;
 		}
+		if (!aSound.mAudioSourceID)
+		{
+			aSound.mAudioSourceID = mAudioSourceID;
+			mAudioSourceID++;
+		}
 		mChannel[ch] = aSound.createInstance();
+		mChannel[ch]->mAudioSourceID = aSound.mAudioSourceID;
 		int handle = ch | (mPlayIndex << 8);
 
 		mChannel[ch]->init(mPlayIndex, aSound.mBaseSamplerate, aSound.mFlags);
@@ -631,6 +641,24 @@ namespace SoLoud
 			mChannel[aChannel] = 0;			
 		}
 	}		
+
+	void Soloud::stopSound(AudioSource &aSound)
+	{
+		if (aSound.mAudioSourceID)
+		{
+			if (mLockMutexFunc) mLockMutexFunc(mMutex);
+			
+			int i;
+			for (i = 0; i < mChannelCount; i++)
+			{
+				if (mChannel[i]->mAudioSourceID == aSound.mAudioSourceID)
+				{
+					stopChannel(i);
+				}
+			}
+			if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+		}
+	}
 
 	void Soloud::stopAll()
 	{

@@ -84,10 +84,13 @@ void render()
 
 void plonk(float rel)
 {
-	float handle = gSoloud.play(gSinewave);
-	gSoloud.fadeVolume(handle,1,0,0.5);
-	gSoloud.scheduleStop(handle,0.5);
+	float pan = sin(SDL_GetTicks() * 0.0234) ;
+	float handle = gSoloud.play(gSinewave,1,pan);
+	//gSoloud.fadePan(handle,pan,-pan,0.5);
+	gSoloud.fadeVolume(handle, 1, 0, 0.5);
+	gSoloud.scheduleStop(handle, 0.5);
 	gSoloud.setRelativePlaySpeed(handle, rel);
+	//gSoloud.fadeRelativePlaySpeed(handle,rel,rel * 0.9,0.5);
 }
 
 // Entry point
@@ -101,6 +104,8 @@ int main(int argc, char *argv[])
 	}
 
 	SoLoud::sdl_init(&gSoloud);
+	gSoloud.setGlobalVolume(0.75);
+	gSoloud.setPostClipScaler(0.75);
 
 	// Register SDL_Quit to be called at exit; makes sure things are
 	// cleaned up when we quit.
@@ -132,23 +137,23 @@ int main(int argc, char *argv[])
 				switch (event.key.keysym.sym)
 				{
 
-				case SDLK_p: plonk(1); break;
-				case SDLK_0: plonk(pow(0.943875f, 1)); break;
-				case SDLK_o: plonk(pow(0.943875f, 2)); break;
-				case SDLK_9: plonk(pow(0.943875f, 3)); break;
-				case SDLK_i: plonk(pow(0.943875f, 4)); break;
-				case SDLK_u: plonk(pow(0.943875f, 5)); break;
-				case SDLK_7: plonk(pow(0.943875f, 6)); break;
-				case SDLK_y: plonk(pow(0.943875f, 7)); break;
-				case SDLK_6: plonk(pow(0.943875f, 8)); break;
-				case SDLK_t: plonk(pow(0.943875f, 9)); break;
-				case SDLK_r: plonk(pow(0.943875f, 10)); break;
-				case SDLK_4: plonk(pow(0.943875f, 11)); break;
-				case SDLK_e: plonk(pow(0.943875f, 12)); break;
-				case SDLK_3: plonk(pow(0.943875f, 13)); break;
-				case SDLK_w: plonk(pow(0.943875f, 14)); break;
-				case SDLK_2: plonk(pow(0.943875f, 15)); break;
-				case SDLK_q: plonk(pow(0.943875f, 16)); break;
+				case SDLK_p: plonk(1); break;                  // C
+				case SDLK_o: plonk(pow(0.943875f, 1)); break;  // B
+				case SDLK_9: plonk(pow(0.943875f, 2)); break;  //  A#
+				case SDLK_i: plonk(pow(0.943875f, 3)); break;  // A
+				case SDLK_8: plonk(pow(0.943875f, 4)); break;  //  G#
+				case SDLK_u: plonk(pow(0.943875f, 5)); break;  // G
+				case SDLK_7: plonk(pow(0.943875f, 6)); break;  //  F#
+				case SDLK_y: plonk(pow(0.943875f, 7)); break;  // F
+				case SDLK_t: plonk(pow(0.943875f, 8)); break;  // E
+				case SDLK_5: plonk(pow(0.943875f, 9)); break;  //  D#
+				case SDLK_r: plonk(pow(0.943875f, 10)); break; // D
+				case SDLK_4: plonk(pow(0.943875f, 11)); break; //  C#
+				case SDLK_e: plonk(pow(0.943875f, 12)); break; // C
+				case SDLK_w: plonk(pow(0.943875f, 13)); break; // B
+				case SDLK_2: plonk(pow(0.943875f, 14)); break; //  A#
+				case SDLK_q: plonk(pow(0.943875f, 15)); break; // A
+				case SDLK_1: plonk(pow(0.943875f, 16)); break; //  G#
 				}
 				break;
 			case SDL_KEYUP:

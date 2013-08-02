@@ -835,7 +835,7 @@ namespace SoLoud
 					float lpan = mChannel[i]->mFaderVolume[0];
 					float rpan = mChannel[i]->mFaderVolume[2];
 					float lpani = (mChannel[i]->mFaderVolume[1] - mChannel[i]->mFaderVolume[0]) / aSamples;
-					float rpani = (mChannel[i]->mFaderVolume[1] - mChannel[i]->mFaderVolume[0]) / aSamples;
+					float rpani = (mChannel[i]->mFaderVolume[3] - mChannel[i]->mFaderVolume[2]) / aSamples;
 
 					if (mChannel[i]->mFlags & AudioInstance::STEREO)
 					{

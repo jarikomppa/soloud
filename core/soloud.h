@@ -131,6 +131,8 @@ namespace SoLoud
 		virtual int rewind();
 	};
 
+	class Soloud;
+
 	// Base class for audio sources
 	class AudioSource
 	{
@@ -148,6 +150,8 @@ namespace SoLoud
 		float mBaseSamplerate;
 		// Sound source ID. Assigned by SoLoud the first time it's played.
 		int mAudioSourceID;
+		// Pointer to the Soloud object. Needed to stop all instances in dtor.
+		Soloud *mSoloud;
 
 		// CTor
 		AudioSource();

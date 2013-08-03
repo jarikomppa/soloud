@@ -149,11 +149,15 @@ namespace SoLoud
 		mFlags = 0; 
 		mBaseSamplerate = 44100; 
 		mAudioSourceID = 0;
+		mSoloud = 0;
 	}
 
 	AudioSource::~AudioSource() 
 	{
-
+		if (mSoloud)
+		{
+			mSoloud->stopSound(*this);
+		}
 	}
 
 	void AudioSource::setLooping(int aLoop)
@@ -273,6 +277,7 @@ namespace SoLoud
 		{
 			aSound.mAudioSourceID = mAudioSourceID;
 			mAudioSourceID++;
+			aSound.mSoloud = this;
 		}
 		mChannel[ch] = aSound.createInstance();
 		mChannel[ch]->mAudioSourceID = aSound.mAudioSourceID;

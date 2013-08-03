@@ -84,8 +84,8 @@ void render()
 
 void plonk(float rel)
 {
-	float pan = sin(SDL_GetTicks() * 0.0234) ;
-	float handle = gSoloud.play(gSinewave,1,pan);
+	float pan = (float)sin(SDL_GetTicks() * 0.0234) ;
+	int handle = gSoloud.play(gSinewave,1,pan);
 	//gSoloud.fadePan(handle,pan,-pan,0.5);
 	gSoloud.fadeVolume(handle, 1, 0, 0.5);
 	gSoloud.scheduleStop(handle, 0.5);

@@ -51,7 +51,7 @@ namespace SoLoud
 	Sinewave::Sinewave()
 	{
 		mBaseSamplerate = 4000;
-		mFreq = 440 * M_PI * 2 / mBaseSamplerate;
+		mFreq = (float)(440 * M_PI * 2 / mBaseSamplerate);
 	}
 
 	AudioInstance * Sinewave::createInstance() 

@@ -56,18 +56,18 @@ void render()
 	// Ask SDL for the time in milliseconds
 	int tick = SDL_GetTicks();
 
-	float *buf = (float*)gSoloud.mBackendData;
+	
+	float *buf = gSoloud.calcFFT();//(float*)gSoloud.mBackendData;
 
 	int i, j;
 	for (i = 0; i < 400; i++)
 	{
-		int v = (int)floor(buf[i*2]*127+128);
+		float f = buf[i*256/400];
+		int v = (int)floor(256 - f * 4);//(int)floor(buf[i*2]*127+128);
 		for (j = 0; j < 256; j++)
 		{
 			int c = 0;
-			if (j < 128 && v < 128 && j > v)
-				c = 0xff0000;
-			if (j > 127 && v > 127 && j < v)
+			if (j > v)
 				c = 0xff0000;
 
 			putpixel(i, j, c);
@@ -103,7 +103,7 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
-	SoLoud::sdl_init(&gSoloud);
+	SoLoud::sdl_init(&gSoloud, 32, 3, 44100, 2048);
 	gSoloud.setGlobalVolume(0.75);
 	gSoloud.setPostClipScaler(0.75);
 

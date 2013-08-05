@@ -656,7 +656,7 @@ namespace SoLoud
 			int i;
 			for (i = 0; i < mChannelCount; i++)
 			{
-				if (mChannel[i]->mAudioSourceID == aSound.mAudioSourceID)
+				if (mChannel[i] && mChannel[i]->mAudioSourceID == aSound.mAudioSourceID)
 				{
 					stopChannel(i);
 				}

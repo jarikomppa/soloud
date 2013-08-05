@@ -32,6 +32,12 @@ freely, subject to the following restrictions:
 #define M_PI 3.14159265359
 #endif
 
+#define SOLOUD_INCLUDE_FFT
+
+#ifdef SOLOUD_INCLUDE_FFT
+#include "soloud_fft.h"
+#endif
+
 namespace SoLoud
 {
 	typedef void (*mutexCallFunction)(void *aMutexPtr);
@@ -166,6 +172,14 @@ namespace SoLoud
 	// Soloud core class.
 	class Soloud
 	{
+#ifdef SOLOUD_INCLUDE_FFT
+		// FFT calculation code
+		FFT mFFT;
+		// Data gathered for FFT input
+		float mFFTInput[512];
+		// FFT output data
+		float mFFTData[256];
+#endif
 		// Scratch buffer, used for resampling.
 		float *mScratch;
 		// Current size of the scratch, in stereo samples.
@@ -226,7 +240,8 @@ namespace SoLoud
 		enum FLAGS
 		{
 			// Use round-off clipper
-			CLIP_ROUNDOFF = 1
+			CLIP_ROUNDOFF = 1,
+			ENABLE_FFT = 2
 		};
 
 		// Initialize SoLoud. Called by the back-end.
@@ -301,6 +316,11 @@ namespace SoLoud
 		void schedulePause(int aChannelHandle, float aTime);
 		// Schedule a stream to stop
 		void scheduleStop(int aChannelHandle, float aTime);
+
+#ifdef SOLOUD_INCLUDE_FFT
+		// Calculate FFT
+		float *calcFFT();
+#endif
 	};
 
 	// SDL back-end initialization call

@@ -747,6 +747,24 @@ namespace SoLoud
 		mGlobalVolumeFader.set(aFrom, aTo, aTime, mStreamTime);
 	}
 
+#ifdef SOLOUD_INCLUDE_FFT
+	float * Soloud::calcFFT()
+	{
+		if (mLockMutexFunc) mLockMutexFunc(mMutex);
+		mFFT.fft(mFFTInput, mScratch);
+
+		int i;
+		for (i = 0; i < 256; i++)
+		{
+			float real = mScratch[i];
+			float imag = mScratch[i+256];
+			mFFTData[i] = sqrt(real*real + imag*imag);
+		}
+		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+		return mFFTData;
+	}
+#endif
+
 	void Soloud::mix(float *aBuffer, int aSamples)
 	{
 		float buffertime = aSamples / (float)mSamplerate;
@@ -964,6 +982,24 @@ namespace SoLoud
 				aBuffer[i] = f * mPostClipScaler;
 			}
 		}
+#ifdef SOLOUD_INCLUDE_FFT
+		if (mFlags & ENABLE_FFT)
+		{
+			if (aSamples > 1024)
+			{
+				for (i = 0; i < 512; i++)
+				{
+					mFFTInput[i] = aBuffer[i*4+0] + aBuffer[i*4+1];
+				}
+			}
+			else
+			{
+				for (i = 0; i < 512; i++)
+				{
+					mFFTInput[i] = aBuffer[((i * 4) % aSamples) + 0] + aBuffer[((i * 4) & aSamples) + 1];
+				}
+			}
+		}
+#endif
 	}
-
 };

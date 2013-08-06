@@ -985,18 +985,18 @@ namespace SoLoud
 #ifdef SOLOUD_INCLUDE_FFT
 		if (mFlags & ENABLE_FFT)
 		{
-			if (aSamples > 1024)
+			if (aSamples > 511)
 			{
 				for (i = 0; i < 512; i++)
 				{
-					mFFTInput[i] = aBuffer[i*4+0] + aBuffer[i*4+1];
+					mFFTInput[i] = aBuffer[i*2+0] + aBuffer[i*2+1];
 				}
 			}
 			else
 			{
 				for (i = 0; i < 512; i++)
 				{
-					mFFTInput[i] = aBuffer[((i * 4) % aSamples) + 0] + aBuffer[((i * 4) & aSamples) + 1];
+					mFFTInput[i] = aBuffer[((i % aSamples) * 2) + 0] + aBuffer[((i % aSamples) * 2) + 1];
 				}
 			}
 		}

@@ -45,12 +45,19 @@ namespace SoLoud
 
 	int SinewaveInstance::hasEnded()
 	{
+		// This audio source never ends.
 		return 0;
 	}
 	
 	Sinewave::Sinewave()
 	{
 		mBaseSamplerate = 4000;
+		mFreq = (float)(440 * M_PI * 2 / mBaseSamplerate);
+	}
+
+	void Sinewave::setSamplerate(float aSamplerate)
+	{
+		mBaseSamplerate = aSamplerate;
 		mFreq = (float)(440 * M_PI * 2 / mBaseSamplerate);
 	}
 

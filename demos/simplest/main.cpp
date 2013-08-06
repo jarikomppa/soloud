@@ -36,24 +36,35 @@ freely, subject to the following restrictions:
 // Entry point
 int main(int argc, char *argv[])
 {
+	// Init SDL (minimally, in this case))
+	SDL_Init(0); 
 
-	SDL_Init(0);
+	// Define a couple of variables
+	SoLoud::Soloud soloud;  // SoLoud engine core
+	SoLoud::Speech speech;  // A sound source (speech, in this case)
 
-	SoLoud::Soloud soloud;
-	SoLoud::Speech speech;
+	// Configure sound source
+	speech.setText("1 2 3   1 2 3   Hello world. Welcome to So-Loud.");
 
-	speech.setText("Hello world. You will be assimilated.");
-
+	// initialize SoLoud for SDL
 	SoLoud::sdl_init(&soloud);
 
+	// Play the sound source (we could do this several times if we wanted)
 	soloud.play(speech);
 
+	// Wait until sounds have finished
 	while (soloud.getActiveVoiceCount())
 	{
+		// Still going, sleep for a bit
 		SDL_Delay(100);
 	}
 
+	// Clean up SoLoud for SDL
 	SoLoud::sdl_deinit(&soloud);
+
+	// Clean up SDL
 	SDL_Quit();
+
+	// All done.
 	return 0;
 }

@@ -46,6 +46,7 @@ namespace SoLoud
 	public:
 		float mFreq;
 		Sinewave();
+		void setSamplerate(float aSamplerate);
 		virtual AudioInstance *createInstance();
 	};
 };

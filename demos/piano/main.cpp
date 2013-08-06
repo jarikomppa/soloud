@@ -34,9 +34,10 @@ freely, subject to the following restrictions:
 #include "soloud_sinewave.h"
 #include "soloud_filter.h"
 
-SoLoud::Soloud gSoloud;
-SoLoud::Sinewave gSinewave;
-SoLoud::EchoFilter gFilter;
+
+SoLoud::Soloud gSoloud;			// SoLoud engine core
+SoLoud::Sinewave gSinewave;		// Simple sinewave audio source
+SoLoud::EchoFilter gFilter;		// Simple echo filter
 
 SDL_Surface *screen;
 
@@ -58,15 +59,25 @@ void render()
 	// Ask SDL for the time in milliseconds
 	int tick = SDL_GetTicks();
 
-	
+	// Calling calcFFT will cause SoLoud to actually calculate the FFT;
+	// if we keep this pointer around, it'll just point to the old data.
 	float *buf = gSoloud.calcFFT();
-
+	float *mixbuf = (float*)gSoloud.mBackendData;
 	int i, j;
-	for (i = 0; i < 400; i++)
+	for (i = 0; i < 640; i++)
 	{
-		float f = buf[i*256/400];
-		int v = (int)floor(256 - f * 4);
-		for (j = 0; j < 256; j++)
+		float f = buf[i*256/640];
+		int v = (int)floor(480 - f * 2);
+		for (j = 240; j < 480; j++)
+		{
+			int c = 0;
+			if (j > v)
+				c = 0xff0000;
+
+			putpixel(i, j, c);
+		}
+		v = (int)floor(120*mixbuf[i*2])+120;
+		for (j = 0; j < 240; j++)
 		{
 			int c = 0;
 			if (j > v)
@@ -81,7 +92,7 @@ void render()
 		SDL_UnlockSurface(screen);
 
 	// Tell SDL to update the whole screen
-	SDL_UpdateRect(screen, 0, 0, 400, 256);    
+	SDL_UpdateRect(screen, 0, 0, 640, 480);    
 }
 
 void plonk(float rel)
@@ -106,7 +117,7 @@ int main(int argc, char *argv[])
 	}
 
 	SoLoud::sdl_init(&gSoloud, 32, 3, 44100, 2048);
-	gSoloud.setGlobalVolume(0.75);
+	gSoloud.setGlobalVolume(0.5);
 	gSoloud.setPostClipScaler(0.75);
 	gSoloud.setGlobalFilter(gFilter);
 	gFilter.setParams(0.25f, 0.5f);
@@ -116,7 +127,7 @@ int main(int argc, char *argv[])
 	atexit(SDL_Quit);	
 
 	// Attempt to create a 640x480 window with 32bit pixels.
-	screen = SDL_SetVideoMode(400, 256, 32, SDL_SWSURFACE);
+	screen = SDL_SetVideoMode(640, 480, 32, SDL_SWSURFACE);
 
 	// If we fail, return error.
 	if ( screen == NULL ) 

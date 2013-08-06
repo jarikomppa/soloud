@@ -57,13 +57,13 @@ void render()
 	int tick = SDL_GetTicks();
 
 	
-	float *buf = gSoloud.calcFFT();//(float*)gSoloud.mBackendData;
+	float *buf = gSoloud.calcFFT();
 
 	int i, j;
 	for (i = 0; i < 400; i++)
 	{
 		float f = buf[i*256/400];
-		int v = (int)floor(256 - f * 4);//(int)floor(buf[i*2]*127+128);
+		int v = (int)floor(256 - f * 4);
 		for (j = 0; j < 256; j++)
 		{
 			int c = 0;

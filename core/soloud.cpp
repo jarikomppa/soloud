@@ -163,6 +163,7 @@ namespace SoLoud
 
 	AudioSource::AudioSource() 
 	{ 
+		mFilter = 0;
 		mFlags = 0; 
 		mBaseSamplerate = 44100; 
 		mAudioSourceID = 0;

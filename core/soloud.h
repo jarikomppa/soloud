@@ -42,6 +42,21 @@ namespace SoLoud
 {
 	typedef void (*mutexCallFunction)(void *aMutexPtr);
 
+	class AudioSource;
+
+	class FilterInstance
+	{
+	public:
+		virtual void filter(float *aBuffer, int aSamples, int aStereo, float aSamplerate) = 0;
+	};
+
+	class Filter
+	{
+	public:
+		virtual void init(AudioSource *aSource);
+		virtual FilterInstance *createInstance() = 0;
+	};
+
 	// Helper class to process faders
 	class Fader
 	{
@@ -125,6 +140,8 @@ namespace SoLoud
 		float mFaderVolume[2 * 2];
 		// ID of the sound source that generated this instance
 		int mAudioSourceID;
+		// Filter pointer
+		FilterInstance *mFilter;
 		// Initialize instance. Mostly internal use, but also needed from filters.
 		void init(int aPlayIndex, float aBaseSamplerate, int aSourceFlags);
 		// Get N samples from the stream to the buffer
@@ -156,6 +173,8 @@ namespace SoLoud
 		float mBaseSamplerate;
 		// Sound source ID. Assigned by SoLoud the first time it's played.
 		int mAudioSourceID;
+		// Filter pointer
+		Filter *mFilter;
 		// Pointer to the Soloud object. Needed to stop all instances in dtor.
 		Soloud *mSoloud;
 
@@ -163,6 +182,8 @@ namespace SoLoud
 		AudioSource();
 		// Set the looping of the instances created from this audio source
 		void setLooping(int aLoop);
+		// Set filter
+		void setFilter(Filter &aFilter);
 		// DTor
 		virtual ~AudioSource();
 		// Create instance from the audio source. Called from within Soloud class.
@@ -208,6 +229,10 @@ namespace SoLoud
 		Fader mGlobalVolumeFader;
 		// Global stream time, for the global volume fader. Re-set when global volume fader is set.
 		float mStreamTime;
+		// Global filter
+		Filter *mFilter;
+		// Global filter instance
+		FilterInstance *mFilterInstance;
 		// Find a free channel, stopping the oldest if no free channel is found.
 		int findFreeChannel();
 		// Converts handle to channel, if the handle is valid.
@@ -316,6 +341,9 @@ namespace SoLoud
 		void schedulePause(int aChannelHandle, float aTime);
 		// Schedule a stream to stop
 		void scheduleStop(int aChannelHandle, float aTime);
+
+		// Set global filter
+		void setGlobalFilter(Filter &aFilter);
 
 #ifdef SOLOUD_INCLUDE_FFT
 		// Calculate FFT

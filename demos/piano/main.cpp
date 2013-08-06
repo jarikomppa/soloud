@@ -32,9 +32,11 @@ freely, subject to the following restrictions:
 
 #include "soloud.h"
 #include "soloud_sinewave.h"
+#include "soloud_filter.h"
 
 SoLoud::Soloud gSoloud;
 SoLoud::Sinewave gSinewave;
+SoLoud::EchoFilter gFilter;
 
 SDL_Surface *screen;
 
@@ -86,11 +88,11 @@ void plonk(float rel)
 {
 	float pan = (float)sin(SDL_GetTicks() * 0.0234) ;
 	int handle = gSoloud.play(gSinewave,1,pan);
-	//gSoloud.fadePan(handle,pan,-pan,0.5);
+	gSoloud.fadePan(handle,pan,-pan,0.5);
 	gSoloud.fadeVolume(handle, 1, 0, 0.5);
 	gSoloud.scheduleStop(handle, 0.5);
 	gSoloud.setRelativePlaySpeed(handle, rel);
-	//gSoloud.fadeRelativePlaySpeed(handle,rel,rel * 0.9,0.5);
+	//gSoloud.fadeRelativePlaySpeed(handle,rel,rel * 1.1,0.5);
 }
 
 // Entry point
@@ -106,6 +108,8 @@ int main(int argc, char *argv[])
 	SoLoud::sdl_init(&gSoloud, 32, 3, 44100, 2048);
 	gSoloud.setGlobalVolume(0.75);
 	gSoloud.setPostClipScaler(0.75);
+	gSoloud.setGlobalFilter(gFilter);
+	gFilter.setParams(0.25f, 0.5f);
 
 	// Register SDL_Quit to be called at exit; makes sure things are
 	// cleaned up when we quit.

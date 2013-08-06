@@ -22,31 +22,34 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#ifndef SOLOUD_FILTER_H
-#define SOLOUD_FILTER_H
+#ifndef SOLOUD_ECHOFILTER_H
+#define SOLOUD_ECHOFILTER_H
 
 namespace SoLoud
 {
-	class Filter;
+	class EchoFilter;
 
-	class FilterInstance : public AudioInstance
+	class EchoFilterInstance : public FilterInstance
 	{
-		AudioInstance *mSource;
+		float *mBuffer;
+		int mBufferLength;
+		EchoFilter *mParent;
 		int mOffset;
 	public:
-		FilterInstance(AudioSource *aSource);
-		virtual void getAudio(float *aBuffer, int aSamples);
-		virtual int hasEnded();
-		virtual ~FilterInstance();
+		virtual void filter(float *aBuffer, int aSamples, int aStereo, float aSamplerate);
+		virtual ~EchoFilterInstance();
+		EchoFilterInstance(EchoFilter *aParent);
 	};
 
-	class Filter : public AudioSource
+	class EchoFilter : public Filter
 	{
-		AudioSource *mSource;
 	public:
-		void setSource(AudioSource *aSource);
-		Filter();
-		virtual AudioInstance *createInstance();
+		float mDelay;
+		float mDecay;
+		virtual void init(AudioSource *aSource);
+		virtual FilterInstance *createInstance();
+		EchoFilter();
+		void setParams(float aDelay, float aDecay);
 	};
 }
 

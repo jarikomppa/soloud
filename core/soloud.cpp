@@ -30,6 +30,12 @@ namespace SoLoud
 {
 	///////////////////////////////////////////////////////////////////////////
 
+	void Filter::init(AudioSource *aSource)
+	{
+	}
+
+	///////////////////////////////////////////////////////////////////////////
+
 	Fader::Fader()
 	{
 		mCurrent = mFrom = mTo = mDelta = mTime = mStartTime = mEndTime = 0;
@@ -86,13 +92,20 @@ namespace SoLoud
 		mStreamTime = 0.0f;
 		mAudioSourceID = 0;
 		mActiveFader = 0;
+		mFilter = 0;
 		int i;
 		for (i = 0; i < 4; i++)
+		{
 			mFaderVolume[i] = 0;
+		}
 	}
 
 	AudioInstance::~AudioInstance()
 	{
+		if (mFilter)
+		{
+			delete mFilter;
+		}
 	}
 
 	void AudioInstance::init(int aPlayIndex, float aBaseSamplerate, int aSourceFlags)
@@ -176,6 +189,15 @@ namespace SoLoud
 		}
 	}
 
+	void AudioSource::setFilter(Filter &aFilter)
+	{
+		mFilter = &aFilter;
+		if (mFilter)
+		{
+			mFilter->init(this);
+		}
+	}
+
 	///////////////////////////////////////////////////////////////////////////
 
 	Soloud::Soloud()
@@ -197,16 +219,25 @@ namespace SoLoud
 		mUnlockMutexFunc = NULL;
 		mStreamTime = 0;
 		mAudioSourceID = 1;
+		mFilter = 0;
+		mFilterInstance = 0;
+#ifdef SOLOUD_INCLUDE_FFT
 		int i;
 		for (i = 0; i < 512; i++)
+		{
 			mFFTInput[i] = 0;
+		}
 		for (i = 0; i < 256; i++)
+		{
 			mFFTData[i] = 0;
+		}
+#endif
 	}
 
 	Soloud::~Soloud()
 	{
 		stopAll();
+		delete mFilterInstance;
 		delete[] mScratch;
 		delete[] mChannel;
 	}
@@ -293,7 +324,7 @@ namespace SoLoud
 		int handle = ch | (mPlayIndex << 8);
 
 		mChannel[ch]->init(mPlayIndex, aSound.mBaseSamplerate, aSound.mFlags);
-
+		
 		if (aPaused)
 		{
 			mChannel[ch]->mFlags |= AudioInstance::PAUSED;
@@ -302,6 +333,11 @@ namespace SoLoud
 		setChannelPan(ch, aPan);
 		setChannelVolume(ch, aVolume);
 		setChannelRelativePlaySpeed(ch, 1);
+
+		if (aSound.mFilter)
+		{
+			mChannel[ch]->mFilter = aSound.mFilter->createInstance();
+		}
 
 		mPlayIndex++;
 		int scratchneeded = (int)ceil((mChannel[ch]->mSamplerate / mSamplerate) * mBufferSize);
@@ -774,6 +810,15 @@ namespace SoLoud
 	}
 #endif
 
+	void Soloud::setGlobalFilter(Filter &aFilter)
+	{
+		delete mFilterInstance;
+		
+		mFilter = &aFilter;
+		mFilter->init(NULL);
+		mFilterInstance = mFilter->createInstance();
+	}
+
 	void Soloud::mix(float *aBuffer, int aSamples)
 	{
 		float buffertime = aSamples / (float)mSamplerate;
@@ -888,7 +933,14 @@ namespace SoLoud
 				float step = 0;
 				int j;
 
-				mChannel[i]->getAudio(mScratch, (int)ceil(aSamples * stepratio));		
+				int readsamples = (int)ceil(aSamples * stepratio);
+
+				mChannel[i]->getAudio(mScratch, readsamples);	
+
+				if (mChannel[i]->mFilter)
+				{
+					mChannel[i]->mFilter->filter(mScratch, readsamples, mChannel[i]->mFlags & AudioInstance::STEREO, mChannel[i]->mSamplerate);
+				}
 
 				if (mChannel[i]->mActiveFader)
 				{
@@ -948,6 +1000,11 @@ namespace SoLoud
 					stopChannel(i);
 				}
 			}
+		}
+
+		if (mFilterInstance)
+		{
+			mFilterInstance->filter(aBuffer, aSamples, 1, (float)mSamplerate);
 		}
 
 		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);

@@ -123,6 +123,7 @@ namespace SoLoud
 	Speech::Speech()
 	{
 		mBaseSamplerate = 11025;
+		mFrames = 0;
 	}
 
 	Speech::~Speech()

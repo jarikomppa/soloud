@@ -85,6 +85,10 @@ namespace SoLoud
 		mRelativePlaySpeed = 1.0f;
 		mStreamTime = 0.0f;
 		mAudioSourceID = 0;
+		mActiveFader = 0;
+		int i;
+		for (i = 0; i < 4; i++)
+			mFaderVolume[i] = 0;
 	}
 
 	AudioInstance::~AudioInstance()
@@ -193,6 +197,11 @@ namespace SoLoud
 		mUnlockMutexFunc = NULL;
 		mStreamTime = 0;
 		mAudioSourceID = 1;
+		int i;
+		for (i = 0; i < 512; i++)
+			mFFTInput[i] = 0;
+		for (i = 0; i < 256; i++)
+			mFFTData[i] = 0;
 	}
 
 	Soloud::~Soloud()

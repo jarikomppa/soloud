@@ -281,6 +281,11 @@ namespace SoLoud
 	{
 		mFilename = 0;
 		mSampleCount = 0;
+		mOgg = NULL;
+		mDataOffset = 0;
+		mBits = 0;
+		mChannels = 0;
+		mChannelOffset = 0;
 	}
 	
 	WavStream::~WavStream()

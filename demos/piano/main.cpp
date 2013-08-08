@@ -119,7 +119,7 @@ int main(int argc, char *argv[])
 	SoLoud::sdl_init(&gSoloud, 32, 3, 44100, 2048);
 	gSoloud.setGlobalVolume(0.5);
 	gSoloud.setPostClipScaler(0.75);
-	gSoloud.setGlobalFilter(gFilter);
+	gSoloud.setGlobalFilter(&gFilter);
 	gFilter.setParams(0.25f, 0.5f);
 
 	// Register SDL_Quit to be called at exit; makes sure things are

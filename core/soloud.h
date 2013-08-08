@@ -142,7 +142,7 @@ namespace SoLoud
 		int mAudioSourceID;
 		// Filter pointer
 		FilterInstance *mFilter;
-		// Initialize instance. Mostly internal use, but also needed from filters.
+		// Initialize instance. Mostly internal use.
 		void init(int aPlayIndex, float aBaseSamplerate, int aSourceFlags);
 		// Get N samples from the stream to the buffer
 		virtual void getAudio(float *aBuffer, int aSamples) = 0;
@@ -182,8 +182,8 @@ namespace SoLoud
 		AudioSource();
 		// Set the looping of the instances created from this audio source
 		void setLooping(int aLoop);
-		// Set filter
-		void setFilter(Filter &aFilter);
+		// Set filter. Set to NULL to clear the filter.
+		void setFilter(Filter *aFilter);
 		// DTor
 		virtual ~AudioSource();
 		// Create instance from the audio source. Called from within Soloud class.
@@ -342,8 +342,8 @@ namespace SoLoud
 		// Schedule a stream to stop
 		void scheduleStop(int aChannelHandle, float aTime);
 
-		// Set global filter
-		void setGlobalFilter(Filter &aFilter);
+		// Set global filter. Set to NULL to clear the filter.
+		void setGlobalFilter(Filter *aFilter);
 
 #ifdef SOLOUD_INCLUDE_FFT
 		// Calculate FFT

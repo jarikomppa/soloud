@@ -190,9 +190,9 @@ namespace SoLoud
 		}
 	}
 
-	void AudioSource::setFilter(Filter &aFilter)
+	void AudioSource::setFilter(Filter *aFilter)
 	{
-		mFilter = &aFilter;
+		mFilter = aFilter;
 		if (mFilter)
 		{
 			mFilter->init(this);
@@ -811,13 +811,16 @@ namespace SoLoud
 	}
 #endif
 
-	void Soloud::setGlobalFilter(Filter &aFilter)
+	void Soloud::setGlobalFilter(Filter *aFilter)
 	{
 		delete mFilterInstance;
 		
-		mFilter = &aFilter;
-		mFilter->init(NULL);
-		mFilterInstance = mFilter->createInstance();
+		mFilter = aFilter;
+		if (mFilter)
+		{
+			mFilter->init(NULL);
+			mFilterInstance = mFilter->createInstance();
+		}
 	}
 
 	void Soloud::mix(float *aBuffer, int aSamples)

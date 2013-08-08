@@ -158,8 +158,8 @@ int main(int argc, char *argv[])
 					gSoloud.schedulePause(gMusichandle1, 2);
 					break;
 				case SDLK_4:
-					gSoloud.fadeRelativePlaySpeed(gMusichandle1, gSoloud.getRelativePlaySpeed(gMusichandle1), 0.2, 5);
-					gSoloud.fadeRelativePlaySpeed(gMusichandle2, gSoloud.getRelativePlaySpeed(gMusichandle2), 0.2, 5);
+					gSoloud.fadeRelativePlaySpeed(gMusichandle1, gSoloud.getRelativePlaySpeed(gMusichandle1), 0.2f, 5);
+					gSoloud.fadeRelativePlaySpeed(gMusichandle2, gSoloud.getRelativePlaySpeed(gMusichandle2), 0.2f, 5);
 					break;
 				case SDLK_5:
 					gSoloud.fadeRelativePlaySpeed(gMusichandle1, gSoloud.getRelativePlaySpeed(gMusichandle1), 1, 5);

@@ -354,6 +354,10 @@ namespace SoLoud
 
 	int Soloud::getChannelFromHandle(int aChannelHandle) const
 	{
+		if (aChannelHandle < 0) 
+		{
+			return -1;
+		}
 		int ch = aChannelHandle & 0xff;
 		unsigned int idx = aChannelHandle >> 8;
 		if (mChannel[ch] &&

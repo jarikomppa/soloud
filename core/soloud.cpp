@@ -728,6 +728,11 @@ namespace SoLoud
 
 	void Soloud::schedulePause(int aChannelHandle, float aTime)
 	{
+		if (aTime <= 0)
+		{
+			setPause(aChannelHandle, 1);
+			return;
+		}
 		if (mLockMutexFunc) mLockMutexFunc(mMutex);
 		int ch = getChannelFromHandle(aChannelHandle);
 		if (ch == -1) 
@@ -741,6 +746,11 @@ namespace SoLoud
 
 	void Soloud::scheduleStop(int aChannelHandle, float aTime)
 	{
+		if (aTime <= 0)
+		{
+			stop(aChannelHandle);
+			return;
+		}
 		if (mLockMutexFunc) mLockMutexFunc(mMutex);
 		int ch = getChannelFromHandle(aChannelHandle);
 		if (ch == -1) 
@@ -754,6 +764,12 @@ namespace SoLoud
 
 	void Soloud::fadeVolume(int aChannelHandle, float aFrom, float aTo, float aTime)
 	{
+		if (aTime <= 0 || aTo == aFrom)
+		{
+			setVolume(aChannelHandle, aTo);
+			return;
+		}
+
 		if (mLockMutexFunc) mLockMutexFunc(mMutex);
 		int ch = getChannelFromHandle(aChannelHandle);
 		if (ch == -1) 
@@ -767,6 +783,12 @@ namespace SoLoud
 
 	void Soloud::fadePan(int aChannelHandle, float aFrom, float aTo, float aTime)
 	{
+		if (aTime <= 0 || aTo == aFrom)
+		{
+			setPan(aChannelHandle, aTo);
+			return;
+		}
+
 		if (mLockMutexFunc) mLockMutexFunc(mMutex);
 		int ch = getChannelFromHandle(aChannelHandle);
 		if (ch == -1) 
@@ -780,6 +802,11 @@ namespace SoLoud
 
 	void Soloud::fadeRelativePlaySpeed(int aChannelHandle, float aFrom, float aTo, float aTime)
 	{
+		if (aTime <= 0 || aTo == aFrom)
+		{
+			setRelativePlaySpeed(aChannelHandle, aTo);
+			return;
+		}
 		if (mLockMutexFunc) mLockMutexFunc(mMutex);
 		int ch = getChannelFromHandle(aChannelHandle);
 		if (ch == -1) 
@@ -793,6 +820,11 @@ namespace SoLoud
 
 	void Soloud::fadeGlobalVolume(float aFrom, float aTo, float aTime)
 	{
+		if (aTime <= 0 || aTo == aFrom)
+		{
+			setGlobalVolume(aTo);
+			return;
+		}
 		mStreamTime = 0; // avoid rollover (~6 days)
 		mGlobalVolumeFader.set(aFrom, aTo, aTime, mStreamTime);
 	}
@@ -1056,6 +1088,7 @@ namespace SoLoud
 				aBuffer[i] = f * mPostClipScaler;
 			}
 		}
+
 #ifdef SOLOUD_INCLUDE_FFT
 		if (mFlags & ENABLE_FFT)
 		{

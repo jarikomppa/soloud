@@ -59,8 +59,8 @@ int main(int argc, char *argv[])
 		SDL_Delay(100);
 	}
 
-	// Clean up SoLoud for SDL
-	SoLoud::sdl_deinit(&soloud);
+	// Clean up SoLoud
+	soloud.deinit();
 
 	// Clean up SDL
 	SDL_Quit();

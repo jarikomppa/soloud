@@ -40,7 +40,10 @@ freely, subject to the following restrictions:
 
 namespace SoLoud
 {
+	class Soloud;
+
 	typedef void (*mutexCallFunction)(void *aMutexPtr);
+	typedef void (*soloudCallFunction)(Soloud *aSoloud);
 
 	class AudioSource;
 
@@ -256,6 +259,8 @@ namespace SoLoud
 		mutexCallFunction mLockMutexFunc;
 		// Mutex unlock for thread safety. Set by the back-end. If NULL, not called.
 		mutexCallFunction mUnlockMutexFunc;
+		// Called by SoLoud to shut down the back-end. If NULL, not called. Should be set by back-end.
+		soloudCallFunction mBackendCleanupFunc;
 
 		// CTor
 		Soloud();
@@ -273,6 +278,9 @@ namespace SoLoud
 		void init(int aChannels, int aSamplerate, int aBufferSize, int aFlags);
 		// Mix and return N stereo samples in the buffer. Called by the back-end.
 		void mix(float *aBuffer, int aSamples);
+
+		// Deinitialize SoLoud. Must be called before shutting down.
+		void deinit();
 
 		// Start playing a sound. Returns channel handle, which can be ignored or used to alter the playing sound's parameters.
 		int play(AudioSource &aSound, float aVolume = 1.0f, float aPan = 0.0f, int aPaused = 0);
@@ -353,8 +361,12 @@ namespace SoLoud
 
 	// SDL back-end initialization call
 	int sdl_init(SoLoud::Soloud *aSoloud, int aChannels = 32, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 2048);
-	// SDL back-end clean-up call
-	void sdl_deinit(SoLoud::Soloud *aSoloud);
+
+	// OpenAL back-end initialization call
+	int openal_init(SoLoud::Soloud *aSoloud, int aChannels = 32, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 2048);
+
+	// PortAudio back-end initialization call
+	int portaudio_init(SoLoud::Soloud *aSoloud, int aChannels = 32, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 2048);
 };
 
 #endif 

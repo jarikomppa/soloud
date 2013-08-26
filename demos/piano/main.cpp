@@ -175,12 +175,12 @@ int main(int argc, char *argv[])
 				// If escape is pressed, return (and thus, quit)
 				if (event.key.keysym.sym == SDLK_ESCAPE)
 				{
-					SoLoud::sdl_deinit(&gSoloud);
+					gSoloud.deinit();
 					return 0;
 				}
 				break;
 			case SDL_QUIT:
-				SoLoud::sdl_deinit(&gSoloud);
+				gSoloud.deinit();
 				return(0);
 			}
 		}

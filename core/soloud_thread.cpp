@@ -143,10 +143,28 @@ namespace SoLoud
 			}
 		}
 
+		struct soloud_thread_data
+		{
+			threadFunction mFunc;
+			void *mParam;
+		};
+
+		static void * threadfunc(void * d)
+		{
+			soloud_thread_data *p = (soloud_thread_data *)d;
+			p->mFunc(p->mParam);
+			delete p;
+			return 0;
+		}
+
 		void createThread(threadFunction aThreadFunction, void *aParameter)
 		{
+			soloud_thread_data *d = new soloud_thread_data;
+			d->mFunc = aThreadFunction;
+			d->mParam = aParameter;
+
 			pthread_t thread;
-			pthread_create(&thread, NULL, aThreadFunction, aParameter);
+			pthread_create(&thread, NULL, threadfunc, (void*)d);
 		}
 
 		void sleep(int aMSec)

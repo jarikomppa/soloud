@@ -34,6 +34,14 @@ namespace SoLoud
 	{
 	}
 
+	Filter::~Filter()
+	{
+	}
+
+	FilterInstance::~FilterInstance()
+	{
+	}
+
 	///////////////////////////////////////////////////////////////////////////
 
 	Fader::Fader()

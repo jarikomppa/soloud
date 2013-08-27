@@ -51,6 +51,7 @@ namespace SoLoud
 	{
 	public:
 		virtual void filter(float *aBuffer, int aSamples, int aStereo, float aSamplerate) = 0;
+		virtual ~FilterInstance();
 	};
 
 	class Filter
@@ -58,6 +59,7 @@ namespace SoLoud
 	public:
 		virtual void init(AudioSource *aSource);
 		virtual FilterInstance *createInstance() = 0;
+		virtual ~Filter();
 	};
 
 	// Helper class to process faders

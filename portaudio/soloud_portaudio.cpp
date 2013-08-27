@@ -27,6 +27,7 @@ freely, subject to the following restrictions:
 #include "portaudio.h"
 
 #include "soloud.h"
+#include "soloud_thread.h"
 
 namespace SoLoud
 {
@@ -47,16 +48,33 @@ namespace SoLoud
 		return 0;
 	}
 
+	static void portaudio_mutex_lock(void * mutex)
+	{
+		Thread::lockMutex(mutex);
+	}
+
+	static void portaudio_mutex_unlock(void * mutex)
+	{
+		Thread::unlockMutex(mutex);
+	}
+
 	void soloud_portaudio_deinit(SoLoud::Soloud *aSoloud)
 	{
 		Pa_CloseStream(gStream);
 		Pa_Terminate();
+		Thread::destroyMutex(aSoloud->mMutex);
+		aSoloud->mMutex = 0;
+		aSoloud->mLockMutexFunc = 0;
+		aSoloud->mUnlockMutexFunc = 0;
 	}
 
 	int portaudio_init(SoLoud::Soloud *aSoloud, int aChannels, int aFlags, int aSamplerate, int aBuffer)
 	{
 		aSoloud->init(aChannels, aSamplerate, aBuffer * 2, aFlags);
 		aSoloud->mBackendCleanupFunc = soloud_portaudio_deinit;
+		aSoloud->mMutex = Thread::createMutex();
+		aSoloud->mLockMutexFunc = portaudio_mutex_lock;
+		aSoloud->mUnlockMutexFunc = portaudio_mutex_unlock;
 		Pa_Initialize();
 		Pa_OpenDefaultStream(&gStream, 0, 2, paFloat32, aSamplerate, paFramesPerBufferUnspecified, portaudio_callback, (void*)aSoloud);
 		Pa_StartStream(gStream);

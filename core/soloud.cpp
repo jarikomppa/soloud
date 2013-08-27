@@ -241,6 +241,14 @@ namespace SoLoud
 		delete mFilterInstance;
 		delete[] mScratch;
 		delete[] mChannel;
+		deinit();
+	}
+
+	void Soloud::deinit()
+	{
+		if (mBackendCleanupFunc)
+			mBackendCleanupFunc(this);
+		mBackendCleanupFunc = 0;
 	}
 
 	void Soloud::init(int aChannels, int aSamplerate, int aBufferSize, int aFlags)

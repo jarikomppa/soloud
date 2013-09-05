@@ -33,10 +33,13 @@ freely, subject to the following restrictions:
 #include "soloud.h"
 #include "soloud_sinewave.h"
 #include "soloud_echofilter.h"
+#include "soloud_speech.h"
+#include "soloud_biquadresonantfilter.h"
 
 SoLoud::Soloud gSoloud;			// SoLoud engine core
 SoLoud::Sinewave gSinewave;		// Simple sinewave audio source
 SoLoud::EchoFilter gFilter;		// Simple echo filter
+SoLoud::BiquadResonantFilter gBQRFilter;   // BQR filter
 
 SDL_Surface *screen;
 
@@ -60,13 +63,19 @@ void render()
 
 	// Calling calcFFT will cause SoLoud to actually calculate the FFT;
 	// if we keep this pointer around, it'll just point to the old data.
+#ifdef SOLOUD_INCLUDE_FFT
 	float *buf = gSoloud.calcFFT();
+#endif
 	float *mixbuf = (float*)gSoloud.mBackendData;
 	int i, j;
+	if (mixbuf)
 	for (i = 0; i < 640; i++)
 	{
-		float f = buf[i*256/640];
-		int v = (int)floor(480 - f * 2);
+		float f;
+		int v;
+#ifdef SOLOUD_INCLUDE_FFT
+		f = buf[i*256/640];
+		v = (int)floor(480 - f * 2);
 		for (j = 240; j < 480; j++)
 		{
 			int c = 0;
@@ -75,6 +84,7 @@ void render()
 
 			putpixel(i, j, c);
 		}
+#endif
 		v = (int)floor(120*mixbuf[i*2])+120;
 		for (j = 0; j < 240; j++)
 		{
@@ -101,8 +111,7 @@ void plonk(float rel)
 	gSoloud.fadePan(handle,pan,-pan,0.5);
 	gSoloud.fadeVolume(handle, 1, 0, 0.5);
 	gSoloud.scheduleStop(handle, 0.5);
-	gSoloud.setRelativePlaySpeed(handle, rel);
-	//gSoloud.fadeRelativePlaySpeed(handle,rel,rel * 1.1,0.5);
+	gSoloud.setRelativePlaySpeed(handle, 2*rel);
 }
 
 // Entry point
@@ -116,11 +125,12 @@ int main(int argc, char *argv[])
 	}
 
 	SoLoud::sdl_init(&gSoloud, 32, 3, 44100, 2048);
-	gSoloud.setGlobalVolume(0.5);
+	gSoloud.setGlobalVolume(0.75);
 	gSoloud.setPostClipScaler(0.75);
-	gSoloud.setGlobalFilter(&gFilter);
+	gSoloud.setGlobalFilter(&gBQRFilter);
 	gFilter.setParams(0.25f, 0.5f);
 
+	
 	// Register SDL_Quit to be called at exit; makes sure things are
 	// cleaned up when we quit.
 	atexit(SDL_Quit);	
@@ -150,7 +160,12 @@ int main(int argc, char *argv[])
 			case SDL_KEYDOWN:
 				switch (event.key.keysym.sym)
 				{
-
+				case SDLK_z: gSoloud.setGlobalFilter(0); break;
+				case SDLK_x: gSoloud.setGlobalFilter(&gFilter); break;
+				case SDLK_c: gSoloud.setGlobalFilter(&gBQRFilter); gBQRFilter.setParams(SoLoud::BiquadResonantFilter::LOWPASS, 44100, 1000, 2); break;
+				case SDLK_v: gSoloud.setGlobalFilter(&gBQRFilter); gBQRFilter.setParams(SoLoud::BiquadResonantFilter::LOWPASS, 44100, 500, 8); break;
+				case SDLK_b: gSoloud.setGlobalFilter(&gBQRFilter); gBQRFilter.setParams(SoLoud::BiquadResonantFilter::HIGHPASS, 44100, 1000, 8); break;
+				case SDLK_n: gSoloud.setGlobalFilter(&gBQRFilter); gBQRFilter.setParams(SoLoud::BiquadResonantFilter::BANDPASS, 44100, 1000, 1); break;
 				case SDLK_p: plonk(1); break;                  // C
 				case SDLK_o: plonk(pow(0.943875f, 1)); break;  // B
 				case SDLK_9: plonk(pow(0.943875f, 2)); break;  //  A#

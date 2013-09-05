@@ -23,7 +23,7 @@ freely, subject to the following restrictions:
 */
 
 #include "soloud.h"
-#include "soloud_filter.h"
+#include "soloud_echofilter.h"
 
 namespace SoLoud
 {

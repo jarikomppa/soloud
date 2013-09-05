@@ -32,7 +32,7 @@ freely, subject to the following restrictions:
 #define M_PI 3.14159265359
 #endif
 
-#define SOLOUD_INCLUDE_FFT
+//#define SOLOUD_INCLUDE_FFT
 
 #ifdef SOLOUD_INCLUDE_FFT
 #include "soloud_fft.h"

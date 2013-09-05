@@ -31,7 +31,7 @@ freely, subject to the following restrictions:
 #include "soloud.h"
 #include "soloud_thread.h"
 
-#define NUM_BUFFERS 4
+#define NUM_BUFFERS 2
 #define BUFFER_SIZE 4096
 
 static ALCdevice* device = NULL;

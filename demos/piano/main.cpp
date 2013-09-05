@@ -32,8 +32,7 @@ freely, subject to the following restrictions:
 
 #include "soloud.h"
 #include "soloud_sinewave.h"
-#include "soloud_filter.h"
-
+#include "soloud_echofilter.h"
 
 SoLoud::Soloud gSoloud;			// SoLoud engine core
 SoLoud::Sinewave gSinewave;		// Simple sinewave audio source

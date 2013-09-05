@@ -865,7 +865,9 @@ namespace SoLoud
 
 	void Soloud::setGlobalFilter(Filter *aFilter)
 	{
+		if (mLockMutexFunc) mLockMutexFunc(mMutex);
 		delete mFilterInstance;
+		mFilterInstance = 0;
 		
 		mFilter = aFilter;
 		if (mFilter)
@@ -873,6 +875,7 @@ namespace SoLoud
 			mFilter->init(NULL);
 			mFilterInstance = mFilter->createInstance();
 		}
+		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 	}
 
 	void Soloud::mix(float *aBuffer, int aSamples)

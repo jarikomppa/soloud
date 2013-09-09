@@ -32,6 +32,8 @@ freely, subject to the following restrictions:
 #define M_PI 3.14159265359
 #endif
 
+// Maximum number of filters per stream
+#define FILTERS_PER_STREAM 4
 //#define SOLOUD_INCLUDE_FFT
 
 #ifdef SOLOUD_INCLUDE_FFT
@@ -50,14 +52,17 @@ namespace SoLoud
 	class FilterInstance
 	{
 	public:
-		virtual void filter(float *aBuffer, int aSamples, int aStereo, float aSamplerate) = 0;
+		virtual void filter(float *aBuffer, int aSamples, int aStereo, float aSamplerate, float aTime) = 0;
+		virtual void setFilterParameter(int aAttributeId, float aValue);
+		virtual void fadeFilterParameter(int aAttributeId, float aFrom, float aTo, float aTime, float aStartTime);
+		virtual void oscillateFilterParameter(int aAttributeId, float aFrom, float aTo, float aTime, float aStartTime);
+
 		virtual ~FilterInstance();
 	};
 
 	class Filter
 	{
 	public:
-		virtual void init(AudioSource *aSource);
 		virtual FilterInstance *createInstance() = 0;
 		virtual ~Filter();
 	};
@@ -148,7 +153,7 @@ namespace SoLoud
 		// ID of the sound source that generated this instance
 		int mAudioSourceID;
 		// Filter pointer
-		FilterInstance *mFilter;
+		FilterInstance *mFilter[FILTERS_PER_STREAM];
 		// Initialize instance. Mostly internal use.
 		void init(int aPlayIndex, float aBaseSamplerate, int aSourceFlags);
 		// Get N samples from the stream to the buffer
@@ -181,7 +186,7 @@ namespace SoLoud
 		// Sound source ID. Assigned by SoLoud the first time it's played.
 		int mAudioSourceID;
 		// Filter pointer
-		Filter *mFilter;
+		Filter *mFilter[FILTERS_PER_STREAM];
 		// Pointer to the Soloud object. Needed to stop all instances in dtor.
 		Soloud *mSoloud;
 
@@ -190,7 +195,7 @@ namespace SoLoud
 		// Set the looping of the instances created from this audio source
 		void setLooping(int aLoop);
 		// Set filter. Set to NULL to clear the filter.
-		void setFilter(Filter *aFilter);
+		void setFilter(int aFilterId, Filter *aFilter);
 		// DTor
 		virtual ~AudioSource();
 		// Create instance from the audio source. Called from within Soloud class.
@@ -237,9 +242,9 @@ namespace SoLoud
 		// Global stream time, for the global volume fader. Re-set when global volume fader is set.
 		float mStreamTime;
 		// Global filter
-		Filter *mFilter;
+		Filter *mFilter[FILTERS_PER_STREAM];
 		// Global filter instance
-		FilterInstance *mFilterInstance;
+		FilterInstance *mFilterInstance[FILTERS_PER_STREAM];
 		// Find a free channel, stopping the oldest if no free channel is found.
 		int findFreeChannel();
 		// Converts handle to channel, if the handle is valid.
@@ -296,6 +301,13 @@ namespace SoLoud
 		void stopAll();
 		// Stop all channels that play this sound source
 		void stopSound(AudioSource &aSound);
+
+		// Set a live filter parameter. Use 0 for the global filters.
+		void setFilterParameter(int aChannelHandle, int aFilterId, int aAttributeId, float aValue);
+		// Fade a live filter parameter. Use 0 for the global filters.
+		void fadeFilterParameter(int aChannelHandle, int aFilterId, int aAttributeId, float aFrom, float aTo, float aTime);
+		// Oscillate a live filter parameter. Use 0 for the global filters.
+		void oscillateFilterParameter(int aChannelHandle, int aFilterId, int aAttributeId, float aFrom, float aTo, float aTime);
 
 		// Get current play time, in seconds.
 		float getStreamTime(int aChannelHandle) const;
@@ -363,8 +375,8 @@ namespace SoLoud
 		// Set up global volume oscillator
 		void oscillateGlobalVolume(float aFrom, float aTo, float aTime);
 
-		// Set global filter. Set to NULL to clear the filter.
-		void setGlobalFilter(Filter *aFilter);
+		// Set global filters. Set to NULL to clear the filter.
+		void setGlobalFilter(int aFilterId, Filter *aFilter);
 
 #ifdef SOLOUD_INCLUDE_FFT
 		// Calculate FFT

@@ -79,19 +79,44 @@ namespace SoLoud
 	{
 		mParent = aParent;
 		mY1[0] = mY2[0] = mX1[0] = mX2[0] = mY1[1] = mY2[1] = mX1[1] = mX2[1] = 0;
+
 		mFilterType = aParent->mFilterType;
 		mSampleRate = aParent->mSampleRate;
 		mResonance = aParent->mResonance;
+
 		calcBQRParams();
 	}
 
-	void BiquadResonantFilterInstance::filter(float *aBuffer, int aSamples, int aStereo, float aSamplerate)
+	void BiquadResonantFilterInstance::filter(float *aBuffer, int aSamples, int aStereo, float aSamplerate, float aTime)
 	{
 		int i, pitch, s;
 		float x;
 
 		if (!mActive)
 			return;
+
+		if (mFrequencyFader.mActive > 0)
+		{
+			mDirty = 1;
+			mFrequency = mFrequencyFader.get(aTime);
+		}
+
+		if (mResonanceFader.mActive > 0)
+		{
+			mDirty = 1;
+			mResonance = mResonanceFader.get(aTime);
+		}
+
+		if (mSampleRateFader.mActive > 0)
+		{
+			mDirty = 1;
+			mSampleRate = mSampleRateFader.get(aTime);
+		}
+
+		if (mDirty)
+		{
+			calcBQRParams();
+		}
 
 		pitch = aStereo ? 2 : 1;
 
@@ -121,12 +146,64 @@ namespace SoLoud
 		}
 	}
 
-	BiquadResonantFilterInstance::~BiquadResonantFilterInstance()
+	void BiquadResonantFilterInstance::setFilterParameter(int aAttributeId, float aValue)
 	{
+		switch (aAttributeId)
+		{
+		case BiquadResonantFilter::FREQUENCY:
+			mDirty = 1;
+			mFrequencyFader.mActive = 0;
+			mFrequency = aValue;
+			break;
+		case BiquadResonantFilter::SAMPLERATE:
+			mDirty = 1;
+			mSampleRateFader.mActive = 0;
+			mSampleRate = aValue;
+			break;
+		case BiquadResonantFilter::RESONANCE:
+			mDirty = 1;
+			mResonanceFader.mActive = 0;
+			mResonance = aValue;
+			break;
+		}
 	}
 
-	void BiquadResonantFilter::init(AudioSource *aSource)
-	{		
+	void BiquadResonantFilterInstance::fadeFilterParameter(int aAttributeId, float aFrom, float aTo, float aTime, float aStartTime)
+	{
+		if (aFrom == aTo || aTime <= 0) return;
+		switch (aAttributeId)
+		{
+		case BiquadResonantFilter::FREQUENCY:
+			mFrequencyFader.set(aFrom, aTo, aTime, aStartTime);
+			break;
+		case BiquadResonantFilter::SAMPLERATE:
+			mSampleRateFader.set(aFrom, aTo, aTime, aStartTime);
+			break;
+		case BiquadResonantFilter::RESONANCE:
+			mResonanceFader.set(aFrom, aTo, aTime, aStartTime);
+			break;
+		}
+	}
+
+	void BiquadResonantFilterInstance::oscillateFilterParameter(int aAttributeId, float aFrom, float aTo, float aTime, float aStartTime)
+	{
+		if (aFrom == aTo || aTime <= 0) return;
+		switch (aAttributeId)
+		{
+		case BiquadResonantFilter::FREQUENCY:
+			mFrequencyFader.setLFO(aFrom, aTo, aTime, aStartTime);
+			break;
+		case BiquadResonantFilter::SAMPLERATE:
+			mSampleRateFader.setLFO(aFrom, aTo, aTime, aStartTime);
+			break;
+		case BiquadResonantFilter::RESONANCE:
+			mResonanceFader.setLFO(aFrom, aTo, aTime, aStartTime);
+			break;
+		}
+	}
+
+	BiquadResonantFilterInstance::~BiquadResonantFilterInstance()
+	{
 	}
 
 	BiquadResonantFilter::BiquadResonantFilter()

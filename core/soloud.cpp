@@ -62,8 +62,33 @@ namespace SoLoud
 		mActive = 1;
 	}
 
+	void Fader::setLFO(float aFrom, float aTo, float aTime, float aStartTime)
+	{
+		mActive = 2;
+		mCurrent = 0;
+		mFrom = aFrom;
+		mTo = aTo;
+		mTime = aTime;
+		mDelta = abs(aTo - aFrom) / 2;
+		mStartTime = aStartTime;
+		mEndTime = M_PI * 2 / mTime;
+	}
+
 	float Fader::get(float aCurrentTime)
 	{
+		if (mActive == 2)
+		{
+			// LFO mode
+			if (mStartTime > aCurrentTime)
+			{
+				// Time rolled over.
+				mStartTime = aCurrentTime;
+			}
+			float t = mStartTime - aCurrentTime;
+			mCurrent += t;
+			return sin(mCurrent * mEndTime) * mDelta + (mFrom + mDelta);
+			
+		}
 		if (mStartTime > aCurrentTime)
 		{
 			// Time rolled over.
@@ -845,6 +870,73 @@ namespace SoLoud
 		mGlobalVolumeFader.set(aFrom, aTo, aTime, mStreamTime);
 	}
 
+
+	void Soloud::oscillateVolume(int aChannelHandle, float aFrom, float aTo, float aTime)
+	{
+		if (aTime <= 0 || aTo == aFrom)
+		{
+			setVolume(aChannelHandle, aTo);
+			return;
+		}
+
+		if (mLockMutexFunc) mLockMutexFunc(mMutex);
+		int ch = getChannelFromHandle(aChannelHandle);
+		if (ch == -1) 
+		{
+			if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+			return;
+		}
+		mChannel[ch]->mVolumeFader.setLFO(aFrom, aTo, aTime, mChannel[ch]->mStreamTime);
+		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+	}
+
+	void Soloud::oscillatePan(int aChannelHandle, float aFrom, float aTo, float aTime)
+	{
+		if (aTime <= 0 || aTo == aFrom)
+		{
+			setPan(aChannelHandle, aTo);
+			return;
+		}
+
+		if (mLockMutexFunc) mLockMutexFunc(mMutex);
+		int ch = getChannelFromHandle(aChannelHandle);
+		if (ch == -1) 
+		{
+			if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+			return;
+		}
+		mChannel[ch]->mPanFader.setLFO(aFrom, aTo, aTime, mChannel[ch]->mStreamTime);
+		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+	}
+
+	void Soloud::oscillateRelativePlaySpeed(int aChannelHandle, float aFrom, float aTo, float aTime)
+	{
+		if (aTime <= 0 || aTo == aFrom)
+		{
+			setRelativePlaySpeed(aChannelHandle, aTo);
+			return;
+		}
+		if (mLockMutexFunc) mLockMutexFunc(mMutex);
+		int ch = getChannelFromHandle(aChannelHandle);
+		if (ch == -1) 
+		{
+			if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+			return;
+		}
+		mChannel[ch]->mRelativePlaySpeedFader.setLFO(aFrom, aTo, aTime, mChannel[ch]->mStreamTime);
+		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+	}
+
+	void Soloud::oscillateGlobalVolume(float aFrom, float aTo, float aTime)
+	{
+		if (aTime <= 0 || aTo == aFrom)
+		{
+			setGlobalVolume(aTo);
+			return;
+		}
+		mStreamTime = 0; // avoid rollover (~6 days)
+		mGlobalVolumeFader.setLFO(aFrom, aTo, aTime, mStreamTime);
+	}
 #ifdef SOLOUD_INCLUDE_FFT
 	float * Soloud::calcFFT()
 	{
@@ -905,21 +997,21 @@ namespace SoLoud
 
 				mChannel[i]->mActiveFader = 0;
 
-				if (mGlobalVolumeFader.mActive)
+				if (mGlobalVolumeFader.mActive > 0)
 				{
 					mChannel[i]->mActiveFader = 1;
 				}
 
 				mChannel[i]->mStreamTime += buffertime;
 
-				if (mChannel[i]->mRelativePlaySpeedFader.mActive == 1)
+				if (mChannel[i]->mRelativePlaySpeedFader.mActive > 0)
 				{
 					float speed = mChannel[i]->mRelativePlaySpeedFader.get(mChannel[i]->mStreamTime);
 					setChannelRelativePlaySpeed(i, speed);
 				}
 
 				volume[0] = mChannel[i]->mVolume;
-				if (mChannel[i]->mVolumeFader.mActive == 1)
+				if (mChannel[i]->mVolumeFader.mActive > 0)
 				{
 					mChannel[i]->mVolume = mChannel[i]->mVolumeFader.get(mChannel[i]->mStreamTime);
 					mChannel[i]->mActiveFader = 1;
@@ -929,7 +1021,7 @@ namespace SoLoud
 
 				panl[0] = mChannel[i]->mLVolume;
 				panr[0] = mChannel[i]->mRVolume;
-				if (mChannel[i]->mPanFader.mActive == 1)
+				if (mChannel[i]->mPanFader.mActive > 0)
 				{
 					float pan = mChannel[i]->mPanFader.get(mChannel[i]->mStreamTime);
 					setChannelPan(i, pan);

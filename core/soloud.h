@@ -80,10 +80,12 @@ namespace SoLoud
 		float mEndTime;
 		// Current value. Used in case time rolls over.
 		float mCurrent;
-		// Active flag; 0 means disabled, 1 is active, -1 means was active, but stopped
+		// Active flag; 0 means disabled, 1 is active, 2 is LFO, -1 means was active, but stopped
 		int mActive;
 		// Ctor
 		Fader();
+		// Set up LFO
+		void setLFO(float aFrom, float aTo, float aTime, float aStartTime);
 		// Set up fader
 		void set(float aFrom, float aTo, float aTime, float aStartTime);
 		// Get the current fading value
@@ -351,6 +353,15 @@ namespace SoLoud
 		void schedulePause(int aChannelHandle, float aTime);
 		// Schedule a stream to stop
 		void scheduleStop(int aChannelHandle, float aTime);
+
+		// Set up volume oscillator
+		void oscillateVolume(int aChannelHandle, float aFrom, float aTo, float aTime);
+		// Set up panning oscillator
+		void oscillatePan(int aChannelHandle, float aFrom, float aTo, float aTime);
+		// Set up relative play speed oscillator
+		void oscillateRelativePlaySpeed(int aChannelHandle, float aFrom, float aTo, float aTime);
+		// Set up global volume oscillator
+		void oscillateGlobalVolume(float aFrom, float aTo, float aTime);
 
 		// Set global filter. Set to NULL to clear the filter.
 		void setGlobalFilter(Filter *aFilter);

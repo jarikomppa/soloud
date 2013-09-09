@@ -31,7 +31,9 @@ namespace SoLoud
 
 	class BiquadResonantFilterInstance : public FilterInstance
 	{
+		int mActive;
 		float mY1[2], mY2[2], mX1[2], mX2[2];
+		float mA0, mA1, mA2, mB1, mB2;
 		BiquadResonantFilter *mParent;
 	public:
 		virtual void filter(float *aBuffer, int aSamples, int aStereo, float aSamplerate);
@@ -44,10 +46,12 @@ namespace SoLoud
 	public:
 		enum FILTERTYPE
 		{
-			LOWPASS = 0,
-			HIGHPASS = 1,
-			BANDPASS = 2
+			NONE = 0,
+			LOWPASS = 1,
+			HIGHPASS = 2,
+			BANDPASS = 3
 		};
+		int mActive;
 		float mA0, mA1, mA2, mB1, mB2;
 		virtual void init(AudioSource *aSource);
 		virtual BiquadResonantFilterInstance *createInstance();

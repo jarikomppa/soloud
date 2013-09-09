@@ -20,6 +20,11 @@ freely, subject to the following restrictions:
 
    3. This notice may not be removed or altered from any source
    distribution.
+
+--
+
+Based on "Using the Biquad Resonant Filter", 
+Phil Burk, Game Programming Gems 3, p. 606
 */
 
 #include <math.h>

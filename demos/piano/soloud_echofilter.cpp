@@ -35,7 +35,7 @@ namespace SoLoud
 		mOffset = 0;
 	}
 
-	void EchoFilterInstance::filter(float *aBuffer, int aSamples, int aStereo, float aSamplerate)
+	void EchoFilterInstance::filter(float *aBuffer, int aSamples, int aStereo, float aSamplerate, float aTime)
 	{
 		if (mBuffer == 0)
 		{
@@ -62,10 +62,6 @@ namespace SoLoud
 	EchoFilterInstance::~EchoFilterInstance()
 	{
 		delete[] mBuffer;
-	}
-
-	void EchoFilter::init(AudioSource *aSource)
-	{
 	}
 
 	EchoFilter::EchoFilter()

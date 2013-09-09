@@ -30,10 +30,6 @@ namespace SoLoud
 {
 	///////////////////////////////////////////////////////////////////////////
 
-	void Filter::init(AudioSource *aSource)
-	{
-	}
-
 	Filter::~Filter()
 	{
 	}
@@ -41,6 +37,19 @@ namespace SoLoud
 	FilterInstance::~FilterInstance()
 	{
 	}
+
+	void FilterInstance::setFilterParameter(int aAttributeId, float aValue)
+	{
+	}
+
+	void FilterInstance::fadeFilterParameter(int aAttributeId, float aFrom, float aTo, float aTime, float aStartTime)
+	{
+	}
+
+	void FilterInstance::oscillateFilterParameter(int aAttributeId, float aFrom, float aTo, float aTime, float aStartTime)
+	{
+	}
+
 
 	///////////////////////////////////////////////////////////////////////////
 
@@ -71,7 +80,7 @@ namespace SoLoud
 		mTime = aTime;
 		mDelta = abs(aTo - aFrom) / 2;
 		mStartTime = aStartTime;
-		mEndTime = M_PI * 2 / mTime;
+		mEndTime = (float)M_PI * 2 / (mTime * 1000.0f);
 	}
 
 	float Fader::get(float aCurrentTime)
@@ -84,7 +93,7 @@ namespace SoLoud
 				// Time rolled over.
 				mStartTime = aCurrentTime;
 			}
-			float t = mStartTime - aCurrentTime;
+			float t = aCurrentTime - mStartTime;
 			mCurrent += t;
 			return sin(mCurrent * mEndTime) * mDelta + (mFrom + mDelta);
 			
@@ -125,8 +134,11 @@ namespace SoLoud
 		mStreamTime = 0.0f;
 		mAudioSourceID = 0;
 		mActiveFader = 0;
-		mFilter = 0;
 		int i;
+		for (i = 0; i < FILTERS_PER_STREAM; i++)
+		{
+			mFilter[i] = NULL;
+		}
 		for (i = 0; i < 4; i++)
 		{
 			mFaderVolume[i] = 0;
@@ -137,7 +149,11 @@ namespace SoLoud
 	{
 		if (mFilter)
 		{
-			delete mFilter;
+			int i;
+			for (i = 0; i < FILTERS_PER_STREAM; i++)
+			{
+				delete mFilter[i];
+			}
 		}
 	}
 
@@ -196,7 +212,11 @@ namespace SoLoud
 
 	AudioSource::AudioSource() 
 	{ 
-		mFilter = 0;
+		int i;
+		for (i = 0; i < FILTERS_PER_STREAM; i++)
+		{
+			mFilter[i] = 0;
+		}
 		mFlags = 0; 
 		mBaseSamplerate = 44100; 
 		mAudioSourceID = 0;
@@ -223,13 +243,11 @@ namespace SoLoud
 		}
 	}
 
-	void AudioSource::setFilter(Filter *aFilter)
+	void AudioSource::setFilter(int aFilterId, Filter *aFilter)
 	{
-		mFilter = aFilter;
-		if (mFilter)
-		{
-			mFilter->init(this);
-		}
+		if (aFilterId < 0 || aFilterId >= FILTERS_PER_STREAM)
+			return;
+		mFilter[aFilterId] = aFilter;
 	}
 
 	///////////////////////////////////////////////////////////////////////////
@@ -253,10 +271,13 @@ namespace SoLoud
 		mUnlockMutexFunc = NULL;
 		mStreamTime = 0;
 		mAudioSourceID = 1;
-		mFilter = 0;
-		mFilterInstance = 0;
-#ifdef SOLOUD_INCLUDE_FFT
 		int i;
+		for (i = 0; i < FILTERS_PER_STREAM; i++)
+		{
+			mFilter[i] = NULL;
+			mFilterInstance[i] = NULL;
+		}
+#ifdef SOLOUD_INCLUDE_FFT
 		for (i = 0; i < 512; i++)
 		{
 			mFFTInput[i] = 0;
@@ -271,7 +292,11 @@ namespace SoLoud
 	Soloud::~Soloud()
 	{
 		stopAll();
-		delete mFilterInstance;
+		int i;
+		for (i = 0; i < FILTERS_PER_STREAM; i++)
+		{
+			delete mFilterInstance[i];
+		}
 		delete[] mScratch;
 		delete[] mChannel;
 		deinit();
@@ -363,7 +388,7 @@ namespace SoLoud
 		}
 		mChannel[ch] = aSound.createInstance();
 		mChannel[ch]->mAudioSourceID = aSound.mAudioSourceID;
-		int handle = ch | (mPlayIndex << 8);
+		int handle = ch | (mPlayIndex << 12);
 
 		mChannel[ch]->init(mPlayIndex, aSound.mBaseSamplerate, aSound.mFlags);
 		
@@ -376,9 +401,13 @@ namespace SoLoud
 		setChannelVolume(ch, aVolume);
 		setChannelRelativePlaySpeed(ch, 1);
 
-		if (aSound.mFilter)
+		int i;
+		for (i = 0; i < FILTERS_PER_STREAM; i++)
 		{
-			mChannel[ch]->mFilter = aSound.mFilter->createInstance();
+			if (aSound.mFilter[i])
+			{
+				mChannel[ch]->mFilter[i] = aSound.mFilter[i]->createInstance();
+			}
 		}
 
 		mPlayIndex++;
@@ -400,9 +429,9 @@ namespace SoLoud
 			return -1;
 		}
 		int ch = aChannelHandle & 0xff;
-		unsigned int idx = aChannelHandle >> 8;
+		unsigned int idx = aChannelHandle >> 12;
 		if (mChannel[ch] &&
-			(mChannel[ch]->mPlayIndex & 0xffffff) == idx)
+			(mChannel[ch]->mPlayIndex & 0xfffff) == idx)
 		{
 			return ch;
 		}
@@ -736,7 +765,7 @@ namespace SoLoud
 			delete mChannel[aChannel];
 			mChannel[aChannel] = 0;			
 		}
-	}		
+	}
 
 	void Soloud::stopSound(AudioSource &aSound)
 	{
@@ -763,6 +792,96 @@ namespace SoLoud
 		for (i = 0; i < mChannelCount; i++)
 		{
 			stopChannel(i);
+		}
+		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+	}
+
+	void Soloud::setFilterParameter(int aChannelHandle, int aFilterId, int aAttributeId, float aValue)
+	{
+		if (aFilterId < 0 || aFilterId >= FILTERS_PER_STREAM)
+			return;
+
+		if (aChannelHandle == 0)
+		{
+			if (mLockMutexFunc) mLockMutexFunc(mMutex);		
+			if (mFilterInstance[aFilterId])
+			{
+				mFilterInstance[aFilterId]->setFilterParameter(aAttributeId, aValue);
+			}
+			if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+			return;
+		}
+
+		int ch = getChannelFromHandle(aChannelHandle);
+		if (ch == -1) 
+		{
+			return;
+		}
+		if (mLockMutexFunc) mLockMutexFunc(mMutex);		
+		if (mChannel[ch] &&
+			mChannel[ch]->mFilter[aFilterId])
+		{
+			mChannel[ch]->mFilter[aFilterId]->setFilterParameter(aAttributeId, aValue);
+		}
+		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+	}
+
+	void Soloud::fadeFilterParameter(int aChannelHandle, int aFilterId, int aAttributeId, float aFrom, float aTo, float aTime)
+	{
+		if (aFilterId < 0 || aFilterId >= FILTERS_PER_STREAM)
+			return;
+
+		if (aChannelHandle == 0)
+		{
+			if (mLockMutexFunc) mLockMutexFunc(mMutex);		
+			if (mFilterInstance[aFilterId])
+			{
+				mFilterInstance[aFilterId]->fadeFilterParameter(aAttributeId, aFrom, aTo, aTime, mStreamTime);
+			}
+			if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+			return;
+		}
+
+		int ch = getChannelFromHandle(aChannelHandle);
+		if (ch == -1) 
+		{
+			return;
+		}
+		if (mLockMutexFunc) mLockMutexFunc(mMutex);		
+		if (mChannel[ch] &&
+			mChannel[ch]->mFilter[aFilterId])
+		{
+			mChannel[ch]->mFilter[aFilterId]->fadeFilterParameter(aAttributeId, aFrom, aTo, aTime, mStreamTime);
+		}
+		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+	}
+
+	void Soloud::oscillateFilterParameter(int aChannelHandle, int aFilterId, int aAttributeId, float aFrom, float aTo, float aTime)
+	{
+		if (aFilterId < 0 || aFilterId >= FILTERS_PER_STREAM)
+			return;
+
+		if (aChannelHandle == 0)
+		{
+			if (mLockMutexFunc) mLockMutexFunc(mMutex);		
+			if (mFilterInstance[aFilterId])
+			{
+				mFilterInstance[aFilterId]->oscillateFilterParameter(aAttributeId, aFrom, aTo, aTime, mStreamTime);
+			}
+			if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+			return;
+		}
+
+		int ch = getChannelFromHandle(aChannelHandle);
+		if (ch == -1) 
+		{
+			return;
+		}
+		if (mLockMutexFunc) mLockMutexFunc(mMutex);		
+		if (mChannel[ch] &&
+			mChannel[ch]->mFilter[aFilterId])
+		{
+			mChannel[ch]->mFilter[aFilterId]->oscillateFilterParameter(aAttributeId, aFrom, aTo, aTime, mStreamTime);
 		}
 		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 	}
@@ -955,17 +1074,19 @@ namespace SoLoud
 	}
 #endif
 
-	void Soloud::setGlobalFilter(Filter *aFilter)
+	void Soloud::setGlobalFilter(int aFilterId, Filter *aFilter)
 	{
+		if (aFilterId < 0 || aFilterId >= FILTERS_PER_STREAM)
+			return;
+
 		if (mLockMutexFunc) mLockMutexFunc(mMutex);
-		delete mFilterInstance;
-		mFilterInstance = 0;
+		delete mFilterInstance[aFilterId];
+		mFilterInstance[aFilterId] = 0;
 		
-		mFilter = aFilter;
-		if (mFilter)
+		mFilter[aFilterId] = aFilter;
+		if (aFilter)
 		{
-			mFilter->init(NULL);
-			mFilterInstance = mFilter->createInstance();
+			mFilterInstance[aFilterId] = mFilter[aFilterId]->createInstance();
 		}
 		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 	}
@@ -1088,9 +1209,17 @@ namespace SoLoud
 
 				mChannel[i]->getAudio(mScratch, readsamples);	
 
-				if (mChannel[i]->mFilter)
+				for (j = 0; j < FILTERS_PER_STREAM; j++)
 				{
-					mChannel[i]->mFilter->filter(mScratch, readsamples, mChannel[i]->mFlags & AudioInstance::STEREO, mChannel[i]->mSamplerate);
+					if (mChannel[i]->mFilter[j])
+					{
+						mChannel[i]->mFilter[j]->filter(
+							mScratch, 
+							readsamples, 
+							mChannel[i]->mFlags & AudioInstance::STEREO, 
+							mChannel[i]->mSamplerate,
+							mStreamTime);
+					}
 				}
 
 				if (mChannel[i]->mActiveFader)
@@ -1153,9 +1282,12 @@ namespace SoLoud
 			}
 		}
 
-		if (mFilterInstance)
+		for (i = 0; i < FILTERS_PER_STREAM; i++)
 		{
-			mFilterInstance->filter(aBuffer, aSamples, 1, (float)mSamplerate);
+			if (mFilterInstance[i])
+			{
+				mFilterInstance[i]->filter(aBuffer, aSamples, 1, (float)mSamplerate, mStreamTime);
+			}
 		}
 
 		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);

@@ -81,7 +81,7 @@ namespace SoLoud
 			aSoloud->mix(mixbuf,BUFFER_SIZE);
 			int i;
 			for (i = 0; i < BUFFER_SIZE*2; i++)
-				downbuf[i] = mixbuf[i] * 0x7fff;
+				downbuf[i] = (short)floor(mixbuf[i] * 0x7fff);
 
 			alSourceUnqueueBuffers(source, 1, &buffer);
 

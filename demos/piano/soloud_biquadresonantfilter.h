@@ -39,10 +39,18 @@ namespace SoLoud
 		float mSampleRate;
 		float mFrequency;
 		float mResonance;
+
+		Fader mResonanceFader;
+		Fader mFrequencyFader;
+		Fader mSampleRateFader;
+
 		BiquadResonantFilter *mParent;
 		void calcBQRParams();
 	public:
-		virtual void filter(float *aBuffer, int aSamples, int aStereo, float aSamplerate);
+		virtual void filter(float *aBuffer, int aSamples, int aStereo, float aSamplerate, float aTime);
+		virtual void setFilterParameter(int aAttributeId, float aValue);
+		virtual void fadeFilterParameter(int aAttributeId, float aFrom, float aTo, float aTime, float aStartTime);
+		virtual void oscillateFilterParameter(int aAttributeId, float aFrom, float aTo, float aTime, float aStartTime);
 		virtual ~BiquadResonantFilterInstance();
 		BiquadResonantFilterInstance(BiquadResonantFilter *aParent);
 	};
@@ -57,11 +65,16 @@ namespace SoLoud
 			HIGHPASS = 2,
 			BANDPASS = 3
 		};
+		enum FILTERATTRIBUTE
+		{
+			SAMPLERATE = 0,
+			FREQUENCY = 1,
+			RESONANCE = 2
+		};
 		int mFilterType;
 		float mSampleRate;
 		float mFrequency;
 		float mResonance;
-		virtual void init(AudioSource *aSource);
 		virtual BiquadResonantFilterInstance *createInstance();
 		BiquadResonantFilter();
 		void setParams(int aType, float aSampleRate, float aFrequency, float aResonance);

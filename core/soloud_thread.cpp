@@ -169,7 +169,7 @@ namespace SoLoud
 
 		void sleep(int aMSec)
 		{
-			usleep(aMSec / 1000);
+			usleep(aMSec * 1000);
 		}
 #endif
 	}

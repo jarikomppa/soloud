@@ -369,6 +369,12 @@ namespace SoLoud
 
 	// PortAudio back-end initialization call
 	int portaudio_init(SoLoud::Soloud *aSoloud, int aChannels = 32, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 2048);
+
+	// WinMM back-end initialization call
+	int winmm_init(SoLoud::Soloud *aSoloud, int aChannels = 32, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 4096);
+
+	// Xaudio2 back-end initialization call
+	int xaudio2_init(SoLoud::Soloud *aSoloud, int aChannels = 32, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 2048);
 };
 
 #endif 

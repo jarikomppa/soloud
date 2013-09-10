@@ -11,19 +11,6 @@ namespace SoLoud
 {
     static const int BUFFER_COUNT = 2;
 
-    template <typename T>
-    class AutoPointer
-    {
-    public:
-        explicit AutoPointer(T *ptr) : m_ptr(ptr) {}
-        virtual ~AutoPointer() { delete m_ptr; }
-        T* operator->() const { return m_ptr; }
-        T* ptr() const { return m_ptr; }
-        const T* constPtr() const { return m_ptr; }
-    private:
-        T *m_ptr;
-    };
-
     struct BufferData
     {
         int index;
@@ -34,6 +21,7 @@ namespace SoLoud
 
     struct Xaudio2Data
     {
+        const float *lastFilledBuffer;
         BufferData *bufferData[BUFFER_COUNT];
         bool buffersToFill[BUFFER_COUNT];
         IXAudio2 *xaudio2;
@@ -97,6 +85,7 @@ namespace SoLoud
                 if (!data->buffersToFill[i])
                     continue;
                 data->soloud->mix(data->bufferData[i]->buffer, data->samples);
+                data->lastFilledBuffer = data->bufferData[i]->buffer;
                 data->buffersToFill[i] = false;
                 data->sourceVoice->SubmitSourceBuffer(&data->bufferData[i]->bufferInfo);
             }
@@ -151,30 +140,31 @@ namespace SoLoud
         data->audioEvent = CreateEvent(0, FALSE, FALSE, 0);
         if (0 == data->audioEvent)
             return 1;
-        AutoPointer<WAVEFORMATEX> format(new WAVEFORMATEX);
-        format->nChannels = min(aChannels, 2);
-        format->nSamplesPerSec = aSamplerate;
-        format->wFormatTag = WAVE_FORMAT_IEEE_FLOAT;
-        format->nAvgBytesPerSec = aSamplerate*sizeof(float)*format->nChannels;
-        format->nBlockAlign = sizeof(float)*format->nChannels;
-        format->wBitsPerSample = sizeof(float)*8;
+        WAVEFORMATEX format;
+        ZeroMemory(&format, sizeof(WAVEFORMATEX));
+        format.nChannels = min(aChannels, 2);
+        format.nSamplesPerSec = aSamplerate;
+        format.wFormatTag = WAVE_FORMAT_IEEE_FLOAT;
+        format.nAvgBytesPerSec = aSamplerate*sizeof(float)*format.nChannels;
+        format.nBlockAlign = sizeof(float)*format.nChannels;
+        format.wBitsPerSample = sizeof(float)*8;
         if (FAILED(XAudio2Create(&data->xaudio2)))
             return 2;
         if (FAILED(data->xaudio2->CreateMasteringVoice(&data->masteringVoice, 
-                                                       format->nChannels, aSamplerate))) {
+                                                       format.nChannels, aSamplerate))) {
             return 3;
         }
         data->voiceCb = new VoiceCallback;
         if (FAILED(data->xaudio2->CreateSourceVoice(&data->sourceVoice, 
-            format.constPtr(), 0, 2.f, data->voiceCb))) {
+            &format, 0, 2.f, data->voiceCb))) {
             return 4;
         }
         for (int i=0;i<BUFFER_COUNT;++i) {
             data->bufferData[i] = new BufferData;
             data->bufferData[i]->index = i;
-            data->bufferData[i]->buffer = new float[aBuffer * format->nChannels];
+            data->bufferData[i]->buffer = new float[aBuffer * format.nChannels];
             ZeroMemory(&data->bufferData[i]->bufferInfo, sizeof(XAUDIO2_BUFFER));
-            data->bufferData[i]->bufferInfo.AudioBytes = sizeof(float)*aBuffer*format->nChannels;
+            data->bufferData[i]->bufferInfo.AudioBytes = sizeof(float)*aBuffer*format.nChannels;
             data->bufferData[i]->bufferInfo.pAudioData = reinterpret_cast<const BYTE*>(data->bufferData[i]->buffer);
             data->bufferData[i]->bufferInfo.pContext = data->bufferData[i];
             data->bufferData[i]->parent = data;
@@ -185,7 +175,7 @@ namespace SoLoud
         aSoloud->mLockMutexFunc = Thread::lockMutex;
         aSoloud->mUnlockMutexFunc = Thread::unlockMutex;
         data->soloud = aSoloud;
-        aSoloud->init(aChannels, aSamplerate, aBuffer * format->nChannels, aFlags);
+        aSoloud->init(aChannels, aSamplerate, aBuffer * format.nChannels, aFlags);
         Thread::createThread(xaudio2Thread, data);
         data->sourceVoice->Start();
         return 0;

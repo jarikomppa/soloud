@@ -46,8 +46,6 @@ public:
 	  Interp mInterpolator[ELM_COUNT];
  };
 
-extern Element gElement[];
-
 enum ELEMENT_FEATURES
 {
 	ELM_FEATURE_ALV = 0x00000001,

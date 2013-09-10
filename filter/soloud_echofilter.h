@@ -36,7 +36,7 @@ namespace SoLoud
 		EchoFilter *mParent;
 		int mOffset;
 	public:
-		virtual void filter(float *aBuffer, int aSamples, int aStereo, float aSamplerate, float aTime);
+		virtual void filter(float *aBuffer, int aSamples, int aChannels, float aSamplerate, float aTime);
 		virtual ~EchoFilterInstance();
 		EchoFilterInstance(EchoFilter *aParent);
 	};

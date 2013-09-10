@@ -35,11 +35,11 @@ namespace SoLoud
 		mOffset = 0;
 	}
 
-	void EchoFilterInstance::filter(float *aBuffer, int aSamples, int aStereo, float aSamplerate, float aTime)
+	void EchoFilterInstance::filter(float *aBuffer, int aSamples, int aChannels, float aSamplerate, float aTime)
 	{
 		if (mBuffer == 0)
 		{
-			mBufferLength = (int)ceil(mParent->mDelay * aSamplerate) * (aStereo?2:1);
+			mBufferLength = (int)ceil(mParent->mDelay * aSamplerate) * aChannels;
 			mBuffer = new float[mBufferLength];
 			int i;
 			for (i = 0; i < mBufferLength; i++)
@@ -47,7 +47,7 @@ namespace SoLoud
 				mBuffer[i] = 0;
 			}
 		}
-		int process = aSamples * (aStereo?2:1);
+		int process = aSamples * aChannels;
 		float decay = mParent->mDecay;
 		int i;
 		for (i = 0; i < process; i++)

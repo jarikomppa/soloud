@@ -247,7 +247,7 @@ namespace SoLoud
 						mVoice[i]->mFilter[j]->filter(
 							mScratch, 
 							readsamples, 
-							mVoice[i]->mFlags & AudioSourceInstance::STEREO, 
+							(mVoice[i]->mFlags & AudioSourceInstance::STEREO)?2:1, 
 							mVoice[i]->mSamplerate,
 							mStreamTime);
 					}
@@ -317,7 +317,7 @@ namespace SoLoud
 		{
 			if (mFilterInstance[i])
 			{
-				mFilterInstance[i]->filter(aBuffer, aSamples, 1, (float)mSamplerate, mStreamTime);
+				mFilterInstance[i]->filter(aBuffer, aSamples, 2, (float)mSamplerate, mStreamTime);
 			}
 		}
 

@@ -87,7 +87,7 @@ namespace SoLoud
 		calcBQRParams();
 	}
 
-	void BiquadResonantFilterInstance::filter(float *aBuffer, int aSamples, int aStereo, float aSamplerate, float aTime)
+	void BiquadResonantFilterInstance::filter(float *aBuffer, int aSamples, int aChannels, float aSamplerate, float aTime)
 	{
 		int i, pitch, s;
 		float x;
@@ -118,7 +118,7 @@ namespace SoLoud
 			calcBQRParams();
 		}
 
-		pitch = aStereo ? 2 : 1;
+		pitch = aChannels;
 
 		for (s = 0; s < pitch; s++)
 		{
@@ -166,6 +166,20 @@ namespace SoLoud
 			mResonance = aValue;
 			break;
 		}
+	}
+
+	float BiquadResonantFilterInstance::getFilterParameter(int aAttributeId)
+	{
+		switch (aAttributeId)
+		{
+		case BiquadResonantFilter::FREQUENCY:
+			return mFrequency;
+		case BiquadResonantFilter::SAMPLERATE:
+			return mSampleRate;
+		case BiquadResonantFilter::RESONANCE:
+			return mResonance;
+		}
+		return 0;
 	}
 
 	void BiquadResonantFilterInstance::fadeFilterParameter(int aAttributeId, float aFrom, float aTo, float aTime, float aStartTime)

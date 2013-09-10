@@ -30,7 +30,7 @@ namespace SoLoud
 	class FilterInstance
 	{
 	public:
-		virtual void filter(float *aBuffer, int aSamples, int aStereo, float aSamplerate, float aTime) = 0;
+		virtual void filter(float *aBuffer, int aSamples, int aChannels, float aSamplerate, float aTime) = 0;
 		virtual float getFilterParameter(int aAttributeId);
 		virtual void setFilterParameter(int aAttributeId, float aValue);
 		virtual void fadeFilterParameter(int aAttributeId, float aFrom, float aTo, float aTime, float aStartTime);

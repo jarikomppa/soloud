@@ -47,8 +47,9 @@ namespace SoLoud
 		BiquadResonantFilter *mParent;
 		void calcBQRParams();
 	public:
-		virtual void filter(float *aBuffer, int aSamples, int aStereo, float aSamplerate, float aTime);
+		virtual void filter(float *aBuffer, int aSamples, int aChannels, float aSamplerate, float aTime);
 		virtual void setFilterParameter(int aAttributeId, float aValue);
+		virtual float getFilterParameter(int aAttributeId);
 		virtual void fadeFilterParameter(int aAttributeId, float aFrom, float aTo, float aTime, float aStartTime);
 		virtual void oscillateFilterParameter(int aAttributeId, float aFrom, float aTo, float aTime, float aStartTime);
 		virtual ~BiquadResonantFilterInstance();

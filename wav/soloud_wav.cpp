@@ -101,64 +101,31 @@ namespace SoLoud
 		delete[] mData;
 	}
 	
-	static int read32File(void **f)
+	static int read32(FILE * f)
 	{
 		int i;
-		fread(&i,1,4,*reinterpret_cast<FILE**>(f));
+		fread(&i,1,4,f);
 		return i;
 	}
 
-	static int read16File(void **f)
+	static int read16(FILE * f)
 	{
 		short i;
-		fread(&i,1,2,*reinterpret_cast<FILE**>(f));
+		fread(&i,1,2,f);
 		return i;
 	}
 
-	static int read8File(void **f)
+	static int read8(FILE * f)
 	{
 		char i;
-		fread(&i,1,1,*reinterpret_cast<FILE**>(f));
-		return i;
-	}
-
-	static int read32Mem(void **m)
-	{
-		int **ptr = reinterpret_cast<int**>(m);
-        int i = (**ptr);
-        ++(*ptr);
-		return i;
-	}
-
-	static int read16Mem(void **m)
-	{
-		short **ptr = reinterpret_cast<short**>(m);
-        short i = (**ptr);
-        ++(*ptr);
-		return i;
-	}
-
-	static int read8Mem(void **m)
-	{
-		char **ptr = reinterpret_cast<char**>(m);
-        char i = (**ptr);
-        ++(*ptr);
+		fread(&i,1,1,f);
 		return i;
 	}
 
 #define MAKEDWORD(a,b,c,d) (((d) << 24) | ((c) << 16) | ((b) << 8) | (a))
 
-	void Wav::loadwav(void *src, bool isMem, int aStereo, int aChannel)
+	void Wav::loadwav(FILE * fp, int aStereo, int aChannel)
 	{
-        void **fp = &src;
-        int (*read8)(void **) = read8File;
-        int (*read16)(void **) = read16File;
-        int (*read32)(void **) = read32File;
-        if (isMem) {
-            read8 = read8Mem;
-            read16 = read16Mem;
-            read32 = read32Mem;
-        }
 		int wavsize = read32(fp);
 		if (read32(fp) != MAKEDWORD('W','A','V','E'))
 		{
@@ -267,8 +234,12 @@ namespace SoLoud
 		mSampleCount = samples;
 	}
 
-	void Wav::loadogg(stb_vorbis *v, int aStereo, int aChannel)
+	void Wav::loadogg(FILE * fp, int aStereo, int aChannel)
 	{
+		fseek(fp,0,SEEK_SET);
+		int e;
+		stb_vorbis *v = stb_vorbis_open_file(fp, 0, &e, NULL);
+		if (!v) return;
 		stb_vorbis_info info = stb_vorbis_get_info(v);
 		mBaseSamplerate = (float)info.sample_rate;
 		int samples = stb_vorbis_stream_length_in_samples(v);
@@ -309,45 +280,22 @@ namespace SoLoud
 
 	void Wav::load(const char *aFilename, int aStereo, int aChannel)
 	{
-		FILE * fp = fopen(aFilename, "rb");
-		if (!fp) return;
 		delete[] mData;
 		mData = NULL;
 		mSampleCount = 0;
-        int tag = read32File(reinterpret_cast<void**>(&fp));
+		FILE * fp = fopen(aFilename, "rb");
+		if (!fp) return;
+		int tag = read32(fp);
 		if (tag == MAKEDWORD('O','g','g','S'))
 		{
-		    fseek(fp,0,SEEK_SET);
-		    int e;
-		    stb_vorbis *v = stb_vorbis_open_file(fp, 0, &e, NULL);
-		    if (0 != v)
-			    loadogg(v, aStereo, aChannel);
+			loadogg(fp, aStereo, aChannel);
 		}
 		if (tag == MAKEDWORD('R','I','F','F'))
 		{
-			loadwav(fp, false, aStereo, aChannel);
+			loadwav(fp, aStereo, aChannel);
 		}
 		fclose(fp);
 	}
-
-    void Wav::loadMem(unsigned char *mem, int len, int aStereo, int aChannel)
-    {
-		delete[] mData;
-		mData = 0;
-		mSampleCount = 0;
-        int tag = *reinterpret_cast<const int*>(mem);
-		if (tag == MAKEDWORD('O','g','g','S'))
-		{
-            int e = 0;
-            stb_vorbis *v = stb_vorbis_open_memory(mem, len, &e, 0);
-            if (0 != v)
-			    loadogg(v, aStereo, aChannel);
-		}
-		if (tag == MAKEDWORD('R','I','F','F'))
-		{
-			loadwav(mem+4, true, aStereo, aChannel);
-		}
-    }
 
 	AudioInstance *Wav::createInstance()
 	{

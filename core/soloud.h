@@ -40,6 +40,10 @@ freely, subject to the following restrictions:
 #include "soloud_fft.h"
 #endif
 
+#include "soloud_filter.h"
+#include "soloud_fader.h"
+#include "soloud_audiosource.h"
+
 namespace SoLoud
 {
 	class Soloud;
@@ -47,160 +51,6 @@ namespace SoLoud
 	typedef void (*mutexCallFunction)(void *aMutexPtr);
 	typedef void (*soloudCallFunction)(Soloud *aSoloud);
 
-	class AudioSource;
-
-	class FilterInstance
-	{
-	public:
-		virtual void filter(float *aBuffer, int aSamples, int aStereo, float aSamplerate, float aTime) = 0;
-		virtual void setFilterParameter(int aAttributeId, float aValue);
-		virtual void fadeFilterParameter(int aAttributeId, float aFrom, float aTo, float aTime, float aStartTime);
-		virtual void oscillateFilterParameter(int aAttributeId, float aFrom, float aTo, float aTime, float aStartTime);
-
-		virtual ~FilterInstance();
-	};
-
-	class Filter
-	{
-	public:
-		virtual FilterInstance *createInstance() = 0;
-		virtual ~Filter();
-	};
-
-	// Helper class to process faders
-	class Fader
-	{
-	public:
-		// Value to fade from
-		float mFrom;
-		// Value to fade to
-		float mTo;
-		// Delta between from and to
-		float mDelta;
-		// Total time to fade
-		float mTime;
-		// Time fading started
-		float mStartTime;
-		// Time fading will end
-		float mEndTime;
-		// Current value. Used in case time rolls over.
-		float mCurrent;
-		// Active flag; 0 means disabled, 1 is active, 2 is LFO, -1 means was active, but stopped
-		int mActive;
-		// Ctor
-		Fader();
-		// Set up LFO
-		void setLFO(float aFrom, float aTo, float aTime, float aStartTime);
-		// Set up fader
-		void set(float aFrom, float aTo, float aTime, float aStartTime);
-		// Get the current fading value
-		float get(float aCurrentTime);
-	}; 
-
-	// Base class for audio instances
-	class AudioInstance
-	{
-	public:
-		enum FLAGS
-		{			
-			// This audio instance loops (if supported)
-			LOOPING = 1,
-			// This audio instance outputs stereo samples
-			STEREO = 2,
-			// This audio instance is protected - won't get stopped if we run out of voices
-			PROTECTED = 4,
-			// This audio instance is paused
-			PAUSED = 8
-		};
-		// Ctor
-		AudioInstance();
-		// Dtor
-		virtual ~AudioInstance();
-		// Play index; used to identify instances from handles
-		unsigned int mPlayIndex;
-		// Flags; see AudioInstance::FLAGS
-		int mFlags;
-		// Pan value, for getPan()
-		float mPan;
-		// Left channel volume (panning)
-		float mLVolume;
-		// Right channel volume (panning)
-		float mRVolume;
-		// Overall volume
-		float mVolume;
-		// Base samplerate; samplerate = base samplerate * relative play speed
-		float mBaseSamplerate;
-		// Samplerate; samplerate = base samplerate * relative play speed
-		float mSamplerate;
-		// Relative play speed; samplerate = base samplerate * relative play speed
-		float mRelativePlaySpeed;
-		// How long this stream has played, in seconds.
-		float mStreamTime;
-		// Fader for the audio panning
-		Fader mPanFader;
-		// Fader for the audio volume
-		Fader mVolumeFader;
-		// Fader for the relative play speed
-		Fader mRelativePlaySpeedFader;
-		// Fader used to schedule pausing of the stream
-		Fader mPauseScheduler;
-		// Fader used to schedule stopping of the stream
-		Fader mStopScheduler;
-		// Affected by some fader
-		int mActiveFader;
-		// Fader-affected l/r volumes
-		float mFaderVolume[2 * 2];
-		// ID of the sound source that generated this instance
-		int mAudioSourceID;
-		// Filter pointer
-		FilterInstance *mFilter[FILTERS_PER_STREAM];
-		// Initialize instance. Mostly internal use.
-		void init(int aPlayIndex, float aBaseSamplerate, int aSourceFlags);
-		// Get N samples from the stream to the buffer
-		virtual void getAudio(float *aBuffer, int aSamples) = 0;
-		// Has the stream ended?
-		virtual int hasEnded() = 0;
-		// Seek to certain place in the stream. Base implementation is generic "tape" seek (and slow).
-		virtual void seek(float aSeconds, float *mScratch, int mScratchSize);
-		// Rewind stream. Base implementation returns 0, meaning it can't rewind.
-		virtual int rewind();
-	};
-
-	class Soloud;
-
-	// Base class for audio sources
-	class AudioSource
-	{
-	public:
-		enum FLAGS
-		{
-			// The instances from this audio source should loop
-			SHOULD_LOOP = 1,
-			// This audio source produces stereo samples
-			STEREO = 2
-		};
-		// Flags. See AudioSource::FLAGS
-		int mFlags;
-		// Base sample rate, used to initialize instances
-		float mBaseSamplerate;
-		// Sound source ID. Assigned by SoLoud the first time it's played.
-		int mAudioSourceID;
-		// Filter pointer
-		Filter *mFilter[FILTERS_PER_STREAM];
-		// Pointer to the Soloud object. Needed to stop all instances in dtor.
-		Soloud *mSoloud;
-
-		// CTor
-		AudioSource();
-		// Set the looping of the instances created from this audio source
-		void setLooping(int aLoop);
-		// Set filter. Set to NULL to clear the filter.
-		void setFilter(int aFilterId, Filter *aFilter);
-		// DTor
-		virtual ~AudioSource();
-		// Create instance from the audio source. Called from within Soloud class.
-		virtual AudioInstance *createInstance() = 0;
-	};
 
 	// Soloud core class.
 	class Soloud
@@ -220,7 +70,7 @@ namespace SoLoud
 		// Amount of scratch needed.
 		int mScratchNeeded;
 		// Audio voices.
-		AudioInstance **mVoice;
+		AudioSourceInstance **mVoice;
 		// Number of concurrent voices.
 		int mVoiceCount;
 		// Output sample rate
@@ -304,6 +154,8 @@ namespace SoLoud
 
 		// Set a live filter parameter. Use 0 for the global filters.
 		void setFilterParameter(int aVoiceHandle, int aFilterId, int aAttributeId, float aValue);
+		// Get a live filter parameter. Use 0 for the global filters.
+		float getFilterParameter(int aVoiceHandle, int aFilterId, int aAttributeId);
 		// Fade a live filter parameter. Use 0 for the global filters.
 		void fadeFilterParameter(int aVoiceHandle, int aFilterId, int aAttributeId, float aFrom, float aTo, float aTime);
 		// Oscillate a live filter parameter. Use 0 for the global filters.

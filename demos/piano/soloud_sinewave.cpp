@@ -61,7 +61,7 @@ namespace SoLoud
 		mFreq = (float)(440 * M_PI * 2 / mBaseSamplerate);
 	}
 
-	AudioInstance * Sinewave::createInstance() 
+	AudioSourceInstance * Sinewave::createInstance() 
 	{
 		return new SinewaveInstance(this);
 	}

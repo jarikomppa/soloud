@@ -22,33 +22,40 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#ifndef SINEWAVE_H
-#define SINEWAVE_H
-
-#include "soloud.h"
+#ifndef SOLOUD_FADER_H
+#define SOLOUD_FADER_H
 
 namespace SoLoud
 {
-	class Sinewave;
-
-	class SinewaveInstance : public AudioSourceInstance
-	{
-		Sinewave *mParent;
-		int mOffset;
-	public:
-		SinewaveInstance(Sinewave *aParent);
-		virtual void getAudio(float *aBuffer, int aSamples);
-		virtual int hasEnded();
-	};
-
-	class Sinewave : public AudioSource
+	// Helper class to process faders
+	class Fader
 	{
 	public:
-		float mFreq;
-		Sinewave();
-		void setSamplerate(float aSamplerate);
-		virtual AudioSourceInstance *createInstance();
-	};
+		// Value to fade from
+		float mFrom;
+		// Value to fade to
+		float mTo;
+		// Delta between from and to
+		float mDelta;
+		// Total time to fade
+		float mTime;
+		// Time fading started
+		float mStartTime;
+		// Time fading will end
+		float mEndTime;
+		// Current value. Used in case time rolls over.
+		float mCurrent;
+		// Active flag; 0 means disabled, 1 is active, 2 is LFO, -1 means was active, but stopped
+		int mActive;
+		// Ctor
+		Fader();
+		// Set up LFO
+		void setLFO(float aFrom, float aTo, float aTime, float aStartTime);
+		// Set up fader
+		void set(float aFrom, float aTo, float aTime, float aStartTime);
+		// Get the current fading value
+		float get(float aCurrentTime);
+	}; 
 };
 
-#endif
+#endif 

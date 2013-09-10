@@ -22,32 +22,28 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#ifndef SINEWAVE_H
-#define SINEWAVE_H
-
-#include "soloud.h"
+#ifndef SOLOUD_FILTER_H
+#define SOLOUD_FILTER_H
 
 namespace SoLoud
 {
-	class Sinewave;
-
-	class SinewaveInstance : public AudioSourceInstance
+	class FilterInstance
 	{
-		Sinewave *mParent;
-		int mOffset;
 	public:
-		SinewaveInstance(Sinewave *aParent);
-		virtual void getAudio(float *aBuffer, int aSamples);
-		virtual int hasEnded();
+		virtual void filter(float *aBuffer, int aSamples, int aStereo, float aSamplerate, float aTime) = 0;
+		virtual float getFilterParameter(int aAttributeId);
+		virtual void setFilterParameter(int aAttributeId, float aValue);
+		virtual void fadeFilterParameter(int aAttributeId, float aFrom, float aTo, float aTime, float aStartTime);
+		virtual void oscillateFilterParameter(int aAttributeId, float aFrom, float aTo, float aTime, float aStartTime);
+
+		virtual ~FilterInstance();
 	};
 
-	class Sinewave : public AudioSource
+	class Filter
 	{
 	public:
-		float mFreq;
-		Sinewave();
-		void setSamplerate(float aSamplerate);
-		virtual AudioSourceInstance *createInstance();
+		virtual FilterInstance *createInstance() = 0;
+		virtual ~Filter();
 	};
 };
 

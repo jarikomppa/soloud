@@ -77,11 +77,11 @@ namespace SoLoud
         if (0 == aSoloud->mBackendData)
             return;
         SoLoudWinMMData *data = static_cast<SoLoudWinMMData*>(aSoloud->mBackendData);
-        waveOutReset(data->waveOut);
         data->audioProcessingDone = true;
         SetEvent(data->audioEvent);
         while (data->threadRunning)
             Sleep(10);
+        waveOutReset(data->waveOut);
         for (int i=0;i<BUFFER_COUNT;++i) {
             waveOutUnprepareHeader(data->waveOut, &data->header[i], sizeof(WAVEHDR));
             if (0 != data->sampleBuffer[i])

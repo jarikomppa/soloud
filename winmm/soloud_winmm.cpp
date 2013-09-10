@@ -3,12 +3,6 @@
 #include <windows.h>
 #include <mmsystem.h>
 
-#if (__GNUC__ < 4)
-static const WORD WAVE_FORMAT_IEEE_FLOAT = 0x0003;
-#else
-#include <mmreg.h>
-#endif 
-
 #ifdef _MSC_VER
 #pragma comment(lib, "winmm.lib")
 #endif
@@ -19,12 +13,13 @@ namespace SoLoud
 
     struct SoLoudWinMMData
     {
-        float *buffer[BUFFER_COUNT];
-        int channels;
-        HWAVEOUT waveOut;
+        float *buffer;
+        short *sampleBuffer[BUFFER_COUNT];
         WAVEHDR header[BUFFER_COUNT];
+        HWAVEOUT waveOut;
         HANDLE audioEvent;
         Soloud *soloud;
+        int samples;
         bool audioProcessingDone;
         bool threadRunning;
     };
@@ -37,10 +32,16 @@ namespace SoLoud
             for (int i=0;i<BUFFER_COUNT;++i) {
                 if ((data->header[i].dwFlags & WHDR_INQUEUE) != 0) 
                     continue;
-                int samples = (data->header[i].dwBufferLength/4)/data->channels;
-                data->soloud->mix(data->buffer[i], samples);
-                if (MMSYSERR_NOERROR != waveOutWrite(data->waveOut, &data->header[i], sizeof(WAVEHDR)))
+                data->soloud->mix(data->buffer, data->samples);
+                short *tgtBuf = data->sampleBuffer[i];
+                for (DWORD j=0;j<(data->header[i].dwBufferLength/sizeof(short));++j) {
+                    tgtBuf[j] = static_cast<short>(floor(data->buffer[j] 
+                                                         * static_cast<float>(0x7fff)));
+                }
+                if (MMSYSERR_NOERROR != waveOutWrite(data->waveOut, &data->header[i], 
+                                                     sizeof(WAVEHDR))) {
                     return;
+                }
             }
             WaitForSingleObject(data->audioEvent, INFINITE);
         }
@@ -59,9 +60,11 @@ namespace SoLoud
             Sleep(10);
         for (int i=0;i<BUFFER_COUNT;++i) {
             waveOutUnprepareHeader(data->waveOut, &data->header[i], sizeof(WAVEHDR));
-            if (0 != data->buffer[i])
-                delete[] data->buffer[i];
+            if (0 != data->sampleBuffer[i])
+                delete[] data->sampleBuffer[i];
         }
+        if (0 != data->buffer)
+            delete[] data->buffer;
         CloseHandle(data->audioEvent);
         waveOutClose(data->waveOut);
         Thread::destroyMutex(data->soloud->mMutex);
@@ -78,26 +81,29 @@ namespace SoLoud
         ZeroMemory(data, sizeof(SoLoudWinMMData));
         aSoloud->mBackendData = data;
         aSoloud->mBackendCleanupFunc = winMMCleanup;
+        data->samples = aBuffer;
+        data->soloud = aSoloud;
         data->audioEvent = CreateEvent(0, FALSE, FALSE, 0);
         if (0 == data->audioEvent)
             return 1;
         WAVEFORMATEX format;
         ZeroMemory(&format, sizeof(WAVEFORMATEX));
-        format.nChannels = data->channels = min(aChannels, 2);
+        format.nChannels = min(aChannels, 2);
         format.nSamplesPerSec = aSamplerate;
-        format.wFormatTag = WAVE_FORMAT_IEEE_FLOAT;
-        format.nAvgBytesPerSec = aSamplerate*sizeof(float)*format.nChannels;
-        format.nBlockAlign = sizeof(float)*format.nChannels;
-        format.wBitsPerSample = sizeof(float)*8;
+        format.wFormatTag = WAVE_FORMAT_PCM;
+        format.wBitsPerSample = sizeof(short)*8;
+        format.nBlockAlign = (format.nChannels*format.wBitsPerSample)/8;
+        format.nAvgBytesPerSec = format.nSamplesPerSec*format.nBlockAlign;
         if (MMSYSERR_NOERROR != waveOutOpen(&data->waveOut, WAVE_MAPPER, &format, 
                             reinterpret_cast<DWORD_PTR>(data->audioEvent), 0, CALLBACK_EVENT)) {
             return 2;
         }
+        data->buffer = new float[data->samples*format.nChannels];
         for (int i=0;i<BUFFER_COUNT;++i) {
-            data->buffer[i] = new float[aBuffer*format.nChannels];
+            data->sampleBuffer[i] = new short[data->samples*format.nChannels];
             ZeroMemory(&data->header[i], sizeof(WAVEHDR));
-            data->header[i].dwBufferLength = aBuffer*sizeof(float)*2;
-            data->header[i].lpData = reinterpret_cast<LPSTR>(data->buffer[i]);
+            data->header[i].dwBufferLength = data->samples*sizeof(short)*format.nChannels;
+            data->header[i].lpData = reinterpret_cast<LPSTR>(data->sampleBuffer[i]);
             if (MMSYSERR_NOERROR != waveOutPrepareHeader(data->waveOut, &data->header[i], 
                                                          sizeof(WAVEHDR))) {
                 return 3;
@@ -106,8 +112,7 @@ namespace SoLoud
         aSoloud->mMutex = Thread::createMutex();
         aSoloud->mLockMutexFunc = Thread::lockMutex;
         aSoloud->mUnlockMutexFunc = Thread::unlockMutex;
-        data->soloud = aSoloud;
-        aSoloud->init(aChannels, aSamplerate, aBuffer * format.nChannels, aFlags);
+        aSoloud->init(aChannels, aSamplerate, data->samples * format.nChannels, aFlags);
         Thread::createThread(winMMThread, data);
         return 0;
     }

@@ -153,7 +153,7 @@ namespace SoLoud
         aSoloud->mBackendData = 0;
     }
 
-    int xaudio2_init(Soloud *aSoloud, int aChannels, int aFlags, int aSamplerate, int aBuffer)
+    int xaudio2_init(Soloud *aSoloud, int aVoices, int aFlags, int aSamplerate, int aBuffer)
     {
         Xaudio2Data *data = new Xaudio2Data;
         ZeroMemory(data, sizeof(Xaudio2Data));
@@ -164,7 +164,7 @@ namespace SoLoud
             return 1;
         WAVEFORMATEX format;
         ZeroMemory(&format, sizeof(WAVEFORMATEX));
-        format.nChannels = min(aChannels, 2);
+        format.nChannels = 2;
         format.nSamplesPerSec = aSamplerate;
         format.wFormatTag = WAVE_FORMAT_IEEE_FLOAT;
         format.nAvgBytesPerSec = aSamplerate*sizeof(float)*format.nChannels;
@@ -197,7 +197,7 @@ namespace SoLoud
         aSoloud->mLockMutexFunc = Thread::lockMutex;
         aSoloud->mUnlockMutexFunc = Thread::unlockMutex;
         data->soloud = aSoloud;
-        aSoloud->init(aChannels, aSamplerate, aBuffer * format.nChannels, aFlags);
+        aSoloud->init(aVoices, aSamplerate, aBuffer * format.nChannels, aFlags);
         Thread::createThread(xaudio2Thread, data);
         data->sourceVoice->Start();
         return 0;

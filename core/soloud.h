@@ -107,7 +107,7 @@ namespace SoLoud
 			LOOPING = 1,
 			// This audio instance outputs stereo samples
 			STEREO = 2,
-			// This audio instance is protected - won't get stopped if we run out of channels
+			// This audio instance is protected - won't get stopped if we run out of voices
 			PROTECTED = 4,
 			// This audio instance is paused
 			PAUSED = 8
@@ -219,10 +219,10 @@ namespace SoLoud
 		int mScratchSize;
 		// Amount of scratch needed.
 		int mScratchNeeded;
-		// Audio channels.
-		AudioInstance **mChannel;
-		// Number of channels
-		int mChannelCount;
+		// Audio voices.
+		AudioInstance **mVoice;
+		// Number of concurrent voices.
+		int mVoiceCount;
 		// Output sample rate
 		int mSamplerate;
 		// Maximum size of output buffer; used to calculate needed scratch.
@@ -245,20 +245,20 @@ namespace SoLoud
 		Filter *mFilter[FILTERS_PER_STREAM];
 		// Global filter instance
 		FilterInstance *mFilterInstance[FILTERS_PER_STREAM];
-		// Find a free channel, stopping the oldest if no free channel is found.
-		int findFreeChannel();
-		// Converts handle to channel, if the handle is valid.
-		int getChannelFromHandle(int aChannelHandle) const;
-		// Stop channel (not handle).
-		void stopChannel(int aChannel);
-		// Set channel (not handle) pan.
-		void setChannelPan(int aChannel, float aPan);
-		// Set channel (not handle) relative play speed.
-		void setChannelRelativePlaySpeed(int aChannel, float aSpeed);
-		// Set channel (not handle) volume.
-		void setChannelVolume(int aChannel, float aVolume);
-		// Set channel (not handle) pause state.
-		void setChannelPause(int aChannel, int aPause);
+		// Find a free voice, stopping the oldest if no free voice is found.
+		int findFreeVoice();
+		// Converts handle to voice, if the handle is valid.
+		int getVoiceFromHandle(int aVoiceHandle) const;
+		// Stop voice (not handle).
+		void stopVoice(int aVoice);
+		// Set voice (not handle) pan.
+		void setVoicePan(int aVoice, float aPan);
+		// Set voice (not handle) relative play speed.
+		void setVoiceRelativePlaySpeed(int aVoice, float aSpeed);
+		// Set voice (not handle) volume.
+		void setVoiceVolume(int aVoice, float aVolume);
+		// Set voice (not handle) pause state.
+		void setVoicePause(int aVoice, int aPause);
 	public:
 		// Back-end data; content is up to the back-end implementation.
 		void * mBackendData;
@@ -284,49 +284,49 @@ namespace SoLoud
 		};
 
 		// Initialize SoLoud. Called by the back-end.
-		void init(int aChannels, int aSamplerate, int aBufferSize, int aFlags);
+		void init(int aVoices, int aSamplerate, int aBufferSize, int aFlags);
 		// Mix and return N stereo samples in the buffer. Called by the back-end.
 		void mix(float *aBuffer, int aSamples);
 
 		// Deinitialize SoLoud. Must be called before shutting down.
 		void deinit();
 
-		// Start playing a sound. Returns channel handle, which can be ignored or used to alter the playing sound's parameters.
+		// Start playing a sound. Returns voice handle, which can be ignored or used to alter the playing sound's parameters.
 		int play(AudioSource &aSound, float aVolume = 1.0f, float aPan = 0.0f, int aPaused = 0);
 		// Seek the audio stream to certain point in time. Some streams can't seek backwards. Relative play speed affects time.
-		void seek(int aChannelHandle, float aSeconds);
+		void seek(int aVoiceHandle, float aSeconds);
 		// Stop the sound.
-		void stop(int aChannelHandle);
-		// Stop all channels.
+		void stop(int aVoiceHandle);
+		// Stop all voices.
 		void stopAll();
-		// Stop all channels that play this sound source
+		// Stop all voices that play this sound source
 		void stopSound(AudioSource &aSound);
 
 		// Set a live filter parameter. Use 0 for the global filters.
-		void setFilterParameter(int aChannelHandle, int aFilterId, int aAttributeId, float aValue);
+		void setFilterParameter(int aVoiceHandle, int aFilterId, int aAttributeId, float aValue);
 		// Fade a live filter parameter. Use 0 for the global filters.
-		void fadeFilterParameter(int aChannelHandle, int aFilterId, int aAttributeId, float aFrom, float aTo, float aTime);
+		void fadeFilterParameter(int aVoiceHandle, int aFilterId, int aAttributeId, float aFrom, float aTo, float aTime);
 		// Oscillate a live filter parameter. Use 0 for the global filters.
-		void oscillateFilterParameter(int aChannelHandle, int aFilterId, int aAttributeId, float aFrom, float aTo, float aTime);
+		void oscillateFilterParameter(int aVoiceHandle, int aFilterId, int aAttributeId, float aFrom, float aTo, float aTime);
 
 		// Get current play time, in seconds.
-		float getStreamTime(int aChannelHandle) const;
+		float getStreamTime(int aVoiceHandle) const;
 		// Get current pause state.
-		int getPause(int aChannelHandle) const;
+		int getPause(int aVoiceHandle) const;
 		// Get current volume.
-		float getVolume(int aChannelHandle) const;
+		float getVolume(int aVoiceHandle) const;
 		// Get current pan.
-		float getPan(int aChannelHandle) const;
+		float getPan(int aVoiceHandle) const;
 		// Get current sample rate.
-		float getSamplerate(int aChannelHandle) const;
-		// Get current channel protection state.
-		int getProtectChannel(int aChannelHandle) const;
-		// Get the current number of busy channels.
+		float getSamplerate(int aVoiceHandle) const;
+		// Get current voice protection state.
+		int getProtectVoice(int aVoiceHandle) const;
+		// Get the current number of busy voices.
 		int getActiveVoiceCount() const; 
 		// Check if the handle is still valid, or if the sound has stopped.
-		int isValidChannelHandle(int aChannelHandle) const;
+		int isValidVoiceHandle(int aVoiceHandle) const;
 		// Get current relative play speed.
-		float getRelativePlaySpeed(int aChannelHandle) const;
+		float getRelativePlaySpeed(int aVoiceHandle) const;
 		// Get current post-clip scaler value.
 		float getPostClipScaler() const;
 		// Get current global volume
@@ -337,41 +337,41 @@ namespace SoLoud
 		// Set the post clip scaler value
 		void setPostClipScaler(float aScaler);
 		// Set the pause state
-		void setPause(int aChannelHandle, int aPause);
-		// Pause all channels
+		void setPause(int aVoiceHandle, int aPause);
+		// Pause all voices
 		void setPauseAll(int aPause);
 		// Set the relative play speed
-		void setRelativePlaySpeed(int aChannelHandle, float aSpeed);
-		// Set the channel protection state
-		void setProtectChannel(int aChannelHandle, int aProtect);
+		void setRelativePlaySpeed(int aVoiceHandle, float aSpeed);
+		// Set the voice protection state
+		void setProtectVoice(int aVoiceHandle, int aProtect);
 		// Set the sample rate
-		void setSamplerate(int aChannelHandle, float aSamplerate);
+		void setSamplerate(int aVoiceHandle, float aSamplerate);
 		// Set panning value; -1 is left, 0 is center, 1 is right
-		void setPan(int aChannelHandle, float aPan);
+		void setPan(int aVoiceHandle, float aPan);
 		// Set absolute left/right volumes
-		void setPanAbsolute(int aChannelHandle, float aLVolume, float aRVolume);
+		void setPanAbsolute(int aVoiceHandle, float aLVolume, float aRVolume);
 		// Set overall volume
-		void setVolume(int aChannelHandle, float aVolume);
+		void setVolume(int aVoiceHandle, float aVolume);
 
 		// Set up volume fader
-		void fadeVolume(int aChannelHandle, float aFrom, float aTo, float aTime);
+		void fadeVolume(int aVoiceHandle, float aFrom, float aTo, float aTime);
 		// Set up panning fader
-		void fadePan(int aChannelHandle, float aFrom, float aTo, float aTime);
+		void fadePan(int aVoiceHandle, float aFrom, float aTo, float aTime);
 		// Set up relative play speed fader
-		void fadeRelativePlaySpeed(int aChannelHandle, float aFrom, float aTo, float aTime);
+		void fadeRelativePlaySpeed(int aVoiceHandle, float aFrom, float aTo, float aTime);
 		// Set up global volume fader
 		void fadeGlobalVolume(float aFrom, float aTo, float aTime);
 		// Schedule a stream to pause
-		void schedulePause(int aChannelHandle, float aTime);
+		void schedulePause(int aVoiceHandle, float aTime);
 		// Schedule a stream to stop
-		void scheduleStop(int aChannelHandle, float aTime);
+		void scheduleStop(int aVoiceHandle, float aTime);
 
 		// Set up volume oscillator
-		void oscillateVolume(int aChannelHandle, float aFrom, float aTo, float aTime);
+		void oscillateVolume(int aVoiceHandle, float aFrom, float aTo, float aTime);
 		// Set up panning oscillator
-		void oscillatePan(int aChannelHandle, float aFrom, float aTo, float aTime);
+		void oscillatePan(int aVoiceHandle, float aFrom, float aTo, float aTime);
 		// Set up relative play speed oscillator
-		void oscillateRelativePlaySpeed(int aChannelHandle, float aFrom, float aTo, float aTime);
+		void oscillateRelativePlaySpeed(int aVoiceHandle, float aFrom, float aTo, float aTime);
 		// Set up global volume oscillator
 		void oscillateGlobalVolume(float aFrom, float aTo, float aTime);
 
@@ -385,19 +385,19 @@ namespace SoLoud
 	};
 
 	// SDL back-end initialization call
-	int sdl_init(SoLoud::Soloud *aSoloud, int aChannels = 32, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 2048);
+	int sdl_init(SoLoud::Soloud *aSoloud, int aVoices = 32, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 2048);
 
 	// OpenAL back-end initialization call
-	int openal_init(SoLoud::Soloud *aSoloud, int aChannels = 32, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 2048);
+	int openal_init(SoLoud::Soloud *aSoloud, int aVoices = 32, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 2048);
 
 	// PortAudio back-end initialization call
-	int portaudio_init(SoLoud::Soloud *aSoloud, int aChannels = 32, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 2048);
+	int portaudio_init(SoLoud::Soloud *aSoloud, int aVoices = 32, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 2048);
 
 	// WinMM back-end initialization call
-	int winmm_init(SoLoud::Soloud *aSoloud, int aChannels = 32, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 4096);
+	int winmm_init(SoLoud::Soloud *aSoloud, int aVoices = 32, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 4096);
 
 	// Xaudio2 back-end initialization call
-	int xaudio2_init(SoLoud::Soloud *aSoloud, int aChannels = 32, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 2048);
+	int xaudio2_init(SoLoud::Soloud *aSoloud, int aVoices = 32, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 2048);
 };
 
 #endif 

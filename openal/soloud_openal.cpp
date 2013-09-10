@@ -106,9 +106,9 @@ namespace SoLoud
 		threadrun++;
 	}
 
-	int openal_init(SoLoud::Soloud *aSoloud, int aChannels, int aFlags, int aSamplerate, int aBuffer)
+	int openal_init(SoLoud::Soloud *aSoloud, int aVoices, int aFlags, int aSamplerate, int aBuffer)
 	{
-		aSoloud->init(2,aSamplerate,aBuffer,aFlags);
+		aSoloud->init(aVoices,aSamplerate,aBuffer,aFlags);
 		aSoloud->mBackendCleanupFunc = soloud_openal_deinit;
 		aSoloud->mMutex = Thread::createMutex();
 		aSoloud->mLockMutexFunc = openal_mutex_lock;

@@ -205,7 +205,7 @@ namespace SoLoud
 				mOffset += b;
 				if (mOffset >= mParent->mSampleCount)
 				{
-					if (mFlags & AudioInstance::LOOPING)
+					if (mFlags & AudioSourceInstance::LOOPING)
 					{
 						stb_vorbis_seek_start(mOgg);
 						mOffset = aSamples - offset;
@@ -232,7 +232,7 @@ namespace SoLoud
 		
 			if (copysize != aSamples)
 			{
-				if (mFlags & AudioInstance::LOOPING)
+				if (mFlags & AudioSourceInstance::LOOPING)
 				{
 					fseek(mFile, mParent->mDataOffset, SEEK_SET);
 					getWavData(mFile, aBuffer + copysize * channels, aSamples - copysize, channels, mParent->mChannels, mParent->mChannelOffset, mParent->mBits);
@@ -398,7 +398,7 @@ namespace SoLoud
 		fclose(fp);
 	}
 
-	AudioInstance *WavStream::createInstance()
+	AudioSourceInstance *WavStream::createInstance()
 	{
 		return new WavStreamInstance(this);
 	}

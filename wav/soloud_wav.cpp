@@ -56,7 +56,7 @@ namespace SoLoud
 		
 		if (copysize != aSamples)
 		{
-			if (mFlags & AudioInstance::LOOPING)
+			if (mFlags & AudioSourceInstance::LOOPING)
 			{
 				memcpy(aBuffer + copysize * channels, mParent->mData, sizeof(float) * (aSamples - copysize) * channels);
 				mOffset = aSamples - copysize;
@@ -297,7 +297,7 @@ namespace SoLoud
 		fclose(fp);
 	}
 
-	AudioInstance *Wav::createInstance()
+	AudioSourceInstance *Wav::createInstance()
 	{
 		return new WavInstance(this);
 	}

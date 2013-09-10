@@ -78,7 +78,7 @@ namespace SoLoud
 				samples_out += copycount;				
 			}
 			else
-			if (mSampleCount < 0 && mFlags & AudioInstance::LOOPING)
+			if (mSampleCount < 0 && mFlags & AudioSourceInstance::LOOPING)
 			{
 				mSynth.init();
 				mSynth.initsynth(mParent->mElement.getSize(), (unsigned char *)mParent->mElement.getData());
@@ -130,7 +130,7 @@ namespace SoLoud
 	{
 	}
 
-	AudioInstance *Speech::createInstance()
+	AudioSourceInstance *Speech::createInstance()
 	{
 		return new SpeechInstance(this);
 	}	

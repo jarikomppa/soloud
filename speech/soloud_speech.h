@@ -41,10 +41,10 @@ namespace SoLoud
 		Speech();
 		void setText(char *aText);
 		virtual ~Speech();
-		virtual AudioInstance *createInstance();
+		virtual AudioSourceInstance *createInstance();
 	};
 
-	class SpeechInstance : public AudioInstance
+	class SpeechInstance : public AudioSourceInstance
 	{
 		klatt mSynth;
 		Speech *mParent;

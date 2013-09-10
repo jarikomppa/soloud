@@ -35,7 +35,7 @@ namespace SoLoud
 {
 	class WavStream;
 
-	class WavStreamInstance : public AudioInstance
+	class WavStreamInstance : public AudioSourceInstance
 	{
 		WavStream *mParent;
 		int mOffset;
@@ -68,7 +68,7 @@ namespace SoLoud
 		WavStream();
 		virtual ~WavStream();
 		void load(const char *aFilename, int aStereo = 1, int aChannel = 0);
-		virtual AudioInstance *createInstance();
+		virtual AudioSourceInstance *createInstance();
 	};
 };
 

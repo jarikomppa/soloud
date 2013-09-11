@@ -97,7 +97,7 @@ namespace SoLoud
         aSoloud->mBackendData = 0;
     }
 
-    int winmm_init(Soloud *aSoloud, int aChannels, int aFlags, int aSamplerate, int aBuffer)
+    int winmm_init(Soloud *aSoloud, int aVoices, int aFlags, int aSamplerate, int aBuffer)
     {
         SoLoudWinMMData *data = new SoLoudWinMMData;
         ZeroMemory(data, sizeof(SoLoudWinMMData));
@@ -110,7 +110,7 @@ namespace SoLoud
             return 1;
         WAVEFORMATEX format;
         ZeroMemory(&format, sizeof(WAVEFORMATEX));
-        format.nChannels = min(aChannels, 2);
+        format.nChannels = 2;
         format.nSamplesPerSec = aSamplerate;
         format.wFormatTag = WAVE_FORMAT_PCM;
         format.wBitsPerSample = sizeof(short)*8;
@@ -134,7 +134,7 @@ namespace SoLoud
         aSoloud->mMutex = Thread::createMutex();
         aSoloud->mLockMutexFunc = Thread::lockMutex;
         aSoloud->mUnlockMutexFunc = Thread::unlockMutex;
-        aSoloud->init(aChannels, aSamplerate, data->samples * format.nChannels, aFlags);
+        aSoloud->init(aVoices, aSamplerate, data->samples * format.nChannels, aFlags);
         data->threadHandle = Thread::createThread(winMMThread, data);
         if (0 == data->threadHandle)
             return 4;

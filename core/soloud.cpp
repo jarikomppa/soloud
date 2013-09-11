@@ -291,7 +291,7 @@ namespace SoLoud
 						mVoice[i]->mFilter[j]->filter(
 							mScratch, 
 							readsamples, 
-							(mVoice[i]->mFlags & AudioSourceInstance::STEREO)?2:1, 
+							mVoice[i]->mChannels,
 							mVoice[i]->mSamplerate,
 							mStreamTime);
 					}
@@ -304,7 +304,7 @@ namespace SoLoud
 					float lpani = (mVoice[i]->mFaderVolume[1] - mVoice[i]->mFaderVolume[0]) / aSamples;
 					float rpani = (mVoice[i]->mFaderVolume[3] - mVoice[i]->mFaderVolume[2]) / aSamples;
 
-					if (mVoice[i]->mFlags & AudioSourceInstance::STEREO)
+					if (mVoice[i]->mChannels == 2)
 					{
 						for (j = 0; j < aSamples; j++, step += stepratio, lpan += lpani, rpan += rpani)
 						{
@@ -328,7 +328,7 @@ namespace SoLoud
 				{
 					float lpan = mVoice[i]->mLVolume * mVoice[i]->mVolume * mGlobalVolume;
 					float rpan = mVoice[i]->mRVolume * mVoice[i]->mVolume * mGlobalVolume;
-					if (mVoice[i]->mFlags & AudioSourceInstance::STEREO)
+					if (mVoice[i]->mChannels == 2)
 					{
 						for (j = 0; j < aSamples; j++, step += stepratio)
 						{

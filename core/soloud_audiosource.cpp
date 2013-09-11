@@ -40,6 +40,7 @@ namespace SoLoud
 		mStreamTime = 0.0f;
 		mAudioSourceID = 0;
 		mActiveFader = 0;
+		mChannels = 1;
 		int i;
 		for (i = 0; i < FILTERS_PER_STREAM; i++)
 		{
@@ -63,22 +64,18 @@ namespace SoLoud
 		}
 	}
 
-	void AudioSourceInstance::init(int aPlayIndex, float aBaseSamplerate, int aSourceFlags)
+	void AudioSourceInstance::init(int aPlayIndex, float aBaseSamplerate, int aChannels, int aSourceFlags)
 	{
 		mPlayIndex = aPlayIndex;
 		mBaseSamplerate = aBaseSamplerate;
 		mSamplerate = mBaseSamplerate;
+		mChannels = aChannels;
 		mStreamTime = 0.0f;
 		mFlags = 0;
 
 		if (aSourceFlags & AudioSource::SHOULD_LOOP)
 		{
 			mFlags |= AudioSourceInstance::LOOPING;
-		}
-
-		if (aSourceFlags & AudioSource::STEREO)
-		{
-			mFlags |= AudioSourceInstance::STEREO;
 		}
 	}
 
@@ -125,6 +122,7 @@ namespace SoLoud
 		mBaseSamplerate = 44100; 
 		mAudioSourceID = 0;
 		mSoloud = 0;
+		mChannels = 1;
 	}
 
 	AudioSource::~AudioSource() 

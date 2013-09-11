@@ -40,12 +40,10 @@ namespace SoLoud
 		{			
 			// This audio instance loops (if supported)
 			LOOPING = 1,
-			// This audio instance outputs stereo samples
-			STEREO = 2,
 			// This audio instance is protected - won't get stopped if we run out of voices
-			PROTECTED = 4,
+			PROTECTED = 2,
 			// This audio instance is paused
-			PAUSED = 8
+			PAUSED = 4
 		};
 		// Ctor
 		AudioSourceInstance();
@@ -67,6 +65,8 @@ namespace SoLoud
 		float mBaseSamplerate;
 		// Samplerate; samplerate = base samplerate * relative play speed
 		float mSamplerate;
+		// Number of channels this audio source produces
+		int mChannels;
 		// Relative play speed; samplerate = base samplerate * relative play speed
 		float mRelativePlaySpeed;
 		// How long this stream has played, in seconds.
@@ -90,7 +90,7 @@ namespace SoLoud
 		// Filter pointer
 		FilterInstance *mFilter[FILTERS_PER_STREAM];
 		// Initialize instance. Mostly internal use.
-		void init(int aPlayIndex, float aBaseSamplerate, int aSourceFlags);
+		void init(int aPlayIndex, float aBaseSamplerate, int aChannels, int aSourceFlags);
 		// Get N samples from the stream to the buffer
 		virtual void getAudio(float *aBuffer, int aSamples) = 0;
 		// Has the stream ended?
@@ -110,14 +110,14 @@ namespace SoLoud
 		enum FLAGS
 		{
 			// The instances from this audio source should loop
-			SHOULD_LOOP = 1,
-			// This audio source produces stereo samples
-			STEREO = 2
+			SHOULD_LOOP = 1
 		};
 		// Flags. See AudioSource::FLAGS
 		int mFlags;
 		// Base sample rate, used to initialize instances
 		float mBaseSamplerate;
+		// Number of channels this audio source produces
+		int mChannels;
 		// Sound source ID. Assigned by SoLoud the first time it's played.
 		int mAudioSourceID;
 		// Filter pointer

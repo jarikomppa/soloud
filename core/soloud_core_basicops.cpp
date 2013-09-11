@@ -47,7 +47,7 @@ namespace SoLoud
 		mVoice[ch]->mAudioSourceID = aSound.mAudioSourceID;
 		int handle = ch | (mPlayIndex << 12);
 
-		mVoice[ch]->init(mPlayIndex, aSound.mBaseSamplerate, aSound.mFlags);
+		mVoice[ch]->init(mPlayIndex, aSound.mBaseSamplerate, aSound.mChannels, aSound.mFlags);
 		
 		if (aPaused)
 		{

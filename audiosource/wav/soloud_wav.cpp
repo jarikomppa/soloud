@@ -42,9 +42,7 @@ namespace SoLoud
 		if (mParent->mData == NULL)
 			return;
 
-		int channels = 1;
-		if (mFlags & STEREO)
-			channels = 2;
+		int channels = mChannels;
 
 		int copysize = aSamples;
 		if (copysize + mOffset > mParent->mSampleCount)
@@ -93,7 +91,7 @@ namespace SoLoud
 
 	int WavInstance::hasEnded()
 	{
-		if (mOffset >= mParent->mSampleCount)
+		if (!(mFlags & AudioSourceInstance::LOOPING) && mOffset >= mParent->mSampleCount)
 		{
 			return 1;
 		}
@@ -181,7 +179,7 @@ namespace SoLoud
 		if (channels > 1)
 		{
 			readchannels = 2;
-			mFlags |= STEREO;
+			mChannels = 2;
 		}
 
 		int subchunk2size = read32(fp);
@@ -258,7 +256,7 @@ namespace SoLoud
 		if (info.channels > 1)
 		{
 			readchannels = 2;
-			mFlags |= STEREO;
+			mChannels = 2;
 		}
 
 		mData = new float[samples * readchannels];

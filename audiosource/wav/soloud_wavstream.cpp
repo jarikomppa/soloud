@@ -174,9 +174,7 @@ namespace SoLoud
 
 	void WavStreamInstance::getAudio(float *aBuffer, int aSamples)
 	{			
-		int channels = 1;
-		if (mFlags & STEREO)
-			channels = 2;
+		int channels = mChannels;
 
 		if (mFile == NULL)
 			return;
@@ -343,7 +341,7 @@ namespace SoLoud
 		if (channels > 1)
 		{
 			readchannels = 2;
-			mFlags |= STEREO;
+			mChannels = 2;
 		}
 
 		int subchunk2size = read32(fp);
@@ -367,7 +365,7 @@ namespace SoLoud
 		stb_vorbis_info info = stb_vorbis_get_info(v);
 		if (info.channels > 1)
 		{
-			mFlags |= STEREO;
+			mChannels = 2;
 		}
 		mBaseSamplerate = (float)info.sample_rate;
 		int samples = stb_vorbis_stream_length_in_samples(v);

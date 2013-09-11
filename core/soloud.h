@@ -65,7 +65,7 @@ namespace SoLoud
 #endif
 		// Scratch buffer, used for resampling.
 		float *mScratch;
-		// Current size of the scratch, in stereo samples.
+		// Current size of the scratch, in samples.
 		int mScratchSize;
 		// Amount of scratch needed.
 		int mScratchNeeded;
@@ -75,6 +75,8 @@ namespace SoLoud
 		int mVoiceCount;
 		// Output sample rate
 		int mSamplerate;
+		// Output channel count
+		int mChannels;
 		// Maximum size of output buffer; used to calculate needed scratch.
 		int mBufferSize;
 		// Flags; see Soloud::FLAGS

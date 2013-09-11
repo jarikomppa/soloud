@@ -54,20 +54,19 @@ namespace SoLoud
 
 	class WavStream : public AudioSource
 	{
-		void loadwav(FILE * fp, int aStereo, int aChannel);
-		void loadogg(FILE * fp, int aStereo, int aChannel);
+		void loadwav(FILE * fp);
+		void loadogg(FILE * fp);
 	public:
 		int mOgg;
 		char *mFilename;
 		int mDataOffset;
 		int mBits;
 		int mChannels;
-		int mChannelOffset;
 		int mSampleCount;
 
 		WavStream();
 		virtual ~WavStream();
-		void load(const char *aFilename, int aStereo = 1, int aChannel = 0);
+		void load(const char *aFilename);
 		virtual AudioSourceInstance *createInstance();
 	};
 };

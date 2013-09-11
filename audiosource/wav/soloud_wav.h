@@ -44,15 +44,15 @@ namespace SoLoud
 
 	class Wav : public AudioSource
 	{
-		void loadwav(FILE * fp, int aStereo, int aChannel);
-		void loadogg(FILE * fp, int aStereo, int aChannel);
+		void loadwav(FILE * fp);
+		void loadogg(FILE * fp);
 	public:
 		float *mData;
 		int mSampleCount;
 
 		Wav();
 		virtual ~Wav();
-		void load(const char *aFilename, int aStereo = 1, int aChannel = 0);
+		void load(const char *aFilename);
 		virtual AudioSourceInstance *createInstance();
 	};
 };

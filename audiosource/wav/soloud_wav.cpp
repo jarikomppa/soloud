@@ -134,7 +134,7 @@ namespace SoLoud
 
 #define MAKEDWORD(a,b,c,d) (((d) << 24) | ((c) << 16) | ((b) << 8) | (a))
 
-	void Wav::loadwav(FILE * fp, int aStereo, int aChannel)
+	void Wav::loadwav(FILE * fp)
 	{
 		int wavsize = read32(fp);
 		if (read32(fp) != MAKEDWORD('W','A','V','E'))
@@ -178,7 +178,7 @@ namespace SoLoud
 
 		int readchannels = 1;
 
-		if (aStereo && channels > 1)
+		if (channels > 1)
 		{
 			readchannels = 2;
 			mFlags |= STEREO;
@@ -197,13 +197,13 @@ namespace SoLoud
 			{
 				for (j = 0; j < channels; j++)
 				{
-					if (j == aChannel)
+					if (j == 0)
 					{
 						mData[i] = read8(fp) / (float)0x80;
 					}
 					else
 					{
-						if (readchannels > 1 && j == aChannel + 1)
+						if (readchannels > 1 && j == 1)
 						{
 							mData[i + samples] = read8(fp) / (float)0x80;
 						}
@@ -222,13 +222,13 @@ namespace SoLoud
 			{
 				for (j = 0; j < channels; j++)
 				{
-					if (j == aChannel)
+					if (j == 0)
 					{
 						mData[i] = read16(fp) / (float)0x8000;
 					}
 					else
 					{
-						if (readchannels > 1 && j == aChannel + 1)
+						if (readchannels > 1 && j == 1)
 						{
 							mData[i + samples] = read16(fp) / (float)0x8000;
 						}
@@ -244,7 +244,7 @@ namespace SoLoud
 		mSampleCount = samples;
 	}
 
-	void Wav::loadogg(FILE * fp, int aStereo, int aChannel)
+	void Wav::loadogg(FILE * fp)
 	{
 		fseek(fp,0,SEEK_SET);
 		int e;
@@ -253,9 +253,9 @@ namespace SoLoud
 		stb_vorbis_info info = stb_vorbis_get_info(v);
 		mBaseSamplerate = (float)info.sample_rate;
 		int samples = stb_vorbis_stream_length_in_samples(v);
-
+		
 		int readchannels = 1;
-		if (aStereo)
+		if (info.channels > 1)
 		{
 			readchannels = 2;
 			mFlags |= STEREO;
@@ -272,19 +272,19 @@ namespace SoLoud
 				break;
 			if (readchannels == 1)
 			{
-				memcpy(mData + samples, outputs[aChannel],sizeof(float) * n);
+				memcpy(mData + samples, outputs[0],sizeof(float) * n);
 			}
 			else
 			{
-				memcpy(mData + samples, outputs[aChannel],sizeof(float) * n);
-				memcpy(mData + samples + mSampleCount, outputs[aChannel + 1],sizeof(float) * n);
+				memcpy(mData + samples, outputs[0],sizeof(float) * n);
+				memcpy(mData + samples + mSampleCount, outputs[1],sizeof(float) * n);
 			}
 			samples += n;
 		}
 		stb_vorbis_close(v);
 	}
 
-	void Wav::load(const char *aFilename, int aStereo, int aChannel)
+	void Wav::load(const char *aFilename)
 	{
 		delete[] mData;
 		mData = NULL;
@@ -294,11 +294,11 @@ namespace SoLoud
 		int tag = read32(fp);
 		if (tag == MAKEDWORD('O','g','g','S'))
 		{
-			loadogg(fp, aStereo, aChannel);
+			loadogg(fp);
 		}
 		if (tag == MAKEDWORD('R','I','F','F'))
 		{
-			loadwav(fp, aStereo, aChannel);
+			loadwav(fp);
 		}
 		fclose(fp);
 	}

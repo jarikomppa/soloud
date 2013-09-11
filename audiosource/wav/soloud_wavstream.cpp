@@ -95,7 +95,7 @@ namespace SoLoud
 		return i;
 	}
 
-	static void getWavData(FILE * aFile, float * aBuffer, int aSamples, int aPitch, int aChannels, int aSrcChannels, int aChannelOffset, int aBits)
+	static void getWavData(FILE * aFile, float * aBuffer, int aSamples, int aPitch, int aChannels, int aSrcChannels, int aBits)
 	{
 		int i, j;
 		if (aBits == 8)
@@ -104,13 +104,13 @@ namespace SoLoud
 			{
 				for (j = 0; j < aSrcChannels; j++)
 				{
-					if (j == aChannelOffset)
+					if (j == 0)
 					{
 						aBuffer[i] = read8(aFile) / (float)0x80;
 					}
 					else
 					{
-						if (aChannels > 1 && j == aChannelOffset + 1)
+						if (aChannels > 1 && j == 1)
 						{
 							aBuffer[i + aPitch] = read8(aFile) / (float)0x80;
 						}
@@ -129,13 +129,13 @@ namespace SoLoud
 			{
 				for (j = 0; j < aSrcChannels; j++)
 				{
-					if (j == aChannelOffset)
+					if (j == 0)
 					{
 						aBuffer[i] = read16(aFile) / (float)0x8000;
 					}
 					else
 					{
-						if (aChannels > 1 && j == aChannelOffset + 1)
+						if (aChannels > 1 && j == 1)
 						{
 							aBuffer[i + aPitch] = read16(aFile) / (float)0x8000;
 						}
@@ -228,14 +228,14 @@ namespace SoLoud
 				copysize = mParent->mSampleCount - mOffset;
 			}
 
-			getWavData(mFile, aBuffer, copysize, aSamples, channels, mParent->mChannels, mParent->mChannelOffset, mParent->mBits);
+			getWavData(mFile, aBuffer, copysize, aSamples, channels, mParent->mChannels, mParent->mBits);
 		
 			if (copysize != aSamples)
 			{
 				if (mFlags & AudioSourceInstance::LOOPING)
 				{
 					fseek(mFile, mParent->mDataOffset, SEEK_SET);
-					getWavData(mFile, aBuffer + copysize, aSamples - copysize, aSamples, channels, mParent->mChannels, mParent->mChannelOffset, mParent->mBits);
+					getWavData(mFile, aBuffer + copysize, aSamples - copysize, aSamples, channels, mParent->mChannels, mParent->mBits);
 					mOffset = aSamples - copysize;
 					mStreamTime = mOffset / mSamplerate;
 				}
@@ -287,7 +287,6 @@ namespace SoLoud
 		mDataOffset = 0;
 		mBits = 0;
 		mChannels = 0;
-		mChannelOffset = 0;
 	}
 	
 	WavStream::~WavStream()
@@ -297,7 +296,7 @@ namespace SoLoud
 	
 #define MAKEDWORD(a,b,c,d) (((d) << 24) | ((c) << 16) | ((b) << 8) | (a))
 
-	void WavStream::loadwav(FILE * fp, int aStereo, int aChannel)
+	void WavStream::loadwav(FILE * fp)
 	{
 		int wavsize = read32(fp);
 		if (read32(fp) != MAKEDWORD('W','A','V','E'))
@@ -341,7 +340,7 @@ namespace SoLoud
 
 		int readchannels = 1;
 
-		if (aStereo && channels > 1)
+		if (channels > 1)
 		{
 			readchannels = 2;
 			mFlags |= STEREO;
@@ -352,7 +351,6 @@ namespace SoLoud
 		int samples = (subchunk2size / (bitspersample / 8)) / channels;
 		
 		mDataOffset = ftell(fp);
-		mChannelOffset = aChannel;
 		mBits = bitspersample;
 		mChannels = channels;	
 		mBaseSamplerate = (float)samplerate;
@@ -360,13 +358,17 @@ namespace SoLoud
 		mOgg = 0;
 	}
 
-	void WavStream::loadogg(FILE * fp, int aStereo, int aChannel)
+	void WavStream::loadogg(FILE * fp)
 	{
 		fseek(fp,0,SEEK_SET);
 		int e;
 		stb_vorbis *v = stb_vorbis_open_file(fp, 0, &e, NULL);
 		if (!v) return;
 		stb_vorbis_info info = stb_vorbis_get_info(v);
+		if (info.channels > 1)
+		{
+			mFlags |= STEREO;
+		}
 		mBaseSamplerate = (float)info.sample_rate;
 		int samples = stb_vorbis_stream_length_in_samples(v);
 		stb_vorbis_close(v);
@@ -375,7 +377,7 @@ namespace SoLoud
 		mSampleCount = samples;		
 	}
 
-	void WavStream::load(const char *aFilename, int aStereo, int aChannel)
+	void WavStream::load(const char *aFilename)
 	{
 		delete[] mFilename;
 		mFilename = 0;
@@ -385,11 +387,11 @@ namespace SoLoud
 		int tag = read32(fp);
 		if (tag == MAKEDWORD('O','g','g','S'))
 		{
-			loadogg(fp, aStereo, aChannel);
+			loadogg(fp);
 		}
 		if (tag == MAKEDWORD('R','I','F','F'))
 		{
-			loadwav(fp, aStereo, aChannel);
+			loadwav(fp);
 		}
 
 		int len = strlen(aFilename);

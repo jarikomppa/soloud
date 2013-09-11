@@ -95,7 +95,7 @@ namespace SoLoud
 		return i;
 	}
 
-	static void getWavData(FILE * aFile, float * aBuffer, int aSamples, int aChannels, int aSrcChannels, int aChannelOffset, int aBits)
+	static void getWavData(FILE * aFile, float * aBuffer, int aSamples, int aPitch, int aChannels, int aSrcChannels, int aChannelOffset, int aBits)
 	{
 		int i, j;
 		if (aBits == 8)
@@ -106,13 +106,13 @@ namespace SoLoud
 				{
 					if (j == aChannelOffset)
 					{
-						aBuffer[i * aChannels] = read8(aFile) / (float)0x80;
+						aBuffer[i] = read8(aFile) / (float)0x80;
 					}
 					else
 					{
 						if (aChannels > 1 && j == aChannelOffset + 1)
 						{
-							aBuffer[i * aChannels + 1] = read8(aFile) / (float)0x80;
+							aBuffer[i + aPitch] = read8(aFile) / (float)0x80;
 						}
 						else
 						{
@@ -131,13 +131,13 @@ namespace SoLoud
 				{
 					if (j == aChannelOffset)
 					{
-						aBuffer[i * aChannels] = read16(aFile) / (float)0x8000;
+						aBuffer[i] = read16(aFile) / (float)0x8000;
 					}
 					else
 					{
 						if (aChannels > 1 && j == aChannelOffset + 1)
 						{
-							aBuffer[i * aChannels + 1] = read16(aFile) / (float)0x8000;
+							aBuffer[i + aPitch] = read16(aFile) / (float)0x8000;
 						}
 						else
 						{
@@ -149,10 +149,11 @@ namespace SoLoud
 		}
 	}
 
-	static int getOggData(float **aOggOutputs, float *aBuffer, int aSamples, int aFrameSize, int &aFrameOffset, int aChannelOffset, int aChannels)
+	static int getOggData(float **aOggOutputs, float *aBuffer, int aSamples, int aPitch, int aFrameSize, int aFrameOffset, int aChannels)
 	{			
-		if (aFrameSize == 0)
+		if (aFrameSize <= 0)
 			return 0;
+
 		int samples = aSamples;
 		if (aFrameSize - aFrameOffset < samples)
 		{
@@ -161,18 +162,13 @@ namespace SoLoud
 
 		if (aChannels == 1)
 		{
-			memcpy(aBuffer, aOggOutputs[aChannelOffset] + aFrameOffset, sizeof(float) * samples);
+			memcpy(aBuffer, aOggOutputs[0] + aFrameOffset, sizeof(float) * samples);
 		}
 		else
 		{
-			int i;
-			for (i = 0; i < samples; i++)
-			{
-				aBuffer[i * 2] = aOggOutputs[aChannelOffset][i + aFrameOffset];
-				aBuffer[i * 2 + 1] = aOggOutputs[aChannelOffset + 1][i + aFrameOffset];
-			}
+			memcpy(aBuffer, aOggOutputs[0] + aFrameOffset, sizeof(float) * samples);
+			memcpy(aBuffer + aPitch, aOggOutputs[1] + aFrameOffset, sizeof(float) * samples);
 		}
-		aFrameOffset += samples;
 		return samples;
 	}
 
@@ -190,9 +186,10 @@ namespace SoLoud
 			int offset = 0;			
 			if (mOggFrameOffset < mOggFrameSize)
 			{
-				int b = getOggData(mOggOutputs, aBuffer, aSamples, mOggFrameSize, mOggFrameOffset, mParent->mChannelOffset, channels);
-				offset += b;
+				int b = getOggData(mOggOutputs, aBuffer, aSamples, aSamples, mOggFrameSize, mOggFrameOffset, channels);
 				mOffset += b;
+				offset += b;
+				mOggFrameOffset += b;
 			}
 
 			while (offset < aSamples)
@@ -200,9 +197,10 @@ namespace SoLoud
 				mOggFrameSize = stb_vorbis_get_frame_float(mOgg, NULL, &mOggOutputs);
 				mOggFrameOffset = 0;
 				int b;
-				b = getOggData(mOggOutputs, aBuffer + offset * channels, aSamples - offset, mOggFrameSize, mOggFrameOffset, mParent->mChannelOffset, channels);
-				offset += b;
+				b = getOggData(mOggOutputs, aBuffer + offset, aSamples - offset, aSamples, mOggFrameSize, mOggFrameOffset, channels);
 				mOffset += b;
+				offset += b;
+				mOggFrameOffset += b;
 				if (mOffset >= mParent->mSampleCount)
 				{
 					if (mFlags & AudioSourceInstance::LOOPING)
@@ -213,7 +211,9 @@ namespace SoLoud
 					}
 					else
 					{
-						memset(aBuffer + offset * channels, 0, sizeof(float) * (aSamples - offset) * channels);
+						int i;
+						for (i = 0; i < channels; i++)
+							memset(aBuffer + offset + i * aSamples, 0, sizeof(float) * (aSamples - offset));
 						mOffset += aSamples - offset;
 						offset = aSamples;
 					}
@@ -228,20 +228,22 @@ namespace SoLoud
 				copysize = mParent->mSampleCount - mOffset;
 			}
 
-			getWavData(mFile, aBuffer, copysize, channels, mParent->mChannels, mParent->mChannelOffset, mParent->mBits);
+			getWavData(mFile, aBuffer, copysize, aSamples, channels, mParent->mChannels, mParent->mChannelOffset, mParent->mBits);
 		
 			if (copysize != aSamples)
 			{
 				if (mFlags & AudioSourceInstance::LOOPING)
 				{
 					fseek(mFile, mParent->mDataOffset, SEEK_SET);
-					getWavData(mFile, aBuffer + copysize * channels, aSamples - copysize, channels, mParent->mChannels, mParent->mChannelOffset, mParent->mBits);
+					getWavData(mFile, aBuffer + copysize, aSamples - copysize, aSamples, channels, mParent->mChannels, mParent->mChannelOffset, mParent->mBits);
 					mOffset = aSamples - copysize;
 					mStreamTime = mOffset / mSamplerate;
 				}
 				else
 				{
-					memset(aBuffer + copysize * channels, 0, sizeof(float) * (aSamples - copysize) * channels);
+					int i;
+					for (i = 0; i < channels; i++)
+						memset(aBuffer + copysize + i * aSamples, 0, sizeof(float) * (aSamples - copysize));
 					mOffset += aSamples - copysize;
 				}
 			}

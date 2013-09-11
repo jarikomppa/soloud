@@ -89,9 +89,6 @@ namespace SoLoud
 
 	void BiquadResonantFilterInstance::filter(float *aBuffer, int aSamples, int aChannels, float aSamplerate, float aTime)
 	{
-		int i, pitch, s;
-		float x;
-
 		if (!mActive)
 			return;
 
@@ -118,22 +115,27 @@ namespace SoLoud
 			calcBQRParams();
 		}
 
-		pitch = aChannels;
 
-		for (s = 0; s < pitch; s++)
+		float x;
+		int i,  s;
+		int c = 0;
+
+		for (s = 0; s < aChannels; s++)
 		{
-			for (i = 0; i < aSamples; i += 2)
+			for (i = 0; i < aSamples; i +=2, c++)
 			{
 				// Generate outputs by filtering inputs.
-				x = aBuffer[i * pitch + s];
+				x = aBuffer[c];
 				mY2[s] = (mA0 * x) + (mA1 * mX1[s]) + (mA2 * mX2[s]) - (mB1 * mY1[s]) - (mB2 * mY2[s]);
-				aBuffer[i * pitch + s] = mY2[s];
+				aBuffer[c] = mY2[s];
+
+				c++;
 
 				// Permute filter operations to reduce data movement.
 				// Just substitute variables instead of doing mX1=x, etc.
-				mX2[s] = aBuffer[(i+1) * pitch + s];
+				mX2[s] = aBuffer[c];
 				mY1[s] = (mA0 * mX2[s]) + (mA1 * x) + (mA2 * mX1[s]) - (mB1 * mY2[s]) - (mB2 * mY1[s]);
-				aBuffer[(i+1) * pitch + s] = mY1[s];
+				aBuffer[c] = mY1[s];
 
 				// Only move a little data.
 				mX1[s] = mX2[s];

@@ -122,6 +122,50 @@ namespace SoLoud
 	}
 #endif
 
+	void Soloud::clip(float *aBuffer, float *aDestBuffer, int aSamples)
+	{
+		int i;
+		// Clip
+		if (mFlags & CLIP_ROUNDOFF)
+		{
+			for (i = 0; i < aSamples*2; i++)
+			{
+				float f = aBuffer[i];
+				if (f <= -1.65f)
+				{
+					f = -0.9862875f;
+				}
+				else
+				if (f >= 1.65f)
+				{
+					f = 0.9862875f;
+				}
+				else
+				{
+					f =  0.87f * f - 0.1f * f * f * f;
+				}
+				aDestBuffer[i] = f * mPostClipScaler;
+			}
+		}
+		else
+		{
+			for (i = 0; i < aSamples; i++)
+			{
+				float f = aBuffer[i];
+				if (f < -1.0f)
+				{
+					f = -1.0f;
+				}
+				else
+				if (f > 1.0f)
+				{
+					f = 1.0f;
+				}
+				aDestBuffer[i] = f * mPostClipScaler;
+			}
+		}
+	}
+
 	void Soloud::mix(float *aBuffer, int aSamples)
 	{
 		float buffertime = aSamples / (float)mSamplerate;
@@ -264,10 +308,10 @@ namespace SoLoud
 					{
 						for (j = 0; j < aSamples; j++, step += stepratio, lpan += lpani, rpan += rpani)
 						{
-							float s1 = mScratch[(int)floor(step)*2];
-							float s2 = mScratch[(int)floor(step)*2+1];
-							aBuffer[j * 2 + 0] += s1 * lpan;
-							aBuffer[j * 2 + 1] += s2 * rpan;
+							float s1 = mScratch[(int)floor(step)];
+							float s2 = mScratch[(int)floor(step)+aSamples];
+							aBuffer[j + 0] += s1 * lpan;
+							aBuffer[j + aSamples] += s2 * rpan;
 						}
 					}
 					else
@@ -275,8 +319,8 @@ namespace SoLoud
 						for (j = 0; j < aSamples; j++, step += stepratio, lpan += lpani, rpan += rpani)
 						{
 							float s = mScratch[(int)floor(step)];
-							aBuffer[j * 2 + 0] += s * lpan;
-							aBuffer[j * 2 + 1] += s * rpan;
+							aBuffer[j + 0] += s * lpan;
+							aBuffer[j + aSamples] += s * rpan;
 						}
 					}
 				}
@@ -288,10 +332,10 @@ namespace SoLoud
 					{
 						for (j = 0; j < aSamples; j++, step += stepratio)
 						{
-							float s1 = mScratch[(int)floor(step)*2];
-							float s2 = mScratch[(int)floor(step)*2+1];
-							aBuffer[j * 2 + 0] += s1 * lpan;
-							aBuffer[j * 2 + 1] += s2 * rpan;
+							float s1 = mScratch[(int)floor(step)];
+							float s2 = mScratch[(int)floor(step)+aSamples];
+							aBuffer[j + 0] += s1 * lpan;
+							aBuffer[j + aSamples] += s2 * rpan;
 						}
 					}
 					else
@@ -299,8 +343,8 @@ namespace SoLoud
 						for (j = 0; j < aSamples; j++, step += stepratio)
 						{
 							float s = mScratch[(int)floor(step)];
-							aBuffer[j * 2 + 0] += s * lpan;
-							aBuffer[j * 2 + 1] += s * rpan;
+							aBuffer[j + 0] += s * lpan;
+							aBuffer[j + aSamples] += s * rpan;
 						}
 					}
 				}
@@ -323,45 +367,9 @@ namespace SoLoud
 
 		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 
-		// Clip
-		if (mFlags & CLIP_ROUNDOFF)
-		{
-			for (i = 0; i < aSamples*2; i++)
-			{
-				float f = aBuffer[i];
-				if (f <= -1.65f)
-				{
-					f = -0.9862875f;
-				}
-				else
-				if (f >= 1.65f)
-				{
-					f = 0.9862875f;
-				}
-				else
-				{
-					f =  0.87f * f - 0.1f * f * f * f;
-				}
-				aBuffer[i] = f * mPostClipScaler;
-			}
-		}
-		else
-		{
-			for (i = 0; i < aSamples; i++)
-			{
-				float f = aBuffer[i];
-				if (f < -1.0f)
-				{
-					f = -1.0f;
-				}
-				else
-				if (f > 1.0f)
-				{
-					f = 1.0f;
-				}
-				aBuffer[i] = f * mPostClipScaler;
-			}
-		}
+		clip(aBuffer, mScratch, aSamples);
+		interlace_samples(mScratch, aBuffer, aSamples, 2);
+
 
 #ifdef SOLOUD_INCLUDE_FFT
 		if (mFlags & ENABLE_FFT)
@@ -383,4 +391,35 @@ namespace SoLoud
 		}
 #endif
 	}
+
+	void deinterlace_samples(const float *aSourceBuffer, float *aDestBuffer, int aSamples, int aChannels)
+	{
+		// 121212 -> 111222
+		int i, j, c;
+		c = 0;
+		for (j = 0; j < aChannels; j++)
+		{
+			for (i = j; i < aSamples; i += aChannels)
+			{
+				aDestBuffer[c] = aSourceBuffer[i + j];
+				c++;
+			}
+		}
+	}
+
+	void interlace_samples(const float *aSourceBuffer, float *aDestBuffer, int aSamples, int aChannels)
+	{
+		// 111222 -> 121212
+		int i, j, c;
+		c = 0;
+		for (j = 0; j < aChannels; j++)
+		{
+			for (i = j; i < aSamples * aChannels; i += aChannels)
+			{
+				aDestBuffer[i] = aSourceBuffer[c];
+				c++;
+			}
+		}
+	}
+
 };

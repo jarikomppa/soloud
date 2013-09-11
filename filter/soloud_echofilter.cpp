@@ -39,22 +39,27 @@ namespace SoLoud
 	{
 		if (mBuffer == 0)
 		{
-			mBufferLength = (int)ceil(mParent->mDelay * aSamplerate) * aChannels;
-			mBuffer = new float[mBufferLength];
+			mBufferLength = (int)ceil(mParent->mDelay * aSamplerate);
+			mBuffer = new float[mBufferLength * aChannels];
 			int i;
-			for (i = 0; i < mBufferLength; i++)
+			for (i = 0; i < mBufferLength * aChannels; i++)
 			{
 				mBuffer[i] = 0;
 			}
 		}
-		int process = aSamples * aChannels;
+
 		float decay = mParent->mDecay;
-		int i;
-		for (i = 0; i < process; i++)
+		int i, j;
+		for (i = 0; i < aSamples; i++)
 		{
-			float n = aBuffer[i] + mBuffer[mOffset];
-			mBuffer[mOffset] = n * decay;
-			aBuffer[i] = n;
+			for (j = 0; j < aChannels; j++)
+			{
+				int chofs = j * mBufferLength;
+				int bchofs = j * aSamples;
+				float n = aBuffer[i + bchofs] + mBuffer[mOffset + chofs] * decay;
+				mBuffer[mOffset + chofs] = n;
+				aBuffer[i + bchofs] = n;
+			}
 			mOffset = (mOffset + 1) % mBufferLength;
 		}
 	}

@@ -52,19 +52,29 @@ namespace SoLoud
 			copysize = mParent->mSampleCount - mOffset;
 		}
 
-		memcpy(aBuffer, mParent->mData + mOffset * channels, sizeof(float) * copysize * channels);
+		int i;
+		for (i = 0; i < channels; i++)
+		{
+			memcpy(aBuffer + i * aSamples, mParent->mData + mOffset + i * mParent->mSampleCount, sizeof(float) * copysize);
+		}
 		
 		if (copysize != aSamples)
 		{
 			if (mFlags & AudioSourceInstance::LOOPING)
 			{
-				memcpy(aBuffer + copysize * channels, mParent->mData, sizeof(float) * (aSamples - copysize) * channels);
+				for (i = 0; i < channels; i++)
+				{
+					memcpy(aBuffer + copysize + i * aSamples, mParent->mData + i * mParent->mSampleCount, sizeof(float) * (aSamples - copysize));
+				}
 				mOffset = aSamples - copysize;
 				mStreamTime = mOffset / mSamplerate;
 			}
 			else
 			{
-				memset(aBuffer + copysize * channels, 0, sizeof(float) * (aSamples - copysize) * channels);
+				for (i = 0; i < channels; i++)
+				{
+					memset(aBuffer + copysize + i * aSamples, 0, sizeof(float) * (aSamples - copysize));
+				}
 				mOffset += aSamples - copysize;
 			}
 		}
@@ -189,13 +199,13 @@ namespace SoLoud
 				{
 					if (j == aChannel)
 					{
-						mData[i * readchannels] = read8(fp) / (float)0x80;
+						mData[i] = read8(fp) / (float)0x80;
 					}
 					else
 					{
 						if (readchannels > 1 && j == aChannel + 1)
 						{
-							mData[i * readchannels+1] = read8(fp) / (float)0x80;
+							mData[i + samples] = read8(fp) / (float)0x80;
 						}
 						else
 						{
@@ -214,13 +224,13 @@ namespace SoLoud
 				{
 					if (j == aChannel)
 					{
-						mData[i * readchannels] = read16(fp) / (float)0x8000;
+						mData[i] = read16(fp) / (float)0x8000;
 					}
 					else
 					{
 						if (readchannels > 1 && j == aChannel + 1)
 						{
-							mData[i * readchannels + 1] = read16(fp) / (float)0x8000;
+							mData[i + samples] = read16(fp) / (float)0x8000;
 						}
 						else
 						{
@@ -266,12 +276,8 @@ namespace SoLoud
 			}
 			else
 			{
-				int i;
-				for (i = 0; i < n; i++)
-				{
-					mData[(samples + i) * 2] = outputs[aChannel][i];
-					mData[(samples + i) * 2 + 1] = outputs[aChannel + 1][i];
-				}
+				memcpy(mData + samples, outputs[aChannel],sizeof(float) * n);
+				memcpy(mData + samples + mSampleCount, outputs[aChannel + 1],sizeof(float) * n);
 			}
 			samples += n;
 		}

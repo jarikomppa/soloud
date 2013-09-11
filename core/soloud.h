@@ -109,6 +109,8 @@ namespace SoLoud
 		void setVoiceVolume(int aVoice, float aVolume);
 		// Set voice (not handle) pause state.
 		void setVoicePause(int aVoice, int aPause);
+		// Clip the samples in the buffer
+		void clip(float *aBuffer, float *aDestBuffer, int aSamples);
 	public:
 		// Back-end data; content is up to the back-end implementation.
 		void * mBackendData;
@@ -250,6 +252,12 @@ namespace SoLoud
 
 	// Xaudio2 back-end initialization call
 	int xaudio2_init(SoLoud::Soloud *aSoloud, int aVoices = 32, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 2048);
+
+	// Deinterlace samples in a buffer. From 12121212 to 11112222
+	void deinterlace_samples(const float *aSourceBuffer, float *aDestBuffer, int aSamples, int aChannels);
+
+	// Interlace samples in a buffer. From 11112222 to 12121212
+	void interlace_samples(const float *aSourceBuffer, float *aDestBuffer, int aSamples, int aChannels);
 };
 
 #endif 

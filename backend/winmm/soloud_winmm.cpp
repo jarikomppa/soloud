@@ -45,16 +45,15 @@ namespace SoLoud
         Soloud *soloud;
         int samples;
         bool audioProcessingDone;
-        bool threadRunning;
+        Thread::ThreadHandle threadHandle;
     };
 
     static void winMMThread(LPVOID param)
     {
         SoLoudWinMMData *data = static_cast<SoLoudWinMMData*>(param);
-        data->threadRunning = true;
         while (!data->audioProcessingDone) {
             for (int i=0;i<BUFFER_COUNT;++i) {
-                if ((data->header[i].dwFlags & WHDR_INQUEUE) != 0) 
+                if (0 != (data->header[i].dwFlags & WHDR_INQUEUE)) 
                     continue;
                 data->soloud->mix(data->buffer, data->samples);
                 short *tgtBuf = data->sampleBuffer[i];
@@ -69,7 +68,6 @@ namespace SoLoud
             }
             WaitForSingleObject(data->audioEvent, INFINITE);
         }
-        data->threadRunning = false;
     }
 
     static void winMMCleanup(Soloud *aSoloud)
@@ -79,8 +77,9 @@ namespace SoLoud
         SoLoudWinMMData *data = static_cast<SoLoudWinMMData*>(aSoloud->mBackendData);
         data->audioProcessingDone = true;
         SetEvent(data->audioEvent);
-        while (data->threadRunning)
-            Sleep(10);
+        Thread::wait(data->threadHandle, INFINITE);
+        Thread::release(data->threadHandle);
+        CloseHandle(data->audioEvent);
         waveOutReset(data->waveOut);
         for (int i=0;i<BUFFER_COUNT;++i) {
             waveOutUnprepareHeader(data->waveOut, &data->header[i], sizeof(WAVEHDR));
@@ -89,7 +88,6 @@ namespace SoLoud
         }
         if (0 != data->buffer)
             delete[] data->buffer;
-        CloseHandle(data->audioEvent);
         waveOutClose(data->waveOut);
         Thread::destroyMutex(data->soloud->mMutex);
         data->soloud->mMutex = 0;
@@ -99,7 +97,7 @@ namespace SoLoud
         aSoloud->mBackendData = 0;
     }
 
-    int winmm_init(Soloud *aSoloud, int aVoices, int aFlags, int aSamplerate, int aBuffer)
+    int winmm_init(Soloud *aSoloud, int aChannels, int aFlags, int aSamplerate, int aBuffer)
     {
         SoLoudWinMMData *data = new SoLoudWinMMData;
         ZeroMemory(data, sizeof(SoLoudWinMMData));
@@ -112,7 +110,7 @@ namespace SoLoud
             return 1;
         WAVEFORMATEX format;
         ZeroMemory(&format, sizeof(WAVEFORMATEX));
-        format.nChannels = 2;
+        format.nChannels = min(aChannels, 2);
         format.nSamplesPerSec = aSamplerate;
         format.wFormatTag = WAVE_FORMAT_PCM;
         format.wBitsPerSample = sizeof(short)*8;
@@ -136,8 +134,10 @@ namespace SoLoud
         aSoloud->mMutex = Thread::createMutex();
         aSoloud->mLockMutexFunc = Thread::lockMutex;
         aSoloud->mUnlockMutexFunc = Thread::unlockMutex;
-        aSoloud->init(aVoices, aSamplerate, data->samples * format.nChannels, aFlags);
-        Thread::createThread(winMMThread, data);
+        aSoloud->init(aChannels, aSamplerate, data->samples * format.nChannels, aFlags);
+        data->threadHandle = Thread::createThread(winMMThread, data);
+        if (0 == data->threadHandle)
+            return 4;
         return 0;
     }
 };

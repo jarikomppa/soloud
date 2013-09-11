@@ -55,7 +55,7 @@ namespace SoLoud
         HANDLE audioEvent;
         Soloud *soloud;
         bool audioProcessingDone;
-        bool threadRunning;
+        Thread::ThreadHandle thread;
     };
 
     class VoiceCallback : public IXAudio2VoiceCallback
@@ -102,7 +102,6 @@ namespace SoLoud
     static void xaudio2Thread(LPVOID param)
     {
         Xaudio2Data *data = static_cast<Xaudio2Data*>(param);
-        data->threadRunning = true;
         while (!data->audioProcessingDone) {
             for (int i=0;i<BUFFER_COUNT;++i) {
                 if (!data->buffersToFill[i])
@@ -113,7 +112,6 @@ namespace SoLoud
             }
             WaitForSingleObject(data->audioEvent, INFINITE);
         }
-        data->threadRunning = false;
     }
 
     static void xaudio2Cleanup(Soloud *aSoloud)
@@ -123,8 +121,8 @@ namespace SoLoud
         Xaudio2Data *data = static_cast<Xaudio2Data*>(aSoloud->mBackendData);
         data->audioProcessingDone = true;
         SetEvent(data->audioEvent);
-        while (data->threadRunning)
-            Sleep(10);
+        Thread::wait(data->thread, INFINITE);
+        Thread::release(data->thread);
         CloseHandle(data->audioEvent);
         if (0 != data->sourceVoice) {
             data->sourceVoice->Stop();
@@ -198,7 +196,7 @@ namespace SoLoud
         aSoloud->mUnlockMutexFunc = Thread::unlockMutex;
         data->soloud = aSoloud;
         aSoloud->init(aVoices, aSamplerate, aBuffer * format.nChannels, aFlags);
-        Thread::createThread(xaudio2Thread, data);
+        data->thread = Thread::createThread(xaudio2Thread, data);
         data->sourceVoice->Start();
         return 0;
     }

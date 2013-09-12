@@ -42,7 +42,7 @@ namespace SoLoud
 		ThreadHandle createThread(threadFunction aThreadFunction, void *aParameter);
 
 		void sleep(int aMSec);
-        void wait(ThreadHandle aThreadHandle, int aMSec);
+        void wait(ThreadHandle aThreadHandle);
         void release(ThreadHandle aThreadHandle);
 	}
 }

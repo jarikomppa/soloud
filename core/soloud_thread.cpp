@@ -110,9 +110,9 @@ namespace SoLoud
 			Sleep(aMSec);
 		}
 
-        void wait(ThreadHandle aThreadHandle, int aMSec)
+        void wait(ThreadHandle aThreadHandle)
         {
-            WaitForSingleObject(aThreadHandle->thread, aMSec);
+            WaitForSingleObject(aThreadHandle->thread, INFINITE);
         }
 
         void release(ThreadHandle aThreadHandle)
@@ -199,7 +199,7 @@ namespace SoLoud
 			usleep(aMSec * 1000);
 		}
 
-        void wait(ThreadHandle aThreadHandle, int aMSec)
+        void wait(ThreadHandle aThreadHandle)
         {
             pthread_join(aThreadHandle->thread, 0);
         }

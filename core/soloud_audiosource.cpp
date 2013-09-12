@@ -71,7 +71,6 @@ namespace SoLoud
 		mSamplerate = mBaseSamplerate;
 		mChannels = aChannels;
 		mStreamTime = 0.0f;
-		mFlags = 0;
 
 		if (aSourceFlags & AudioSource::SHOULD_LOOP)
 		{

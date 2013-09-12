@@ -50,5 +50,19 @@ namespace SoLoud
 	{
 		return 0;
 	}
+
+	void FilterInstance::filter(float *aBuffer, int aSamples, int aChannels, float aSamplerate, float aTime)
+	{
+		int i;
+		for (i = 0; i < aChannels; i++)
+		{
+			filterChannel(aBuffer + i* aSamples, aSamples, aSamplerate, aTime, i, aChannels);
+		}
+	}
+
+	void FilterInstance::filterChannel(float *aBuffer, int aSamples, float aSamplerate, float aTime, int aChannel, int aChannels)
+	{
+	}
+
 };
 

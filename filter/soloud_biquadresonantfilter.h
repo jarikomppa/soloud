@@ -29,10 +29,15 @@ namespace SoLoud
 {
 	class BiquadResonantFilter;
 
+	struct BQRStateData
+	{
+		float mY1, mY2, mX1, mX2;
+	};
+
 	class BiquadResonantFilterInstance : public FilterInstance
 	{
 		int mActive;
-		float mY1[2], mY2[2], mX1[2], mX2[2];
+		BQRStateData mState[2];
 		float mA0, mA1, mA2, mB1, mB2;
 		int mDirty;
 		int mFilterType;
@@ -47,7 +52,7 @@ namespace SoLoud
 		BiquadResonantFilter *mParent;
 		void calcBQRParams();
 	public:
-		virtual void filter(float *aBuffer, int aSamples, int aChannels, float aSamplerate, float aTime);
+		virtual void filterChannel(float *aBuffer, int aSamples, float aSamplerate, float aTime, int aChannel, int aChannels);
 		virtual void setFilterParameter(int aAttributeId, float aValue);
 		virtual float getFilterParameter(int aAttributeId);
 		virtual void fadeFilterParameter(int aAttributeId, float aFrom, float aTo, float aTime, float aStartTime);

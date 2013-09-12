@@ -28,6 +28,7 @@ Phil Burk, Game Programming Gems 3, p. 606
 */
 
 #include <math.h>
+#include <string.h>
 #include "soloud.h"
 #include "soloud_biquadresonantfilter.h"
 
@@ -77,9 +78,9 @@ namespace SoLoud
 
 	BiquadResonantFilterInstance::BiquadResonantFilterInstance(BiquadResonantFilter *aParent)
 	{
-		mParent = aParent;
-		mY1[0] = mY2[0] = mX1[0] = mX2[0] = mY1[1] = mY2[1] = mX1[1] = mX2[1] = 0;
+		memset(&mState, 0, sizeof(mState));
 
+		mParent = aParent;
 		mFilterType = aParent->mFilterType;
 		mSampleRate = aParent->mSampleRate;
 		mResonance = aParent->mResonance;
@@ -87,7 +88,7 @@ namespace SoLoud
 		calcBQRParams();
 	}
 
-	void BiquadResonantFilterInstance::filter(float *aBuffer, int aSamples, int aChannels, float aSamplerate, float aTime)
+	void BiquadResonantFilterInstance::filterChannel(float *aBuffer, int aSamples, float aSamplerate, float aTime, int aChannel, int aChannels)
 	{
 		if (!mActive)
 			return;
@@ -115,37 +116,35 @@ namespace SoLoud
 			calcBQRParams();
 		}
 
-
 		float x;
-		int i,  s;
+		int i;
 		int c = 0;
 
-		for (s = 0; s < aChannels; s++)
+		BQRStateData &s = mState[aChannel];
+
+		for (i = 0; i < aSamples; i +=2, c++)
 		{
-			for (i = 0; i < aSamples; i +=2, c++)
-			{
-				// Generate outputs by filtering inputs.
-				x = aBuffer[c];
-				mY2[s] = (mA0 * x) + (mA1 * mX1[s]) + (mA2 * mX2[s]) - (mB1 * mY1[s]) - (mB2 * mY2[s]);
-				aBuffer[c] = mY2[s];
+			// Generate outputs by filtering inputs.
+			x = aBuffer[c];
+			s.mY2 = (mA0 * x) + (mA1 * s.mX1) + (mA2 * s.mX2) - (mB1 * s.mY1) - (mB2 * s.mY2);
+			aBuffer[c] = s.mY2;
 
-				c++;
+			c++;
 
-				// Permute filter operations to reduce data movement.
-				// Just substitute variables instead of doing mX1=x, etc.
-				mX2[s] = aBuffer[c];
-				mY1[s] = (mA0 * mX2[s]) + (mA1 * x) + (mA2 * mX1[s]) - (mB1 * mY2[s]) - (mB2 * mY1[s]);
-				aBuffer[c] = mY1[s];
+			// Permute filter operations to reduce data movement.
+			// Just substitute variables instead of doing mX1=x, etc.
+			s.mX2 = aBuffer[c];
+			s.mY1 = (mA0 * s.mX2) + (mA1 * x) + (mA2 * s.mX1) - (mB1 * s.mY2) - (mB2 * s.mY1);
+			aBuffer[c] = s.mY1;
 
-				// Only move a little data.
-				mX1[s] = mX2[s];
-				mX2[s] = x;
-			}
-
-			// Apply a small impulse to filter to prevent arithmetic underflow,
-			// which can cause the FPU to interrupt the CPU.
-			mY1[s] += (float) 1.0E-26;
+			// Only move a little data.
+			s.mX1 = s.mX2;
+			s.mX2 = x;
 		}
+
+		// Apply a small impulse to filter to prevent arithmetic underflow,
+		// which can cause the FPU to interrupt the CPU.
+		s.mY1 += (float) 1.0E-26;		
 	}
 
 	void BiquadResonantFilterInstance::setFilterParameter(int aAttributeId, float aValue)

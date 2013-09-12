@@ -53,7 +53,7 @@ namespace SoLoud
 		mTime = aTime;
 		mDelta = abs(aTo - aFrom) / 2;
 		mStartTime = aStartTime;
-		mEndTime = (float)M_PI * 2 / (mTime * 1000.0f);
+		mEndTime = (float)M_PI * 2 / mTime;
 	}
 
 	float Fader::get(float aCurrentTime)
@@ -66,9 +66,8 @@ namespace SoLoud
 				// Time rolled over.
 				mStartTime = aCurrentTime;
 			}
-			float t = aCurrentTime - mStartTime;
-			mCurrent += t;
-			return sin(mCurrent * mEndTime) * mDelta + (mFrom + mDelta);
+			float t = aCurrentTime - mStartTime;			
+			return sin(t * mEndTime) * mDelta + (mFrom + mDelta);
 			
 		}
 		if (mStartTime > aCurrentTime)

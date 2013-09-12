@@ -31,14 +31,19 @@ namespace SoLoud
 	{
 		typedef void (*threadFunction)(void *aParam);
 
+        struct ThreadHandleData;
+        typedef ThreadHandleData* ThreadHandle;
+
 		void * createMutex();
 		void destroyMutex(void *aHandle);
 		void lockMutex(void *aHandle);
 		void unlockMutex(void *aHandle);
 
-		void createThread(threadFunction aThreadFunction, void *aParameter);
+		ThreadHandle createThread(threadFunction aThreadFunction, void *aParameter);
 
 		void sleep(int aMSec);
+        void wait(ThreadHandle aThreadHandle);
+        void release(ThreadHandle aThreadHandle);
 	}
 }
 

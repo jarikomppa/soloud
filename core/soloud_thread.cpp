@@ -40,6 +40,11 @@ namespace SoLoud
 	namespace Thread
 	{
 #ifdef WINDOWS_VERSION
+        struct ThreadHandleData
+        {
+            HANDLE thread;
+        };
+
 		void * createMutex()
 		{
 			CRITICAL_SECTION * cs = new CRITICAL_SECTION;
@@ -86,13 +91,18 @@ namespace SoLoud
 			return 0;
 		}
 
-		void createThread(threadFunction aThreadFunction, void *aParameter)
+        ThreadHandle createThread(threadFunction aThreadFunction, void *aParameter)
 		{
 			soloud_thread_data *d = new soloud_thread_data;
 			d->mFunc = aThreadFunction;
 			d->mParam = aParameter;
 
-			CreateThread(NULL,0,threadfunc,d,0,NULL);
+			HANDLE h = CreateThread(NULL,0,threadfunc,d,0,NULL);
+            if (0 == h)
+                return 0;
+            ThreadHandleData *threadHandle = new ThreadHandleData;
+            threadHandle->thread = h;
+            return threadHandle;
 		}
 
 		void sleep(int aMSec)
@@ -100,7 +110,23 @@ namespace SoLoud
 			Sleep(aMSec);
 		}
 
+        void wait(ThreadHandle aThreadHandle)
+        {
+            WaitForSingleObject(aThreadHandle->thread, INFINITE);
+        }
+
+        void release(ThreadHandle aThreadHandle)
+        {
+            CloseHandle(aThreadHandle->thread);
+            delete aThreadHandle;
+        }
+
 #else // pthreads
+        struct ThreadHandleData
+        {
+            pthread_t thread;
+        };
+
 		void * createMutex()
 		{
 			pthread_mutex_t *mutex;
@@ -157,20 +183,31 @@ namespace SoLoud
 			return 0;
 		}
 
-		void createThread(threadFunction aThreadFunction, void *aParameter)
+		ThreadHandle createThread(threadFunction aThreadFunction, void *aParameter)
 		{
 			soloud_thread_data *d = new soloud_thread_data;
 			d->mFunc = aThreadFunction;
 			d->mParam = aParameter;
 
-			pthread_t thread;
-			pthread_create(&thread, NULL, threadfunc, (void*)d);
+			ThreadHandleData *threadHandle = new ThreadHandleData;
+			pthread_create(&threadHandle->thread, NULL, threadfunc, (void*)d);
+            return threadHandle;
 		}
 
 		void sleep(int aMSec)
 		{
 			usleep(aMSec * 1000);
 		}
+
+        void wait(ThreadHandle aThreadHandle)
+        {
+            pthread_join(aThreadHandle->thread, 0);
+        }
+
+        void release(ThreadHandle aThreadHandle)
+        {
+            delete aThreadHandle;
+        }
 #endif
 	}
 }

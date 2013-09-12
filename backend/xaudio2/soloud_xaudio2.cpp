@@ -35,34 +35,28 @@ namespace SoLoud
 {
     static const int BUFFER_COUNT = 2;
 
-    struct BufferData
-    {
-        int index;
-        float *buffer;
-        XAUDIO2_BUFFER bufferInfo;
-        struct Xaudio2Data *parent;
-    };
-
     struct Xaudio2Data
     {
-        BufferData *bufferData[BUFFER_COUNT];
-        bool buffersToFill[BUFFER_COUNT];
+        float *bufferToFill;
+        float *buffer[BUFFER_COUNT];
         IXAudio2 *xaudio2;
         IXAudio2MasteringVoice *masteringVoice;
         IXAudio2SourceVoice *sourceVoice;
-        class VoiceCallback *voiceCb;
-        int samples;
         HANDLE audioEvent;
+        HANDLE audioProcessingDoneEvent;
+        class VoiceCallback *voiceCb;
+        Thread::ThreadHandle thread;
+        void *fillMutex;
         Soloud *soloud;
-        bool audioProcessingDone;
-        bool threadRunning;
+        int samples;
+        UINT32 bufferLengthBytes;
     };
 
     class VoiceCallback : public IXAudio2VoiceCallback
     {
     public:
-        VoiceCallback() 
-            : IXAudio2VoiceCallback() {}
+        VoiceCallback(Xaudio2Data *data) 
+            : IXAudio2VoiceCallback(), m_data(data) {}
         virtual ~VoiceCallback() {}
 
     private:
@@ -83,9 +77,10 @@ namespace SoLoud
         // The buffer can now be reused or destroyed.
         void __stdcall OnBufferEnd(void *bufferContext) 
         {
-            BufferData *bd = reinterpret_cast<BufferData*>(bufferContext);
-            bd->parent->buffersToFill[bd->index] = true;
-            SetEvent(bd->parent->audioEvent);
+            Thread::lockMutex(m_data->fillMutex);
+            m_data->bufferToFill = reinterpret_cast<float*>(bufferContext);
+            Thread::unlockMutex(m_data->fillMutex);
+            SetEvent(m_data->audioEvent);
         }
 
         // Called when this voice has just reached the end position of a loop.
@@ -97,23 +92,41 @@ namespace SoLoud
         // the error.  The callback arguments report which buffer was being
         // processed when the error occurred, and its HRESULT code.
         void __stdcall OnVoiceError(void *bufferContext, HRESULT error) {}
+
+        Xaudio2Data *m_data;
     };
+
+    static void xaudio2SubmitBuffer(IXAudio2SourceVoice *voice, float *buffer, UINT32 length)
+    {
+        XAUDIO2_BUFFER info = {0};
+        info.AudioBytes = length;
+        info.pAudioData = reinterpret_cast<const BYTE*>(buffer);
+        info.pContext = buffer;
+        voice->SubmitSourceBuffer(&info);
+    }
 
     static void xaudio2Thread(LPVOID param)
     {
+        if (FAILED(CoInitializeEx(0, COINIT_MULTITHREADED)))
+            return;
         Xaudio2Data *data = static_cast<Xaudio2Data*>(param);
-        data->threadRunning = true;
-        while (!data->audioProcessingDone) {
-            for (int i=0;i<BUFFER_COUNT;++i) {
-                if (!data->buffersToFill[i])
-                    continue;
-                data->soloud->mix(data->bufferData[i]->buffer, data->samples);
-                data->buffersToFill[i] = false;
-                data->sourceVoice->SubmitSourceBuffer(&data->bufferData[i]->bufferInfo);
+        for (int i=0;i<BUFFER_COUNT;++i) {
+            data->soloud->mix(data->buffer[i], data->samples);
+            xaudio2SubmitBuffer(data->sourceVoice, data->buffer[i], data->bufferLengthBytes);
+        }
+        data->bufferToFill = 0;
+        data->sourceVoice->Start();
+        while (WAIT_OBJECT_0 != WaitForSingleObject(data->audioProcessingDoneEvent, 0)) {
+            Thread::lockMutex(data->fillMutex);
+            float *buffer = data->bufferToFill;
+            Thread::unlockMutex(data->fillMutex);
+            if (0 != buffer) {
+                data->soloud->mix(buffer, data->samples);
+                xaudio2SubmitBuffer(data->sourceVoice, buffer, data->bufferLengthBytes);
             }
             WaitForSingleObject(data->audioEvent, INFINITE);
         }
-        data->threadRunning = false;
+        CoUninitialize();
     }
 
     static void xaudio2Cleanup(Soloud *aSoloud)
@@ -121,11 +134,12 @@ namespace SoLoud
         if (0 == aSoloud->mBackendData)
             return;
         Xaudio2Data *data = static_cast<Xaudio2Data*>(aSoloud->mBackendData);
-        data->audioProcessingDone = true;
+        SetEvent(data->audioProcessingDoneEvent);
         SetEvent(data->audioEvent);
-        while (data->threadRunning)
-            Sleep(10);
+        Thread::wait(data->thread);
+        Thread::release(data->thread);
         CloseHandle(data->audioEvent);
+        CloseHandle(data->audioProcessingDoneEvent);
         if (0 != data->sourceVoice) {
             data->sourceVoice->Stop();
             data->sourceVoice->FlushSourceBuffers();
@@ -141,14 +155,14 @@ namespace SoLoud
         if (0 != data->xaudio2)
             data->xaudio2->Release();
         for (int i=0;i<BUFFER_COUNT;++i) {
-            if (0 != data->bufferData[i]->buffer)
-                delete[] data->bufferData[i]->buffer;
-            delete data->bufferData[i];
+            if (0 != data->buffer[i])
+                delete[] data->buffer[i];
         }
         Thread::destroyMutex(data->soloud->mMutex);
         data->soloud->mMutex = 0;
         data->soloud->mLockMutexFunc = 0;
         data->soloud->mUnlockMutexFunc = 0;
+        Thread::destroyMutex(data->fillMutex);
         delete data;
         aSoloud->mBackendData = 0;
     }
@@ -162,6 +176,9 @@ namespace SoLoud
         data->audioEvent = CreateEvent(0, FALSE, FALSE, 0);
         if (0 == data->audioEvent)
             return 1;
+        data->audioProcessingDoneEvent = CreateEvent(0, FALSE, FALSE, 0);
+        if (0 == data->audioProcessingDoneEvent)
+            return 2;
         WAVEFORMATEX format;
         ZeroMemory(&format, sizeof(WAVEFORMATEX));
         format.nChannels = 2;
@@ -171,35 +188,27 @@ namespace SoLoud
         format.nBlockAlign = sizeof(float)*format.nChannels;
         format.wBitsPerSample = sizeof(float)*8;
         if (FAILED(XAudio2Create(&data->xaudio2)))
-            return 2;
+            return 3;
         if (FAILED(data->xaudio2->CreateMasteringVoice(&data->masteringVoice, 
                                                        format.nChannels, aSamplerate))) {
-            return 3;
-        }
-        data->voiceCb = new VoiceCallback;
-        if (FAILED(data->xaudio2->CreateSourceVoice(&data->sourceVoice, 
-            &format, 0, 2.f, data->voiceCb))) {
             return 4;
         }
-        for (int i=0;i<BUFFER_COUNT;++i) {
-            data->bufferData[i] = new BufferData;
-            data->bufferData[i]->index = i;
-            data->bufferData[i]->buffer = new float[aBuffer * format.nChannels];
-            ZeroMemory(&data->bufferData[i]->bufferInfo, sizeof(XAUDIO2_BUFFER));
-            data->bufferData[i]->bufferInfo.AudioBytes = sizeof(float)*aBuffer*format.nChannels;
-            data->bufferData[i]->bufferInfo.pAudioData = reinterpret_cast<const BYTE*>(data->bufferData[i]->buffer);
-            data->bufferData[i]->bufferInfo.pContext = data->bufferData[i];
-            data->bufferData[i]->parent = data;
-            data->buffersToFill[i] = true;
+        data->voiceCb = new VoiceCallback(data);
+        if (FAILED(data->xaudio2->CreateSourceVoice(&data->sourceVoice, 
+            &format, 0, 2.f, data->voiceCb))) {
+            return 5;
         }
+        data->bufferLengthBytes = aBuffer * format.nChannels * sizeof(float);
+        for (int i=0;i<BUFFER_COUNT;++i)
+            data->buffer[i] = new float[aBuffer * format.nChannels];
         data->samples = aBuffer;
+        data->fillMutex = Thread::createMutex();
         aSoloud->mMutex = Thread::createMutex();
         aSoloud->mLockMutexFunc = Thread::lockMutex;
         aSoloud->mUnlockMutexFunc = Thread::unlockMutex;
         data->soloud = aSoloud;
         aSoloud->init(aVoices, aSamplerate, aBuffer * format.nChannels, aFlags);
-        Thread::createThread(xaudio2Thread, data);
-        data->sourceVoice->Start();
+        data->thread = Thread::createThread(xaudio2Thread, data);
         return 0;
     }
 };

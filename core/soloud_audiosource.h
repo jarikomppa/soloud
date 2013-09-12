@@ -87,6 +87,8 @@ namespace SoLoud
 		float mFaderVolume[2 * 2];
 		// ID of the sound source that generated this instance
 		int mAudioSourceID;
+		// Handle of the bus this audio instance is playing on. 0 for root.
+		int mBusHandle;
 		// Filter pointer
 		FilterInstance *mFilter[FILTERS_PER_STREAM];
 		// Initialize instance. Mostly internal use.

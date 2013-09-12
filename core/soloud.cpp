@@ -122,46 +122,155 @@ namespace SoLoud
 	}
 #endif
 
-	void Soloud::clip(float *aBuffer, float *aDestBuffer, int aSamples)
+	void Soloud::clip(float *aBuffer, float *aDestBuffer, int aSamples, float aVolume0, float aVolume1)
 	{
-		int i;
+		float vd = (aVolume1 - aVolume0) / aSamples;
+		float v = aVolume0;
+		int i, j, c;
 		// Clip
 		if (mFlags & CLIP_ROUNDOFF)
 		{
-			for (i = 0; i < aSamples*2; i++)
+			int c = 0;
+			for (j = 0; j < 2; j++)
 			{
-				float f = aBuffer[i];
-				if (f <= -1.65f)
+				v = aVolume0;
+				for (i = 0; i < aSamples; i++, c++, v += vd)
 				{
-					f = -0.9862875f;
+					float f = aBuffer[c] * v;
+					if (f <= -1.65f)
+					{
+						f = -0.9862875f;
+					}
+					else
+					if (f >= 1.65f)
+					{
+						f = 0.9862875f;
+					}
+					else
+					{
+						f =  0.87f * f - 0.1f * f * f * f;
+					}
+					aDestBuffer[c] = f * mPostClipScaler;
 				}
-				else
-				if (f >= 1.65f)
-				{
-					f = 0.9862875f;
-				}
-				else
-				{
-					f =  0.87f * f - 0.1f * f * f * f;
-				}
-				aDestBuffer[i] = f * mPostClipScaler;
 			}
 		}
 		else
 		{
-			for (i = 0; i < aSamples; i++)
+			c = 0;
+			for (j = 0; j < 2; j++)
 			{
-				float f = aBuffer[i];
-				if (f < -1.0f)
+				v = aVolume0;
+				for (i = 0; i < aSamples; i++, c++, v += vd)
 				{
-					f = -1.0f;
+					float f = aBuffer[i] * v;
+					if (f < -1.0f)
+					{
+						f = -1.0f;
+					}
+					else
+					if (f > 1.0f)
+					{
+						f = 1.0f;
+					}
+					aDestBuffer[i] = f * mPostClipScaler;
+				}
+			}
+		}
+	}
+
+	void Soloud::mixBus(float *aBuffer, int aSamples, float *aScratch, int aBus)
+	{
+		int i;
+		// Clear accumulation buffer
+		for (i = 0; i < aSamples*2; i++)
+		{
+			aBuffer[i] = 0;
+		}
+
+		// Accumulate sound sources
+		for (i = 0; i < mVoiceCount; i++)
+		{
+			if (mVoice[i] && mVoice[i]->mBusHandle == aBus && !(mVoice[i]->mFlags & AudioSourceInstance::PAUSED))
+			{
+
+				float stepratio = mVoice[i]->mSamplerate / mSamplerate;
+				float step = 0;
+				int j;
+
+				int readsamples = (int)ceil(aSamples * stepratio);
+
+				mVoice[i]->getAudio(aScratch, readsamples);	
+
+				for (j = 0; j < FILTERS_PER_STREAM; j++)
+				{
+					if (mVoice[i]->mFilter[j])
+					{
+						mVoice[i]->mFilter[j]->filter(
+							aScratch, 
+							readsamples, 
+							mVoice[i]->mChannels,
+							mVoice[i]->mSamplerate,
+							mStreamTime);
+					}
+				}
+
+				if (mVoice[i]->mActiveFader)
+				{
+					float lpan = mVoice[i]->mFaderVolume[0];
+					float rpan = mVoice[i]->mFaderVolume[2];
+					float lpani = (mVoice[i]->mFaderVolume[1] - mVoice[i]->mFaderVolume[0]) / aSamples;
+					float rpani = (mVoice[i]->mFaderVolume[3] - mVoice[i]->mFaderVolume[2]) / aSamples;
+
+					if (mVoice[i]->mChannels == 2)
+					{
+						for (j = 0; j < aSamples; j++, step += stepratio, lpan += lpani, rpan += rpani)
+						{
+							float s1 = aScratch[(int)floor(step)];
+							float s2 = aScratch[(int)floor(step)+aSamples];
+							aBuffer[j + 0] += s1 * lpan;
+							aBuffer[j + aSamples] += s2 * rpan;
+						}
+					}
+					else
+					{
+						for (j = 0; j < aSamples; j++, step += stepratio, lpan += lpani, rpan += rpani)
+						{
+							float s = aScratch[(int)floor(step)];
+							aBuffer[j + 0] += s * lpan;
+							aBuffer[j + aSamples] += s * rpan;
+						}
+					}
 				}
 				else
-				if (f > 1.0f)
 				{
-					f = 1.0f;
+					float lpan = mVoice[i]->mLVolume * mVoice[i]->mVolume;
+					float rpan = mVoice[i]->mRVolume * mVoice[i]->mVolume;
+					if (mVoice[i]->mChannels == 2)
+					{
+						for (j = 0; j < aSamples; j++, step += stepratio)
+						{
+							float s1 = aScratch[(int)floor(step)];
+							float s2 = aScratch[(int)floor(step)+aSamples];
+							aBuffer[j + 0] += s1 * lpan;
+							aBuffer[j + aSamples] += s2 * rpan;
+						}
+					}
+					else
+					{
+						for (j = 0; j < aSamples; j++, step += stepratio)
+						{
+							float s = aScratch[(int)floor(step)];
+							aBuffer[j + 0] += s * lpan;
+							aBuffer[j + aSamples] += s * rpan;
+						}
+					}
 				}
-				aDestBuffer[i] = f * mPostClipScaler;
+
+				// clear voice if the sound is over
+				if (!(mVoice[i]->mFlags & AudioSourceInstance::LOOPING) && mVoice[i]->hasEnded())
+				{
+					stopVoice(i);
+				}
 			}
 		}
 	}
@@ -238,10 +347,10 @@ namespace SoLoud
 
 				if (mVoice[i]->mActiveFader)
 				{
-					mVoice[i]->mFaderVolume[0*2+0] = panl[0] * volume[0] * globalVolume[0];
-					mVoice[i]->mFaderVolume[0*2+1] = panl[1] * volume[1] * globalVolume[1];
-					mVoice[i]->mFaderVolume[1*2+0] = panr[0] * volume[0] * globalVolume[0];
-					mVoice[i]->mFaderVolume[1*2+1] = panr[1] * volume[1] * globalVolume[1];
+					mVoice[i]->mFaderVolume[0*2+0] = panl[0] * volume[0];
+					mVoice[i]->mFaderVolume[0*2+1] = panl[1] * volume[1];
+					mVoice[i]->mFaderVolume[1*2+0] = panr[0] * volume[0];
+					mVoice[i]->mFaderVolume[1*2+1] = panr[1] * volume[1];
 				}
 
 				if (mVoice[i]->mStopScheduler.mActive)
@@ -264,98 +373,7 @@ namespace SoLoud
 			mScratch = new float[mScratchSize];
 		}
 		
-		// Clear accumulation buffer
-		for (i = 0; i < aSamples*2; i++)
-		{
-			aBuffer[i] = 0;
-		}
-
-		// Accumulate sound sources
-		for (i = 0; i < mVoiceCount; i++)
-		{
-			if (mVoice[i] && !(mVoice[i]->mFlags & AudioSourceInstance::PAUSED))
-			{
-
-				float stepratio = mVoice[i]->mSamplerate / mSamplerate;
-				float step = 0;
-				int j;
-
-				int readsamples = (int)ceil(aSamples * stepratio);
-
-				mVoice[i]->getAudio(mScratch, readsamples);	
-
-				for (j = 0; j < FILTERS_PER_STREAM; j++)
-				{
-					if (mVoice[i]->mFilter[j])
-					{
-						mVoice[i]->mFilter[j]->filter(
-							mScratch, 
-							readsamples, 
-							mVoice[i]->mChannels,
-							mVoice[i]->mSamplerate,
-							mStreamTime);
-					}
-				}
-
-				if (mVoice[i]->mActiveFader)
-				{
-					float lpan = mVoice[i]->mFaderVolume[0];
-					float rpan = mVoice[i]->mFaderVolume[2];
-					float lpani = (mVoice[i]->mFaderVolume[1] - mVoice[i]->mFaderVolume[0]) / aSamples;
-					float rpani = (mVoice[i]->mFaderVolume[3] - mVoice[i]->mFaderVolume[2]) / aSamples;
-
-					if (mVoice[i]->mChannels == 2)
-					{
-						for (j = 0; j < aSamples; j++, step += stepratio, lpan += lpani, rpan += rpani)
-						{
-							float s1 = mScratch[(int)floor(step)];
-							float s2 = mScratch[(int)floor(step)+aSamples];
-							aBuffer[j + 0] += s1 * lpan;
-							aBuffer[j + aSamples] += s2 * rpan;
-						}
-					}
-					else
-					{
-						for (j = 0; j < aSamples; j++, step += stepratio, lpan += lpani, rpan += rpani)
-						{
-							float s = mScratch[(int)floor(step)];
-							aBuffer[j + 0] += s * lpan;
-							aBuffer[j + aSamples] += s * rpan;
-						}
-					}
-				}
-				else
-				{
-					float lpan = mVoice[i]->mLVolume * mVoice[i]->mVolume * mGlobalVolume;
-					float rpan = mVoice[i]->mRVolume * mVoice[i]->mVolume * mGlobalVolume;
-					if (mVoice[i]->mChannels == 2)
-					{
-						for (j = 0; j < aSamples; j++, step += stepratio)
-						{
-							float s1 = mScratch[(int)floor(step)];
-							float s2 = mScratch[(int)floor(step)+aSamples];
-							aBuffer[j + 0] += s1 * lpan;
-							aBuffer[j + aSamples] += s2 * rpan;
-						}
-					}
-					else
-					{
-						for (j = 0; j < aSamples; j++, step += stepratio)
-						{
-							float s = mScratch[(int)floor(step)];
-							aBuffer[j + 0] += s * lpan;
-							aBuffer[j + aSamples] += s * rpan;
-						}
-					}
-				}
-
-				// clear voice if the sound is over
-				if (!(mVoice[i]->mFlags & AudioSourceInstance::LOOPING) && mVoice[i]->hasEnded())
-				{
-					stopVoice(i);
-				}
-			}
-		}
+		mixBus(aBuffer, aSamples, mScratch, 0);
 
 		for (i = 0; i < FILTERS_PER_STREAM; i++)
 		{
@@ -367,7 +385,7 @@ namespace SoLoud
 
 		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 
-		clip(aBuffer, mScratch, aSamples);
+		clip(aBuffer, mScratch, aSamples, globalVolume[0], globalVolume[1]);
 		interlace_samples(mScratch, aBuffer, aSamples, 2);
 
 

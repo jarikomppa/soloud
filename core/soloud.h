@@ -43,6 +43,7 @@ freely, subject to the following restrictions:
 #include "soloud_filter.h"
 #include "soloud_fader.h"
 #include "soloud_audiosource.h"
+#include "soloud_bus.h"
 
 namespace SoLoud
 {
@@ -55,64 +56,6 @@ namespace SoLoud
 	// Soloud core class.
 	class Soloud
 	{
-#ifdef SOLOUD_INCLUDE_FFT
-		// FFT calculation code
-		FFT mFFT;
-		// Data gathered for FFT input
-		float mFFTInput[512];
-		// FFT output data
-		float mFFTData[256];
-#endif
-		// Scratch buffer, used for resampling.
-		float *mScratch;
-		// Current size of the scratch, in samples.
-		int mScratchSize;
-		// Amount of scratch needed.
-		int mScratchNeeded;
-		// Audio voices.
-		AudioSourceInstance **mVoice;
-		// Number of concurrent voices.
-		int mVoiceCount;
-		// Output sample rate
-		int mSamplerate;
-		// Output channel count
-		int mChannels;
-		// Maximum size of output buffer; used to calculate needed scratch.
-		int mBufferSize;
-		// Flags; see Soloud::FLAGS
-		int mFlags;
-		// Global volume. Applied before clipping.
-		float mGlobalVolume;
-		// Post-clip scaler. Applied after clipping.
-		float mPostClipScaler;
-		// Current play index. Used to create audio handles.
-		unsigned int mPlayIndex;
-		// Current sound source index. Used to create sound source IDs.
-		int mAudioSourceID;
-		// Fader for the global volume.
-		Fader mGlobalVolumeFader;
-		// Global stream time, for the global volume fader. Re-set when global volume fader is set.
-		float mStreamTime;
-		// Global filter
-		Filter *mFilter[FILTERS_PER_STREAM];
-		// Global filter instance
-		FilterInstance *mFilterInstance[FILTERS_PER_STREAM];
-		// Find a free voice, stopping the oldest if no free voice is found.
-		int findFreeVoice();
-		// Converts handle to voice, if the handle is valid.
-		int getVoiceFromHandle(int aVoiceHandle) const;
-		// Stop voice (not handle).
-		void stopVoice(int aVoice);
-		// Set voice (not handle) pan.
-		void setVoicePan(int aVoice, float aPan);
-		// Set voice (not handle) relative play speed.
-		void setVoiceRelativePlaySpeed(int aVoice, float aSpeed);
-		// Set voice (not handle) volume.
-		void setVoiceVolume(int aVoice, float aVolume);
-		// Set voice (not handle) pause state.
-		void setVoicePause(int aVoice, int aPause);
-		// Clip the samples in the buffer
-		void clip(float *aBuffer, float *aDestBuffer, int aSamples);
 	public:
 		// Back-end data; content is up to the back-end implementation.
 		void * mBackendData;
@@ -146,7 +89,7 @@ namespace SoLoud
 		void deinit();
 
 		// Start playing a sound. Returns voice handle, which can be ignored or used to alter the playing sound's parameters.
-		int play(AudioSource &aSound, float aVolume = 1.0f, float aPan = 0.0f, int aPaused = 0);
+		int play(AudioSource &aSound, float aVolume = 1.0f, float aPan = 0.0f, int aPaused = 0, int aBus = 0);
 		// Seek the audio stream to certain point in time. Some streams can't seek backwards. Relative play speed affects time.
 		void seek(int aVoiceHandle, float aSeconds);
 		// Stop the sound.
@@ -237,6 +180,71 @@ namespace SoLoud
 #ifdef SOLOUD_INCLUDE_FFT
 		// Calculate FFT
 		float *calcFFT();
+#endif
+
+		// Rest of the stuff is used internally.
+	public:
+		// Perform mixing for a specific bus
+		void mixBus(float *aBuffer, int aSamples, float *aScratch, int aBus);
+		// Scratch buffer, used for resampling.
+		float *mScratch;
+		// Current size of the scratch, in samples.
+		int mScratchSize;
+		// Amount of scratch needed.
+		int mScratchNeeded;
+		// Audio voices.
+		AudioSourceInstance **mVoice;
+		// Number of concurrent voices.
+		int mVoiceCount;
+		// Output sample rate
+		int mSamplerate;
+		// Output channel count
+		int mChannels;
+		// Maximum size of output buffer; used to calculate needed scratch.
+		int mBufferSize;
+		// Flags; see Soloud::FLAGS
+		int mFlags;
+		// Global volume. Applied before clipping.
+		float mGlobalVolume;
+		// Post-clip scaler. Applied after clipping.
+		float mPostClipScaler;
+		// Current play index. Used to create audio handles.
+		unsigned int mPlayIndex;
+		// Current sound source index. Used to create sound source IDs.
+		int mAudioSourceID;
+		// Fader for the global volume.
+		Fader mGlobalVolumeFader;
+		// Global stream time, for the global volume fader. Re-set when global volume fader is set.
+		float mStreamTime;
+		// Global filter
+		Filter *mFilter[FILTERS_PER_STREAM];
+		// Global filter instance
+		FilterInstance *mFilterInstance[FILTERS_PER_STREAM];
+		// Find a free voice, stopping the oldest if no free voice is found.
+		int findFreeVoice();
+		// Converts handle to voice, if the handle is valid.
+		int getVoiceFromHandle(int aVoiceHandle) const;
+		// Converts voice + playindex into handle
+		int getHandleFromVoice(int aVoice) const;
+		// Stop voice (not handle).
+		void stopVoice(int aVoice);
+		// Set voice (not handle) pan.
+		void setVoicePan(int aVoice, float aPan);
+		// Set voice (not handle) relative play speed.
+		void setVoiceRelativePlaySpeed(int aVoice, float aSpeed);
+		// Set voice (not handle) volume.
+		void setVoiceVolume(int aVoice, float aVolume);
+		// Set voice (not handle) pause state.
+		void setVoicePause(int aVoice, int aPause);
+		// Clip the samples in the buffer
+		void clip(float *aBuffer, float *aDestBuffer, int aSamples, float aVolume0, float aVolume1);
+#ifdef SOLOUD_INCLUDE_FFT
+		// FFT calculation code
+		FFT mFFT;
+		// Data gathered for FFT input
+		float mFFTInput[512];
+		// FFT output data
+		float mFFTData[256];
 #endif
 	};
 

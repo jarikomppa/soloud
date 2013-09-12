@@ -83,8 +83,10 @@ namespace SoLoud
 	{
 		if (mVoice[aVoice])
 		{
-			delete mVoice[aVoice];
+			// Delete via temporary variable to avoid recursion
+			AudioSourceInstance * v = mVoice[aVoice];
 			mVoice[aVoice] = 0;			
+			delete v;
 		}
 	}
 

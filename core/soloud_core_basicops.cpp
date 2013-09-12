@@ -28,7 +28,7 @@ freely, subject to the following restrictions:
 
 namespace SoLoud
 {
-	int Soloud::play(AudioSource &aSound, float aVolume, float aPan, int aPaused)
+	int Soloud::play(AudioSource &aSound, float aVolume, float aPan, int aPaused, int aBus)
 	{
 		if (mLockMutexFunc) mLockMutexFunc(mMutex);
 		int ch = findFreeVoice();
@@ -45,10 +45,11 @@ namespace SoLoud
 		}
 		mVoice[ch] = aSound.createInstance();
 		mVoice[ch]->mAudioSourceID = aSound.mAudioSourceID;
-		int handle = ch | (mPlayIndex << 12);
-
+		mVoice[ch]->mBusHandle = aBus;
 		mVoice[ch]->init(mPlayIndex, aSound.mBaseSamplerate, aSound.mChannels, aSound.mFlags);
-		
+
+		mPlayIndex++;
+
 		if (aPaused)
 		{
 			mVoice[ch]->mFlags |= AudioSourceInstance::PAUSED;
@@ -67,7 +68,6 @@ namespace SoLoud
 			}
 		}
 
-		mPlayIndex++;
 		int scratchneeded = (int)ceil((mVoice[ch]->mSamplerate / mSamplerate) * mBufferSize);
 		if (mScratchNeeded < scratchneeded)
 		{
@@ -76,6 +76,8 @@ namespace SoLoud
 			mScratchNeeded = pot;
 		}
 		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+
+		int handle = getHandleFromVoice(ch);
 		return handle;
 	}	
 

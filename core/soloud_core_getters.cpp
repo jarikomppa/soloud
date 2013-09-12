@@ -38,13 +38,20 @@ namespace SoLoud
 		return mGlobalVolume;
 	}
 
+	int Soloud::getHandleFromVoice(int aVoice) const
+	{
+		if (mVoice[aVoice] == 0)
+			return 0;
+		return (aVoice + 1) | (mVoice[aVoice]->mPlayIndex << 12);
+	}
+
 	int Soloud::getVoiceFromHandle(int aVoiceHandle) const
 	{
 		if (aVoiceHandle < 0) 
 		{
 			return -1;
 		}
-		int ch = aVoiceHandle & 0xff;
+		int ch = (aVoiceHandle & 0xfff) - 1;
 		unsigned int idx = aVoiceHandle >> 12;
 		if (mVoice[ch] &&
 			(mVoice[ch]->mPlayIndex & 0xfffff) == idx)

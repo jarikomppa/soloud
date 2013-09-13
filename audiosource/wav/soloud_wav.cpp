@@ -257,7 +257,7 @@ namespace SoLoud
 				{
 					if (j == 0)
 					{
-						mData[i * readchannels] = dr->read8() / (float)0x80;
+						mData[i] = dr->read8() / (float)0x80;
 					}
 					else
 					{

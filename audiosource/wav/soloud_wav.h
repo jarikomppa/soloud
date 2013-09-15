@@ -47,9 +47,9 @@ namespace SoLoud
 
 	class Wav : public AudioSource
 	{
-		void loadwav(DataReader *dr);
-		void loadogg(stb_vorbis *v);
-		void testAndLoadFile(DataReader *dr);
+		void loadwav(DataReader *aReader);
+		void loadogg(stb_vorbis *aVorbis);
+		void testAndLoadFile(DataReader *aReader);
 	public:
 		float *mData;
 		int mSampleCount;
@@ -57,7 +57,7 @@ namespace SoLoud
 		Wav();
 		virtual ~Wav();
 		void load(const char *aFilename);
-		void loadMem(unsigned char *mem, int len);
+		void loadMem(unsigned char *aMem, int aLength);
 		virtual AudioSourceInstance *createInstance();
 	};
 };

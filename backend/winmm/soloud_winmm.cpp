@@ -48,9 +48,9 @@ namespace SoLoud
         Thread::ThreadHandle threadHandle;
     };
 
-    static void winMMThread(LPVOID param)
+    static void winMMThread(LPVOID aParam)
     {
-        SoLoudWinMMData *data = static_cast<SoLoudWinMMData*>(param);
+        SoLoudWinMMData *data = static_cast<SoLoudWinMMData*>(aParam);
         while (!data->audioProcessingDone) 
         {
             for (int i=0;i<BUFFER_COUNT;++i) 

@@ -31,15 +31,17 @@ freely, subject to the following restrictions:
 #include <math.h>
 
 #include "soloud.h"
-#include "soloud_sinewave.h"
+#include "soloud_basicwave.h"
 #include "soloud_echofilter.h"
 #include "soloud_speech.h"
 #include "soloud_biquadresonantfilter.h"
 
+SoLoud::Speech gSpeech;
 SoLoud::Soloud gSoloud;			// SoLoud engine core
-SoLoud::Sinewave gSinewave;		// Simple sinewave audio source
+SoLoud::Basicwave gWave;		// Simple wave audio source
 SoLoud::EchoFilter gFilter;		// Simple echo filter
 SoLoud::BiquadResonantFilter gBQRFilter;   // BQR filter
+SoLoud::Bus gBus;
 
 SDL_Surface *screen;
 
@@ -63,19 +65,16 @@ void render()
 
 	// Calling calcFFT will cause SoLoud to actually calculate the FFT;
 	// if we keep this pointer around, it'll just point to the old data.
-#ifdef SOLOUD_INCLUDE_FFT
 	float *buf = gSoloud.calcFFT();
-#endif
-	float *mixbuf = (float*)gSoloud.mBackendData;
+	float *mixbuf = gSoloud.getWave();
 	int i, j;
 	if (mixbuf)
 	for (i = 0; i < 640; i++)
 	{
-		float f;
 		int v;
-#ifdef SOLOUD_INCLUDE_FFT
+		float f;
 		f = buf[i*256/640];
-		v = (int)floor(480 - f * 2);
+		v = (int)floor(480 - f * 4);
 		for (j = 240; j < 480; j++)
 		{
 			int c = 0;
@@ -84,8 +83,8 @@ void render()
 
 			putpixel(i, j, c);
 		}
-#endif
-		v = (int)floor(120*mixbuf[i*2])+120;
+
+		v = (int)floor(120*mixbuf[i * 256 / 640])+120;
 		for (j = 0; j < 240; j++)
 		{
 			int c = 0;
@@ -107,8 +106,10 @@ void render()
 void plonk(float rel)
 {
 	float pan = (float)sin(SDL_GetTicks() * 0.0234) ;
-	int handle = gSoloud.play(gSinewave,1,pan);
-	gSoloud.fadePan(handle,pan,-pan,0.5);
+//	int handle = gSoloud.play(gWave,1,pan);
+	int handle = gBus.play(gWave,1,pan);
+//	gSoloud.fadePan(handle,pan,-pan,0.5);
+//	gSoloud.oscillatePan(handle,-1,1,0.2);
 	gSoloud.fadeVolume(handle, 1, 0, 0.5);
 	gSoloud.scheduleStop(handle, 0.5);
 	gSoloud.setRelativePlaySpeed(handle, 2*rel);
@@ -124,12 +125,15 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
-	SoLoud::sdl_init(&gSoloud, 32, 3, 44100, 2048);
+	SoLoud::sdl_init(&gSoloud, 32, SoLoud::Soloud::CLIP_ROUNDOFF | SoLoud::Soloud::ENABLE_VISUALIZATION, 44100, 2048);
 	gSoloud.setGlobalVolume(0.75);
 	gSoloud.setPostClipScaler(0.75);
-	gSoloud.setGlobalFilter(&gBQRFilter);
-	gFilter.setParams(0.25f, 0.5f);
-
+//	gBus.setFilter(0, &gBQRFilter);
+//	gBus.setFilter(1, &gFilter);
+	gFilter.setParams(0.5f, 0.5f);
+	int bushandle = gSoloud.play(gBus);
+	gSpeech.setText("Use keyboard to play or adjust settings");
+	gSoloud.play(gSpeech, 4);
 	
 	// Register SDL_Quit to be called at exit; makes sure things are
 	// cleaned up when we quit.
@@ -160,12 +164,64 @@ int main(int argc, char *argv[])
 			case SDL_KEYDOWN:
 				switch (event.key.keysym.sym)
 				{
-				case SDLK_z: gSoloud.setGlobalFilter(0); break;
-				case SDLK_x: gSoloud.setGlobalFilter(&gFilter); break;
-				case SDLK_c: gSoloud.setGlobalFilter(&gBQRFilter); gBQRFilter.setParams(SoLoud::BiquadResonantFilter::LOWPASS, 44100, 1000, 2); break;
-				case SDLK_v: gSoloud.setGlobalFilter(&gBQRFilter); gBQRFilter.setParams(SoLoud::BiquadResonantFilter::LOWPASS, 44100, 500, 8); break;
-				case SDLK_b: gSoloud.setGlobalFilter(&gBQRFilter); gBQRFilter.setParams(SoLoud::BiquadResonantFilter::HIGHPASS, 44100, 1000, 8); break;
-				case SDLK_n: gSoloud.setGlobalFilter(&gBQRFilter); gBQRFilter.setParams(SoLoud::BiquadResonantFilter::BANDPASS, 44100, 1000, 1); break;
+				case SDLK_z: 
+					gBus.setFilter(0, 0); 
+					gBus.setFilter(1, 0); 
+					gSpeech.setText("Filter clear");
+					gSoloud.play(gSpeech, 4);
+					break;
+				case SDLK_x: 
+					gBus.setFilter(0, &gFilter); 
+					gSpeech.setText("Echo filter");
+					gSoloud.play(gSpeech, 4);
+					break;
+				case SDLK_c: 
+					gBQRFilter.setParams(SoLoud::BiquadResonantFilter::LOWPASS, 44100, 1000, 2);  
+					gBus.setFilter(1, &gBQRFilter); 
+					gSpeech.setText("Low pass filter 1000 hz");
+					gSoloud.play(gSpeech, 4);
+					break;
+				case SDLK_v: 
+					gBQRFilter.setParams(SoLoud::BiquadResonantFilter::LOWPASS, 44100, 500, 8);   
+					gBus.setFilter(1, &gBQRFilter); 
+					gSpeech.setText("Low pass filter 500 hz");
+					gSoloud.play(gSpeech, 4);
+					break;
+				case SDLK_b: 
+					gBQRFilter.setParams(SoLoud::BiquadResonantFilter::HIGHPASS, 44100, 1000, 8); 
+					gBus.setFilter(1, &gBQRFilter); 
+					gSpeech.setText("High pass filter 1000 hz");
+					gSoloud.play(gSpeech, 4);
+					break;
+				case SDLK_n: 
+					gBQRFilter.setParams(SoLoud::BiquadResonantFilter::BANDPASS, 44100, 1000, 1); 
+					gBus.setFilter(1, &gBQRFilter); 
+					gSpeech.setText("Band pass filter 1000 hz");
+					gSoloud.play(gSpeech, 4);
+					break;
+				case SDLK_m: 
+					gBQRFilter.setParams(SoLoud::BiquadResonantFilter::LOWPASS, 44100, 1000, 2);  
+					gBus.setFilter(1, &gBQRFilter); 
+					gSoloud.oscillateFilterParameter(bushandle, 1, 1, 500, 6000, 4);  
+					gSpeech.setText("Oscillating low pass filter");
+					gSoloud.play(gSpeech, 4);
+					break; 				
+				case SDLK_a: 
+					gWave.setWaveform(SoLoud::Basicwave::SINE); 
+					gSpeech.setText("Sine wave");
+					gSoloud.play(gSpeech, 4);
+					break;
+				case SDLK_s: 
+					gWave.setWaveform(SoLoud::Basicwave::TRIANGLE); 
+					gSpeech.setText("Triangle wave");
+					gSoloud.play(gSpeech, 4);
+					break;
+				case SDLK_d: 
+					gWave.setWaveform(SoLoud::Basicwave::SQUARE); 
+					gSpeech.setText("Square wave");
+					gSoloud.play(gSpeech, 4);
+					break;
+
 				case SDLK_p: plonk(1); break;                  // C
 				case SDLK_o: plonk(pow(0.943875f, 1)); break;  // B
 				case SDLK_9: plonk(pow(0.943875f, 2)); break;  //  A#

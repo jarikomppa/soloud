@@ -27,9 +27,12 @@ freely, subject to the following restrictions:
 
 #include "soloud.h"
 
+struct stb_vorbis;
+
 namespace SoLoud
 {
 	class Wav;
+	class DataReader;
 
 	class WavInstance : public AudioSourceInstance
 	{
@@ -44,8 +47,9 @@ namespace SoLoud
 
 	class Wav : public AudioSource
 	{
-		void loadwav(FILE * fp);
-		void loadogg(FILE * fp);
+		void loadwav(DataReader *aReader);
+		void loadogg(stb_vorbis *aVorbis);
+		void testAndLoadFile(DataReader *aReader);
 	public:
 		float *mData;
 		int mSampleCount;
@@ -53,6 +57,7 @@ namespace SoLoud
 		Wav();
 		virtual ~Wav();
 		void load(const char *aFilename);
+		void loadMem(unsigned char *aMem, int aLength);
 		virtual AudioSourceInstance *createInstance();
 	};
 };

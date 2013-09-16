@@ -78,7 +78,14 @@ namespace SoLoud
 
 	BiquadResonantFilterInstance::BiquadResonantFilterInstance(BiquadResonantFilter *aParent)
 	{
-		memset(&mState, 0, sizeof(mState));
+		int i;
+		for (i = 0; i < 2; i++)
+		{
+			mState[i].mX1 = 0;
+			mState[i].mY1 = 0;
+			mState[i].mX2 = 0;
+			mState[i].mY2 = 0;
+		}
 
 		mParent = aParent;
 		mFilterType = aParent->mFilterType;

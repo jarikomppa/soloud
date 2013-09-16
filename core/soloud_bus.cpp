@@ -38,7 +38,13 @@ namespace SoLoud
 	{
 		int handle = mParent->mChannelHandle;
 		if (handle == 0) 
+		{
+			// Avoid reuse of scratch data if this bus hasn't played anything yet
+			int i;
+			for (i = 0; i < aSamples * mChannels; i++)
+				aBuffer[i] = 0;
 			return;
+		}
 		
 		Soloud *s = mParent->mSoloud;
 		if (s->mScratchNeeded != mScratchSize)

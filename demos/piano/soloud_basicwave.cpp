@@ -80,6 +80,11 @@ namespace SoLoud
 		mFreq = (float)(440 / mBaseSamplerate);
 	}
 
+	void Basicwave::setWaveform(int aWaveform)
+	{
+		mWaveform = aWaveform;
+	}
+
 	AudioSourceInstance * Basicwave::createInstance() 
 	{
 		return new BasicwaveInstance(this);

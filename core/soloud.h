@@ -34,11 +34,6 @@ freely, subject to the following restrictions:
 
 // Maximum number of filters per stream
 #define FILTERS_PER_STREAM 4
-//#define SOLOUD_INCLUDE_FFT
-
-#ifdef SOLOUD_INCLUDE_FFT
-#include "soloud_fft.h"
-#endif
 
 #include "soloud_filter.h"
 #include "soloud_fader.h"
@@ -77,7 +72,7 @@ namespace SoLoud
 		{
 			// Use round-off clipper
 			CLIP_ROUNDOFF = 1,
-			ENABLE_FFT = 2
+			ENABLE_VISUALIZATION = 2,
 		};
 
 		// Initialize SoLoud. Called by the back-end.
@@ -177,10 +172,11 @@ namespace SoLoud
 		// Set global filters. Set to NULL to clear the filter.
 		void setGlobalFilter(int aFilterId, Filter *aFilter);
 
-#ifdef SOLOUD_INCLUDE_FFT
-		// Calculate FFT
+		// Calculate and get 256 floats of FFT data for visualization. Need ENABLE_VISUALIZATION at SoLoud init to use.
 		float *calcFFT();
-#endif
+
+		// Get 256 floats of wave data for visualization. Need ENABLE_VISUALIZATION at SoLoud init to use.
+		float *getWave();
 
 		// Rest of the stuff is used internally.
 	public:
@@ -238,14 +234,12 @@ namespace SoLoud
 		void setVoicePause(int aVoice, int aPause);
 		// Clip the samples in the buffer
 		void clip(float *aBuffer, float *aDestBuffer, int aSamples, float aVolume0, float aVolume1);
-#ifdef SOLOUD_INCLUDE_FFT
-		// FFT calculation code
-		FFT mFFT;
-		// Data gathered for FFT input
-		float mFFTInput[512];
+		// Mono-mixed wave data for visualization and for visualization FFT input
+		float mVisualizationWaveData[256];
 		// FFT output data
 		float mFFTData[256];
-#endif
+		// Snapshot of wave data for visualization
+		float mWaveData[256];
 	};
 
 	// SDL back-end initialization call

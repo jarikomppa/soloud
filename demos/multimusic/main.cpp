@@ -44,6 +44,8 @@ SDL_Surface *screen;
 
 void putpixel(int x, int y, int color)
 {
+	if (y < 0 || y > 255 || x < 0 || x > 400) 
+		return;
 	unsigned int *ptr = (unsigned int*)screen->pixels;
 	int lineoffset = y * (screen->pitch / 4);
 	ptr[lineoffset + x] = color;
@@ -60,21 +62,34 @@ void render()
 	// Ask SDL for the time in milliseconds
 	int tick = SDL_GetTicks();
 
-	float *buf = (float*)gSoloud.mBackendData;
+	float *buf = gSoloud.getWave();
+	float *fft = gSoloud.calcFFT();
 
-	int i, j;
-	for (i = 0; i < 400; i++)
+
+	if (buf && fft)
 	{
-		int v = (int)floor(buf[i*2]*127+128);
-		for (j = 0; j < 256; j++)
-		{
-			int c = 0;
-			if (j < 128 && v < 128 && j > v)
-				c = 0xff0000;
-			if (j > 127 && v > 127 && j < v)
-				c = 0xff0000;
+		int i, j;
+		for (i = 0; i < 256; i++)
+			for (j = 0; j < 400; j++)
+				putpixel(j, i, 0);
 
-			putpixel(i, j, c);
+		int last = 0;
+		for (i = 0; i < 256; i++)
+		{			
+			int v = 256-(int)floor(fft[i] * 127);
+			for (j = v; j < 256; j++)
+			{
+				putpixel(i,j,0x0000ff);
+			}
+
+			v = (int)floor(buf[i] * 127 + 128);
+			for (j = 0; j < 6; j++)
+			{
+				putpixel(i,j+v,0xff0000);
+			}
+
+			putpixel(200 + v,128+(v-last),0x00ff00);
+			last = v;
 		}
 	}
 
@@ -104,7 +119,7 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
-	SoLoud::sdl_init(&gSoloud);
+	SoLoud::sdl_init(&gSoloud, 32, SoLoud::Soloud::CLIP_ROUNDOFF | SoLoud::Soloud::ENABLE_VISUALIZATION);
 
 	// Register SDL_Quit to be called at exit; makes sure things are
 	// cleaned up when we quit.
@@ -122,8 +137,8 @@ int main(int argc, char *argv[])
 
 	gMusichandle1 = gSoloud.play(gMusic1,0,0,1);
 	gMusichandle2 = gSoloud.play(gMusic2);
-	gSoloud.setProtectChannel(gMusichandle1, 1);
-	gSoloud.setProtectChannel(gMusichandle2, 1);
+	gSoloud.setProtectVoice(gMusichandle1, 1);
+	gSoloud.setProtectVoice(gMusichandle2, 1);
 
 	// Main loop: loop forever.
 	while (1)

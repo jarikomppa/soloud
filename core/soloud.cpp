@@ -96,10 +96,11 @@ namespace SoLoud
 			mVoice[i] = 0;
 		}
 		mSamplerate = aSamplerate;
-		mScratchSize = 2048;
-		mScratchNeeded = 2048;
-		mScratch = new float[mScratchSize * 2];
 		mBufferSize = aBufferSize;
+		mScratchSize = aBufferSize;
+		if (mScratchSize < 2048) mScratchSize = 2048;
+		mScratchNeeded = mScratchSize;
+		mScratch = new float[mScratchSize * 2];
 		mFlags = aFlags;
 		mPostClipScaler = 0.5f;
 	}

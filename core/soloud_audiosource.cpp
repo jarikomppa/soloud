@@ -41,6 +41,7 @@ namespace SoLoud
 		mAudioSourceID = 0;
 		mActiveFader = 0;
 		mChannels = 1;
+		mBusHandle = -1;
 		int i;
 		for (i = 0; i < FILTERS_PER_STREAM; i++)
 		{

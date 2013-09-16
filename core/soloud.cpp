@@ -45,6 +45,8 @@ namespace SoLoud
 		mPostClipScaler = 0;
 		mLockMutexFunc = NULL;
 		mUnlockMutexFunc = NULL;
+		mBackendCleanupFunc = NULL;
+		mChannels = 2;		
 		mStreamTime = 0;
 		mAudioSourceID = 1;
 		int i;
@@ -53,16 +55,12 @@ namespace SoLoud
 			mFilter[i] = NULL;
 			mFilterInstance[i] = NULL;
 		}
-#ifdef SOLOUD_INCLUDE_FFT
-		for (i = 0; i < 512; i++)
-		{
-			mFFTInput[i] = 0;
-		}
 		for (i = 0; i < 256; i++)
 		{
 			mFFTData[i] = 0;
+			mVisualizationWaveData[i] = 0;
+			mWaveData[i] = 0;
 		}
-#endif
 	}
 
 	Soloud::~Soloud()

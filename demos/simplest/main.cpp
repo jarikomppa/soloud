@@ -23,22 +23,14 @@ freely, subject to the following restrictions:
 */
 
 #include <stdlib.h>
-#if defined(_MSC_VER)
-#include "SDL.h"
-#else
-#include "SDL/SDL.h"
-#endif
-#include <math.h>
 
 #include "soloud.h"
 #include "soloud_speech.h"
+#include "soloud_thread.h"
 
 // Entry point
 int main(int argc, char *argv[])
 {
-	// Init SDL (minimally, in this case))
-	SDL_Init(0); 
-
 	// Define a couple of variables
 	SoLoud::Soloud soloud;  // SoLoud engine core
 	SoLoud::Speech speech;  // A sound source (speech, in this case)
@@ -46,24 +38,25 @@ int main(int argc, char *argv[])
 	// Configure sound source
 	speech.setText("1 2 3   1 2 3   Hello world. Welcome to So-Loud.");
 
-	// initialize SoLoud for SDL
-	SoLoud::sdl_init(&soloud);
+	// initialize SoLoud.
+#ifdef _WIN32
+	SoLoud::winmm_init(&soloud); // On windows, simplest thing is to use WinMM
+#else
+	SoLoud::portaudio_init(&soloud); // On other platforms, portaudio is probably the best option
+#endif
 
 	// Play the sound source (we could do this several times if we wanted)
 	soloud.play(speech);
 
 	// Wait until sounds have finished
-	while (soloud.getActiveVoiceCount())
+	while (soloud.getActiveVoiceCount() > 0)
 	{
 		// Still going, sleep for a bit
-		SDL_Delay(100);
+		SoLoud::Thread::sleep(100);
 	}
 
 	// Clean up SoLoud
 	soloud.deinit();
-
-	// Clean up SDL
-	SDL_Quit();
 
 	// All done.
 	return 0;

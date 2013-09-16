@@ -22,48 +22,67 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#include "soloud_sinewave.h"
+#include "soloud_basicwave.h"
 
 namespace SoLoud
 {
 
-	SinewaveInstance::SinewaveInstance(Sinewave *aParent)
+	BasicwaveInstance::BasicwaveInstance(Basicwave *aParent)
 	{
 		mParent = aParent;
 		mOffset = 0;
 	}
 
-	void SinewaveInstance::getAudio(float *aBuffer, int aSamples)
+	void BasicwaveInstance::getAudio(float *aBuffer, int aSamples)
 	{
 		int i;
-		for (i = 0; i < aSamples; i++)
+		switch (mParent->mWaveform)
 		{
-			aBuffer[i] = sin(mParent->mFreq * mOffset);
-			mOffset++;
+			case Basicwave::SINE:
+				for (i = 0; i < aSamples; i++)
+				{
+					aBuffer[i] = sin(mParent->mFreq * mOffset * M_PI * 2);
+					mOffset++;
+				}
+				break;
+			case Basicwave::TRIANGLE:
+				for (i = 0; i < aSamples; i++)
+				{
+					aBuffer[i] = (1 - fmod(mParent->mFreq * mOffset, 1)) * 2 - 1;
+					mOffset++;
+				}
+				break;
+			case Basicwave::SQUARE:
+				for (i = 0; i < aSamples; i++)
+				{
+					aBuffer[i] = (fmod(mParent->mFreq * mOffset, 1) > 0.5) ? -1 : 1;
+					mOffset++;
+				}
+				break;
 		}
 	}
 
-	int SinewaveInstance::hasEnded()
+	int BasicwaveInstance::hasEnded()
 	{
 		// This audio source never ends.
 		return 0;
 	}
 	
-	Sinewave::Sinewave()
+	Basicwave::Basicwave()
 	{
-		mBaseSamplerate = 4000;
-		mFreq = (float)(440 * M_PI * 2 / mBaseSamplerate);
+		setSamplerate(4000);
+		mWaveform = SQUARE;
 	}
 
-	void Sinewave::setSamplerate(float aSamplerate)
+	void Basicwave::setSamplerate(float aSamplerate)
 	{
 		mBaseSamplerate = aSamplerate;
-		mFreq = (float)(440 * M_PI * 2 / mBaseSamplerate);
+		mFreq = (float)(440 / mBaseSamplerate);
 	}
 
-	AudioSourceInstance * Sinewave::createInstance() 
+	AudioSourceInstance * Basicwave::createInstance() 
 	{
-		return new SinewaveInstance(this);
+		return new BasicwaveInstance(this);
 	}
 
 };

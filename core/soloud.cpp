@@ -75,6 +75,7 @@ namespace SoLoud
 		}
 		delete[] mScratch;
 		delete[] mVoice;
+		mVoice = 0;
 		deinit();
 	}
 

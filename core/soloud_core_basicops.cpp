@@ -116,7 +116,7 @@ namespace SoLoud
 			int i;
 			for (i = 0; i < mVoiceCount; i++)
 			{
-				if (mVoice[i] && mVoice[i]->mAudioSourceID == aSound.mAudioSourceID)
+				if (mVoice && mVoice[i] && mVoice[i]->mAudioSourceID == aSound.mAudioSourceID)
 				{
 					stopVoice(i);
 				}

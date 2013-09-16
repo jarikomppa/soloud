@@ -22,31 +22,39 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#ifndef SINEWAVE_H
-#define SINEWAVE_H
+#ifndef BASICWAVE_H
+#define BASICWAVE_H
 
 #include "soloud.h"
 
 namespace SoLoud
 {
-	class Sinewave;
+	class Basicwave;
 
-	class SinewaveInstance : public AudioSourceInstance
+	class BasicwaveInstance : public AudioSourceInstance
 	{
-		Sinewave *mParent;
+		Basicwave *mParent;
 		int mOffset;
 	public:
-		SinewaveInstance(Sinewave *aParent);
+		BasicwaveInstance(Basicwave *aParent);
 		virtual void getAudio(float *aBuffer, int aSamples);
 		virtual int hasEnded();
 	};
 
-	class Sinewave : public AudioSource
+	class Basicwave : public AudioSource
 	{
 	public:
+		enum WAVEFORMS
+		{
+			SINE,
+			TRIANGLE,
+			SQUARE
+		};
 		float mFreq;
-		Sinewave();
+		int mWaveform;
+		Basicwave();
 		void setSamplerate(float aSamplerate);
+		void setWaveform(int aWaveform);
 		virtual AudioSourceInstance *createInstance();
 	};
 };

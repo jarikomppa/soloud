@@ -132,7 +132,7 @@ namespace SoLoud
 		// Set the looping of the instances created from this audio source
 		void setLooping(int aLoop);
 		// Set filter. Set to NULL to clear the filter.
-		void setFilter(int aFilterId, Filter *aFilter);
+		virtual void setFilter(int aFilterId, Filter *aFilter);
 		// DTor
 		virtual ~AudioSource();
 		// Create instance from the audio source. Called from within Soloud class.

@@ -51,6 +51,8 @@ namespace SoLoud
 	public:
 		Bus();
 		virtual BusInstance *createInstance();
+		// Set filter. Set to NULL to clear the filter.
+		virtual void setFilter(int aFilterId, Filter *aFilter);
 		int play(AudioSource &aSound, float aVolume = 1.0f, float aPan = 0.0f, int aPaused = 0);
 	};
 };

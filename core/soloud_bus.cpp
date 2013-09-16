@@ -112,4 +112,26 @@ namespace SoLoud
 		}
 		return mSoloud->play(aSound, aVolume, aPan, aPaused, mChannelHandle);
 	}	
+
+	void Bus::setFilter(int aFilterId, Filter *aFilter)
+	{
+		if (aFilterId < 0 || aFilterId >= FILTERS_PER_STREAM)
+			return;
+
+		mFilter[aFilterId] = aFilter;
+
+		if (mInstance)
+		{
+			if (mSoloud->mLockMutexFunc) mSoloud->mLockMutexFunc(mSoloud->mMutex);
+			delete mInstance->mFilter[aFilterId];
+			mInstance->mFilter[aFilterId] = 0;
+		
+			if (aFilter)
+			{
+				mInstance->mFilter[aFilterId] = mFilter[aFilterId]->createInstance();
+			}
+			if (mSoloud->mUnlockMutexFunc) mSoloud->mUnlockMutexFunc(mSoloud->mMutex);
+		}
+	}
+
 };

@@ -96,10 +96,11 @@ namespace SoLoud
 			soloud_thread_data *d = new soloud_thread_data;
 			d->mFunc = aThreadFunction;
 			d->mParam = aParameter;
-
 			HANDLE h = CreateThread(NULL,0,threadfunc,d,0,NULL);
             if (0 == h)
+            {
                 return 0;
+            }
             ThreadHandleData *threadHandle = new ThreadHandleData;
             threadHandle->thread = h;
             return threadHandle;

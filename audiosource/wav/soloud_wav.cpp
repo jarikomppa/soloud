@@ -108,48 +108,122 @@ namespace SoLoud
 	{
 		delete[] mData;
 	}
-	
-	static int read32(FILE * f)
-	{
-		int i;
-		fread(&i,1,4,f);
-		return i;
-	}
 
-	static int read16(FILE * f)
-	{
-		short i;
-		fread(&i,1,2,f);
-		return i;
-	}
-
-	static int read8(FILE * f)
-	{
-		char i;
-		fread(&i,1,1,f);
-		return i;
-	}
+    // if this proves to be useful in general, we probably should make an interface
+    // called DataReader. then we could implement all kinds of fancy readers
+    class DataReader
+    {
+    public:
+        DataReader()
+            : mOriginalPtr(0), mCurrentPtr(0), mFilePtr(0), mIsMem(false), mLength(0) {}
+        virtual ~DataReader() 
+        {
+            if (0 != mFilePtr) 
+            {
+                fclose(mFilePtr);
+            }
+        }
+        bool open(const char *filename)
+        {
+            mIsMem = false;
+            mFilePtr = fopen(filename, "rb");
+            return (0 != mFilePtr);
+        }
+        bool open(unsigned char *data, int len)
+        {
+            mOriginalPtr = data;
+            mCurrentPtr = data;
+            mLength = len;
+            mIsMem = true;
+            return true;
+        }
+        int read8()
+        {
+            char i = 0;
+            if (mIsMem) 
+            {
+                i = *mCurrentPtr;
+                ++mCurrentPtr;
+            } 
+            else 
+            {
+                fread(&i, sizeof(char), 1, mFilePtr);
+            }
+            return i;
+        }
+        int read16()
+        {
+            short i = 0;
+            if (mIsMem) 
+            {
+                i = *reinterpret_cast<short*>(mCurrentPtr);
+                mCurrentPtr += sizeof(short);
+            } 
+            else 
+            {
+                fread(&i, sizeof(short), 1, mFilePtr);
+            }
+            return i;
+        }
+        int read32()
+        {
+            int i = 0;
+            if (mIsMem) 
+            {
+                i = *reinterpret_cast<int*>(mCurrentPtr);
+                mCurrentPtr += sizeof(int);
+            } 
+            else 
+            {
+                fread(&i, sizeof(int), 1, mFilePtr);
+            }
+            return i;
+        }
+        void seek(int offset)
+        {
+            if (mIsMem) 
+            {
+                offset = offset > (mLength - 1) ? mLength - 1 : offset;
+                offset = offset < 0 ? 0 : offset;
+                mCurrentPtr = mOriginalPtr + offset;
+            } 
+            else 
+            {
+                fseek(mFilePtr, offset, SEEK_SET);
+            }
+        }
+        bool isMemoryFile() const { return mIsMem; }
+        unsigned char* currentData() const { return mCurrentPtr; }
+        int dataLength() const { return mLength; }
+        FILE* filePtr() const { return mFilePtr; }
+    private:
+        unsigned char *mOriginalPtr;
+        unsigned char *mCurrentPtr;
+        FILE *mFilePtr;
+        bool mIsMem;
+        int mLength;
+    };
 
 #define MAKEDWORD(a,b,c,d) (((d) << 24) | ((c) << 16) | ((b) << 8) | (a))
 
-	void Wav::loadwav(FILE * fp)
+    void Wav::loadwav(DataReader *aReader)
 	{
-		int wavsize = read32(fp);
-		if (read32(fp) != MAKEDWORD('W','A','V','E'))
+		/*int wavsize =*/ aReader->read32();
+		if (aReader->read32() != MAKEDWORD('W','A','V','E'))
 		{
 			return;
 		}
-		if (read32(fp) != MAKEDWORD('f','m','t',' '))
+		if (aReader->read32() != MAKEDWORD('f','m','t',' '))
 		{
 			return;
 		}
-		int subchunk1size = read32(fp);
-		int audioformat = read16(fp);
-		int channels = read16(fp);
-		int samplerate = read32(fp);
-		int byterate = read32(fp);
-		int blockalign = read16(fp);
-		int bitspersample = read16(fp);
+		int subchunk1size = aReader->read32();
+		int audioformat = aReader->read16();
+		int channels = aReader->read16();
+		int samplerate = aReader->read32();
+		/*int byterate =*/ aReader->read32();
+		/*int blockalign =*/ aReader->read16();
+		int bitspersample = aReader->read16();
 
 		if (audioformat != 1 ||
 			subchunk1size != 16 ||
@@ -158,15 +232,15 @@ namespace SoLoud
 			return;
 		}
 		
-		int chunk = read32(fp);
+		int chunk = aReader->read32();
 		
 		if (chunk == MAKEDWORD('L','I','S','T'))
 		{
-			int size = read32(fp);
+			int size = aReader->read32();
 			int i;
 			for (i = 0; i < size; i++)
-				read8(fp);
-			chunk = read32(fp);
+				aReader->read8();
+			chunk = aReader->read32();
 		}
 		
 		if (chunk != MAKEDWORD('d','a','t','a'))
@@ -182,7 +256,7 @@ namespace SoLoud
 			mChannels = 2;
 		}
 
-		int subchunk2size = read32(fp);
+		int subchunk2size = aReader->read32();
 		
 		int samples = (subchunk2size / (bitspersample / 8)) / channels;
 		
@@ -197,17 +271,17 @@ namespace SoLoud
 				{
 					if (j == 0)
 					{
-						mData[i] = read8(fp) / (float)0x80;
+						mData[i] = aReader->read8() / (float)0x80;
 					}
 					else
 					{
 						if (readchannels > 1 && j == 1)
 						{
-							mData[i + samples] = read8(fp) / (float)0x80;
+							mData[i + samples] = aReader->read8() / (float)0x80;
 						}
 						else
 						{
-							read8(fp);
+							aReader->read8();
 						}
 					}
 				}
@@ -222,17 +296,17 @@ namespace SoLoud
 				{
 					if (j == 0)
 					{
-						mData[i] = read16(fp) / (float)0x8000;
+						mData[i] = aReader->read16() / (float)0x8000;
 					}
 					else
 					{
 						if (readchannels > 1 && j == 1)
 						{
-							mData[i + samples] = read16(fp) / (float)0x8000;
+							mData[i + samples] = aReader->read16() / (float)0x8000;
 						}
 						else
 						{
-							read16(fp);
+							aReader->read16();
 						}
 					}
 				}
@@ -242,32 +316,29 @@ namespace SoLoud
 		mSampleCount = samples;
 	}
 
-	void Wav::loadogg(FILE * fp)
+	void Wav::loadogg(stb_vorbis *aVorbis)
 	{
-		fseek(fp,0,SEEK_SET);
-		int e;
-		stb_vorbis *v = stb_vorbis_open_file(fp, 0, &e, NULL);
-		if (!v) return;
-		stb_vorbis_info info = stb_vorbis_get_info(v);
+        stb_vorbis_info info = stb_vorbis_get_info(aVorbis);
 		mBaseSamplerate = (float)info.sample_rate;
-		int samples = stb_vorbis_stream_length_in_samples(v);
-		
+        int samples = stb_vorbis_stream_length_in_samples(aVorbis);
+
 		int readchannels = 1;
 		if (info.channels > 1)
 		{
 			readchannels = 2;
 			mChannels = 2;
 		}
-
 		mData = new float[samples * readchannels];
 		mSampleCount = samples;
 		samples = 0;
 		while(1)
 		{
 			float **outputs;
-			int n = stb_vorbis_get_frame_float(v, NULL, &outputs);
+            int n = stb_vorbis_get_frame_float(aVorbis, NULL, &outputs);
 			if (n == 0)
+            {
 				break;
+            }
 			if (readchannels == 1)
 			{
 				memcpy(mData + samples, outputs[0],sizeof(float) * n);
@@ -279,26 +350,54 @@ namespace SoLoud
 			}
 			samples += n;
 		}
-		stb_vorbis_close(v);
+        stb_vorbis_close(aVorbis);
 	}
+
+    void Wav::testAndLoadFile(DataReader *aReader)
+    {
+		delete[] mData;
+		mData = 0;
+		mSampleCount = 0;
+        int tag = aReader->read32();
+		if (tag == MAKEDWORD('O','g','g','S')) 
+        {
+		 	aReader->seek(0);
+			int e = 0;
+			stb_vorbis *v = 0;
+			if (aReader->isMemoryFile())
+            {
+				v = stb_vorbis_open_memory(aReader->currentData(), aReader->dataLength(), &e, 0);
+            }
+			else
+            {
+				v = stb_vorbis_open_file(aReader->filePtr(), 0, &e, 0);
+            }
+			if (0 != v)
+            {
+				loadogg(v);
+            }
+		} 
+        else if (tag == MAKEDWORD('R','I','F','F')) 
+        {
+			loadwav(aReader);
+		}
+    }
 
 	void Wav::load(const char *aFilename)
 	{
-		delete[] mData;
-		mData = NULL;
-		mSampleCount = 0;
-		FILE * fp = fopen(aFilename, "rb");
-		if (!fp) return;
-		int tag = read32(fp);
-		if (tag == MAKEDWORD('O','g','g','S'))
-		{
-			loadogg(fp);
-		}
-		if (tag == MAKEDWORD('R','I','F','F'))
-		{
-			loadwav(fp);
-		}
-		fclose(fp);
+		DataReader dr;
+		if (!dr.open(aFilename))
+        {
+			return;
+        }
+		testAndLoadFile(&dr);
+	}
+
+	void Wav::loadMem(unsigned char *aMem, int aLength)
+	{
+		DataReader dr;
+        dr.open(aMem, aLength);
+		testAndLoadFile(&dr);
 	}
 
 	AudioSourceInstance *Wav::createInstance()

@@ -286,7 +286,7 @@ namespace SoLoud
 	{
 		int i;
 		// Clear accumulation buffer
-		for (i = 0; i < aSamples*2; i++)
+		for (i = 0; i < aSamples * 2; i++)
 		{
 			aBuffer[i] = 0;
 		}
@@ -294,7 +294,9 @@ namespace SoLoud
 		// Accumulate sound sources
 		for (i = 0; i < mVoiceCount; i++)
 		{
-			if (mVoice[i] && mVoice[i]->mBusHandle == aBus && !(mVoice[i]->mFlags & AudioSourceInstance::PAUSED))
+			if (mVoice[i] && 
+				mVoice[i]->mBusHandle == aBus && 
+				!(mVoice[i]->mFlags & AudioSourceInstance::PAUSED))
 			{
 
 				float stepratio = mVoice[i]->mSamplerate / mSamplerate;
@@ -330,7 +332,7 @@ namespace SoLoud
 						for (j = 0; j < aSamples; j++, step += stepratio, lpan += lpani, rpan += rpani)
 						{
 							float s1 = aScratch[(int)floor(step)];
-							float s2 = aScratch[(int)floor(step)+aSamples];
+							float s2 = aScratch[(int)floor(step) + aSamples];
 							aBuffer[j + 0] += s1 * lpan;
 							aBuffer[j + aSamples] += s2 * rpan;
 						}
@@ -354,7 +356,7 @@ namespace SoLoud
 						for (j = 0; j < aSamples; j++, step += stepratio)
 						{
 							float s1 = aScratch[(int)floor(step)];
-							float s2 = aScratch[(int)floor(step)+aSamples];
+							float s2 = aScratch[(int)floor(step) + aSamples];
 							aBuffer[j + 0] += s1 * lpan;
 							aBuffer[j + aSamples] += s2 * rpan;
 						}

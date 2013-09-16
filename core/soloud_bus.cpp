@@ -74,6 +74,7 @@ namespace SoLoud
 	{
 		mChannelHandle = 0;
 		mInstance = 0;
+		mChannels = 2;
 	}
 	
 	BusInstance * Bus::createInstance()

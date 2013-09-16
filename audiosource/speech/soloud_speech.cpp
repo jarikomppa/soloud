@@ -114,6 +114,7 @@ namespace SoLoud
 
 	void Speech::setText(char *aText)
 	{
+		mSoloud->stopSound(*this);
 		mElement.clear();
 		darray phone;
 		xlate_string(aText, &phone);

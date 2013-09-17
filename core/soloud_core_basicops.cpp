@@ -22,6 +22,7 @@ freely, subject to the following restrictions:
    distribution.
 */
 
+#include <string.h>
 #include "soloud.h"
 
 // Core "basic" operations - play, stop, etc
@@ -69,12 +70,28 @@ namespace SoLoud
 		}
 
 		int scratchneeded = (int)ceil((mVoice[ch]->mSamplerate / mSamplerate) * mBufferSize);
+
+		// Since samples are taken to the per-instance buffer, scratch doesn't need to resize... or does it?
+/*
 		if (mScratchNeeded < scratchneeded)
 		{
 			int pot = 1024;
 			while (pot < scratchneeded) pot <<= 1;
 			mScratchNeeded = pot;
 		}
+*/
+		scratchneeded *= mVoice[ch]->mChannels * 2;
+
+		mVoice[ch]->mResampleData[0]->mBuffer = new float[scratchneeded];
+		mVoice[ch]->mResampleData[1]->mBuffer = new float[scratchneeded];
+		mVoice[ch]->mResampleData[0]->mBufferSize = scratchneeded;
+		mVoice[ch]->mResampleData[1]->mBufferSize = scratchneeded;
+		mVoice[ch]->mResampleData[0]->mSamples = 1;
+		mVoice[ch]->mResampleData[1]->mSamples = 1;
+
+		memset(mVoice[ch]->mResampleData[0]->mBuffer, 0, sizeof(float) * scratchneeded);
+		memset(mVoice[ch]->mResampleData[1]->mBuffer, 0, sizeof(float) * scratchneeded);
+
 		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 
 		int handle = getHandleFromVoice(ch);

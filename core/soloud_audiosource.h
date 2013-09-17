@@ -32,6 +32,15 @@ namespace SoLoud
 {
 	class AudioSource;
 
+	struct AudioSourceResampleData
+	{
+		AudioSourceResampleData();
+		~AudioSourceResampleData();
+		float *mBuffer;
+		int mBufferSize;
+		int mSamples;
+	};
+
 	// Base class for audio instances
 	class AudioSourceInstance
 	{
@@ -93,6 +102,8 @@ namespace SoLoud
 		FilterInstance *mFilter[FILTERS_PER_STREAM];
 		// Initialize instance. Mostly internal use.
 		void init(int aPlayIndex, float aBaseSamplerate, int aChannels, int aSourceFlags);
+		// Buffers for the resampler
+		AudioSourceResampleData *mResampleData[2];
 		// Get N samples from the stream to the buffer
 		virtual void getAudio(float *aBuffer, int aSamples) = 0;
 		// Has the stream ended?

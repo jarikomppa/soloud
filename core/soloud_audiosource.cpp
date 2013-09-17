@@ -26,6 +26,19 @@ freely, subject to the following restrictions:
 
 namespace SoLoud
 {
+
+	AudioSourceResampleData::AudioSourceResampleData()
+	{
+		mSamples = 0;
+		mBufferSize = 0;
+		mBuffer = 0;
+	}
+	
+	AudioSourceResampleData::~AudioSourceResampleData()
+	{
+		delete[] mBuffer;
+	}
+
 	AudioSourceInstance::AudioSourceInstance()
 	{
 		mPlayIndex = 0;
@@ -51,6 +64,8 @@ namespace SoLoud
 		{
 			mFaderVolume[i] = 0;
 		}
+		mResampleData[0] = new AudioSourceResampleData;
+		mResampleData[1] = new AudioSourceResampleData;
 	}
 
 	AudioSourceInstance::~AudioSourceInstance()
@@ -63,6 +78,8 @@ namespace SoLoud
 				delete mFilter[i];
 			}
 		}
+		delete mResampleData[0];
+		delete mResampleData[1];
 	}
 
 	void AudioSourceInstance::init(int aPlayIndex, float aBaseSamplerate, int aChannels, int aSourceFlags)

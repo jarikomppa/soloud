@@ -98,6 +98,7 @@ namespace SoLoud
 		mSamplerate = aSamplerate;
 		mBufferSize = aBufferSize;
 		mScratchSize = aBufferSize;
+		if (mScratchSize < SAMPLE_GRANULARITY * 2) mScratchSize = SAMPLE_GRANULARITY * 2;
 		if (mScratchSize < 4096) mScratchSize = 4096;
 		mScratchNeeded = mScratchSize;
 		mScratch = new float[mScratchSize * 2];

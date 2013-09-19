@@ -29,8 +29,6 @@ namespace SoLoud
 
 	AudioSourceResampleData::AudioSourceResampleData()
 	{
-		mSamples = 0;
-		mBufferSize = 0;
 		mBuffer = 0;
 	}
 	
@@ -66,6 +64,7 @@ namespace SoLoud
 		}
 		mResampleData[0] = new AudioSourceResampleData;
 		mResampleData[1] = new AudioSourceResampleData;
+		mLeftoverSamples = 0;
 	}
 
 	AudioSourceInstance::~AudioSourceInstance()

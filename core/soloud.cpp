@@ -22,6 +22,7 @@ freely, subject to the following restrictions:
    distribution.
 */
 
+#include <string.h>
 #include <stdlib.h> // rand
 #include <math.h> // sin
 #include "soloud.h"
@@ -281,7 +282,13 @@ namespace SoLoud
 		}
 	}
 
-	void resample(float *aSrc, float *aSrc1, float *aDst, int aSrcSampleCount, int aSrc1SampleCount, int aDstSampleCount, float aSrcSamplerate, float aDstSamplerate)
+	void resample(float *aSrc,
+		          float *aSrc1, 
+				  float *aDst, 
+				  int aSrcOffset,
+				  int aDstSampleCount,
+				  float aSrcSamplerate, 
+				  float aDstSamplerate)
 	{
 #if 1
 		int i;
@@ -290,7 +297,7 @@ namespace SoLoud
 
 		for (i = 0; i < aDstSampleCount; i++, step += stepratio)
 		{
-			aDst[i] = aSrc[(int)floor(step)];
+			aDst[i] = aSrc[(int)floor(step) + aSrcOffset];
 		}
 #else
 		int i;
@@ -334,50 +341,80 @@ namespace SoLoud
 			{
 				int j;
 				float stepratio = mVoice[i]->mSamplerate / mSamplerate;
-
-				int readsamples = (int)ceil(aSamples * stepratio);
-
-				if (mVoice[i]->mResampleData[0]->mBufferSize < mVoice[i]->mResampleData[1]->mBufferSize)
+				int writesamples = (int)ceil(SAMPLE_GRANULARITY / stepratio);
+				int outofs = 0;
+				
+				if (mVoice[i]->mLeftoverSamples)
 				{
-					delete[] mVoice[i]->mResampleData[0]->mBuffer;
-					mVoice[i]->mResampleData[0]->mBufferSize = mVoice[i]->mResampleData[1]->mBufferSize;
-					mVoice[i]->mResampleData[0]->mBuffer = new float[mVoice[i]->mResampleData[0]->mBufferSize];
-				}
-
-				mVoice[i]->getAudio(mVoice[i]->mResampleData[0]->mBuffer, readsamples);	
-				mVoice[i]->mResampleData[0]->mSamples = readsamples;
-								
-				for (j = 0; j < FILTERS_PER_STREAM; j++)
-				{
-					if (mVoice[i]->mFilter[j])
+					int sampleofs = SAMPLE_GRANULARITY - mVoice[i]->mLeftoverSamples;
+					int destsamples = (int)ceil(mVoice[i]->mLeftoverSamples / stepratio);
+					if (destsamples > aSamples)
+						destsamples = aSamples;
+					int readsamples = (int)floor(destsamples * stepratio);
+					for (j = 0; j < mVoice[i]->mChannels; j++)
 					{
-						mVoice[i]->mFilter[j]->filter(
-							mVoice[i]->mResampleData[0]->mBuffer, 
-							readsamples, 
-							mVoice[i]->mChannels,
-							mVoice[i]->mSamplerate,
-							mStreamTime);
+						resample(mVoice[i]->mResampleData[0]->mBuffer + SAMPLE_GRANULARITY * j, 
+								 mVoice[i]->mResampleData[1]->mBuffer + SAMPLE_GRANULARITY * j, 
+								 aScratch + aSamples * j, 
+								 sampleofs,
+								 destsamples, 
+								 mVoice[i]->mSamplerate, 
+								 mSamplerate);
 					}
+					outofs = destsamples;
+					mVoice[i]->mLeftoverSamples -= readsamples;
+				}		
+
+				while (outofs < aSamples)
+				{
+					AudioSourceResampleData * t = mVoice[i]->mResampleData[0];
+					mVoice[i]->mResampleData[0] = mVoice[i]->mResampleData[1];
+					mVoice[i]->mResampleData[1] = t;
+
+					int readsamples = SAMPLE_GRANULARITY;
+
+					if (outofs + writesamples > aSamples)
+					{
+						writesamples = aSamples - outofs;
+						readsamples = (int)ceil(writesamples * stepratio);
+						if (readsamples > SAMPLE_GRANULARITY)
+							readsamples = SAMPLE_GRANULARITY;
+						mVoice[i]->mLeftoverSamples = SAMPLE_GRANULARITY - readsamples;
+					}
+
+					mVoice[i]->getAudio(mVoice[i]->mResampleData[0]->mBuffer, SAMPLE_GRANULARITY);
+								
+					for (j = 0; j < FILTERS_PER_STREAM; j++)
+					{
+						if (mVoice[i]->mFilter[j])
+						{
+							mVoice[i]->mFilter[j]->filter(
+								mVoice[i]->mResampleData[0]->mBuffer, 
+								SAMPLE_GRANULARITY, 
+								mVoice[i]->mChannels,
+								mVoice[i]->mSamplerate,
+								mStreamTime);
+						}
+					}
+
+					for (j = 0; j < mVoice[i]->mChannels; j++)
+					{
+						resample(mVoice[i]->mResampleData[0]->mBuffer + SAMPLE_GRANULARITY * j, 
+								 mVoice[i]->mResampleData[1]->mBuffer + SAMPLE_GRANULARITY * j, 
+								 outofs + aScratch + aSamples * j, 
+								 0,
+								 writesamples, 
+								 mVoice[i]->mSamplerate, 
+								 mSamplerate);
+					}
+
+					outofs += writesamples;
 				}
 
 				int chofs[2];
-				for (j = 0; j < mVoice[i]->mChannels; j++)
-				{
-					chofs[j] = readsamples * j;
-					resample(mVoice[i]->mResampleData[0]->mBuffer + readsamples * j, 
-							 mVoice[i]->mResampleData[1]->mBuffer + mVoice[i]->mResampleData[1]->mSamples * j, 
-							 aScratch + chofs[j], 
-							 readsamples, 
-							 mVoice[i]->mResampleData[1]->mSamples,
-							 aSamples, 
-							 mVoice[i]->mSamplerate, 
-							 mSamplerate);
-				}
-
-				AudioSourceResampleData * t = mVoice[i]->mResampleData[0];
-				mVoice[i]->mResampleData[0] = mVoice[i]->mResampleData[1];
-				mVoice[i]->mResampleData[1] = t;
-
+				chofs[0] = 0;
+				chofs[1] = aSamples;
+				/*
 				if (mVoice[i]->mActiveFader)
 				{
 					float lpan = mVoice[i]->mFaderVolume[0];
@@ -405,7 +442,7 @@ namespace SoLoud
 						}
 					}
 				}
-				else
+				else*/
 				{
 					float lpan = mVoice[i]->mLVolume * mVoice[i]->mVolume;
 					float rpan = mVoice[i]->mRVolume * mVoice[i]->mVolume;
@@ -431,7 +468,7 @@ namespace SoLoud
 				}
 
 				// clear voice if the sound is over
-				if (!(mVoice[i]->mFlags & AudioSourceInstance::LOOPING) && mVoice[i]->hasEnded())
+				if (!(mVoice[i]->mFlags & AudioSourceInstance::LOOPING) && mVoice[i]->hasEnded() && mVoice[i]->mLeftoverSamples == 0)
 				{
 					stopVoice(i);
 				}

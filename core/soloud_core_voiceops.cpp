@@ -34,25 +34,6 @@ namespace SoLoud
 		{
 			mVoice[aVoice]->mRelativePlaySpeed = aSpeed;
 			mVoice[aVoice]->mSamplerate = mVoice[aVoice]->mBaseSamplerate * mVoice[aVoice]->mRelativePlaySpeed;
-			int scratchneeded = (int)ceil((mVoice[aVoice]->mSamplerate / mSamplerate) * mBufferSize);
-
-		// Since samples are taken to the per-instance buffer, scratch doesn't need to resize... or does it?
-/*
-			if (mScratchNeeded < scratchneeded)
-			{
-				int pot = 1024;
-				while (pot < scratchneeded) pot <<= 1;
-				mScratchNeeded = pot;
-			}
-*/			
-			scratchneeded *= mChannels * 2;
-
-			if (mVoice[aVoice]->mResampleData[0]->mBufferSize < scratchneeded)
-			{
-				delete[] mVoice[aVoice]->mResampleData[0]->mBuffer;
-				mVoice[aVoice]->mResampleData[0]->mBuffer = new float[scratchneeded];
-				mVoice[aVoice]->mResampleData[0]->mBufferSize = scratchneeded;				
-			}
 		}
 	}
 

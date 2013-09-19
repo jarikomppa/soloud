@@ -35,6 +35,9 @@ freely, subject to the following restrictions:
 // Maximum number of filters per stream
 #define FILTERS_PER_STREAM 4
 
+// Number of samples to process on one go
+#define SAMPLE_GRANULARITY 256
+
 #include "soloud_filter.h"
 #include "soloud_fader.h"
 #include "soloud_audiosource.h"

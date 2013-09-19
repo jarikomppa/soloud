@@ -37,8 +37,6 @@ namespace SoLoud
 		AudioSourceResampleData();
 		~AudioSourceResampleData();
 		float *mBuffer;
-		int mBufferSize;
-		int mSamples;
 	};
 
 	// Base class for audio instances
@@ -104,6 +102,8 @@ namespace SoLoud
 		void init(int aPlayIndex, float aBaseSamplerate, int aChannels, int aSourceFlags);
 		// Buffers for the resampler
 		AudioSourceResampleData *mResampleData[2];
+		// Number of samples "left over" from last resample pass
+		int mLeftoverSamples;
 		// Get N samples from the stream to the buffer
 		virtual void getAudio(float *aBuffer, int aSamples) = 0;
 		// Has the stream ended?

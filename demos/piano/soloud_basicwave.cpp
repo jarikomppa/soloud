@@ -70,7 +70,7 @@ namespace SoLoud
 	
 	Basicwave::Basicwave()
 	{
-		setSamplerate(4000);
+		setSamplerate(40000);
 		mWaveform = SQUARE;
 	}
 

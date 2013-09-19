@@ -290,7 +290,7 @@ namespace SoLoud
 				  float aSrcSamplerate, 
 				  float aDstSamplerate)
 	{
-#if 1
+#if 0
 		int i;
 		float stepratio = aSrcSamplerate / aDstSamplerate;
 		float step = 0;
@@ -308,17 +308,14 @@ namespace SoLoud
 		{
 			int p = (int)floor(step);
 			float f = step - p;
-			float s1;
+			p += aSrcOffset;
+			float s1 = aSrc1[SAMPLE_GRANULARITY - 1];
 			float s2 = aSrc[p];
-			if (p == 0) 
-			{
-				s1 = aSrc1[aSrc1SampleCount-1];
-			}
-			else
+			if (p != 0) 
 			{
 				s1 = aSrc[p-1];
 			}
-			aDst[i] = s2 * f + s1 * (1 - f);
+			aDst[i] = s1 + (s2 - s1) * f;
 		}
 #endif
 	}
@@ -414,13 +411,13 @@ namespace SoLoud
 				int chofs[2];
 				chofs[0] = 0;
 				chofs[1] = aSamples;
-				/*
+				
 				if (mVoice[i]->mActiveFader)
 				{
 					float lpan = mVoice[i]->mFaderVolume[0];
 					float rpan = mVoice[i]->mFaderVolume[2];
-					float lpani = (mVoice[i]->mFaderVolume[1] - mVoice[i]->mFaderVolume[0]) / aSamples;
-					float rpani = (mVoice[i]->mFaderVolume[3] - mVoice[i]->mFaderVolume[2]) / aSamples;
+					float lpani = mVoice[i]->mFaderVolume[1];
+					float rpani = mVoice[i]->mFaderVolume[3];
 
 					if (mVoice[i]->mChannels == 2)
 					{
@@ -441,8 +438,11 @@ namespace SoLoud
 							aBuffer[j + aSamples] += s * rpan;
 						}
 					}
+					
+					mVoice[i]->mFaderVolume[0] = lpan;
+					mVoice[i]->mFaderVolume[2] = rpan;
 				}
-				else*/
+				else
 				{
 					float lpan = mVoice[i]->mLVolume * mVoice[i]->mVolume;
 					float rpan = mVoice[i]->mRVolume * mVoice[i]->mVolume;
@@ -552,6 +552,10 @@ namespace SoLoud
 					mVoice[i]->mFaderVolume[0*2+1] = panl[1] * volume[1];
 					mVoice[i]->mFaderVolume[1*2+0] = panr[0] * volume[0];
 					mVoice[i]->mFaderVolume[1*2+1] = panr[1] * volume[1];
+
+					mVoice[i]->mFaderVolume[0*2+1] = (mVoice[i]->mFaderVolume[1] - mVoice[i]->mFaderVolume[0]) / aSamples;
+					mVoice[i]->mFaderVolume[1*2+1] = (mVoice[i]->mFaderVolume[3] - mVoice[i]->mFaderVolume[2]) / aSamples;
+
 				}
 
 				if (mVoice[i]->mStopScheduler.mActive)

@@ -104,6 +104,8 @@ namespace SoLoud
 		AudioSourceResampleData *mResampleData[2];
 		// Number of samples "left over" from last resample pass
 		int mLeftoverSamples;
+		// Partial samples "left over" from last resample pass
+		float mPartialIn, mPartialOut;
 		// Get N samples from the stream to the buffer
 		virtual void getAudio(float *aBuffer, int aSamples) = 0;
 		// Has the stream ended?

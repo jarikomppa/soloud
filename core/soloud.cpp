@@ -286,7 +286,7 @@ namespace SoLoud
 	void resample(float *aSrc,
 		          float *aSrc1, 
 				  float *aDst, 
-				  int aSrcOffset,
+				  float &aSrcOffset,
 				  int aDstSampleCount,
 				  float aSrcSamplerate, 
 				  float aDstSamplerate)
@@ -294,30 +294,38 @@ namespace SoLoud
 #if 0
 		int i;
 		float stepratio = aSrcSamplerate / aDstSamplerate;
-		float step = 0;
+		float step = aSrcOffset;
 
 		for (i = 0; i < aDstSampleCount; i++, step += stepratio)
 		{
-			aDst[i] = aSrc[(int)floor(step) + aSrcOffset];
+			int p = (int)floor(step);
+			if (p >= SAMPLE_GRANULARITY)
+			{
+				p = SAMPLE_GRANULARITY - 1;
+			}
+			aDst[i] = aSrc[p];
 		}
+		aSrcOffset = step - floor(step);
 #else
 		int i;
 		float stepratio = aSrcSamplerate / aDstSamplerate;
-		float step = 0;
+		float step = aSrcOffset;
 
 		for (i = 0; i < aDstSampleCount; i++, step += stepratio)
 		{
 			int p = (int)floor(step);
 			float f = step - p;
-			p += aSrcOffset;
+			if (p >= SAMPLE_GRANULARITY)
+				p = SAMPLE_GRANULARITY - 1;
 			float s1 = aSrc1[SAMPLE_GRANULARITY - 1];
 			float s2 = aSrc[p];
-			if (p != 0) 
+			if (p != 0)
 			{
 				s1 = aSrc[p-1];
 			}
 			aDst[i] = s1 + (s2 - s1) * f;
 		}
+		aSrcOffset = step - floor(step);
 #endif
 	}
 
@@ -339,27 +347,38 @@ namespace SoLoud
 			{
 				int j;
 				float stepratio = mVoice[i]->mSamplerate / mSamplerate;
-				int writesamples = (int)ceil(SAMPLE_GRANULARITY / stepratio);
-				int outofs = 0;
+				float samples_per_block = SAMPLE_GRANULARITY / stepratio;
+				float outofs = 0;				
+				float partialout = mVoice[i]->mPartialOut;
+				float partialin = mVoice[i]->mPartialIn;
+				int max_samples_per_block = ceil(samples_per_block);
+				if (max_samples_per_block == 0) max_samples_per_block = 1;
+
 				
 				if (mVoice[i]->mLeftoverSamples)
 				{
-					int sampleofs = SAMPLE_GRANULARITY - mVoice[i]->mLeftoverSamples;
-					int destsamples = (int)ceil(mVoice[i]->mLeftoverSamples / stepratio);
+					partialin += SAMPLE_GRANULARITY - mVoice[i]->mLeftoverSamples;
+					float out_samples = mVoice[i]->mLeftoverSamples / stepratio;
+					int destsamples = (int)floor(out_samples);
+					partialout += out_samples - destsamples;
+					int readsamples = mVoice[i]->mLeftoverSamples;
 					if (destsamples > aSamples)
+					{
+						out_samples -= destsamples - aSamples;
 						destsamples = aSamples;
-					int readsamples = (int)floor(destsamples * stepratio);
+						readsamples = (int)floor(destsamples * stepratio);
+					}
 					for (j = 0; j < mVoice[i]->mChannels; j++)
 					{
 						resample(mVoice[i]->mResampleData[0]->mBuffer + SAMPLE_GRANULARITY * j, 
 								 mVoice[i]->mResampleData[1]->mBuffer + SAMPLE_GRANULARITY * j, 
 								 aScratch + aSamples * j, 
-								 sampleofs,
+								 partialin,
 								 destsamples, 
 								 mVoice[i]->mSamplerate, 
 								 mSamplerate);
 					}
-					outofs = destsamples;
+					outofs = out_samples;
 					mVoice[i]->mLeftoverSamples -= readsamples;
 				}		
 
@@ -369,12 +388,22 @@ namespace SoLoud
 					mVoice[i]->mResampleData[0] = mVoice[i]->mResampleData[1];
 					mVoice[i]->mResampleData[1] = t;
 
+					partialout += samples_per_block;
+					int writesamples = (int)floor(partialout);
+					partialout -= writesamples;
+
+					if (writesamples > max_samples_per_block)
+					{
+						partialout += writesamples - max_samples_per_block;
+						writesamples = max_samples_per_block;
+					}
+
 					int readsamples = SAMPLE_GRANULARITY;
 
 					if (outofs + writesamples > aSamples)
 					{
-						writesamples = aSamples - outofs;
-						readsamples = (int)ceil(writesamples * stepratio);
+						writesamples = (int)floor(aSamples - floor(outofs));
+						readsamples = (int)floor(writesamples * stepratio);
 						if (readsamples > SAMPLE_GRANULARITY)
 							readsamples = SAMPLE_GRANULARITY;
 						mVoice[i]->mLeftoverSamples = SAMPLE_GRANULARITY - readsamples;
@@ -399,8 +428,8 @@ namespace SoLoud
 					{
 						resample(mVoice[i]->mResampleData[0]->mBuffer + SAMPLE_GRANULARITY * j, 
 								 mVoice[i]->mResampleData[1]->mBuffer + SAMPLE_GRANULARITY * j, 
-								 outofs + aScratch + aSamples * j, 
-								 0,
+								 (int)floor(outofs) + aScratch + aSamples * j, 
+								 partialin,
 								 writesamples, 
 								 mVoice[i]->mSamplerate, 
 								 mSamplerate);
@@ -408,6 +437,9 @@ namespace SoLoud
 
 					outofs += writesamples;
 				}
+
+				mVoice[i]->mPartialOut = partialout;
+				mVoice[i]->mPartialIn = partialin;
 
 				int chofs[2];
 				chofs[0] = 0;

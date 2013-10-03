@@ -228,6 +228,10 @@ namespace SoLoud
         data->soloud = aSoloud;
         aSoloud->init(aVoices, aSamplerate, aBuffer * format.nChannels, aFlags);
         data->thread = Thread::createThread(xaudio2Thread, data);
+        if (0 == data->thread)
+        {
+            return 7;
+        }
         data->sourceVoice->Start();
         return 0;
     }

@@ -41,17 +41,17 @@ namespace SoLoud
         short *sampleBuffer[BUFFER_COUNT];
         WAVEHDR header[BUFFER_COUNT];
         HWAVEOUT waveOut;
-        HANDLE audioEvent;
+        HANDLE bufferEndEvent;
+        HANDLE audioProcessingDoneEvent;
         Soloud *soloud;
         int samples;
-        bool audioProcessingDone;
         Thread::ThreadHandle threadHandle;
     };
 
     static void winMMThread(LPVOID aParam)
     {
         SoLoudWinMMData *data = static_cast<SoLoudWinMMData*>(aParam);
-        while (!data->audioProcessingDone) 
+        while (WAIT_OBJECT_0 != WaitForSingleObject(data->audioProcessingDoneEvent, 0)) 
         {
             for (int i=0;i<BUFFER_COUNT;++i) 
             {
@@ -72,7 +72,7 @@ namespace SoLoud
                     return;
                 }
             }
-            WaitForSingleObject(data->audioEvent, INFINITE);
+            WaitForSingleObject(data->bufferEndEvent, INFINITE);
         }
     }
 
@@ -83,11 +83,12 @@ namespace SoLoud
             return;
         }
         SoLoudWinMMData *data = static_cast<SoLoudWinMMData*>(aSoloud->mBackendData);
-        data->audioProcessingDone = true;
-        SetEvent(data->audioEvent);
+        SetEvent(data->audioProcessingDoneEvent);
+        SetEvent(data->bufferEndEvent);
         Thread::wait(data->threadHandle);
         Thread::release(data->threadHandle);
-        CloseHandle(data->audioEvent);
+        CloseHandle(data->audioProcessingDoneEvent);
+        CloseHandle(data->bufferEndEvent);
         waveOutReset(data->waveOut);
         for (int i=0;i<BUFFER_COUNT;++i) 
         {
@@ -118,10 +119,15 @@ namespace SoLoud
         aSoloud->mBackendCleanupFunc = winMMCleanup;
         data->samples = aBuffer;
         data->soloud = aSoloud;
-        data->audioEvent = CreateEvent(0, FALSE, FALSE, 0);
-        if (0 == data->audioEvent)
+        data->bufferEndEvent = CreateEvent(0, FALSE, FALSE, 0);
+        if (0 == data->bufferEndEvent)
         {
             return 1;
+        }
+        data->audioProcessingDoneEvent = CreateEvent(0, FALSE, FALSE, 0);
+        if (0 == data->audioProcessingDoneEvent)
+        {
+            return 2;
         }
         WAVEFORMATEX format;
         ZeroMemory(&format, sizeof(WAVEFORMATEX));
@@ -132,9 +138,9 @@ namespace SoLoud
         format.nBlockAlign = (format.nChannels*format.wBitsPerSample)/8;
         format.nAvgBytesPerSec = format.nSamplesPerSec*format.nBlockAlign;
         if (MMSYSERR_NOERROR != waveOutOpen(&data->waveOut, WAVE_MAPPER, &format, 
-                            reinterpret_cast<DWORD_PTR>(data->audioEvent), 0, CALLBACK_EVENT)) 
+                            reinterpret_cast<DWORD_PTR>(data->bufferEndEvent), 0, CALLBACK_EVENT)) 
         {
-            return 2;
+            return 3;
         }
         data->buffer = new float[data->samples*format.nChannels];
         for (int i=0;i<BUFFER_COUNT;++i) 
@@ -146,7 +152,7 @@ namespace SoLoud
             if (MMSYSERR_NOERROR != waveOutPrepareHeader(data->waveOut, &data->header[i], 
                                                          sizeof(WAVEHDR))) 
             {
-                return 3;
+                return 4;
             }
         }
         aSoloud->mMutex = Thread::createMutex();
@@ -156,7 +162,7 @@ namespace SoLoud
         data->threadHandle = Thread::createThread(winMMThread, data);
         if (0 == data->threadHandle)
         {
-            return 4;
+            return 5;
         }
         return 0;
     }

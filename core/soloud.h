@@ -257,8 +257,14 @@ namespace SoLoud
 	// WinMM back-end initialization call
 	int winmm_init(SoLoud::Soloud *aSoloud, int aVoices = 32, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 4096);
 
-	// Xaudio2 back-end initialization call
+	// XAudio2 back-end initialization call
 	int xaudio2_init(SoLoud::Soloud *aSoloud, int aVoices = 32, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 2048);
+
+	// WASAPI back-end initialization call
+	int wasapi_init(SoLoud::Soloud *aSoloud, int aVoices = 32, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 4096);
+
+	// OSS back-end initialization call
+	int oss_init(SoLoud::Soloud *aSoloud, int aVoices = 32, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 2048);
 
 	// Deinterlace samples in a buffer. From 12121212 to 11112222
 	void deinterlace_samples(const float *aSourceBuffer, float *aDestBuffer, int aSamples, int aChannels);

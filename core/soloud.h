@@ -184,7 +184,7 @@ namespace SoLoud
 		// Rest of the stuff is used internally.
 	public:
 		// Perform mixing for a specific bus
-		void mixBus(float *aBuffer, int aSamples, float *aScratch, int aBus);
+		void mixBus(float *aBuffer, int aSamples, float *aScratch, int aBus, float aSamplerate);
 		// Scratch buffer, used for resampling.
 		float *mScratch;
 		// Current size of the scratch, in samples.

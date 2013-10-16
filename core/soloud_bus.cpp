@@ -54,7 +54,7 @@ namespace SoLoud
 			mScratch = new float[mScratchSize];
 		}
 		
-		s->mixBus(aBuffer, aSamples, mScratch, handle);
+		s->mixBus(aBuffer, aSamples, mScratch, handle, mSamplerate);
 	}
 
 	int BusInstance::hasEnded()

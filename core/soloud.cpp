@@ -286,35 +286,35 @@ namespace SoLoud
 	void resample(float *aSrc,
 		          float *aSrc1, 
 				  float *aDst, 
-				  float &aSrcOffset,
+				  float aSrcOffset,
 				  int aDstSampleCount,
 				  float aSrcSamplerate, 
-				  float aDstSamplerate)
+				  float aDstSamplerate,
+				  float aStep)
 	{
 #if 0
 		int i;
-		float stepratio = aSrcSamplerate / aDstSamplerate;
-		float step = aSrcOffset;
+		float pos = aSrcOffset;
 
-		for (i = 0; i < aDstSampleCount; i++, step += stepratio)
+		for (i = 0; i < aDstSampleCount; i++, pos += aStep)
 		{
-			int p = (int)floor(step);
-			if (p >= SAMPLE_GRANULARITY)
+			int p = (int)floor(pos);
+			/*
+			if (p >= SAMPLE_GRANULARITY || p < 0)
 			{
 				p = SAMPLE_GRANULARITY - 1;
 			}
+			*/
 			aDst[i] = aSrc[p];
 		}
-		aSrcOffset = step - floor(step);
 #else
 		int i;
-		float stepratio = aSrcSamplerate / aDstSamplerate;
-		float step = aSrcOffset;
+		float pos = aSrcOffset;
 
-		for (i = 0; i < aDstSampleCount; i++, step += stepratio)
+		for (i = 0; i < aDstSampleCount; i++, pos += aStep)
 		{
-			int p = (int)floor(step);
-			float f = step - p;
+			int p = (int)floor(pos);
+			float f = pos - p;
 			if (p >= SAMPLE_GRANULARITY)
 				p = SAMPLE_GRANULARITY - 1;
 			float s1 = aSrc1[SAMPLE_GRANULARITY - 1];
@@ -325,11 +325,10 @@ namespace SoLoud
 			}
 			aDst[i] = s1 + (s2 - s1) * f;
 		}
-		aSrcOffset = step - floor(step);
 #endif
 	}
 
-	void Soloud::mixBus(float *aBuffer, int aSamples, float *aScratch, int aBus)
+	void Soloud::mixBus(float *aBuffer, int aSamples, float *aScratch, int aBus, float aSamplerate)
 	{
 		int i;
 		// Clear accumulation buffer
@@ -346,100 +345,84 @@ namespace SoLoud
 				!(mVoice[i]->mFlags & AudioSourceInstance::PAUSED))
 			{
 				int j;
-				float stepratio = mVoice[i]->mSamplerate / mSamplerate;
-				float samples_per_block = SAMPLE_GRANULARITY / stepratio;
-				float outofs = 0;				
-				float partialout = mVoice[i]->mPartialOut;
-				float partialin = mVoice[i]->mPartialIn;
-				int max_samples_per_block = ceil(samples_per_block);
-				if (max_samples_per_block == 0) max_samples_per_block = 1;
-
-				
-				if (mVoice[i]->mLeftoverSamples)
-				{
-					partialin += SAMPLE_GRANULARITY - mVoice[i]->mLeftoverSamples;
-					float out_samples = mVoice[i]->mLeftoverSamples / stepratio;
-					int destsamples = (int)floor(out_samples);
-					partialout += out_samples - destsamples;
-					int readsamples = mVoice[i]->mLeftoverSamples;
-					if (destsamples > aSamples)
-					{
-						out_samples -= destsamples - aSamples;
-						destsamples = aSamples;
-						readsamples = (int)floor(destsamples * stepratio);
-					}
-					for (j = 0; j < mVoice[i]->mChannels; j++)
-					{
-						resample(mVoice[i]->mResampleData[0]->mBuffer + SAMPLE_GRANULARITY * j, 
-								 mVoice[i]->mResampleData[1]->mBuffer + SAMPLE_GRANULARITY * j, 
-								 aScratch + aSamples * j, 
-								 partialin,
-								 destsamples, 
-								 mVoice[i]->mSamplerate, 
-								 mSamplerate);
-					}
-					outofs = out_samples;
-					mVoice[i]->mLeftoverSamples -= readsamples;
-				}		
-
+				float step = mVoice[i]->mSamplerate / aSamplerate;
+				float samples_per_block = SAMPLE_GRANULARITY / step;
+				int outofs = 0;
+		
 				while (outofs < aSamples)
 				{
-					AudioSourceResampleData * t = mVoice[i]->mResampleData[0];
-					mVoice[i]->mResampleData[0] = mVoice[i]->mResampleData[1];
-					mVoice[i]->mResampleData[1] = t;
-
-					partialout += samples_per_block;
-					int writesamples = (int)floor(partialout);
-					partialout -= writesamples;
-
-					if (writesamples > max_samples_per_block)
+					if (mVoice[i]->mLeftoverSamples == 0)
 					{
-						partialout += writesamples - max_samples_per_block;
-						writesamples = max_samples_per_block;
-					}
+						// Swap resample buffers (ping-pong)
+						AudioSourceResampleData * t = mVoice[i]->mResampleData[0];
+						mVoice[i]->mResampleData[0] = mVoice[i]->mResampleData[1];
+						mVoice[i]->mResampleData[1] = t;
 
-					int readsamples = SAMPLE_GRANULARITY;
+						// Get a block of source data
 
-					if (outofs + writesamples > aSamples)
-					{
-						writesamples = (int)floor(aSamples - floor(outofs));
-						readsamples = (int)floor(writesamples * stepratio);
-						if (readsamples > SAMPLE_GRANULARITY)
-							readsamples = SAMPLE_GRANULARITY;
-						mVoice[i]->mLeftoverSamples = SAMPLE_GRANULARITY - readsamples;
-					}
+						mVoice[i]->getAudio(mVoice[i]->mResampleData[0]->mBuffer, SAMPLE_GRANULARITY);
+						if (mVoice[i]->mSrcOffset >= SAMPLE_GRANULARITY)
+							mVoice[i]->mSrcOffset -= SAMPLE_GRANULARITY;
+					
+						// Run the per-stream filters to get our source data
 
-					mVoice[i]->getAudio(mVoice[i]->mResampleData[0]->mBuffer, SAMPLE_GRANULARITY);
-								
-					for (j = 0; j < FILTERS_PER_STREAM; j++)
-					{
-						if (mVoice[i]->mFilter[j])
+						for (j = 0; j < FILTERS_PER_STREAM; j++)
 						{
-							mVoice[i]->mFilter[j]->filter(
-								mVoice[i]->mResampleData[0]->mBuffer, 
-								SAMPLE_GRANULARITY, 
-								mVoice[i]->mChannels,
-								mVoice[i]->mSamplerate,
-								mStreamTime);
+							if (mVoice[i]->mFilter[j])
+							{
+								mVoice[i]->mFilter[j]->filter(
+									mVoice[i]->mResampleData[0]->mBuffer, 
+									SAMPLE_GRANULARITY, 
+									mVoice[i]->mChannels,
+									mVoice[i]->mSamplerate,
+									mStreamTime);
+							}
 						}
 					}
+					else
+					{
+						mVoice[i]->mLeftoverSamples = 0;
+					}
 
+					// Figure out how many samples we can generate from this source data.
+					// The value may be zero.
+
+					int writesamples = 0;
+
+					float p = mVoice[i]->mSrcOffset;
+					while (p < SAMPLE_GRANULARITY)
+					{
+						p += step;
+						writesamples++;
+					}
+
+					// If this is too much for our output buffer, don't write that many:
+					if (writesamples + outofs > aSamples)
+					{
+						mVoice[i]->mLeftoverSamples = (writesamples + outofs) - aSamples;
+						writesamples = aSamples - outofs;
+					}
+
+					// Call resampler to generate the samples, once per channel
 					for (j = 0; j < mVoice[i]->mChannels; j++)
 					{
 						resample(mVoice[i]->mResampleData[0]->mBuffer + SAMPLE_GRANULARITY * j, 
 								 mVoice[i]->mResampleData[1]->mBuffer + SAMPLE_GRANULARITY * j, 
-								 (int)floor(outofs) + aScratch + aSamples * j, 
-								 partialin,
-								 writesamples, 
-								 mVoice[i]->mSamplerate, 
-								 mSamplerate);
+								 aScratch + aSamples * j + outofs, 
+								 mVoice[i]->mSrcOffset,
+								 writesamples,
+								 mVoice[i]->mSamplerate,
+								 aSamplerate,
+								 step);
 					}
 
+					// Keep track of how many samples we've written so far
 					outofs += writesamples;
+
+					// Move source pointer onwards (writesamples may be zero)
+					mVoice[i]->mSrcOffset += writesamples * step;
 				}
 
-				mVoice[i]->mPartialOut = partialout;
-				mVoice[i]->mPartialIn = partialin;
 
 				int chofs[2];
 				chofs[0] = 0;
@@ -501,7 +484,7 @@ namespace SoLoud
 				}
 
 				// clear voice if the sound is over
-				if (!(mVoice[i]->mFlags & AudioSourceInstance::LOOPING) && mVoice[i]->hasEnded() && mVoice[i]->mLeftoverSamples == 0)
+				if (!(mVoice[i]->mFlags & AudioSourceInstance::LOOPING) && mVoice[i]->hasEnded())
 				{
 					stopVoice(i);
 				}
@@ -611,7 +594,7 @@ namespace SoLoud
 			mScratch = new float[mScratchSize];
 		}
 		
-		mixBus(aBuffer, aSamples, mScratch, 0);
+		mixBus(aBuffer, aSamples, mScratch, 0, (float)mSamplerate);
 
 		for (i = 0; i < FILTERS_PER_STREAM; i++)
 		{

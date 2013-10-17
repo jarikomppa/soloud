@@ -360,7 +360,14 @@ namespace SoLoud
 
 						// Get a block of source data
 
-						mVoice[i]->getAudio(mVoice[i]->mResampleData[0]->mBuffer, SAMPLE_GRANULARITY);
+						if (mVoice[i]->hasEnded())
+						{
+							memset(mVoice[i]->mResampleData[0]->mBuffer, 0, sizeof(float) * SAMPLE_GRANULARITY * mVoice[i]->mChannels);
+						}
+						else
+						{
+							mVoice[i]->getAudio(mVoice[i]->mResampleData[0]->mBuffer, SAMPLE_GRANULARITY);
+						}
 						if (mVoice[i]->mSrcOffset >= SAMPLE_GRANULARITY)
 							mVoice[i]->mSrcOffset -= SAMPLE_GRANULARITY;
 					

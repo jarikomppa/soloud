@@ -48,7 +48,9 @@ namespace SoLoud
 		{
 			SINE,
 			TRIANGLE,
-			SQUARE
+			SQUARE,
+			SAW,
+			INVERSESAW
 		};
 		float mFreq;
 		int mWaveform;

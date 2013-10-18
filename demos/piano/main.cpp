@@ -266,6 +266,16 @@ int main(int argc, char *argv[])
 					gSpeech.setText("Square wave");
 					gSoloud.play(gSpeech, 4);
 					break;
+				case SDLK_f: 
+					gWave.setWaveform(SoLoud::Basicwave::SAW); 
+					gSpeech.setText("Saw wave");
+					gSoloud.play(gSpeech, 4);
+					break;
+				case SDLK_g: 
+					gWave.setWaveform(SoLoud::Basicwave::INVERSESAW); 
+					gSpeech.setText("Inverse saw wave");
+					gSoloud.play(gSpeech, 4);
+					break;
 
 				case SDLK_p: plonk(1); break;                  // C
 				case SDLK_o: plonk(pow(0.943875f, 1)); break;  // B

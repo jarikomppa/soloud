@@ -205,7 +205,6 @@ namespace SoLoud
 					{
 						stb_vorbis_seek_start(mOgg);
 						mOffset = aSamples - offset;
-						mStreamTime = mOffset / mSamplerate;
 					}
 					else
 					{
@@ -235,7 +234,6 @@ namespace SoLoud
 					fseek(mFile, mParent->mDataOffset, SEEK_SET);
 					getWavData(mFile, aBuffer + copysize, aSamples - copysize, aSamples, channels, mParent->mChannels, mParent->mBits);
 					mOffset = aSamples - copysize;
-					mStreamTime = mOffset / mSamplerate;
 				}
 				else
 				{

@@ -65,7 +65,6 @@ namespace SoLoud
 					memcpy(aBuffer + copysize + i * aSamples, mParent->mData + i * mParent->mSampleCount, sizeof(float) * (aSamples - copysize));
 				}
 				mOffset = aSamples - copysize;
-				mStreamTime = mOffset / mSamplerate;
 			}
 			else
 			{

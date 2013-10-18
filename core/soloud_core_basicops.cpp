@@ -117,7 +117,7 @@ namespace SoLoud
 			if (mLockMutexFunc) mLockMutexFunc(mMutex);
 			
 			int i;
-			for (i = 0; i < mVoiceCount; i++)
+			for (i = 0; i < VOICE_COUNT; i++)
 			{
 				if (mVoice && mVoice[i] && mVoice[i]->mAudioSourceID == aSound.mAudioSourceID)
 				{
@@ -132,7 +132,7 @@ namespace SoLoud
 	{
 		int i;
 		if (mLockMutexFunc) mLockMutexFunc(mMutex);
-		for (i = 0; i < mVoiceCount; i++)
+		for (i = 0; i < VOICE_COUNT; i++)
 		{
 			stopVoice(i);
 		}

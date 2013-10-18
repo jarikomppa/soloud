@@ -68,9 +68,9 @@ namespace SoLoud
 		aSoloud->mUnlockMutexFunc = 0;
 	}
 
-	int portaudio_init(SoLoud::Soloud *aSoloud, int aVoices, int aFlags, int aSamplerate, int aBuffer)
+	int portaudio_init(SoLoud::Soloud *aSoloud, int aFlags, int aSamplerate, int aBuffer)
 	{
-		aSoloud->init(aVoices, aSamplerate, aBuffer * 2, aFlags);
+		aSoloud->init(aSamplerate, aBuffer * 2, aFlags);
 		aSoloud->mBackendCleanupFunc = soloud_portaudio_deinit;
 		aSoloud->mMutex = Thread::createMutex();
 		aSoloud->mLockMutexFunc = portaudio_mutex_lock;

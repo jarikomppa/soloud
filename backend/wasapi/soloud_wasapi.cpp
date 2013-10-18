@@ -120,7 +120,7 @@ namespace SoLoud
         CoUninitialize();
     }
 
-    int wasapi_init(Soloud *aSoloud, int aVoices, int aFlags, int aSamplerate, int aBuffer)
+    int wasapi_init(Soloud *aSoloud, int aFlags, int aSamplerate, int aBuffer)
     {
         if (FAILED(CoInitializeEx(0, COINIT_MULTITHREADED)))
         {
@@ -192,7 +192,7 @@ namespace SoLoud
         aSoloud->mLockMutexFunc = Thread::lockMutex;
         aSoloud->mUnlockMutexFunc = Thread::unlockMutex;
         data->soloud = aSoloud;
-        aSoloud->init(aVoices, aSamplerate, data->bufferFrames * format.nChannels, aFlags);
+        aSoloud->init(aSamplerate, data->bufferFrames * format.nChannels, aFlags);
         data->thread = Thread::createThread(wasapiThread, data);
         if (0 == data->thread)
         {

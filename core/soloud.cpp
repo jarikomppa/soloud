@@ -34,8 +34,6 @@ namespace SoLoud
 		mScratch = NULL;
 		mScratchSize = 0;
 		mScratchNeeded = 0;
-		mVoice = NULL;
-		mVoiceCount = 0;
 		mSamplerate = 0;
 		mBufferSize = 0;
 		mFlags = 0;
@@ -62,6 +60,10 @@ namespace SoLoud
 			mVisualizationWaveData[i] = 0;
 			mWaveData[i] = 0;
 		}
+		for (i = 0; i < VOICE_COUNT; i++)
+		{
+			mVoice[i] = 0;
+		}
 	}
 
 	Soloud::~Soloud()
@@ -73,8 +75,6 @@ namespace SoLoud
 			delete mFilterInstance[i];
 		}
 		delete[] mScratch;
-		delete[] mVoice;
-		mVoice = 0;
 		deinit();
 	}
 
@@ -85,16 +85,9 @@ namespace SoLoud
 		mBackendCleanupFunc = 0;
 	}
 
-	void Soloud::init(int aVoices, int aSamplerate, int aBufferSize, int aFlags)
+	void Soloud::init(int aSamplerate, int aBufferSize, int aFlags)
 	{
 		mGlobalVolume = 1;
-		mVoice = new AudioSourceInstance*[aVoices];
-		mVoiceCount = aVoices;
-		int i;
-		for (i = 0; i < aVoices; i++)
-		{
-			mVoice[i] = 0;
-		}
 		mSamplerate = aSamplerate;
 		mBufferSize = aBufferSize;
 		mScratchSize = aBufferSize;
@@ -338,7 +331,7 @@ namespace SoLoud
 		}
 
 		// Accumulate sound sources
-		for (i = 0; i < mVoiceCount; i++)
+		for (i = 0; i < VOICE_COUNT; i++)
 		{
 			if (mVoice[i] && 
 				mVoice[i]->mBusHandle == aBus && 
@@ -516,7 +509,7 @@ namespace SoLoud
 
 		// Process faders. May change scratch size.
 		int i;
-		for (i = 0; i < mVoiceCount; i++)
+		for (i = 0; i < VOICE_COUNT; i++)
 		{
 			if (mVoice[i] && !(mVoice[i]->mFlags & AudioSourceInstance::PAUSED))
 			{

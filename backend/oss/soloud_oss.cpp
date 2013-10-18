@@ -97,7 +97,7 @@ namespace SoLoud
         aSoloud->mBackendData = 0;
     }
 
-    int oss_init(Soloud *aSoloud, int aVoices, int aFlags, int aSamplerate, int aBuffer)
+    int oss_init(Soloud *aSoloud, int aFlags, int aSamplerate, int aBuffer)
     {
         OSSData *data = new OSSData;
         memset(data, 0, sizeof(OSSData));
@@ -158,7 +158,7 @@ namespace SoLoud
         aSoloud->mMutex = Thread::createMutex();
         aSoloud->mLockMutexFunc = Thread::lockMutex;
         aSoloud->mUnlockMutexFunc = Thread::unlockMutex;
-        aSoloud->init(aVoices, aSamplerate, data->samples * data->channels, aFlags);
+        aSoloud->init(aSamplerate, data->samples * data->channels, aFlags);
         data->threadHandle = Thread::createThread(ossThread, data);
         if (0 == data->threadHandle)
         {

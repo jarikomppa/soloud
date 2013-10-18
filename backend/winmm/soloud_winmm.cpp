@@ -111,7 +111,7 @@ namespace SoLoud
         aSoloud->mBackendData = 0;
     }
 
-    int winmm_init(Soloud *aSoloud, int aVoices, int aFlags, int aSamplerate, int aBuffer)
+    int winmm_init(Soloud *aSoloud, int aFlags, int aSamplerate, int aBuffer)
     {
         SoLoudWinMMData *data = new SoLoudWinMMData;
         ZeroMemory(data, sizeof(SoLoudWinMMData));
@@ -158,7 +158,7 @@ namespace SoLoud
         aSoloud->mMutex = Thread::createMutex();
         aSoloud->mLockMutexFunc = Thread::lockMutex;
         aSoloud->mUnlockMutexFunc = Thread::unlockMutex;
-        aSoloud->init(aVoices, aSamplerate, data->samples * format.nChannels, aFlags);
+        aSoloud->init(aSamplerate, data->samples * format.nChannels, aFlags);
         data->threadHandle = Thread::createThread(winMMThread, data);
         if (0 == data->threadHandle)
         {

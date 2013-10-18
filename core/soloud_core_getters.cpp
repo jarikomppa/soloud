@@ -66,7 +66,7 @@ namespace SoLoud
 		if (mLockMutexFunc) mLockMutexFunc(mMutex);
 		int i;
 		int c = 0;
-		for (i = 0; i < mVoiceCount; i++)
+		for (i = 0; i < VOICE_COUNT; i++)
 		{
 			if (mVoice[i]) 
 			{
@@ -193,7 +193,7 @@ namespace SoLoud
 		int i;
 		unsigned int lowest_play_index_value = 0xffffffff;
 		int lowest_play_index = -1;
-		for (i = 0; i < mVoiceCount; i++)
+		for (i = 0; i < VOICE_COUNT; i++)
 		{
 			if (mVoice[i] == NULL)
 			{

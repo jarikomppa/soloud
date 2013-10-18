@@ -173,7 +173,7 @@ namespace SoLoud
         CoUninitialize();
     }
 
-    int xaudio2_init(Soloud *aSoloud, int aVoices, int aFlags, int aSamplerate, int aBuffer)
+    int xaudio2_init(Soloud *aSoloud, int aFlags, int aSamplerate, int aBuffer)
     {
         if (FAILED(CoInitializeEx(0, COINIT_MULTITHREADED)))
         {
@@ -226,7 +226,7 @@ namespace SoLoud
         aSoloud->mLockMutexFunc = Thread::lockMutex;
         aSoloud->mUnlockMutexFunc = Thread::unlockMutex;
         data->soloud = aSoloud;
-        aSoloud->init(aVoices, aSamplerate, aBuffer * format.nChannels, aFlags);
+        aSoloud->init(aSamplerate, aBuffer * format.nChannels, aFlags);
         data->thread = Thread::createThread(xaudio2Thread, data);
         if (0 == data->thread)
         {

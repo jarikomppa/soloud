@@ -86,7 +86,7 @@ namespace SoLoud
 	{
 		if (mLockMutexFunc) mLockMutexFunc(mMutex);
 		int ch;
-		for (ch = 0; ch < mVoiceCount; ch++)
+		for (ch = 0; ch < VOICE_COUNT; ch++)
 		{
 			setVoicePause(ch, aPause);
 		}

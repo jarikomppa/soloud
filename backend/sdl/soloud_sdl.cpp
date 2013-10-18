@@ -65,7 +65,7 @@ namespace SoLoud
 		SDL_DestroyMutex((SDL_mutex*)aSoloud->mMutex);
 	}
 
-	int sdl_init(SoLoud::Soloud *aSoloud, int aVoices, int aFlags, int aSamplerate, int aBuffer)
+	int sdl_init(SoLoud::Soloud *aSoloud, int aFlags, int aSamplerate, int aBuffer)
 	{
 		aSoloud->mMutex = SDL_CreateMutex();
 		SDL_AudioSpec as;
@@ -83,7 +83,7 @@ namespace SoLoud
 		}
 		aSoloud->mBackendData = new float[as2.samples*4];
 
-		aSoloud->init(aVoices, as2.freq, as2.samples * 2, aFlags);
+		aSoloud->init(as2.freq, as2.samples * 2, aFlags);
 
 		aSoloud->mLockMutexFunc = soloud_sdl_lockmutex;
 		aSoloud->mUnlockMutexFunc = soloud_sdl_unlockmutex;

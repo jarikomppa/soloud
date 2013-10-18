@@ -38,6 +38,9 @@ freely, subject to the following restrictions:
 // Number of samples to process on one go
 #define SAMPLE_GRANULARITY 512
 
+// Maximum number of concurrent voices (hard limit is 4095)
+#define VOICE_COUNT 64
+
 #include "soloud_filter.h"
 #include "soloud_fader.h"
 #include "soloud_audiosource.h"
@@ -79,7 +82,7 @@ namespace SoLoud
 		};
 
 		// Initialize SoLoud. Called by the back-end.
-		void init(int aVoices, int aSamplerate, int aBufferSize, int aFlags);
+		void init(int aSamplerate, int aBufferSize, int aFlags);
 		// Mix and return N stereo samples in the buffer. Called by the back-end.
 		void mix(float *aBuffer, int aSamples);
 
@@ -192,9 +195,7 @@ namespace SoLoud
 		// Amount of scratch needed.
 		int mScratchNeeded;
 		// Audio voices.
-		AudioSourceInstance **mVoice;
-		// Number of concurrent voices.
-		int mVoiceCount;
+		AudioSourceInstance *mVoice[VOICE_COUNT];
 		// Output sample rate
 		int mSamplerate;
 		// Output channel count
@@ -246,25 +247,25 @@ namespace SoLoud
 	};
 
 	// SDL back-end initialization call
-	int sdl_init(SoLoud::Soloud *aSoloud, int aVoices = 32, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 2048);
+	int sdl_init(SoLoud::Soloud *aSoloud, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 2048);
 
 	// OpenAL back-end initialization call
-	int openal_init(SoLoud::Soloud *aSoloud, int aVoices = 32, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 2048);
+	int openal_init(SoLoud::Soloud *aSoloud, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 2048);
 
 	// PortAudio back-end initialization call
-	int portaudio_init(SoLoud::Soloud *aSoloud, int aVoices = 32, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 2048);
+	int portaudio_init(SoLoud::Soloud *aSoloud, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 2048);
 
 	// WinMM back-end initialization call
-	int winmm_init(SoLoud::Soloud *aSoloud, int aVoices = 32, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 4096);
+	int winmm_init(SoLoud::Soloud *aSoloud, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 4096);
 
 	// XAudio2 back-end initialization call
-	int xaudio2_init(SoLoud::Soloud *aSoloud, int aVoices = 32, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 2048);
+	int xaudio2_init(SoLoud::Soloud *aSoloud, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 2048);
 
 	// WASAPI back-end initialization call
-	int wasapi_init(SoLoud::Soloud *aSoloud, int aVoices = 32, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 4096);
+	int wasapi_init(SoLoud::Soloud *aSoloud, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 4096);
 
 	// OSS back-end initialization call
-	int oss_init(SoLoud::Soloud *aSoloud, int aVoices = 32, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 2048);
+	int oss_init(SoLoud::Soloud *aSoloud, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 2048);
 
 	// Deinterlace samples in a buffer. From 12121212 to 11112222
 	void deinterlace_samples(const float *aSourceBuffer, float *aDestBuffer, int aSamples, int aChannels);

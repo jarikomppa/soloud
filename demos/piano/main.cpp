@@ -30,11 +30,18 @@ freely, subject to the following restrictions:
 #endif
 #include <math.h>
 
+#define USE_PORTMIDI
+
 #include "soloud.h"
 #include "soloud_basicwave.h"
 #include "soloud_echofilter.h"
 #include "soloud_speech.h"
 #include "soloud_biquadresonantfilter.h"
+
+#ifdef USE_PORTMIDI
+#include "portmidi.h"
+#include <Windows.h>
+#endif
 
 SoLoud::Speech gSpeech;
 SoLoud::Soloud gSoloud;			// SoLoud engine core
@@ -103,21 +110,30 @@ void render()
 	SDL_UpdateRect(screen, 0, 0, 640, 480);    
 }
 
-void plonk(float rel)
+void plonk(float rel, float vol = 0x50)
 {
+	vol = (vol + 10) / (float)(0x7f + 10);
+	vol *= vol;
 	float pan = (float)sin(SDL_GetTicks() * 0.0234) ;
 //	int handle = gSoloud.play(gWave,1,pan);
-	int handle = gBus.play(gWave,1,pan);
+	int handle = gBus.play(gWave,vol,pan);
 //	gSoloud.fadePan(handle,pan,-pan,0.5);
 //	gSoloud.oscillatePan(handle,-1,1,0.2);
-	gSoloud.fadeVolume(handle, 1, 0, 0.5);
+	gSoloud.fadeVolume(handle, vol, 0, 0.5);
 	gSoloud.scheduleStop(handle, 0.5);
 	gSoloud.setRelativePlaySpeed(handle, 2*rel);
 }
 
+#ifdef USE_PORTMIDI
+PmStream *midi = NULL;
+#endif
+
 // Entry point
 int main(int argc, char *argv[])
 {	
+#ifdef USE_PORTMIDI
+	PmEvent buffer[1];
+#endif
 	// Initialize SDL's subsystems - in this case, only video.
 	if ( SDL_Init(SDL_INIT_VIDEO) < 0 ) 
 	{
@@ -125,16 +141,29 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
-	SoLoud::sdl_init(&gSoloud, 32, SoLoud::Soloud::CLIP_ROUNDOFF | SoLoud::Soloud::ENABLE_VISUALIZATION, 44100, 2048);
+#ifdef USE_PORTMIDI
+	Pm_OpenInput(&midi, Pm_GetDefaultInputDeviceID(), NULL, 100, NULL, NULL);
+	Pm_SetFilter(midi, PM_FILT_REALTIME);
+    while (Pm_Poll(midi)) {
+        Pm_Read(midi, buffer, 1);
+    }
+#endif
+
+	SoLoud::sdl_init(&gSoloud, SoLoud::Soloud::CLIP_ROUNDOFF | SoLoud::Soloud::ENABLE_VISUALIZATION, 44100, 2048);
 	gSoloud.setGlobalVolume(0.75);
 	gSoloud.setPostClipScaler(0.75);
 //	gBus.setFilter(0, &gBQRFilter);
 //	gBus.setFilter(1, &gFilter);
 	gFilter.setParams(0.5f, 0.5f);
 	int bushandle = gSoloud.play(gBus);
-	gSpeech.setText("Use keyboard to play or adjust settings");
+	gSpeech.setText(". . . . Use keyboard to play or adjust settings");
 	gSoloud.play(gSpeech, 4);
 	
+	gSoloud.setGlobalFilter(0,0);
+	gSoloud.setGlobalFilter(1,0);
+	gSoloud.setGlobalFilter(2,0);
+	gSoloud.setGlobalFilter(3,0);
+
 	// Register SDL_Quit to be called at exit; makes sure things are
 	// cleaned up when we quit.
 	atexit(SDL_Quit);	
@@ -154,7 +183,21 @@ int main(int argc, char *argv[])
 	{
 		// Render stuff
 		render();
-
+#ifdef USE_PORTMIDI
+		int i = Pm_Poll(midi);
+		if (i)
+		{
+			i = Pm_Read(midi, buffer, 1);
+			if (i)
+			{
+				char temp[200];
+				sprintf(temp, "\n%x %x %x", Pm_MessageStatus(buffer[0].message), Pm_MessageData1(buffer[0].message), Pm_MessageData2(buffer[0].message));
+				OutputDebugStringA(temp);
+				if (Pm_MessageStatus(buffer[0].message) == 0x90)
+					plonk(pow(0.943875f, 0x3c - Pm_MessageData1(buffer[0].message)),Pm_MessageData2(buffer[0].message));
+			}
+		}
+#endif
 		// Poll for events, and handle the ones we care about.
 		SDL_Event event;
 		while (SDL_PollEvent(&event)) 
@@ -167,6 +210,8 @@ int main(int argc, char *argv[])
 				case SDLK_z: 
 					gBus.setFilter(0, 0); 
 					gBus.setFilter(1, 0); 
+					gBus.setFilter(2, 0); 
+					gBus.setFilter(3, 0); 
 					gSpeech.setText("Filter clear");
 					gSoloud.play(gSpeech, 4);
 					break;

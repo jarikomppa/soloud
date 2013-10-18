@@ -285,22 +285,7 @@ namespace SoLoud
 				  float aDstSamplerate,
 				  float aStep)
 	{
-#if 0
-		int i;
-		float pos = aSrcOffset;
-
-		for (i = 0; i < aDstSampleCount; i++, pos += aStep)
-		{
-			int p = (int)floor(pos);
-			/*
-			if (p >= SAMPLE_GRANULARITY || p < 0)
-			{
-				p = SAMPLE_GRANULARITY - 1;
-			}
-			*/
-			aDst[i] = aSrc[p];
-		}
-#else
+#if defined(RESAMPLER_LINEAR)
 		int i;
 		float pos = aSrcOffset;
 
@@ -317,6 +302,15 @@ namespace SoLoud
 				s1 = aSrc[p-1];
 			}
 			aDst[i] = s1 + (s2 - s1) * f;
+		}
+#else // Point sample
+		int i;
+		float pos = aSrcOffset;
+
+		for (i = 0; i < aDstSampleCount; i++, pos += aStep)
+		{
+			int p = (int)floor(pos);
+			aDst[i] = aSrc[p];
 		}
 #endif
 	}

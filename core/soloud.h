@@ -32,6 +32,10 @@ freely, subject to the following restrictions:
 #define M_PI 3.14159265359
 #endif
 
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+// Configuration defines
+
 // Maximum number of filters per stream
 #define FILTERS_PER_STREAM 4
 
@@ -40,6 +44,13 @@ freely, subject to the following restrictions:
 
 // Maximum number of concurrent voices (hard limit is 4095)
 #define VOICE_COUNT 64
+
+// Use linear resampler
+#define RESAMPLER_LINEAR
+
+//
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
 
 #include "soloud_filter.h"
 #include "soloud_fader.h"

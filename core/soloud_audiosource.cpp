@@ -162,6 +162,18 @@ namespace SoLoud
 		}
 	}
 
+	void AudioSource::setSingleInstance(int aSingleInstance)
+	{
+		if (aSingleInstance)
+		{
+			mFlags |= SINGLE_INSTANCE;
+		}
+		else
+		{
+			mFlags &= ~SINGLE_INSTANCE;
+		}
+	}
+
 	void AudioSource::setFilter(int aFilterId, Filter *aFilter)
 	{
 		if (aFilterId < 0 || aFilterId >= FILTERS_PER_STREAM)

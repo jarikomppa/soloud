@@ -125,7 +125,9 @@ namespace SoLoud
 		enum FLAGS
 		{
 			// The instances from this audio source should loop
-			SHOULD_LOOP = 1
+			SHOULD_LOOP = 1,
+			// Only one instance of this audio source should play at the same time
+			SINGLE_INSTANCE = 2
 		};
 		// Flags. See AudioSource::FLAGS
 		int mFlags;
@@ -144,6 +146,8 @@ namespace SoLoud
 		AudioSource();
 		// Set the looping of the instances created from this audio source
 		void setLooping(int aLoop);
+		// Set whether only one instance of this sound should ever be playing at the same time
+		void setSingleInstance(int aSingleInstance);
 		// Set filter. Set to NULL to clear the filter.
 		virtual void setFilter(int aFilterId, Filter *aFilter);
 		// DTor

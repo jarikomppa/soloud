@@ -31,6 +31,12 @@ namespace SoLoud
 {
 	int Soloud::play(AudioSource &aSound, float aVolume, float aPan, int aPaused, int aBus)
 	{
+		if (aSound.mFlags & AudioSource::SINGLE_INSTANCE)
+		{
+			// Only one instance allowed, stop others
+			stopSound(aSound);
+		}
+
 		if (mLockMutexFunc) mLockMutexFunc(mMutex);
 		int ch = findFreeVoice();
 		if (ch < 0) 

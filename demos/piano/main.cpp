@@ -33,9 +33,11 @@ freely, subject to the following restrictions:
 #define USE_PORTMIDI
 
 #include "soloud.h"
+#include "soloud_wav.h"
 #include "soloud_basicwave.h"
 #include "soloud_echofilter.h"
 #include "soloud_speech.h"
+#include "soloud_fftfilter.h"
 #include "soloud_biquadresonantfilter.h"
 
 #ifdef USE_PORTMIDI
@@ -46,14 +48,21 @@ freely, subject to the following restrictions:
 SoLoud::Speech gSpeech;
 SoLoud::Soloud gSoloud;			// SoLoud engine core
 SoLoud::Basicwave gWave;		// Simple wave audio source
+SoLoud::Wav gLoadedWave;
 SoLoud::EchoFilter gFilter;		// Simple echo filter
 SoLoud::BiquadResonantFilter gBQRFilter;   // BQR filter
 SoLoud::Bus gBus;
+SoLoud::FFTFilter gFftFilter;
+
+float gAttack = 0.02f;
+float gDecay = 0.5f;
 
 SDL_Surface *screen;
 
 void putpixel(int x, int y, int color)
 {
+	if (y < 0 || y > 255 || x < 0 || x > 400) 
+		return;
 	unsigned int *ptr = (unsigned int*)screen->pixels;
 	int lineoffset = y * (screen->pitch / 4);
 	ptr[lineoffset + x] = color;
@@ -70,35 +79,34 @@ void render()
 	// Ask SDL for the time in milliseconds
 	int tick = SDL_GetTicks();
 
-	// Calling calcFFT will cause SoLoud to actually calculate the FFT;
-	// if we keep this pointer around, it'll just point to the old data.
-	float *buf = gSoloud.calcFFT();
-	float *mixbuf = gSoloud.getWave();
-	int i, j;
-	if (mixbuf)
-	for (i = 0; i < 640; i++)
+	float *buf = gSoloud.getWave();
+	float *fft = gSoloud.calcFFT();
+
+
+	if (buf && fft)
 	{
-		int v;
-		float f;
-		f = buf[i*256/640];
-		v = (int)floor(480 - f * 4);
-		for (j = 240; j < 480; j++)
-		{
-			int c = 0;
-			if (j > v)
-				c = 0xff0000;
+		int i, j;
+		for (i = 0; i < 256; i++)
+			for (j = 0; j < 400; j++)
+				putpixel(j, i, 0);
 
-			putpixel(i, j, c);
-		}
+		int last = 0;
+		for (i = 0; i < 256; i++)
+		{			
+			int v = 256-(int)floor(fft[i] * 127 * 0.1);
+			for (j = v; j < 256; j++)
+			{
+				putpixel(i,j,0x0000ff);
+			}
 
-		v = (int)floor(120*mixbuf[i * 256 / 640])+120;
-		for (j = 0; j < 240; j++)
-		{
-			int c = 0;
-			if (j > v)
-				c = 0xff0000;
+			v = (int)floor(buf[i] * 127 + 128);
+			for (j = 0; j < 6; j++)
+			{
+				putpixel(i,j+v,0xff0000);
+			}
 
-			putpixel(i, j, c);
+			putpixel(200 + v,128+(v-last),0x00ff00);
+			last = v;
 		}
 	}
 
@@ -107,21 +115,52 @@ void render()
 		SDL_UnlockSurface(screen);
 
 	// Tell SDL to update the whole screen
-	SDL_UpdateRect(screen, 0, 0, 640, 480);    
+	SDL_UpdateRect(screen, 0, 0, 400, 256);    
 }
+
+struct plonked
+{
+	int mHandle;
+	float mRel;
+	float mVol;
+};
+
+plonked gPlonked[128] = { 0 };
+int gWaveSelect = 0;
 
 void plonk(float rel, float vol = 0x50)
 {
+	int i = 0;
+	while (gPlonked[i].mHandle != 0 && i < 128) i++;
+	if (i == 128) return;
+	
 	vol = (vol + 10) / (float)(0x7f + 10);
 	vol *= vol;
 	float pan = (float)sin(SDL_GetTicks() * 0.0234) ;
-//	int handle = gSoloud.play(gWave,1,pan);
-	int handle = gBus.play(gWave,vol,pan);
-//	gSoloud.fadePan(handle,pan,-pan,0.5);
-//	gSoloud.oscillatePan(handle,-1,1,0.2);
-	gSoloud.fadeVolume(handle, vol, 0, 0.5);
-	gSoloud.scheduleStop(handle, 0.5);
+	int handle;
+	if (!gWaveSelect)
+	{
+		handle = gBus.play(gWave,0);
+	}
+	else
+	{
+		handle = gBus.play(gLoadedWave,0);
+	}
+	gSoloud.fadeVolume(handle, 0, vol, gAttack);
 	gSoloud.setRelativePlaySpeed(handle, 2*rel);
+	gPlonked[i].mHandle = handle;
+	gPlonked[i].mRel = rel;
+	gPlonked[i].mVol = vol;
+}
+
+void unplonk(float rel)
+{
+	int i = 0;
+	while (gPlonked[i].mRel != rel &&i < 128) i++;
+	if (i == 128) return;
+	gSoloud.fadeVolume(gPlonked[i].mHandle, gSoloud.getVolume(gPlonked[i].mHandle), 0, gDecay);
+	gSoloud.scheduleStop(gPlonked[i].mHandle, gDecay);
+	gPlonked[i].mHandle = 0;
 }
 
 #ifdef USE_PORTMIDI
@@ -156,20 +195,28 @@ int main(int argc, char *argv[])
 //	gBus.setFilter(1, &gFilter);
 	gFilter.setParams(0.5f, 0.5f);
 	int bushandle = gSoloud.play(gBus);
-	gSpeech.setText(". . . . Use keyboard to play or adjust settings");
+
+	gSpeech.setFilter(1, &gFftFilter);
+
+	gSpeech.setText(". . . . . . . . . . . . . . . Use keyboard to play or adjust settings");
 	gSoloud.play(gSpeech, 4);
+
+
 	
 	gSoloud.setGlobalFilter(0,0);
 	gSoloud.setGlobalFilter(1,0);
 	gSoloud.setGlobalFilter(2,0);
 	gSoloud.setGlobalFilter(3,0);
 
+	gLoadedWave.load("AKWF_c604_0024.wav");
+	gLoadedWave.setLooping(1);
+
 	// Register SDL_Quit to be called at exit; makes sure things are
 	// cleaned up when we quit.
 	atexit(SDL_Quit);	
 
 	// Attempt to create a 640x480 window with 32bit pixels.
-	screen = SDL_SetVideoMode(640, 480, 32, SDL_SWSURFACE);
+	screen = SDL_SetVideoMode(400, 256, 32, SDL_SWSURFACE);
 
 	// If we fail, return error.
 	if ( screen == NULL ) 
@@ -177,6 +224,8 @@ int main(int argc, char *argv[])
 		fprintf(stderr, "Unable to set 640x480 video: %s\n", SDL_GetError());
 		exit(1);
 	}
+
+
 
 	// Main loop: loop forever.
 	while (1)
@@ -195,6 +244,8 @@ int main(int argc, char *argv[])
 				OutputDebugStringA(temp);
 				if (Pm_MessageStatus(buffer[0].message) == 0x90)
 					plonk(pow(0.943875f, 0x3c - Pm_MessageData1(buffer[0].message)),Pm_MessageData2(buffer[0].message));
+				if (Pm_MessageStatus(buffer[0].message) == 0x80)
+					unplonk(pow(0.943875f, 0x3c - Pm_MessageData1(buffer[0].message)));
 			}
 		}
 #endif
@@ -252,28 +303,32 @@ int main(int argc, char *argv[])
 					gSoloud.play(gSpeech, 4);
 					break; 				
 				case SDLK_a: 
+					gWaveSelect = 0;
 					gWave.setWaveform(SoLoud::Basicwave::SINE); 
 					gSpeech.setText("Sine wave");
 					gSoloud.play(gSpeech, 4);
 					break;
 				case SDLK_s: 
+					gWaveSelect = 0;
 					gWave.setWaveform(SoLoud::Basicwave::TRIANGLE); 
 					gSpeech.setText("Triangle wave");
 					gSoloud.play(gSpeech, 4);
 					break;
 				case SDLK_d: 
+					gWaveSelect = 0;
 					gWave.setWaveform(SoLoud::Basicwave::SQUARE); 
 					gSpeech.setText("Square wave");
 					gSoloud.play(gSpeech, 4);
 					break;
 				case SDLK_f: 
+					gWaveSelect = 0;
 					gWave.setWaveform(SoLoud::Basicwave::SAW); 
 					gSpeech.setText("Saw wave");
 					gSoloud.play(gSpeech, 4);
 					break;
 				case SDLK_g: 
-					gWave.setWaveform(SoLoud::Basicwave::INVERSESAW); 
-					gSpeech.setText("Inverse saw wave");
+					gWaveSelect = 1;
+					gSpeech.setText("Looping sample");
 					gSoloud.play(gSpeech, 4);
 					break;
 
@@ -298,10 +353,31 @@ int main(int argc, char *argv[])
 				break;
 			case SDL_KEYUP:
 				// If escape is pressed, return (and thus, quit)
-				if (event.key.keysym.sym == SDLK_ESCAPE)
+				switch (event.key.keysym.sym)
 				{
-					gSoloud.deinit();
-					return 0;
+				case SDLK_ESCAPE:
+					{
+						gSoloud.deinit();
+						return 0;
+					}
+					break;
+				case SDLK_p: unplonk(1); break;                  // C
+				case SDLK_o: unplonk(pow(0.943875f, 1)); break;  // B
+				case SDLK_9: unplonk(pow(0.943875f, 2)); break;  //  A#
+				case SDLK_i: unplonk(pow(0.943875f, 3)); break;  // A
+				case SDLK_8: unplonk(pow(0.943875f, 4)); break;  //  G#
+				case SDLK_u: unplonk(pow(0.943875f, 5)); break;  // G
+				case SDLK_7: unplonk(pow(0.943875f, 6)); break;  //  F#
+				case SDLK_y: unplonk(pow(0.943875f, 7)); break;  // F
+				case SDLK_t: unplonk(pow(0.943875f, 8)); break;  // E
+				case SDLK_5: unplonk(pow(0.943875f, 9)); break;  //  D#
+				case SDLK_r: unplonk(pow(0.943875f, 10)); break; // D
+				case SDLK_4: unplonk(pow(0.943875f, 11)); break; //  C#
+				case SDLK_e: unplonk(pow(0.943875f, 12)); break; // C
+				case SDLK_w: unplonk(pow(0.943875f, 13)); break; // B
+				case SDLK_2: unplonk(pow(0.943875f, 14)); break; //  A#
+				case SDLK_q: unplonk(pow(0.943875f, 15)); break; // A
+				case SDLK_1: unplonk(pow(0.943875f, 16)); break; //  G#
 				}
 				break;
 			case SDL_QUIT:

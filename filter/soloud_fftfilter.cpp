@@ -181,7 +181,7 @@ namespace SoLoud
 	FFTFilter::FFTFilter()
 	{
 		mScale = 0.002f;
-		mCombine = 1;
+		mCombine = SUBSTRACT;
 		mShift = -15;
 	}
 

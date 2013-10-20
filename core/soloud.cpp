@@ -167,7 +167,7 @@ namespace SoLoud
 			ui = 0.0;
 			arg = (float)(M_PI / (le2 >> 1));
 			wr = cos(arg);
-			wi = sign*sin(arg);
+			wi = sign * sin(arg);
 			for (j = 0; j < le2; j += 2) 
 			{
 				p1r = fftBuffer + j; 

@@ -158,27 +158,27 @@ int main(int argc, char *argv[])
 				case SDLK_1: 
 					h = gSoloud.play(gSfx, 1, ((rand()%512)-256)/256.0f);
 					gSoloud.setRelativePlaySpeed(h, (rand()%512)/256.0f + 0.1f);
-					gSoloud.fadePan(h,gSoloud.getPan(h), 0, 0.5f);
+					gSoloud.fadePan(h, 0, 0.5f);
 					break;
 				case SDLK_2:
 					gSoloud.setPause(gMusichandle1, 0);
-					gSoloud.fadeVolume(gMusichandle1, gSoloud.getVolume(gMusichandle1), 1, 2);
-					gSoloud.fadeVolume(gMusichandle2, gSoloud.getVolume(gMusichandle2), 0, 2);
+					gSoloud.fadeVolume(gMusichandle1, 1, 2);
+					gSoloud.fadeVolume(gMusichandle2, 0, 2);
 					gSoloud.schedulePause(gMusichandle2, 2);
 					break;
 				case SDLK_3:
 					gSoloud.setPause(gMusichandle2, 0);
-					gSoloud.fadeVolume(gMusichandle2, gSoloud.getVolume(gMusichandle2), 1, 2);
-					gSoloud.fadeVolume(gMusichandle1, gSoloud.getVolume(gMusichandle1), 0, 2);
+					gSoloud.fadeVolume(gMusichandle2, 1, 2);
+					gSoloud.fadeVolume(gMusichandle1, 0, 2);
 					gSoloud.schedulePause(gMusichandle1, 2);
 					break;
 				case SDLK_4:
-					gSoloud.fadeRelativePlaySpeed(gMusichandle1, gSoloud.getRelativePlaySpeed(gMusichandle1), 0.2f, 5);
-					gSoloud.fadeRelativePlaySpeed(gMusichandle2, gSoloud.getRelativePlaySpeed(gMusichandle2), 0.2f, 5);
+					gSoloud.fadeRelativePlaySpeed(gMusichandle1, 0.2f, 5);
+					gSoloud.fadeRelativePlaySpeed(gMusichandle2, 0.2f, 5);
 					break;
 				case SDLK_5:
-					gSoloud.fadeRelativePlaySpeed(gMusichandle1, gSoloud.getRelativePlaySpeed(gMusichandle1), 1, 5);
-					gSoloud.fadeRelativePlaySpeed(gMusichandle2, gSoloud.getRelativePlaySpeed(gMusichandle2), 1, 5);
+					gSoloud.fadeRelativePlaySpeed(gMusichandle1, 1, 5);
+					gSoloud.fadeRelativePlaySpeed(gMusichandle2, 1, 5);
 					break;
 				}
 				break;

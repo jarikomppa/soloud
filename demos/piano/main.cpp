@@ -55,7 +55,7 @@ SoLoud::Bus gBus;
 SoLoud::FFTFilter gFftFilter;
 
 float gAttack = 0.02f;
-float gDecay = 0.5f;
+float gRelease = 0.5f;
 
 SDL_Surface *screen;
 
@@ -146,7 +146,7 @@ void plonk(float rel, float vol = 0x50)
 	{
 		handle = gBus.play(gLoadedWave,0);
 	}
-	gSoloud.fadeVolume(handle, 0, vol, gAttack);
+	gSoloud.fadeVolume(handle, vol, gAttack);
 	gSoloud.setRelativePlaySpeed(handle, 2*rel);
 	gPlonked[i].mHandle = handle;
 	gPlonked[i].mRel = rel;
@@ -158,8 +158,8 @@ void unplonk(float rel)
 	int i = 0;
 	while (gPlonked[i].mRel != rel &&i < 128) i++;
 	if (i == 128) return;
-	gSoloud.fadeVolume(gPlonked[i].mHandle, gSoloud.getVolume(gPlonked[i].mHandle), 0, gDecay);
-	gSoloud.scheduleStop(gPlonked[i].mHandle, gDecay);
+	gSoloud.fadeVolume(gPlonked[i].mHandle, 0, gRelease);
+	gSoloud.scheduleStop(gPlonked[i].mHandle, gRelease);
 	gPlonked[i].mHandle = 0;
 }
 

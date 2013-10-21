@@ -165,13 +165,13 @@ namespace SoLoud
 		void setVolume(int aVoiceHandle, float aVolume);
 
 		// Set up volume fader
-		void fadeVolume(int aVoiceHandle, float aFrom, float aTo, float aTime);
+		void fadeVolume(int aVoiceHandle, float aTo, float aTime);
 		// Set up panning fader
-		void fadePan(int aVoiceHandle, float aFrom, float aTo, float aTime);
+		void fadePan(int aVoiceHandle, float aTo, float aTime);
 		// Set up relative play speed fader
-		void fadeRelativePlaySpeed(int aVoiceHandle, float aFrom, float aTo, float aTime);
+		void fadeRelativePlaySpeed(int aVoiceHandle, float aTo, float aTime);
 		// Set up global volume fader
-		void fadeGlobalVolume(float aFrom, float aTo, float aTime);
+		void fadeGlobalVolume(float aTo, float aTime);
 		// Schedule a stream to pause
 		void schedulePause(int aVoiceHandle, float aTime);
 		// Schedule a stream to stop

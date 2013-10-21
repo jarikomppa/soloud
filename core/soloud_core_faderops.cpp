@@ -64,9 +64,10 @@ namespace SoLoud
 		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 	}
 
-	void Soloud::fadeVolume(int aVoiceHandle, float aFrom, float aTo, float aTime)
+	void Soloud::fadeVolume(int aVoiceHandle, float aTo, float aTime)
 	{
-		if (aTime <= 0 || aTo == aFrom)
+		float from = getVolume(aVoiceHandle);
+		if (aTime <= 0 || aTo == from)
 		{
 			setVolume(aVoiceHandle, aTo);
 			return;
@@ -79,13 +80,14 @@ namespace SoLoud
 			if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 			return;
 		}
-		mVoice[ch]->mVolumeFader.set(aFrom, aTo, aTime, mVoice[ch]->mStreamTime);
+		mVoice[ch]->mVolumeFader.set(from, aTo, aTime, mVoice[ch]->mStreamTime);
 		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 	}
 
-	void Soloud::fadePan(int aVoiceHandle, float aFrom, float aTo, float aTime)
+	void Soloud::fadePan(int aVoiceHandle, float aTo, float aTime)
 	{
-		if (aTime <= 0 || aTo == aFrom)
+		float from = getPan(aVoiceHandle);
+		if (aTime <= 0 || aTo == from)
 		{
 			setPan(aVoiceHandle, aTo);
 			return;
@@ -98,13 +100,14 @@ namespace SoLoud
 			if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 			return;
 		}
-		mVoice[ch]->mPanFader.set(aFrom, aTo, aTime, mVoice[ch]->mStreamTime);
+		mVoice[ch]->mPanFader.set(from, aTo, aTime, mVoice[ch]->mStreamTime);
 		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 	}
 
-	void Soloud::fadeRelativePlaySpeed(int aVoiceHandle, float aFrom, float aTo, float aTime)
+	void Soloud::fadeRelativePlaySpeed(int aVoiceHandle, float aTo, float aTime)
 	{
-		if (aTime <= 0 || aTo == aFrom)
+		float from = getRelativePlaySpeed(aVoiceHandle);
+		if (aTime <= 0 || aTo == from)
 		{
 			setRelativePlaySpeed(aVoiceHandle, aTo);
 			return;
@@ -116,19 +119,20 @@ namespace SoLoud
 			if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 			return;
 		}
-		mVoice[ch]->mRelativePlaySpeedFader.set(aFrom, aTo, aTime, mVoice[ch]->mStreamTime);
+		mVoice[ch]->mRelativePlaySpeedFader.set(from, aTo, aTime, mVoice[ch]->mStreamTime);
 		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 	}
 
-	void Soloud::fadeGlobalVolume(float aFrom, float aTo, float aTime)
+	void Soloud::fadeGlobalVolume(float aTo, float aTime)
 	{
-		if (aTime <= 0 || aTo == aFrom)
+		float from = getGlobalVolume();
+		if (aTime <= 0 || aTo == from)
 		{
 			setGlobalVolume(aTo);
 			return;
 		}
 		mStreamTime = 0; // avoid rollover (~6 days)
-		mGlobalVolumeFader.set(aFrom, aTo, aTime, mStreamTime);
+		mGlobalVolumeFader.set(from, aTo, aTime, mStreamTime);
 	}
 
 

@@ -45,6 +45,12 @@ freely, subject to the following restrictions:
 #include <Windows.h>
 #endif
 
+struct plonked
+{
+	int mHandle;
+	float mRel;
+};
+
 SoLoud::Speech gSpeech;
 SoLoud::Soloud gSoloud;			// SoLoud engine core
 SoLoud::Basicwave gWave;		// Simple wave audio source
@@ -57,7 +63,17 @@ SoLoud::FFTFilter gFftFilter;
 float gAttack = 0.02f;
 float gRelease = 0.5f;
 
+plonked gPlonked[128] = { 0 };
+int gWaveSelect = 2;
+int gEcho = 0;
+char *gInfo = "";
+
 SDL_Surface *screen;
+SDL_Surface *font;
+
+#ifdef USE_PORTMIDI
+PmStream *midi = NULL;
+#endif
 
 void putpixel(int x, int y, int color)
 {
@@ -66,6 +82,33 @@ void putpixel(int x, int y, int color)
 	unsigned int *ptr = (unsigned int*)screen->pixels;
 	int lineoffset = y * (screen->pitch / 4);
 	ptr[lineoffset + x] = color;
+}
+
+int drawchar(int ch, int x, int y)
+{
+	int i, j, maxx = 0;
+	for (i = 0; i < 16; i++)
+	{
+		for (j = 0; j < 16; j++)
+		{
+			if (((char*)font->pixels)[((ch-32)*16+i)*16+j])
+			{
+				putpixel(x+j,y+i,0xffffffff);
+				if (j > maxx) maxx = j;
+			}
+		}
+	}
+	return maxx + 1;
+}
+
+void drawstring(char * s, int x, int y)
+{
+	while (*s)
+	{
+		x += drawchar(*s, x, y);
+		if (*s == 32) x += 3;
+		s++;
+	}
 }
 
 
@@ -110,6 +153,31 @@ void render()
 		}
 	}
 
+
+	switch (gWaveSelect)
+	{
+	case 0:
+		drawstring("Sine wave", 0, 0);
+		break;
+	case 1:
+		drawstring("Triangle wave", 0, 0);
+		break;
+	case 2:
+		drawstring("Square wave", 0, 0);
+		break;
+	case 3:
+		drawstring("Saw wave", 0, 0);
+		break;
+	case 4:
+		drawstring("Looped sample", 0, 0);
+		break;
+	}
+
+	if (gEcho)
+		drawstring("Echo on", 0, 16);
+
+	drawstring(gInfo, 0, 256-16);
+
 	// Unlock if needed
 	if (SDL_MUSTLOCK(screen)) 
 		SDL_UnlockSurface(screen);
@@ -117,16 +185,6 @@ void render()
 	// Tell SDL to update the whole screen
 	SDL_UpdateRect(screen, 0, 0, 400, 256);    
 }
-
-struct plonked
-{
-	int mHandle;
-	float mRel;
-	float mVol;
-};
-
-plonked gPlonked[128] = { 0 };
-int gWaveSelect = 0;
 
 void plonk(float rel, float vol = 0x50)
 {
@@ -138,7 +196,7 @@ void plonk(float rel, float vol = 0x50)
 	vol *= vol;
 	float pan = (float)sin(SDL_GetTicks() * 0.0234) ;
 	int handle;
-	if (!gWaveSelect)
+	if (gWaveSelect < 4)
 	{
 		handle = gBus.play(gWave,0);
 	}
@@ -150,7 +208,6 @@ void plonk(float rel, float vol = 0x50)
 	gSoloud.setRelativePlaySpeed(handle, 2*rel);
 	gPlonked[i].mHandle = handle;
 	gPlonked[i].mRel = rel;
-	gPlonked[i].mVol = vol;
 }
 
 void unplonk(float rel)
@@ -163,9 +220,12 @@ void unplonk(float rel)
 	gPlonked[i].mHandle = 0;
 }
 
-#ifdef USE_PORTMIDI
-PmStream *midi = NULL;
-#endif
+void say(char *text)
+{
+	gInfo = text;
+	gSpeech.setText(text);
+	gSoloud.play(gSpeech, 4);
+}
 
 // Entry point
 int main(int argc, char *argv[])
@@ -199,6 +259,7 @@ int main(int argc, char *argv[])
 	gSpeech.setFilter(1, &gFftFilter);
 
 	gSpeech.setText(". . . . . . . . . . . . . . . Use keyboard to play or adjust settings");
+	gInfo = "Use keyboard to play or adjust settings";
 	gSoloud.play(gSpeech, 4);
 
 
@@ -217,7 +278,7 @@ int main(int argc, char *argv[])
 
 	// Attempt to create a 640x480 window with 32bit pixels.
 	screen = SDL_SetVideoMode(400, 256, 32, SDL_SWSURFACE);
-
+	font = SDL_LoadBMP("font.bmp");
 	// If we fail, return error.
 	if ( screen == NULL ) 
 	{
@@ -263,73 +324,63 @@ int main(int argc, char *argv[])
 					gBus.setFilter(1, 0); 
 					gBus.setFilter(2, 0); 
 					gBus.setFilter(3, 0); 
-					gSpeech.setText("Filter clear");
-					gSoloud.play(gSpeech, 4);
+					say("Filter clear");
+					gEcho = 0;
 					break;
 				case SDLK_x: 
 					gBus.setFilter(0, &gFilter); 
-					gSpeech.setText("Echo filter");
-					gSoloud.play(gSpeech, 4);
+					say("Echo filter");
+					gEcho = 1;
 					break;
 				case SDLK_c: 
 					gBQRFilter.setParams(SoLoud::BiquadResonantFilter::LOWPASS, 44100, 1000, 2);  
 					gBus.setFilter(1, &gBQRFilter); 
-					gSpeech.setText("Low pass filter 1000 hz");
-					gSoloud.play(gSpeech, 4);
+					say("Low pass filter 1000 hz");
 					break;
 				case SDLK_v: 
 					gBQRFilter.setParams(SoLoud::BiquadResonantFilter::LOWPASS, 44100, 500, 8);   
 					gBus.setFilter(1, &gBQRFilter); 
-					gSpeech.setText("Low pass filter 500 hz");
-					gSoloud.play(gSpeech, 4);
+					say("Low pass filter 500 hz");
 					break;
 				case SDLK_b: 
 					gBQRFilter.setParams(SoLoud::BiquadResonantFilter::HIGHPASS, 44100, 1000, 8); 
 					gBus.setFilter(1, &gBQRFilter); 
-					gSpeech.setText("High pass filter 1000 hz");
-					gSoloud.play(gSpeech, 4);
+					say("High pass filter 1000 hz");
 					break;
 				case SDLK_n: 
 					gBQRFilter.setParams(SoLoud::BiquadResonantFilter::BANDPASS, 44100, 1000, 1); 
 					gBus.setFilter(1, &gBQRFilter); 
-					gSpeech.setText("Band pass filter 1000 hz");
-					gSoloud.play(gSpeech, 4);
+					say("Band pass filter 1000 hz");
 					break;
 				case SDLK_m: 
 					gBQRFilter.setParams(SoLoud::BiquadResonantFilter::LOWPASS, 44100, 1000, 2);  
 					gBus.setFilter(1, &gBQRFilter); 
 					gSoloud.oscillateFilterParameter(bushandle, 1, 1, 500, 6000, 4);  
-					gSpeech.setText("Oscillating low pass filter");
-					gSoloud.play(gSpeech, 4);
+					say("Oscillating low pass filter");
 					break; 				
 				case SDLK_a: 
 					gWaveSelect = 0;
 					gWave.setWaveform(SoLoud::Basicwave::SINE); 
-					gSpeech.setText("Sine wave");
-					gSoloud.play(gSpeech, 4);
+					say("Sine wave");
 					break;
 				case SDLK_s: 
-					gWaveSelect = 0;
+					gWaveSelect = 1;
 					gWave.setWaveform(SoLoud::Basicwave::TRIANGLE); 
-					gSpeech.setText("Triangle wave");
-					gSoloud.play(gSpeech, 4);
+					say("Triangle wave");
 					break;
 				case SDLK_d: 
-					gWaveSelect = 0;
+					gWaveSelect = 2;
 					gWave.setWaveform(SoLoud::Basicwave::SQUARE); 
-					gSpeech.setText("Square wave");
-					gSoloud.play(gSpeech, 4);
+					say("Square wave");
 					break;
 				case SDLK_f: 
-					gWaveSelect = 0;
+					gWaveSelect = 3;
 					gWave.setWaveform(SoLoud::Basicwave::SAW); 
-					gSpeech.setText("Saw wave");
-					gSoloud.play(gSpeech, 4);
+					say("Saw wave");
 					break;
 				case SDLK_g: 
-					gWaveSelect = 1;
-					gSpeech.setText("Looping sample");
-					gSoloud.play(gSpeech, 4);
+					gWaveSelect = 4;
+					say("Looping sample");
 					break;
 
 				case SDLK_p: plonk(1); break;                  // C

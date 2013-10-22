@@ -279,22 +279,22 @@ namespace SoLoud
 	void resample(float *aSrc,
 		          float *aSrc1, 
 				  float *aDst, 
-				  float aSrcOffset,
+				  int aSrcOffset,
 				  int aDstSampleCount,
 				  float aSrcSamplerate, 
 				  float aDstSamplerate,
-				  float aStep)
+				  int aStepFixed)
 	{
 #if 0
 		
 #elif defined(RESAMPLER_LINEAR)
 		int i;
-		float pos = aSrcOffset;
+		int pos = aSrcOffset;
 
-		for (i = 0; i < aDstSampleCount; i++, pos += aStep)
+		for (i = 0; i < aDstSampleCount; i++, pos += aStepFixed)
 		{
-			int p = (int)floor(pos);
-			float f = pos - p;
+			int p = pos >> 16;
+			int f = pos & 0xffff;
 #ifdef _DEBUG
 			if (p >= SAMPLE_GRANULARITY)
 			{
@@ -308,15 +308,15 @@ namespace SoLoud
 			{
 				s1 = aSrc[p-1];
 			}
-			aDst[i] = s1 + (s2 - s1) * f;
+			aDst[i] = s1 + (s2 - s1) * f * (1 / 65536.0f);
 		}
 #else // Point sample
 		int i;
 		float pos = aSrcOffset;
 
-		for (i = 0; i < aDstSampleCount; i++, pos += aStep)
+		for (i = 0; i < aDstSampleCount; i++, pos += aStepFixed)
 		{
-			int p = (int)floor(pos);
+			int p = pos >> 16;
 			aDst[i] = aSrc[p];
 		}
 #endif
@@ -340,6 +340,7 @@ namespace SoLoud
 			{
 				int j;
 				float step = mVoice[i]->mSamplerate / aSamplerate;
+				int step_fixed = step * 65536;
 				float samples_per_block = SAMPLE_GRANULARITY / step;
 				int outofs = 0;
 		
@@ -363,9 +364,9 @@ namespace SoLoud
 							mVoice[i]->getAudio(mVoice[i]->mResampleData[0]->mBuffer, SAMPLE_GRANULARITY);
 						}
 
-						if (mVoice[i]->mSrcOffset + step > SAMPLE_GRANULARITY)
+						if (mVoice[i]->mSrcOffset + step_fixed > (SAMPLE_GRANULARITY * 65536))
 						{
-							mVoice[i]->mSrcOffset -= SAMPLE_GRANULARITY;
+							mVoice[i]->mSrcOffset -= SAMPLE_GRANULARITY * 65536;
 						}
 					
 						// Run the per-stream filters to get our source data
@@ -393,26 +394,15 @@ namespace SoLoud
 
 					int writesamples = 0;
 
-					// This causes slight noise to appear on certain borderline frequencies
-					// (and, since it's a loop, it's wasteful), but it's still
-					// mathematically closer to what is going on than the code below..
-
-					float p = mVoice[i]->mSrcOffset;				
-					while (p < SAMPLE_GRANULARITY)
+					if (mVoice[i]->mSrcOffset < SAMPLE_GRANULARITY * 65536)
 					{
-						p += step;
-						writesamples++;
+						writesamples = ((SAMPLE_GRANULARITY * 65536) - mVoice[i]->mSrcOffset) / step_fixed + 1;
+
+						// avoid reading past the current buffer..
+						if (((writesamples * step_fixed + mVoice[i]->mSrcOffset) >> 16) >= SAMPLE_GRANULARITY + 1)
+							writesamples--;
 					}
 
-					// the following code should(tm) be pretty much the same as the above loop. However;
-					// with +1, we request src[SAMPLE_GRANULARITY] which is a buffer overrun; without, we miss
-					// plenty of samples (and cause lots of clicks)
-/*
-					if (mVoice[i]->mSrcOffset < SAMPLE_GRANULARITY)
-					{
-						writesamples = floor((SAMPLE_GRANULARITY - mVoice[i]->mSrcOffset) / step) + 1;
-					}
-*/									
 
 					// If this is too much for our output buffer, don't write that many:
 					if (writesamples + outofs > aSamples)
@@ -433,7 +423,7 @@ namespace SoLoud
 									 writesamples,
 									 mVoice[i]->mSamplerate,
 									 aSamplerate,
-									 step);
+									 step_fixed);
 						}
 					}
 
@@ -441,7 +431,7 @@ namespace SoLoud
 					outofs += writesamples;
 
 					// Move source pointer onwards (writesamples may be zero)
-					mVoice[i]->mSrcOffset += writesamples * step;
+					mVoice[i]->mSrcOffset += writesamples * step_fixed;
 				}
 
 

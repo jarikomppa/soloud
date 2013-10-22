@@ -102,8 +102,8 @@ namespace SoLoud
 		void init(int aPlayIndex, float aBaseSamplerate, int aChannels, int aSourceFlags);
 		// Buffers for the resampler
 		AudioSourceResampleData *mResampleData[2];
-		// Sub-sample playhead
-		float mSrcOffset;
+		// Sub-sample playhead; 16.16 fixed point
+		int mSrcOffset;
 		// Samples left over from earlier pass
 		int mLeftoverSamples;
 		// Get N samples from the stream to the buffer

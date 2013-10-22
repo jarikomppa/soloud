@@ -285,7 +285,9 @@ namespace SoLoud
 				  float aDstSamplerate,
 				  float aStep)
 	{
-#if defined(RESAMPLER_LINEAR)
+#if 0
+		
+#elif defined(RESAMPLER_LINEAR)
 		int i;
 		float pos = aSrcOffset;
 
@@ -293,8 +295,13 @@ namespace SoLoud
 		{
 			int p = (int)floor(pos);
 			float f = pos - p;
+#ifdef _DEBUG
 			if (p >= SAMPLE_GRANULARITY)
+			{
+				// This should never actually happen
 				p = SAMPLE_GRANULARITY - 1;
+			}
+#endif
 			float s1 = aSrc1[SAMPLE_GRANULARITY - 1];
 			float s2 = aSrc[p];
 			if (p != 0)
@@ -355,8 +362,11 @@ namespace SoLoud
 						{
 							mVoice[i]->getAudio(mVoice[i]->mResampleData[0]->mBuffer, SAMPLE_GRANULARITY);
 						}
+
 						if (mVoice[i]->mSrcOffset >= SAMPLE_GRANULARITY)
+						{
 							mVoice[i]->mSrcOffset -= SAMPLE_GRANULARITY;
+						}
 					
 						// Run the per-stream filters to get our source data
 
@@ -398,16 +408,19 @@ namespace SoLoud
 					}
 
 					// Call resampler to generate the samples, once per channel
-					for (j = 0; j < mVoice[i]->mChannels; j++)
+					if (writesamples)
 					{
-						resample(mVoice[i]->mResampleData[0]->mBuffer + SAMPLE_GRANULARITY * j, 
-								 mVoice[i]->mResampleData[1]->mBuffer + SAMPLE_GRANULARITY * j, 
-								 aScratch + aSamples * j + outofs, 
-								 mVoice[i]->mSrcOffset,
-								 writesamples,
-								 mVoice[i]->mSamplerate,
-								 aSamplerate,
-								 step);
+						for (j = 0; j < mVoice[i]->mChannels; j++)
+						{
+							resample(mVoice[i]->mResampleData[0]->mBuffer + SAMPLE_GRANULARITY * j, 
+									 mVoice[i]->mResampleData[1]->mBuffer + SAMPLE_GRANULARITY * j, 
+									 aScratch + aSamples * j + outofs, 
+									 mVoice[i]->mSrcOffset,
+									 writesamples,
+									 mVoice[i]->mSamplerate,
+									 aSamplerate,
+									 step);
+						}
 					}
 
 					// Keep track of how many samples we've written so far

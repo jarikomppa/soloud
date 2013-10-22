@@ -363,7 +363,7 @@ namespace SoLoud
 							mVoice[i]->getAudio(mVoice[i]->mResampleData[0]->mBuffer, SAMPLE_GRANULARITY);
 						}
 
-						if (mVoice[i]->mSrcOffset >= SAMPLE_GRANULARITY)
+						if (mVoice[i]->mSrcOffset + step > SAMPLE_GRANULARITY)
 						{
 							mVoice[i]->mSrcOffset -= SAMPLE_GRANULARITY;
 						}
@@ -393,12 +393,26 @@ namespace SoLoud
 
 					int writesamples = 0;
 
-					float p = mVoice[i]->mSrcOffset;
+					// This causes slight noise to appear on certain borderline frequencies
+					// (and, since it's a loop, it's wasteful), but it's still
+					// mathematically closer to what is going on than the code below..
+
+					float p = mVoice[i]->mSrcOffset;				
 					while (p < SAMPLE_GRANULARITY)
 					{
 						p += step;
 						writesamples++;
 					}
+
+					// the following code should(tm) be pretty much the same as the above loop. However;
+					// with +1, we request src[SAMPLE_GRANULARITY] which is a buffer overrun; without, we miss
+					// plenty of samples (and cause lots of clicks)
+/*
+					if (mVoice[i]->mSrcOffset < SAMPLE_GRANULARITY)
+					{
+						writesamples = floor((SAMPLE_GRANULARITY - mVoice[i]->mSrcOffset) / step) + 1;
+					}
+*/									
 
 					// If this is too much for our output buffer, don't write that many:
 					if (writesamples + outofs > aSamples)

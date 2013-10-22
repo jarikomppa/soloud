@@ -42,42 +42,51 @@ namespace SoLoud
 		if (mParent->mData == NULL)
 			return;
 
+		// Buffer size may be bigger than samples, and samples may loop..
+
+		int written = 0;
+		int maxwrite = (aSamples > mParent->mSampleCount) ?  mParent->mSampleCount : aSamples;
 		int channels = mChannels;
 
-		int copysize = aSamples;
-		if (copysize + mOffset > mParent->mSampleCount)
+		while (written < aSamples)
 		{
-			copysize = mParent->mSampleCount - mOffset;
-		}
+			int copysize = maxwrite;
+			if (copysize + mOffset > mParent->mSampleCount)
+			{
+				copysize = mParent->mSampleCount - mOffset;
+			}
 
-		int i;
-		for (i = 0; i < channels; i++)
-		{
-			memcpy(aBuffer + i * aSamples, mParent->mData + mOffset + i * mParent->mSampleCount, sizeof(float) * copysize);
-		}
+			if (copysize + written > aSamples)
+			{
+				copysize = aSamples - written;
+			}
+
+			int i;
+			for (i = 0; i < channels; i++)
+			{
+				memcpy(aBuffer + i * aSamples + written, mParent->mData + mOffset + i * mParent->mSampleCount, sizeof(float) * copysize);
+			}
+
+			written += copysize;
+			mOffset += copysize;				
 		
-		if (copysize != aSamples)
-		{
-			if (mFlags & AudioSourceInstance::LOOPING)
+			if (copysize != maxwrite)
 			{
-				for (i = 0; i < channels; i++)
+				if (mFlags & AudioSourceInstance::LOOPING)
 				{
-					memcpy(aBuffer + copysize + i * aSamples, mParent->mData + i * mParent->mSampleCount, sizeof(float) * (aSamples - copysize));
+					if (mOffset == mParent->mSampleCount)
+						mOffset = 0;
 				}
-				mOffset = aSamples - copysize;
-			}
-			else
-			{
-				for (i = 0; i < channels; i++)
+				else
 				{
-					memset(aBuffer + copysize + i * aSamples, 0, sizeof(float) * (aSamples - copysize));
+					for (i = 0; i < channels; i++)
+					{
+						memset(aBuffer + copysize + i * aSamples, 0, sizeof(float) * (aSamples - written));
+					}
+					mOffset += aSamples - written;
+					written = aSamples;
 				}
-				mOffset += aSamples - copysize;
 			}
-		}
-		else
-		{
-			mOffset += aSamples;
 		}
 	}
 

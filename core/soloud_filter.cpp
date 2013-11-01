@@ -38,7 +38,7 @@ namespace SoLoud
 	{
 	}
 
-	void FilterInstance::fadeFilterParameter(int aAttributeId, float aFrom, float aTo, float aTime, float aStartTime)
+	void FilterInstance::fadeFilterParameter(int aAttributeId, float aTo, float aTime, float aStartTime)
 	{
 	}
 

@@ -118,7 +118,7 @@ namespace SoLoud
 			if (mLockMutexFunc) mLockMutexFunc(mMutex);		
 			if (mFilterInstance[aFilterId])
 			{
-				mFilterInstance[aFilterId]->fadeFilterParameter(aAttributeId, aFrom, aTo, aTime, mStreamTime);
+				mFilterInstance[aFilterId]->fadeFilterParameter(aAttributeId, aTo, aTime, mStreamTime);
 			}
 			if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 			return;
@@ -133,7 +133,7 @@ namespace SoLoud
 		if (mVoice[ch] &&
 			mVoice[ch]->mFilter[aFilterId])
 		{
-			mVoice[ch]->mFilter[aFilterId]->fadeFilterParameter(aAttributeId, aFrom, aTo, aTime, mStreamTime);
+			mVoice[ch]->mFilter[aFilterId]->fadeFilterParameter(aAttributeId, aTo, aTime, mStreamTime);
 		}
 		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 	}

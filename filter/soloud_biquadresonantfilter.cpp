@@ -190,19 +190,22 @@ namespace SoLoud
 		return 0;
 	}
 
-	void BiquadResonantFilterInstance::fadeFilterParameter(int aAttributeId, float aFrom, float aTo, float aTime, float aStartTime)
+	void BiquadResonantFilterInstance::fadeFilterParameter(int aAttributeId, float aTo, float aTime, float aStartTime)
 	{
-		if (aFrom == aTo || aTime <= 0) return;
+		if (aTime <= 0) return;
 		switch (aAttributeId)
 		{
 		case BiquadResonantFilter::FREQUENCY:
-			mFrequencyFader.set(aFrom, aTo, aTime, aStartTime);
+			if (mFrequency == aTo) return;
+			mFrequencyFader.set(mFrequency, aTo, aTime, aStartTime);
 			break;
 		case BiquadResonantFilter::SAMPLERATE:
-			mSampleRateFader.set(aFrom, aTo, aTime, aStartTime);
+			if (mSampleRate == aTo) return;
+			mSampleRateFader.set(mSampleRate, aTo, aTime, aStartTime);
 			break;
 		case BiquadResonantFilter::RESONANCE:
-			mResonanceFader.set(aFrom, aTo, aTime, aStartTime);
+			if (mResonance == aTo) return;
+			mResonanceFader.set(mResonance, aTo, aTime, aStartTime);
 			break;
 		}
 	}

@@ -68,6 +68,7 @@ namespace SoLoud
 
 	Soloud::~Soloud()
 	{
+		deinit();
 		stopAll();
 		int i;
 		for (i = 0; i < FILTERS_PER_STREAM; i++)
@@ -75,7 +76,6 @@ namespace SoLoud
 			delete mFilterInstance[i];
 		}
 		delete[] mScratch;
-		deinit();
 	}
 
 	void Soloud::deinit()

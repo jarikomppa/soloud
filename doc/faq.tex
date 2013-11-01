@@ -1,0 +1,40 @@
+% !TEX root = SoLoud.tex
+%===============================================================================
+
+\chapter{Frequently Asked Questions}
+
+\section{What does it play?}
+
+Currently, SoLoud includes support for uncompressed 8 and 16 bit RIFF Wav files, as well as Ogg Vorbis files. Both of these only support a limited feature set of said formats, so you may experience some issues with strange files.
+
+Additionally, SoLoud comes with a speech synthesizer.
+
+The interface for audio sources is relatively simple, so new formats and noise generators, as well as audio filters, can be made.
+
+An example sin/saw/triangle/square generator is also available, as part of the "piano" example.
+
+Since there are several liberally-licensed audio sources available, the number of formats SoLoud will support is likely to grow in the future.
+
+\section{What dependencies does it have?}
+
+There's no external library dependencies (apart from stdlib). However, to get audio out of your speakers, a back-end is needed. Back-ends that currently exist include SDL, windows multimedia and portaudio, and SoLoud has been designed so that making new back-ends would be as painless as possible.
+
+\section{Is there a DLL / C-Interface?}
+
+Not yet. This has been requested though, so one may appear at some point.
+
+\section{What's the animal in the logo?}
+
+A fennec fox. Google it. They're cute!
+
+\section{Is there a mailing list?}
+
+There's a google group, at http://groups.google.com/d/forum/soloud
+
+Main development occurs on GitHub, at https://github.com/jarikomppa/soloud and the issue tracker is in use.
+
+Finally, there's \#soloud on ircnet, if you want to pop by.
+
+\section{Are these real questions?}
+
+Surprisingly, yes.

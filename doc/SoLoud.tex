@@ -1,0 +1,49 @@
+% These lines tell TeXShop to typeset with xelatex, and to open and 
+% save the source with Unicode encoding.
+
+%!TEX TS-program = xelatex
+%!TEX encoding = UTF-8 Unicode
+%! program = pdflatex
+
+%% Get all the page and style setup from a common file
+\input{setup.tex}
+
+\usepackage{longtable}
+
+\usepackage{float}
+\restylefloat{table} 
+\restylefloat{figure}
+
+%% Set the image paths
+\graphicspath{{images/}}
+
+% \input{GrammarCheckSetup}
+    
+%%% DOCUMENT TITLE
+\title{SoLoud Audio Engine}
+\author{Jari Komppa}
+%\date{August 2012} % Delete this line to display the current date
+
+
+%%% BEGIN DOCUMENT
+\begin{document}
+	
+\begin{titlingpage}
+\maketitle
+\end{titlingpage}
+
+% Use * to avoid the entries themselves to get inserted in TOC
+\tableofcontents*
+% \listoffigures*
+% \listoftables*
+
+%===============================================================================
+% All parts of the document are included as separate files.
+
+\include{intro}
+\include{legal}
+\include{quickstart}
+\include{concepts}
+\include{faq}
+
+\end{document}

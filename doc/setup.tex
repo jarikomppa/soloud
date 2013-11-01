@@ -1,0 +1,178 @@
+\documentclass[10pt,a4paper,oneside]{memoir}
+
+% Use fontspec for loading Trebuchet MS
+\usepackage{fontspec,xltxtra,xunicode}
+\defaultfontfeatures{Mapping=tex-text}
+\setromanfont[Mapping=tex-text]{Trebuchet MS}
+\setsansfont[Scale=MatchLowercase,Mapping=tex-text]{Trebuchet MS}
+\setmonofont[Scale=MatchLowercase]{Courier New}
+
+\usepackage{unicode-math}
+\usepackage{mathtools}
+\setmathfont{xits-math.otf}
+
+% Use xcolor package for color definitions
+\usepackage[cmyk]{xcolor}
+\definecolor{myblack}{RGB/cmyk}{0,0,0/0,0,0,1}
+
+% Use graphicx for importing images
+\usepackage{graphicx}
+
+% Use hyperref for links
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,
+            linkcolor=myblack,
+            urlcolor=myblack}
+
+% Use tabularx for tables and colortbl for adding color
+\usepackage{tabularx}
+\usepackage{colortbl}
+% Set the rule properties for tables
+\setlength\arrayrulewidth{0.4mm}
+\setlength{\heavyrulewidth}{0.4mm}
+\setlength{\lightrulewidth}{0.2mm}
+\arrayrulecolor{myblack}
+% Make a new rule similar to misrule but with heavy weight
+\newcommand{\otoprule}{\midrule[\heavyrulewidth]}
+
+% Use listings for pretty-printing of code
+\usepackage{listings}
+
+% Add some extra commands for changing the row styles of tables
+% This is from http://www.tug.org/pracjourn/2007-1/mori/mori.pdf
+\newcolumntype{+}{>{\global\let\currentrowstyle\relax}}
+\newcolumntype{^}{>{\currentrowstyle}}
+   \newcommand{\rowstyle}[1]{\gdef\currentrowstyle{#1}%
+   #1\ignorespaces
+   }
+
+% Usage in table adds '+' and '^' for delimiters, like this:
+% \begin{tabular}{+l^c^c^c}
+% \toprule\rowstyle{\bfseries}%
+% Quantity & Symbol & Unit & Value \\\otoprule%
+% ...
+% \end{tabular}
+
+% Defines the length used for hanging the tex block from the chapter / section headings
+\newlength{\textblockhang}
+\newlength{\textblockheight}
+\newlength{\textblockwidth}
+\setlength{\textblockhang}{10mm}
+\setlength{\textblockheight}{224mm}
+\setlength{\textblockwidth}{150mm}
+
+\setlength{\droptitle}{5cm}
+
+% Define the page layout
+\settrimmedsize{297mm}{210mm}{*}
+
+\newlength{\textblockleftmargin}
+\setlength{\textblockleftmargin}{\paperwidth}
+\addtolength{\textblockleftmargin}{\textblockhang}
+\addtolength{\textblockleftmargin}{-\textblockwidth}
+\setlength{\textblockleftmargin}{0.5\textblockleftmargin}
+
+\setlength{\trimtop}{0pt}
+\setlength{\trimedge}{\stockwidth}
+\addtolength{\trimedge}{-\paperwidth}
+\settypeblocksize{\textblockheight}{\textblockwidth}{*}
+\setulmargins{4cm}{*}{*}
+\setlrmargins{\textblockleftmargin}{*}{*}
+\setmarginnotes{17pt}{51pt}{\onelineskip}
+\setheadfoot{\onelineskip}{2\onelineskip}
+\setheaderspaces{*}{2\onelineskip}{*}
+\checkandfixthelayout
+
+% Define the style for footer and header
+% Default footer has the company address
+\newcommand{\footcontents}
+{SoLoud Audio Engine - http://soloud-audio.com}
+
+% Length \headfootwidth is used for the width of the footer
+\newlength{\headfootwidth}
+\setlength{\headfootwidth}{\textwidth}
+\addtolength{\headfootwidth}{\textblockhang}
+
+\makepagestyle{mypage}
+\makefootrule{mypage}{\headfootwidth}{0.4mm}{1.5mm}
+\makeevenfoot{mypage}{
+  \color{black}\thepage
+}{
+  \color{black}\small \footcontents
+}{  
+}
+\makeoddfoot{mypage}{
+}{
+  \color{black}\small \footcontents
+}{
+  \color{black}\thepage
+}
+\makeevenhead{mypage}{}{}{}
+\makeoddhead{mypage}{}{}{}
+\makeheadfootruleprefix{mypage}{\color{myblack}}{\color{myblack}}
+\makerunningwidth{mypage}{\headfootwidth}
+\makeheadposition{mypage}{flushright}{flushright}{flushright}{flushright}
+
+\aliaspagestyle{part}{mypage}
+\aliaspagestyle{chapter}{mypage}
+\pagestyle{mypage}
+
+% Define title page hooks
+\pretitle{\begin{center}\begin{Spacing}{-0.5}\huge}
+\posttitle{\par\vspace{-3mm}\color{myblack}\rule{\textwidth}{0.4mm}\color{black}\end{Spacing}\end{center}}
+\preauthor{\begin{center}\begin{Spacing}{-1}\Large}
+\postauthor{\par\end{Spacing}\end{center}}
+\predate{\begin{center}\begin{Spacing}{-1}\large}
+\postdate{\par\end{Spacing}\end{center}
+  \begin{figure}[b]
+    \begin{center}
+    \includegraphics[width=12.0cm]{SoLoudLogo.pdf}
+    \end{center}
+  \end{figure}
+}
+
+% Set section numbering up to and including subsection
+\setsecnumdepth{subsection}
+\maxtocdepth{subsection}
+\settocdepth{subsection}
+
+% Create a custom chapter style. This is based on hangnum from memoir.
+\makechapterstyle{mychapter}{%
+  \renewcommand*{\chaptitlefont}{\normalfont\LARGE\bfseries}
+  \renewcommand*{\chapnumfont}{\chaptitlefont}
+  % allow for 99 chapters!
+  \settowidth{\chapindent}{\chapnumfont 999}
+  \renewcommand*{\printchaptername}{}
+  \renewcommand*{\chapternamenum}{}
+  \renewcommand*{\chapnumfont}{\chaptitlefont}
+  \renewcommand*{\printchapternum}{%
+    \noindent\llap{\makebox[\chapindent][l]{%
+    \chapnumfont \thechapter}}}
+  \renewcommand*{\afterchapternum}{}
+  \renewcommand{\insertchapterspace}{}
+  \setlength{\afterchapskip}{10pt}
+  \setlength{\beforechapskip}{10pt}
+}
+
+% Tweak the indents by \textblockhang outside the margin.
+\chapterstyle{mychapter}
+\setlength{\chapindent}{\textblockhang}
+\setsecindent{-\textblockhang}
+\setsubsecindent{-\textblockhang}
+\setsubsubsecindent{-\textblockhang}
+
+\setlength{\parindent}{0mm}
+\setlength{\parskip}{10pt}
+\definecolor{codebg}{rgb}{0.9,0.9,0.9}
+\lstset{
+	basicstyle=\small, 
+	stringstyle=\ttfamily, 
+	backgroundcolor=\color{codebg}, 
+	commentstyle=\color{blue},
+	language=C++,
+	framexleftmargin=6pt,
+	framextopmargin=2pt,
+	framexbottommargin=2pt,
+	frame=tb,
+	framerule=0pt
+	}

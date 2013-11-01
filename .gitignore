@@ -7,3 +7,9 @@ _UpgradeReport_Files/
 *.old
 *.filters
 build/
+*.aux
+*.out
+*.gz
+*.toc
+incoming/
+experiments/

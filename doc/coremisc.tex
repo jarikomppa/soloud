@@ -1,0 +1,115 @@
+% !TEX root = SoLoud.tex
+%===============================================================================
+
+\chapter{Core: Misc}
+
+\section{Soloud.getStreamTime()}
+
+The getStreamTime function can be used to get the current play position, in seconds.
+
+\begin{lstlisting}{frame=single, framerule=1pt}
+float t = soloud.getStreamTime(h); // get time
+if (t == hammertime) hammer();
+\end{lstlisting}
+
+Note that due to being a floating point value, playing a long stream may cause precision problems, and eventually cause the "time" to stop. This will happen in about 6 days. The precision problems will start somewhat earlier.
+
+Also note that the granularity is likely to be rather high (possibly around 45ms), so using this as the sole clock source for animation will lead to rather low framerate (possibly around 20hz). To fix this, either use some other clock source and only sync with the stream time occasionally, or use some kind of low-pass filter.
+
+\section{Soloud.isValidChannelHandle()}
+
+The isValidChannelHandle function can be used to check if a handle is still valid.
+
+\begin{lstlisting}{frame=single, framerule=1pt}
+if (soloud.isValidChannelHandle(h)) delete foobar;
+\end{lstlisting}
+
+If the handle is invalid, the getPause will return 0.
+
+\section{Soloud.getActiveVoiceCount()}
+
+Returns the number of concurrent sounds that are playing at the moment.
+
+\begin{lstlisting}{frame=single, framerule=1pt}
+if (soloud.getActiveVoiceCount() == 0) enjoy_the_silence();
+\end{lstlisting}
+
+If the handle is invalid, the getPause will return 0.
+
+\section{Soloud.setGlobalFilter()}
+
+Sets, or clears, the global filter.
+
+\begin{lstlisting}{frame=single, framerule=1pt}
+soloud.setGlobalFilter(0, &echochamber); // set first filter
+\end{lstlisting}
+
+Setting the global filter to NULL will clear the global filter. The default maximum number of global filters active is 4, but this can be changed in a global constant in soloud.h.
+
+\section{Soloud.calcFFT()}
+
+Calculates FFT of the currently playing sound (post-clipping) and returns a pointer to the result.
+
+\begin{lstlisting}{frame=single, framerule=1pt}
+float * fft = soloud.calcFFT();
+int i;
+for (i = 0; i < 256; i++)
+  drawline(0, i, fft[i] * 32, i);
+\end{lstlisting}
+
+The FFT data has 256 floats, from low to high frequencies.
+
+SoLoud performs a mono mix of the audio, passes it to FFT, and then calculates the magnitude of the complex numbers for application to use. For more advanced FFT use, SoLoud code changes are needed.
+
+The returned pointer points at a buffer that's always around, but the data is only updated when calcFFT() is called.
+
+For the FFT to work, you also need to initialize SoLoud with the Soloud::ENABLE\_VISUALIZATION flag. Otherwise the source data for the FFT calculation will not be gathered.
+
+\section{Soloud.getWave()}
+
+Gets 256 samples of the currently playing sound (post-clipping) and returns a pointer to the result.
+
+\begin{lstlisting}{frame=single, framerule=1pt}
+float * wav = soloud.getWave();
+int i;
+for (i = 0; i < 256; i++)
+  drawline(0, i, wav[i] * 32, i);
+\end{lstlisting}
+
+The returned pointer points at a buffer that's always around, but the data is only updated when getWave() is called. The data is the same that is used to generate visualization FFT data.
+
+For this function to work, you also need to initialize SoLoud with the Soloud::ENABLE\_VISUALIZATION flag. Otherwise the source data will not be gathered, and the result is undefined (probably zero).
+
+\section{Soloud.setFilterParameter()}
+
+Sets a parameter for a live instance of a filter. The filter must support changing of live parameters; otherwise this call does nothing.
+
+\begin{lstlisting}{frame=single, framerule=1pt}
+soloud.setFilterParameter(bar,lp,cutoff,1000); 
+// set bar's low pass to cut at 1000hz
+\end{lstlisting}
+
+\section{Soloud.getFilterParameter()}
+Gets a parameter from a live instance of a filter. The filter must support changing of live parameters; otherwise this call returns zero.
+\begin{lstlisting}{frame=single, framerule=1pt}
+float v = soloud.getFilterParameter(bar,lp,cutoff); 
+// get bar's low pass cutoff
+\end{lstlisting}
+
+\section{Soloud.fadeFilterParameter()}
+
+Fades a parameter on a live instance of a filter. The filter must support changing of live parameters; otherwise this call does nothing.
+
+\begin{lstlisting}{frame=single, framerule=1pt}
+soloud.fadeFilterParameter(bar,lp,cutoff,1000,1); 
+// Fades bar's low pass to cut at 1000hz
+\end{lstlisting}
+
+\section{Soloud.oscillateFilterParameter()}
+Oscillates a parameter on a live instance of a filter. The filter must support changing of live parameters; otherwise this call does nothing.
+
+\begin{lstlisting}{frame=single, framerule=1pt}
+soloud.setFilterParameter(bar,lp,cutoff,500,1000,2); 
+// Oscillates the bar's lp filter's cutoff between 500 and 1kHz
+\end{lstlisting}
+

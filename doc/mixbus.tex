@@ -1,0 +1,22 @@
+% !TEX root = SoLoud.tex
+%===============================================================================
+
+\chapter{SoLoud::Bus}
+
+The mixing busses are a special case of an audio stream. They are a kind of audio stream that plays other audio streams. Mixing bus can also play other mixing busses. Like any other audio stream, mixing bus has volume, panning and filters.
+
+Only one instance of a mixing bus can play at the same time, however; trying to play the same bus several times stops the earlier instance.
+
+While a mixing bus doesn't generate audio by itself, playing it counts against the maximum number of concurrent streams.
+
+Mixing busses are protected by default (i.e, won't stop playing if maximum number of concurrent streams is reached).
+
+To play a stream through the mixing bus, use the bus play() command.
+
+\begin{lstlisting}{frame=single, framerule=1pt}
+int bushandle = gSoloud.play(gBus); // Play the bus
+gSoloud.setVolume(bushandle, 0.5f); // Set bus volume
+
+int fxhandle = gBus.play(gSoundEffect); // Play sound effect through bus
+gSoloud.setVolume(fxhandle, 0.5f); // set sound effect volume
+\end{lstlisting}

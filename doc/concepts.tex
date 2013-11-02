@@ -15,7 +15,7 @@ One audio stream can contain one or more channels. Typical audio sources are eit
 
 SoLoud can play audio from several sound sources at once (or, in fact, several times from the same sound source at the same time). Each of these sound instances is a "stream". The number of concurrent streams is limited, as having unlimited streams would cause performance issues, as well as lead to unnecessary clipping.
 
-The default number of concurrent streams is 64, but this can be adjusted via a defined constant in the soloud.h file. The hard maximum number is 4096, but if more are required, SoLoud can be modified to support more. But seriously, if you need more than 4096 sounds at once, you're probably going to make some serious changes in any case.
+The default number of concurrent streams - maximum number of "voices" - is 64, but this can be adjusted via a defined constant in the soloud.h file. The hard maximum number is 4096, but if more are required, SoLoud can be modified to support more. But seriously, if you need more than 4096 sounds at once, you're probably going to make some serious changes in any case.
 
 If all channels are already playing and the application requests another sound to play, SoLoud finds the oldest sound and kills it. Since this may be your background music, you can protect channels from being killed by using the soloud.setProtect call.
 

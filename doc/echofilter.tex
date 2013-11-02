@@ -1,0 +1,17 @@
+% !TEX root = SoLoud.tex
+%===============================================================================
+
+\chapter{SoLoud::EchoFilter}
+
+The echo filter in SoLoud is a very simple one. When the sound starts to play, the echo filter allocates a buffer to contain the echo samples, and loops through this until the sound ends.
+
+The filter does not support changing of parameters on the fly, nor does it take changing of relative play speed into account.
+
+There are two parameters - delay and decay. Delay is the time in seconds until the echo, and decay is multiplier for the echo. If the multiplier is outside the [0..1[ range, the results are unpredictable.
+
+\begin{lstlisting}{frame=single, framerule=1pt}
+// Set up echo filter
+gEchoFilter.setParams(0.5f, 0.5f);  
+// Set the filter as the first filter of the bus
+gBus.setFilter(0, &gEchoFilter); 
+\end{lstlisting}

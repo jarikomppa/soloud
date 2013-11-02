@@ -113,3 +113,20 @@ soloud.setPauseAll(h, 0); // resumes playback of all channels
 \end{lstlisting}
 
 Note that this function will overwrite the pause state of all channels at once. If your game uses this to pause/unpause the sound while the game is paused, do note that it will also pause/unpause any sounds that you may have paused/unpaused separately.
+
+\section{Soloud.setFilterParameter()}
+
+Sets a parameter for a live instance of a filter. The filter must support changing of live parameters; otherwise this call does nothing.
+
+\begin{lstlisting}{frame=single, framerule=1pt}
+soloud.setFilterParameter(bar,lp,cutoff,1000); 
+// set bar's low pass to cut at 1000hz
+\end{lstlisting}
+
+\section{Soloud.getFilterParameter()}
+Gets a parameter from a live instance of a filter. The filter must support changing of live parameters; otherwise this call returns zero.
+\begin{lstlisting}{frame=single, framerule=1pt}
+float v = soloud.getFilterParameter(bar,lp,cutoff); 
+// get bar's low pass cutoff
+\end{lstlisting}
+

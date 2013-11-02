@@ -129,3 +129,21 @@ soloud.oscillateGlobalVolume(0.5, 1.0, 0.2); // Go crazy
 \end{lstlisting}
 
 The fader is disabled if you change the global volume with setGlobalVolume()
+
+\section{Soloud.fadeFilterParameter()}
+
+Fades a parameter on a live instance of a filter. The filter must support changing of live parameters; otherwise this call does nothing.
+
+\begin{lstlisting}{frame=single, framerule=1pt}
+soloud.fadeFilterParameter(bar,lp,cutoff,1000,1); 
+// Fades bar's low pass to cut at 1000hz
+\end{lstlisting}
+
+\section{Soloud.oscillateFilterParameter()}
+Oscillates a parameter on a live instance of a filter. The filter must support changing of live parameters; otherwise this call does nothing.
+
+\begin{lstlisting}{frame=single, framerule=1pt}
+soloud.setFilterParameter(bar,lp,cutoff,500,1000,2); 
+// Oscillates the bar's lp filter's cutoff between 500 and 1kHz
+\end{lstlisting}
+

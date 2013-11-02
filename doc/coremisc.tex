@@ -78,38 +78,4 @@ for (i = 0; i < 256; i++)
 
 The returned pointer points at a buffer that's always around, but the data is only updated when getWave() is called. The data is the same that is used to generate visualization FFT data.
 
-For this function to work, you also need to initialize SoLoud with the Soloud::ENABLE\_VISUALIZATION flag. Otherwise the source data will not be gathered, and the result is undefined (probably zero).
-
-\section{Soloud.setFilterParameter()}
-
-Sets a parameter for a live instance of a filter. The filter must support changing of live parameters; otherwise this call does nothing.
-
-\begin{lstlisting}{frame=single, framerule=1pt}
-soloud.setFilterParameter(bar,lp,cutoff,1000); 
-// set bar's low pass to cut at 1000hz
-\end{lstlisting}
-
-\section{Soloud.getFilterParameter()}
-Gets a parameter from a live instance of a filter. The filter must support changing of live parameters; otherwise this call returns zero.
-\begin{lstlisting}{frame=single, framerule=1pt}
-float v = soloud.getFilterParameter(bar,lp,cutoff); 
-// get bar's low pass cutoff
-\end{lstlisting}
-
-\section{Soloud.fadeFilterParameter()}
-
-Fades a parameter on a live instance of a filter. The filter must support changing of live parameters; otherwise this call does nothing.
-
-\begin{lstlisting}{frame=single, framerule=1pt}
-soloud.fadeFilterParameter(bar,lp,cutoff,1000,1); 
-// Fades bar's low pass to cut at 1000hz
-\end{lstlisting}
-
-\section{Soloud.oscillateFilterParameter()}
-Oscillates a parameter on a live instance of a filter. The filter must support changing of live parameters; otherwise this call does nothing.
-
-\begin{lstlisting}{frame=single, framerule=1pt}
-soloud.setFilterParameter(bar,lp,cutoff,500,1000,2); 
-// Oscillates the bar's lp filter's cutoff between 500 and 1kHz
-\end{lstlisting}
-
+For this function to work properly, you also need to initialize SoLoud with the \linebreak Soloud::ENABLE\_VISUALIZATION flag. Otherwise the source data will not be gathered, and the result is undefined (probably zero).

@@ -1,0 +1,27 @@
+% !TEX root = SoLoud.tex
+%===============================================================================
+
+\chapter{SoLoud::WavStream}
+
+The SoLoud::WavStream class represents a wave sound effect that is streamed off disk while it's playing. The source files may be in 8 or 16 bit raw RIFF WAV files, or compressed Ogg Vorbis files.
+
+The sounds are loaded in pieces while they are playing, which takes more processing power than playing samples from memory, but they require much less memory.
+
+For short or often used samples, you may want to use SoLoud::Wav instead.
+
+\section{WavStream.load()}
+
+The wav loader takes just one parameter, the file name:
+
+\begin{lstlisting}{frame=single, framerule=1pt}
+void load(const char *aFilename); // File to load
+\end{lstlisting}
+
+If loading fails, the sample will be silent.
+
+\begin{lstlisting}{frame=single, framerule=1pt}
+SoLoud::WavStream muzak;
+muzak.load("elevator.ogg");
+\end{lstlisting}
+
+If the loading function is called while there are instances playing, the result is undefined (most likely a crash).

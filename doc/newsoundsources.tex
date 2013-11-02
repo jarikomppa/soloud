@@ -1,0 +1,69 @@
+% !TEX root = SoLoud.tex
+%===============================================================================
+
+\chapter{Creating New Audio Sources}
+
+SoLoud is relatively easy to extend by creating new sound sources. Each sound source consists of two parts: an audio source class, and an audio instance class.
+
+Studying the existing audio sources' source code, in addition to this chapter, will be helpful in creating new ones.
+
+\section{AudioSource}
+
+\begin{lstlisting}{frame=single, framerule=1pt}
+class Example : public AudioSource
+{
+public:
+  virtual AudioInstance *createInstance();
+};
+\end{lstlisting}
+
+The only mandatory member of an audio source is the createInstance function.
+
+The audio source class is meant to contain all and any data that represents the sound in general and can be reused by the instances; for instance, with wave files, the wave data is stored with the audio source, while audio instances just read the data.
+
+Note that there's no setLooping() function - that's inherited from AudioSource, and sets the SHOULD\_LOOP flag.
+
+The audio source is also responsible for setting the mChannels and mBaseSamplerate values. These values get copied to all of the instances of this audio source.
+
+\section{AudioSource.createInstance()}
+
+The createInstance function typically creates and returns its counterpart, the audio instance. Usually it also gives a pointer to itself to the audio instance.
+
+\section{AudioSourceInstance}
+
+\begin{lstlisting}{frame=single, framerule=1pt}
+class ExampleInstance : public AudioSourceInstance
+{
+public:
+  virtual void getAudio(float *aBuffer, int aSamples);
+  virtual int hasEnded();
+  virtual void seek(float aSeconds, float *mScratch, int mScratchSize);
+  virtual int rewind();
+};
+\end{lstlisting}
+
+The getAudio and hasEnded methods are mandatory. Seek and rewind are optional.
+
+The audio instance is meant as the "play head" for a sound source. Most of the data should be in the audio source, while audio instance may contain more logic.
+
+\section{AudioSourceInstance.getAudio()}
+
+SoLoud requests samples from the sound instance using the getAudio function. If the instance generates more than one channel (i.e, stereo sound), the expected sample data first has the first channel samples, then second channel samples, etc. 
+
+So, if 1024 samples are requested from a stereo audio source, the first 1024 floats should be for the first channel, and the next 1024 samples should be for the second channel.
+
+The getAudio function is also responsible for handling looping, if the audio source supports it. See the implementations of existing sound sources for more details.
+
+If the audio source runs out of data, the rest of the buffer should be set to zero.
+
+\section{AudioSourceInstance.hasEnded()}
+
+After mixing, SoLoud asks all audio instances whether they have ended, and if they have, it will free the object and free the channel. Supporting looping will likely affect the implementation of this function.
+
+\section{AudioSourceInstance.seek()}
+
+Optionally, you can implement a seek function. The base implementation will simply request (and discard) samples from the sound source until the desired position has been reached; for many sound sources, a smarter way exists.
+
+\section{AudioSourceInstance.rewind()}
+
+To enable the base implementation of seek to seek backwards from the current play position, sound source may implement the rewind function. In most cases the rewind is easier to implement than actual smart seeking.

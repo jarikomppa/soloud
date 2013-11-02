@@ -1,0 +1,23 @@
+% !TEX root = SoLoud.tex
+%===============================================================================
+
+\chapter{SoLoud::Speech}
+
+The SoLoud::Speech class implements a simple Klatt-style formant speech synthesizer. It's barely legible, not really human-like, but it's free, and it's here.
+
+Adjusting the speech synthesizer's output with audio filters should allow for various voices, which, along with subtitles, will let you add voice to your games cheaply.
+
+For more serious use, feel free to study the source code and play with the various internal parameters, as well as apply various filters to the sound.
+
+For legal notes, please see the license page.
+
+\section{Speech.setText()}
+
+The setText function can be used to set the text to be spoken.
+
+\begin{lstlisting}{frame=single, framerule=1pt}
+SoLoud::Speech sp;
+sp.setText("Hello world.  You will be assimilated.");
+\end{lstlisting}
+
+If the setText function is called while speech is playing, SoLoud stops any playing instances to avoid crashing.

@@ -1,0 +1,143 @@
+Core: Attributes
+================
+
+Soloud.getVolume() / Soloud.setVolume()
+---------------------------------------
+
+These functions can be used to get and set a sound's current volume
+setting.
+
+    float v = soloud.getVolume(h); // Get current volume
+    soloud.setVolume(h, v * 2);    // Double it
+
+Note that the volume is the "volume setting", and the actual volume will
+depend on the sound source. Namely, a whisper will most likely be more
+quiet than a scream, even if both are played at the same volume setting.
+
+If an invalid handle is given to getVolume, it will return 0.
+
+Soloud.getPan() / Soloud.setPan()
+---------------------------------
+
+These functions can be used to get and set a sound's current pan
+setting.
+
+    float v = soloud.getPan(h); // Get current pan
+    soloud.setPan(h, v - 0.1);  // Little bit to the left
+
+The range of the pan values is -1 to 1, where -1 is left, 0 is middle
+and and 1 is right. Setting value outside this range may cause undefined
+behavior.
+
+SoLoud calculates the left/right volumes from the pan to keep a constant
+volume; to set the volumes directly, use setPanAbsolute.
+
+If an invalid handle is given to getPan, it will return 0.
+
+Soloud.setPanAbsolute()
+-----------------------
+
+These function can be used to set the left/right volumes directly.
+
+    soloud.setPanAbsolute(h, 1, 1); // full blast
+
+Note that this does not affect the value returned by getPan.
+
+If an invalid handle is given to getPan, it will return 0.
+
+Soloud.getSamplerate() / Soloud.setSamplerate()
+-----------------------------------------------
+
+These functions can be used to get and set a sound's base sample rate.
+
+    float v = soloud.getSamplerate(h); // Get the base sample rate
+    soloud.setSamplerate(h, v * 2);    // Double it
+
+Setting the value to 0 will cause undefined behavior, likely a crash.
+
+To adjust the play speed, while leaving the base sample rate alone, use
+setRelativePlaySpeed instead.
+
+If an invalid handle is given to getSamplerate, it will return 0.
+
+Soloud.getRelativePlaySpeed() / Soloud.setRelativePlaySpeed()
+-------------------------------------------------------------
+
+These functions can be used to get and set a sound's relative play
+speed.
+
+    float v = soloud.getRelativePlaySpeed(h); // Get relative play speed
+    soloud.setRelativePlaySpeed(h, v * 0.5f); // Halve it
+
+Setting the value to 0 will cause undefined behavior, likely a crash.
+
+Change the relative play speed of a sample. This changes the effective
+sample rate while leaving the base sample rate alone.
+
+Note that playing a sound at a higher sample rate will require SoLoud to
+request more samples from the sound source, which will require more
+memory and more processing power. Playing at a slower sample rate is
+cheaper.
+
+If an invalid handle is given to getRelativePlaySpeed, it will return 1.
+
+Soloud.getProtectChannel() / Soloud.setProtectChannel()
+-------------------------------------------------------
+
+These functions can be used to get and set a sound's protection state.
+
+    int v = soloud.getProtectChannel(h);   // Get the protection state
+    if (v) soloud.setProtectChannel(h, 0); // Disable if protected
+
+Normally, if you try to play more sounds than there are channels, SoLoud
+will kill off the oldest playing sound to make room. This will most
+likely be your background music. This can be worked around by protecting
+the sound.
+
+If all sounds are protected, the result will be undefined.
+
+If an invalid handle is given to getProtectChannel, it will return 0.
+
+Soloud.getPause() / Soloud.setPause()
+-------------------------------------
+
+The setPause function can be used to pause, or unpause, a sound.
+
+    if (soloud.getPause(h)) hum_silently();
+    soloud.setPause(h, 0); // resumes playback
+
+Note that even if a sound is paused, its channel may be taken over.
+Trying to resume a sound that's no longer in a channel doesn't do
+anything.
+
+If the handle is invalid, the getPause will return 0.
+
+Soloud.setPauseAll()
+--------------------
+
+The setPauseAll function can be used to pause, or unpause, all sounds.
+
+    soloud.setPauseAll(h, 0); // resumes playback of all channels
+
+Note that this function will overwrite the pause state of all channels
+at once. If your game uses this to pause/unpause the sound while the
+game is paused, do note that it will also pause/unpause any sounds that
+you may have paused/unpaused separately.
+
+Soloud.setFilterParameter()
+---------------------------
+
+Sets a parameter for a live instance of a filter. The filter must
+support changing of live parameters; otherwise this call does nothing.
+
+    soloud.setFilterParameter(bar,lp,cutoff,1000); 
+    // set bar's low pass to cut at 1000hz
+
+Soloud.getFilterParameter()
+---------------------------
+
+Gets a parameter from a live instance of a filter. The filter must
+support changing of live parameters; otherwise this call returns zero.
+
+    float v = soloud.getFilterParameter(bar,lp,cutoff); 
+    // get bar's low pass cutoff

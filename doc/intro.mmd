@@ -1,0 +1,72 @@
+Introduction
+============
+
+SoLoud is an easy to use, free, portable c/c++ audio engine for games.
+
+How easy?
+---------
+
+The engine has been designed to make simple things easy, while not
+making harder things impossible. Here's a code snippet that initializes
+the library, loads a sample and plays it:
+
+    // Declare some variables
+    SoLoud::Soloud soloud; // Engine core
+    SoLoud::Wav sample;    // One sample
+
+    // Initialize SoLoud (with SDL)
+    SoLoud::sdl_init(&soloud);
+
+    sample.load("pew_pew.wav"); // Load a wave file
+    soloud.play(sample);        // Play it
+
+The primary form of use the interface is designed for is "fire and
+forget" audio. In many games, most of the time you don't need to modify
+a sound's parameters on the fly - you just find an event, like an
+explosion, and trigger a sound effect. SoLoud handles the rest.
+
+If you need to alter some aspect of the sound after the fact, the "play"
+function returns a handle you can use. For example:
+
+    int handle = soloud.play(sample);         // Play the sound
+    soloud.setVolume(handle, 0.5f);           // Set volume; 1.0f is "normal"
+    soloud.setPan(handle, -0.2f);             // Set pan; -1 is left, 1 is right
+    soloud.setRelativePlaySpeed(handle, 0.9f);// Play a bit slower; 1.0f is normal
+
+If the sound doesn't exist anymore (either it's ended or you've played
+so many sounds at once it's channel has been taken over by some other
+sound), the handle is still safe to use - it just doesn't do anything.
+
+How free?
+---------
+
+SoLoud is released under the ZLib/LibPNG license. That means you can use
+it in free or commercial applications as much as you want. You can
+modify it. You don't need to give the changes back. You don't need to
+release the source code. You don't need to add a splash screen. You
+don't need to mention it in your printed manual.
+
+Basically the only things the license forbids are suing me, or claiming
+that you made SoLoud. If you redistribute the source code, the license
+needs to be there. But not with the binaries.
+
+Parts of the SoLoud package were not made by me, and those either have a
+similar license, or more permissive (such as Unlicense, CC0, WTFPL or
+Public Domain).
+
+There's a Catch, Right?
+-----------------------
+
+SoLoud quite probably doesn't have all the features you'd find in a
+commercial library like FMOD or WWISE. There's no artist tools or engine
+integration. There's no 3d audio. Output is, currently, limited to
+stereo.
+
+It quite probably isn't as fast. As of this writing, it has no
+specialized assembler optimizations, for any platform.
+
+It certainly doesn't come with the support you get from a commercial
+library.
+
+If you're planning to make a multi-million budgeted console game, this
+library is (probably) not for you. Feel free to try it though =)

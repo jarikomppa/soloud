@@ -1,0 +1,40 @@
+SoLoud::AudioSource
+===================
+
+All audio sources share some common functions. Some of the functionality
+depends on the audio source itself; it may be that some parameter does
+not make sense for a certain audio source, or it may be that it has not
+been implemented for other reasons.
+
+For example, if you stream a live radio station, looping does not make
+much sense.
+
+AudioSource.setLooping()
+------------------------
+
+This function can be used to set a sample to play on repeat, instead of
+just playing once.
+
+    amenbreak.setLooping(1); // let the beat play on
+
+Note that some audio sources may not implement this behavior.
+
+AudioSource.setFilter()
+-----------------------
+
+This function can be used to set or clear the filters that should be
+applied to the sounds generated via this audio source.
+
+    speech.setFilter(0, blackmailer); // Disguise the speech
+
+Setting the filter to NULL will clear the filter. This will not affect
+already playing sounds. By default, up to four filters can be applied.
+This value can be changed through a constant in the soloud.h file.
+
+AudioSource.setSingleInstance()
+-------------------------------
+
+This function can be used to tell SoLoud that only one instance of this
+sound may be played at the same time.
+
+    menuselect.setSingleInstance(1); // Only play it once, sam

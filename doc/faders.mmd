@@ -1,0 +1,153 @@
+Core: Faders
+============
+
+Overview
+--------
+
+Faders are a convenient way of performing some common audio tasks
+without having to add complex code into your application.
+
+The most common use for the faders is to fade audio in or out, adding
+nice touches and polish.
+
+Let's say you're exiting a bar and entering the street.
+
+    soloud.fadeVolume(bar_ambience, 0, 2); // fade bar out in 2 seconds
+    soloud.scheduleStop(bar_ambience, 2);  // stop the bar ambience after fadeout
+    street_ambience = soloud.play(cars, 0);// start steet ambience at 0 volume
+    soloud.setProtectChannel(street_ambience, 1); // protect it
+    soloud.fadeVolume(street_ambience, 1, 1.5f); // fade street in in 1.5
+
+Or let's say you're quiting your game.
+
+    soloud.fadeGlobalVolume(0, 1); // Fade out global volume in 1 second
+
+The faders are only evaluated once per mix function call - in other
+words, whenever the back end requests samples from SoLoud, which is
+likely to be in chunks of 20-100ms, which is smoothly enough for most
+uses.
+
+The exception is volume (which includes panning), which gets
+interpolated on per-sample basis to avoid artifacts.
+
+The starting value for most faders is the current value.
+
+Soloud.fadeVolume()
+-------------------
+
+Smoothly change a channel's volume over specified time.
+
+    soloud.fadeVolume(orchestra, 1, 60); // The orchestra creeps in for a minute
+
+The fader is disabled if you change the channel's volume with
+setVolume()
+
+Soloud.fadePan()
+----------------
+
+Smoothly change a channel's pan setting over specified time.
+
+    soloud.setPan(racecar, -1); // set start value
+    soloud.fadePan(racecar, 1, 0.5); // Swoosh!
+
+The fader is disabled if you change the channel's panning with setPan()
+or setPanAbsolute()
+
+Soloud.fadeRelativePlaySpeed()
+------------------------------
+
+Smoothly change a channel's relative play speed over specified time.
+
+    soloud.fadeRelativePlaySpeed(hal, 0.1, 6); // Hal's message slows down
+
+The fader is disabled if you change the channel's play speed with
+setRelativePlaySpeed()
+
+Soloud.fadeGlobalVolume()
+-------------------------
+
+Smoothly change the global volume over specified time.
+
+    soloud.fadeGlobalVolume(0, 2); // Fade everything out in 2 seconds
+
+The fader is disabled if you change the global volume with
+setGlobalVolume()
+
+Soloud.schedulePause()
+----------------------
+
+After specified time, pause the channel
+
+    soloud.fadeVolume(jukebox, 0, 2); // Fade out the music in 2 seconds
+    soloud.schedulePause(jukebox, 2);    // Pause the music after 2 seconds
+
+The scheduler is disabled if you set the pause state with setPause() or
+setPauseAll().
+
+Soloud.scheduleStop()
+---------------------
+
+After specified time, stop the channel
+
+    soloud.fadeVolume(applause, 0, 10); // Fade out the cheers for 10 seconds
+    soloud.scheduleStop(applause, 10);     // Stop the sound after 10 seconds
+
+There's no way (currently) to disable this scheduler.
+
+Soloud.oscillateVolume()
+------------------------
+
+Set fader to oscillate the volume at specified frequency.
+
+    soloud.oscillateVolume(murmur, 0, 0.2, 5); // murmur comes and goes
+
+The fader is disabled if you change the channel's volume with
+setVolume()
+
+Soloud.oscillatePan()
+---------------------
+
+Set fader to oscillate the panning at specified frequency.
+
+    soloud.oscillatePan(ambulance, -1, 1, 10); // Round and round it goes
+
+The fader is disabled if you change the channel's panning with setPan()
+or setPanAbsolute()
+
+Soloud.oscillateRelativePlaySpeed()
+-----------------------------------
+
+Set fader to oscillate the relative play speed at specified frequency.
+
+    soloud.oscillateRelativePlaySpeed(vinyl, 0.9, 1.1, 3); // Wobbly record
+
+The fader is disabled if you change the channel's play speed with
+setRelativePlaySpeed()
+
+Soloud.oscillateGlobalVolume()
+------------------------------
+
+Set fader to oscillate the global volume at specified frequency.
+
+    soloud.oscillateGlobalVolume(0.5, 1.0, 0.2); // Go crazy
+
+The fader is disabled if you change the global volume with
+setGlobalVolume()
+
+Soloud.fadeFilterParameter()
+----------------------------
+
+Fades a parameter on a live instance of a filter. The filter must
+support changing of live parameters; otherwise this call does nothing.
+
+    soloud.fadeFilterParameter(bar,lp,cutoff,1000,1); 
+    // Fades bar's low pass to cut at 1000hz
+
+Soloud.oscillateFilterParameter()
+---------------------------------
+
+Oscillates a parameter on a live instance of a filter. The filter must
+support changing of live parameters; otherwise this call does nothing.
+
+    soloud.setFilterParameter(bar,lp,cutoff,500,1000,2); 
+    // Oscillates the bar's lp filter's cutoff between 500 and 1kHz

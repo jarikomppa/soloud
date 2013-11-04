@@ -48,7 +48,7 @@ signed 16-bit variable, for instance, you can only store values from
 -32k to +32k in it; if you try to put values outside this range in,
 things tend to break. Same goes for audio.
 
-![image](clipping.pdf)
+![Results of different clippers](clipping)
 
 SoLoud handles all audio as floats, but performs clipping before passing
 the samples out, so all values are in the -1..1 range. There's two ways

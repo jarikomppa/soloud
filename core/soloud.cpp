@@ -296,7 +296,7 @@ namespace SoLoud
 			int p = pos >> 16;
 			int f = pos & 0xffff;
 #ifdef _DEBUG
-			if (p >= SAMPLE_GRANULARITY)
+			if (p >= SAMPLE_GRANULARITY || p < 0)
 			{
 				// This should never actually happen
 				p = SAMPLE_GRANULARITY - 1;
@@ -312,7 +312,7 @@ namespace SoLoud
 		}
 #else // Point sample
 		int i;
-		float pos = aSrcOffset;
+		int pos = aSrcOffset;
 
 		for (i = 0; i < aDstSampleCount; i++, pos += aStepFixed)
 		{
@@ -364,10 +364,11 @@ namespace SoLoud
 							mVoice[i]->getAudio(mVoice[i]->mResampleData[0]->mBuffer, SAMPLE_GRANULARITY);
 						}
 
-						if (mVoice[i]->mSrcOffset + step_fixed > (SAMPLE_GRANULARITY * 65536))
-						{
-							mVoice[i]->mSrcOffset -= SAMPLE_GRANULARITY * 65536;
-						}
+						// We have new block of data, move pointer backwards
+						mVoice[i]->mSrcOffset -= SAMPLE_GRANULARITY * 65536;
+
+						// If we go past zero, crop to zero (a bit of a kludge)
+						if (mVoice[i]->mSrcOffset < 0) mVoice[i]->mSrcOffset = 0;
 					
 						// Run the per-stream filters to get our source data
 

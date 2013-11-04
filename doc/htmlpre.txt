@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>SoLoud</title>
+		<link href="css/soloud.css" rel="stylesheet" type="text/css">
+		<link href="css/vs.css" rel="stylesheet" type="text/css">
+    <!-- c code highlighter -->
+    <script src="css/highlight.pack.js"></script>
+    <script>
+      hljs.tabReplace = '  ';
+      hljs.initHighlightingOnLoad();
+    </script>
+	</head>
+	<body>
+		<a href="index.html"><div class="logo"></div></a>
+		<div class="title">Welcome</div>
+		<div class="divider"></div>
+
+		<div class="menu">
+		
+<a href="index.html">Welcome</a><br>
+<a href="legal.html">License</a><br>
+<a href="downloads.html">Downloads</a><br>
+<a href="quickstart.html">Quick Start</a><br>
+<a href="concepts.html">Concepts</a><br>
+<a href="faq.html">FAQ</a><br>
+<br>
+<a href="basics.html">Core: Basics</a><br>
+<a href="attributes.html">Core: Attributes</a><br>
+<a href="faders.html">Core: Faders</a><br>
+<a href="coremisc.html">Core: Misc</a><br>
+<br>
+<a href="audiosource.html">SoLoud::AudioSource</a><br>
+<a href="wav.html">SoLoud::Wav</a><br>
+<a href="wavstream.html">SoLoud::WavStream</a><br>
+<a href="speech.html">SoLoud::Speech</a><br>
+<a href="newsoundsources.html">New Audio Sources</a><br>
+<br>
+<a href="mixbus.html">SoLoud::Bus</a><br>
+<br>
+<a href="filters.html">SoLoud::Filter</a><br>
+<a href="biquadfilter.html">SoLoud::BiquadReso..</a><br>
+<a href="echofilter.html">SoLoud::EchoFilter</a><br>
+<a href="fftfilter.html">SoLoud::FFTFilter</a><br>
+<br>
+<a href="backends.html">Back-ends</a><br>
+<hr>
+<a href="http://iki.fi/sol/">Author's site</a>
+</div>		  
+
+		<div class="content">

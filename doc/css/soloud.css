@@ -1,0 +1,101 @@
+html {
+	font-family:"Palatino Linotype", "Book Antiqua", Palatino, serif;
+	color:#d0d0d0;				
+}
+
+body {
+	background-image: url(logo.png);
+	background-repeat: no-repeat;
+	background-color: #404040;
+}
+
+.logo {
+	position:absolute;
+	left:0px;
+	top:0px;
+	width:190px;
+	height:130px;
+}
+
+.title {
+	font-size: 60px;
+	position: absolute;
+	left:190px;
+	top:26px;
+	width:610px;
+	text-align:center;
+}
+
+.divider {
+	position:absolute;
+	top:130px;
+	left:0px;
+	width:100%;
+	overflow:hidden;
+	background:#d0d0d0;
+	height:1px;
+}
+
+.content {
+	position:absolute;
+	top:140px;
+	left:190px;
+	width:600px;
+}
+
+.menu {
+	position:absolute;
+	top:140px;
+	left:8px;
+	width:170px;
+}
+
+h1 {
+	font-size: 32px;
+	line-height: 32px;	
+	font-weight: normal;
+	padding: 0;
+	margin: 0;
+	margin-top:0px;
+}
+
+h2
+{
+	font-size: 32px;
+	line-height: 32px;	
+	font-weight: normal;
+	padding: 0;
+	margin: 0;
+	margin-top: 40px;	
+}
+
+a
+{
+	text-decoration:none;
+	color:white;
+}
+
+a:hover
+{
+	text-decoration:underline;
+}
+
+.code
+{
+	font-family: Consolas, "Lucida Console", "Bitstream Vera Sans Mono", Monaco, monospace;
+	font-size: 12px;
+	color: black;
+	background-color: #d0d0d0;
+	padding: 8px 8px 8px 8px;
+	border-style: dashed;
+	border-width: 1px;
+	border-color: #404040;	
+	clear: both;
+}
+
+.img_mid
+{	
+  display: block;
+	margin-left: auto;
+	margin-right: auto;
+};

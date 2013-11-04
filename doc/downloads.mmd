@@ -1,0 +1,60 @@
+Downloads
+=========
+
+This page lists SoLoud downloads, as well as other relevant information.
+
+Stable Releases 
+--------------- 
+
+[soloud_20131111.zip](soloud_20131111.zip) <<- Download here
+
+Documentation: [pdf](soloud_20131111.pdf) [epub](soloud_20131111.epub) [html](soloud_20131111.html) 
+
+- SoLoud "TLF" release 
+- PortAudio, winmm, oss, wasapi, xaudio2 and openal back-ends
+- Simplified cleanup - no separate cleanup functions per back-end
+- Simple cross-platform thread support for back-ends that require it
+- Filter interface revamped
+- Echo, fft and biquad resonant filters
+- Switched from ffft to a simpler (and slower) fft implementation
+- Faders can now oscillate
+- wav/ogg files can be loaded from memory 
+- AudioInstalce -> AudioSourceInstance rename
+- SoLoud core split into a bunch of source files to keep things manageable
+- Various changes aiming at multi-channel support; hardcoded stereo support removed
+- Audio samples no longer interlaced to simplify filter processing
+- Simplified init and wave loading by removing useless options or moving them to constants in soloud.h
+- Mixing busses implemented
+- Visualization via FFT or waveform supported, requires init flag to work
+- Resampler interface and linear resampler
+- Granularity of audio buffers fixed to a small value, configurable via soloud.h
+- Per-sample volume faders
+- Reworked example applications
+- Lots and lots and lots of bug fixes and mixer rewrites
+
+
+[soloud_20130808.zip](soloud_20130808.zip)
+
+- They grow so fast! Hilights:
+- Redesigned, simpler filter system. Probably still needs a lot of work.
+- Added a FFT library and calls to get FFT data from SoLoud. This can be disabled via a #define to improve compile time.
+- Added stopSound() to stop all instances of a sound. This is also called from the dtor of audio sources for simpler application cleanup.
+- Tweaked and improved all demos.
+- Volume faders are calculated on per-sample basis instead of per-buffer, this removed plenty of noise.
+- Added getPan.
+- and various bugfixes and CppCheck fixes.
+
+[soloud_20130801.zip](soloud_20130801.zip)
+
+- Initial release. If you're after something really minimalistic, dig in.
+
+The package contains all sources, and pre-compiled win32 binaries. The sources should(tm) be portable to other platforms.
+
+Development
+-----------
+You can find the latest, bleeding-edge version on GitHub at: <https://github.com/jarikomppa/soloud>. Note that the latest development version may be unstable.
+
+There's a mailing list at <http://groups.google.com/d/forum/soloud>
+
+Finally, there's #soloud on ircnet, if you want to pop by.
+

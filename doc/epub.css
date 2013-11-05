@@ -1,6 +1,5 @@
 /* This defines styles and classes used in the book */      
 body { margin: 5%; text-align: justify; font-size: medium; }
-code { font-family: monospace; }                            
 h1 { text-align: left; }                                    
 h2 { text-align: left; }                                    
 h3 { text-align: left; }                                    
@@ -13,3 +12,15 @@ h3.date { text-align: right; }
 .caption { text-align: center; font-style: italic; }
 ol.toc { padding: 0; margin-left: 1em; }                    
 ol.toc li { list-style-type: none; margin: 0; padding: 0; } 
+pre
+{
+	font-family: monospace;
+	font-size: 12px;
+	color: black;
+	background-color: #d0d0d0;
+	padding: 8px 8px 8px 8px;
+	border-style: dashed;
+	border-width: 1px;
+	border-color: #404040;	
+	clear: both;
+}

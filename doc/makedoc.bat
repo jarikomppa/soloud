@@ -24,6 +24,8 @@ call pandoc -B htmlpre.txt -A htmlpost.txt --default-image-extension=png fftfilt
 call pandoc -B htmlpre.txt -A htmlpost.txt --default-image-extension=png backends.mmd -o backends.html
 
 call pandoc -N --toc  --epub-cover-image=images/cover.png -t epub3 --default-image-extension=png -S --epub-stylesheet=epub.css --epub-metadata=metadata.xml -o SoLoud.epub title.txt intro.mmd legal.mmd quickstart.mmd concepts.mmd faq.mmd basics.mmd attributes.mmd faders.mmd coremisc.mmd audiosource.mmd wav.mmd wavstream.mmd speech.mmd newsoundsources.mmd mixbus.mmd filters.mmd biquadfilter.mmd echofilter.mmd fftfilter.mmd backends.mmd
+kindlegen SoLoud.epub -c2
+
 call pandoc --listings --default-image-extension=pdf --chapters attributes.mmd -o attributes.tex 
 call pandoc --listings --default-image-extension=pdf --chapters audiosource.mmd -o audiosource.tex
 call pandoc --listings --default-image-extension=pdf --chapters backends.mmd -o backends.tex
@@ -48,4 +50,4 @@ del *.aux *.toc *.out *.log *.lg *.4ct *.4tc *.idv *.tmp *.xdv *.xref
 xelatex SoLoud.tex
 xelatex SoLoud.tex
 echo ---------------
-echo soloud.pdf soloud.epub soloud.html + bunch of .html files
+echo soloud.pdf soloud.epub soloud.mobi soloud.html + bunch of .html files

@@ -286,7 +286,7 @@ namespace SoLoud
 				  int aStepFixed)
 	{
 #if 0
-		
+
 #elif defined(RESAMPLER_LINEAR)
 		int i;
 		int pos = aSrcOffset;
@@ -340,7 +340,7 @@ namespace SoLoud
 			{
 				int j;
 				float step = mVoice[i]->mSamplerate / aSamplerate;
-				int step_fixed = step * 65536;
+				int step_fixed = (int)floor(step * 65536);
 				float samples_per_block = SAMPLE_GRANULARITY / step;
 				int outofs = 0;
 		

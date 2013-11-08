@@ -120,7 +120,7 @@ namespace SoLoud
 		// Get a live filter parameter. Use 0 for the global filters.
 		float getFilterParameter(int aVoiceHandle, int aFilterId, int aAttributeId);
 		// Fade a live filter parameter. Use 0 for the global filters.
-		void fadeFilterParameter(int aVoiceHandle, int aFilterId, int aAttributeId, float aFrom, float aTo, float aTime);
+		void fadeFilterParameter(int aVoiceHandle, int aFilterId, int aAttributeId, float aTo, float aTime);
 		// Oscillate a live filter parameter. Use 0 for the global filters.
 		void oscillateFilterParameter(int aVoiceHandle, int aFilterId, int aAttributeId, float aFrom, float aTo, float aTime);
 

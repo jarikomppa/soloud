@@ -144,20 +144,20 @@ void render()
 		v = SMOOTHSTEP(v);
 		v = SMOOTHSTEP(v);
 
-		xpos = v*(800-400);
-		ypos = 600-256;
-		dudey = (1-v)*-8;
+		xpos = (int)floor(v * (800 - 400));
+		ypos = 600 - 256;
+		dudey = (int)floor((1 - v) * -8);
 	}
 	else
 	if (p < 0.9f)
 	{
-		float v = (p-0.5f)*2.5;
+		float v = (p - 0.5f) * 2.5f;
 		v = SMOOTHSTEP(v);
 		v = SMOOTHSTEP(v);
 		v = SMOOTHSTEP(v);
-		xpos = 800-400;
-		ypos = (1-v)*(600-256);
-		dudey = v*90;
+		xpos = 800 - 400;
+		ypos = (int)floor((1 - v) * (600 - 256));
+		dudey = (int)floor(v * 90);
 	}
 	else
 	{
@@ -226,7 +226,7 @@ void render()
 	else
 	if (p < 0.7f)
 	{	
-		gSoloud.setVolume(gMusicHandle, 1-(p-0.5f)*4.5);
+		gSoloud.setVolume(gMusicHandle, 1 - (p - 0.5f) * 4.5f);
 		mode_c = 3;
 	}
 	else
@@ -297,7 +297,7 @@ void render()
 
 	if (p > 0.5f)
 	{
-		int w = (p-0.5f)*400;
+		int w = (int)floor((p - 0.5f) * 400);
 		if (w > 32) w = 32;
 		drawrect((400-32)/2+12, 256-32*2-32-ypos+600-256, w/2, 64, 0xffffffff);
 		drawrect((400-32)/2+12+32-(w/2), 256-32*2-32-ypos+600-256, w/2, 64, 0xffffffff);
@@ -309,8 +309,8 @@ void render()
 	char temp[256];
 	//sprintf(temp, "%3.8f", p);
 	//drawstring(temp,0,0);
-	drawrect(0,0,100,12,0xff808080);
-	drawrect(0,2,100*p,8,0xffe0e0e0);
+	drawrect(0, 0, 100, 12, 0xff808080);
+	drawrect(0, 2, (int)floor(100 * p), 8, 0xffe0e0e0);
 	sprintf(temp, "Rain volume: %3.3f", gSoloud.getVolume(gRainHandle));
 	drawstring(temp,0,20);
 	sprintf(temp, "Music volume: %3.3f", gSoloud.getVolume(gMusicHandle));
@@ -397,11 +397,6 @@ int main(int argc, char *argv[])
 		{
 			switch (event.type) 
 			{
-			case SDL_KEYDOWN:
-				switch (event.key.keysym.sym)
-				{
-				}
-				break;
 			case SDL_KEYUP:
 				// If escape is pressed, return (and thus, quit)
 				switch (event.key.keysym.sym)

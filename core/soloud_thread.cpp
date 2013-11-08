@@ -22,11 +22,8 @@ freely, subject to the following restrictions:
    distribution.
 */
 
+#include "soloud.h"
 #include "soloud_thread.h"
-
-#ifdef _MSC_VER
-#define WINDOWS_VERSION
-#endif
 
 #ifdef WINDOWS_VERSION
 #include <Windows.h>

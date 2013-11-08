@@ -24,6 +24,18 @@ freely, subject to the following restrictions:
 
 #include "soloud.h"
 #include "soloud_thread.h"
+
+#ifdef WINDOWS_VERSION
+
+namespace SoLoud
+{
+    int oss_init(Soloud *aSoloud, int aFlags, int aSamplerate, int aBuffer)
+	{
+		return -1;
+	}
+};
+
+#else
 #include <fcntl.h>
 #include <sys/ioctl.h>
 #include <sys/soundcard.h>
@@ -167,3 +179,4 @@ namespace SoLoud
         return 0;
     }
 };
+#endif

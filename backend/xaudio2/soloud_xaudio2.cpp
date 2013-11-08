@@ -24,6 +24,19 @@ freely, subject to the following restrictions:
 
 #include "soloud.h"
 #include "soloud_thread.h"
+
+#ifndef WINDOWS_VERSION
+
+namespace SoLoud
+{
+	int wasapi_xaudio2(Soloud *aSoloud, int aFlags, int aSamplerate, int aBuffer)
+	{
+		return -1;
+	}
+};
+
+#else
+
 #include <windows.h>
 
 #ifdef _MSC_VER
@@ -236,3 +249,5 @@ namespace SoLoud
         return 0;
     }
 };
+
+#endif

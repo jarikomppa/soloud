@@ -11,6 +11,9 @@ solution "SoLoud"
   location(buildroot)
 	configurations { "Debug", "Release" }
 	targetdir "../bin"
+	if _PREMAKE_VERSION ~= "4.3" then
+		debugdir "../bin"
+	end
 	flags { "NoExceptions", "NoRTTI", "NoPCH" }		
 	if (os.is("Windows")) then defines { "_CRT_SECURE_NO_WARNINGS" } end
 
@@ -177,6 +180,7 @@ if (os.is("Windows")) then
 
   project "backend_winmm"
     kind "StaticLib"
+		targetdir "../lib"
     language "C++"
     files {
       "../backend/winmm/**.c*"
@@ -207,6 +211,7 @@ if (os.is("Windows")) then
 
   project "backend_xaudio2"
     kind "StaticLib"
+		targetdir "../lib"
     language "C++"
     files {
       "../backend/xaudio2/**.c*"
@@ -239,6 +244,7 @@ if (os.is("Windows")) then
 
   project "backend_wasapi"
     kind "StaticLib"
+		targetdir "../lib"
     language "C++"
     files {
       "../backend/wasapi/**.c*"
@@ -268,6 +274,7 @@ end
 
   project "backend_sdl"
     kind "StaticLib"
+		targetdir "../lib"
     language "C++"
     files {
       "../backend/sdl/**.c*"
@@ -296,6 +303,7 @@ end
 
   project "backend_portaudio"
     kind "StaticLib"
+		targetdir "../lib"
     language "C++"
     files {
       "../backend/portaudio/**.c*"
@@ -326,6 +334,7 @@ if (not os.is("Windows")) then
 
   project "backend_oss"
     kind "StaticLib"
+		targetdir "../lib"
     language "C++"
     files {
       "../backend/oss/**.c*"
@@ -355,6 +364,7 @@ end
 
   project "backend_openal"
     kind "StaticLib"
+		targetdir "../lib"
     language "C++"
     files {
       "../backend/openal/**.c*"
@@ -383,6 +393,7 @@ end
 
 	project "StaticLib"
 		kind "StaticLib"
+		targetdir "../lib"
 		language "C++"
 		files 
 		{ 

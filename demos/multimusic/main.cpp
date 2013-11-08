@@ -105,9 +105,9 @@ void render()
 // Entry point
 int main(int argc, char *argv[])
 {
-	gSfx.load("hit.ogg");
-	gMusic1.load("algebra_loop.ogg");
-	gMusic2.load("delphi_loop.ogg");
+	gSfx.load("audio/hit.ogg");
+	gMusic1.load("audio/algebra_loop.ogg");
+	gMusic2.load("audio/delphi_loop.ogg");
 
 	gMusic1.setLooping(1);
 	gMusic2.setLooping(1);

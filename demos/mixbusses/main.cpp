@@ -172,9 +172,9 @@ int main(int argc, char *argv[])
 	gSpeech[8].setText("Don't look, but there is a mountain lion stalking your children");
 	gSpeech[9].setText("The train has already gone, would you like to hire a bicycle?");
 
-	gSfxloop.load("war_loop.ogg");
+	gSfxloop.load("audio/war_loop.ogg");
 	gSfxloop.setLooping(1);
-	gMusicloop.load("algebra_loop.ogg");
+	gMusicloop.load("audio/algebra_loop.ogg");
 	gMusicloop.setLooping(1);
 
 	gSfxbus.play(gSfxloop);
@@ -186,7 +186,7 @@ int main(int argc, char *argv[])
 
 	// Attempt to create a 640x480 window with 32bit pixels.
 	screen = SDL_SetVideoMode(400, 256, 32, SDL_SWSURFACE);
-	font = SDL_LoadBMP("font.bmp");
+	font = SDL_LoadBMP("graphics/font.bmp");
 	// If we fail, return error.
 	if ( screen == NULL ) 
 	{

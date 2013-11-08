@@ -267,7 +267,7 @@ int main(int argc, char *argv[])
 	gSoloud.setGlobalFilter(2,0);
 	gSoloud.setGlobalFilter(3,0);
 
-	gLoadedWave.load("AKWF_c604_0024.wav");
+	gLoadedWave.load("audio/AKWF_c604_0024.wav");
 	gLoadedWave.setLooping(1);
 
 	// Register SDL_Quit to be called at exit; makes sure things are
@@ -276,7 +276,7 @@ int main(int argc, char *argv[])
 
 	// Attempt to create a 640x480 window with 32bit pixels.
 	screen = SDL_SetVideoMode(400, 256, 32, SDL_SWSURFACE);
-	font = SDL_LoadBMP("font.bmp");
+	font = SDL_LoadBMP("graphics/font.bmp");
 	// If we fail, return error.
 	if ( screen == NULL ) 
 	{

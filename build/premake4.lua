@@ -176,7 +176,7 @@ if (os.is("Windows")) then
 		targetdir "../lib"
     language "C++"
     files {
-      "../backend/winmm/**.c*"
+      "../src/backend/winmm/**.c*"
       }
     includedirs {
       "../include"
@@ -207,7 +207,7 @@ if (os.is("Windows")) then
 		targetdir "../lib"
     language "C++"
     files {
-      "../backend/xaudio2/**.c*"
+      "../src/backend/xaudio2/**.c*"
       }
     includedirs {
       "../include",
@@ -240,7 +240,7 @@ if (os.is("Windows")) then
 		targetdir "../lib"
     language "C++"
     files {
-      "../backend/wasapi/**.c*"
+      "../src/backend/wasapi/**.c*"
       }
     includedirs {
       "../include"
@@ -270,7 +270,7 @@ end
 		targetdir "../lib"
     language "C++"
     files {
-      "../backend/sdl/**.c*"
+      "../src/backend/sdl/**.c*"
       }
     includedirs {
       "../include",
@@ -299,7 +299,7 @@ end
 		targetdir "../lib"
     language "C++"
     files {
-      "../backend/portaudio/**.c*"
+      "../src/backend/portaudio/**.c*"
       }
     includedirs {
       "../include",
@@ -330,7 +330,7 @@ if (not os.is("Windows")) then
 		targetdir "../lib"
     language "C++"
     files {
-      "../backend/oss/**.c*"
+      "../src/backend/oss/**.c*"
       }
     includedirs {
       "../include"
@@ -360,7 +360,7 @@ end
 		targetdir "../lib"
     language "C++"
     files {
-      "../backend/openal/**.c*"
+      "../src/backend/openal/**.c*"
       }
     includedirs {
       "../include",
@@ -390,17 +390,14 @@ end
 		language "C++"
 		files 
 		{ 
-	    "../core/**.c*", 
-	    "../filter/**.c*", 
-	    "../audiosource/**.c*", 
+	    "../src/audiosource/**.c*",
+	    "../src/filter/**.c*",
+	    "../src/core/**.c*"	    
 	  }
 
 		includedirs 
 		{
-		  "../core",
-			"../core/**",
-			"../filter",
-			"../audiosource/**",
+		  "../src/**",
       "../include"
 		}
 

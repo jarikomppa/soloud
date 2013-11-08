@@ -44,10 +44,12 @@ namespace SoLoud
 		float mSampleRate;
 		float mFrequency;
 		float mResonance;
+		float mWetSignal;
 
 		Fader mResonanceFader;
 		Fader mFrequencyFader;
 		Fader mSampleRateFader;
+		Fader mWetSignalFader;
 
 		BiquadResonantFilter *mParent;
 		void calcBQRParams();
@@ -75,7 +77,8 @@ namespace SoLoud
 		{
 			SAMPLERATE = 0,
 			FREQUENCY = 1,
-			RESONANCE = 2
+			RESONANCE = 2,
+			WET = 3
 		};
 		int mFilterType;
 		float mSampleRate;

@@ -91,6 +91,8 @@ namespace SoLoud
 		mFilterType = aParent->mFilterType;
 		mSampleRate = aParent->mSampleRate;
 		mResonance = aParent->mResonance;
+		mFrequency = aParent->mFrequency;
+		mWetSignal = 1;
 
 		calcBQRParams();
 	}
@@ -118,6 +120,11 @@ namespace SoLoud
 			mSampleRate = mSampleRateFader.get(aTime);
 		}
 
+		if (mWetSignalFader.mActive > 0)
+		{
+			mWetSignal = mWetSignalFader.get(aTime);
+		}
+
 		if (mDirty)
 		{
 			calcBQRParams();
@@ -134,7 +141,7 @@ namespace SoLoud
 			// Generate outputs by filtering inputs.
 			x = aBuffer[c];
 			s.mY2 = (mA0 * x) + (mA1 * s.mX1) + (mA2 * s.mX2) - (mB1 * s.mY1) - (mB2 * s.mY2);
-			aBuffer[c] = s.mY2;
+			aBuffer[c] += (s.mY2 - aBuffer[c]) * mWetSignal;
 
 			c++;
 
@@ -142,7 +149,7 @@ namespace SoLoud
 			// Just substitute variables instead of doing mX1=x, etc.
 			s.mX2 = aBuffer[c];
 			s.mY1 = (mA0 * s.mX2) + (mA1 * x) + (mA2 * s.mX1) - (mB1 * s.mY2) - (mB2 * s.mY1);
-			aBuffer[c] = s.mY1;
+			aBuffer[c] += (s.mY1 - aBuffer[c]) * mWetSignal;
 
 			// Only move a little data.
 			s.mX1 = s.mX2;
@@ -173,6 +180,10 @@ namespace SoLoud
 			mResonanceFader.mActive = 0;
 			mResonance = aValue;
 			break;
+		case BiquadResonantFilter::WET:
+			mWetSignalFader.mActive = 0;
+			mWetSignal = aValue;
+			break;
 		}
 	}
 
@@ -186,6 +197,8 @@ namespace SoLoud
 			return mSampleRate;
 		case BiquadResonantFilter::RESONANCE:
 			return mResonance;
+		case BiquadResonantFilter::WET:
+			return mWetSignal;
 		}
 		return 0;
 	}
@@ -207,6 +220,10 @@ namespace SoLoud
 			if (mResonance == aTo) return;
 			mResonanceFader.set(mResonance, aTo, aTime, aStartTime);
 			break;
+		case BiquadResonantFilter::WET:
+			if (mWetSignal == aTo) return;
+			mWetSignalFader.set(mWetSignal, aTo, aTime, aStartTime);
+			break;
 		}
 	}
 
@@ -223,6 +240,9 @@ namespace SoLoud
 			break;
 		case BiquadResonantFilter::RESONANCE:
 			mResonanceFader.setLFO(aFrom, aTo, aTime, aStartTime);
+			break;
+		case BiquadResonantFilter::WET:
+			mWetSignalFader.setLFO(aFrom, aTo, aTime, aStartTime);
 			break;
 		}
 	}

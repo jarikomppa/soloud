@@ -391,9 +391,6 @@ int main(int argc, char *argv[])
 
 	SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
 
-	unsigned int speechtick = 0;
-	int speechcount = 0;
-
 	// Main loop: loop forever.
 	while (1)
 	{

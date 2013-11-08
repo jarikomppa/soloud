@@ -25,9 +25,9 @@ freely, subject to the following restrictions:
 #define SOLOUD_SPEECH_H
 
 #include "soloud.h"
-#include "../audiosource/speech/darray.h"
-#include "../audiosource/speech/klatt.h"
-#include "../audiosource/speech/tts.h"
+#include "../src/audiosource/speech/darray.h"
+#include "../src/audiosource/speech/klatt.h"
+#include "../src/audiosource/speech/tts.h"
 
 namespace SoLoud
 {

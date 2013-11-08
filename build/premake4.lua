@@ -20,7 +20,12 @@ solution "SoLoud"
 
 		links {"StaticLib"}
 		
-		if (os.is("Windows")) then links {"winmm"} else links {"portaudio"} end
+		if (os.is("Windows")) 
+		then 
+			links {"backend_winmm"} 
+		else 
+			links {"backend_portaudio"} 
+		end
 
 		configuration "Debug"
 			defines { "DEBUG" }
@@ -39,9 +44,115 @@ solution "SoLoud"
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 
+  project "mixbusses"
+    kind "WindowedApp"
+    language "C++"
+    files {
+      "../demos/mixbusses/**.c*"
+      }
+    includedirs {
+      "../core",
+      "../audiosource/**",
+			"../filter",
+      "/libraries/sdl/include"      
+    }
+    libdirs {
+      "/libraries/sdl/lib"      
+    }
+    
+
+		links {"StaticLib", "sdlmain", "sdl", "backend_sdl"}
+		
+		configuration "Debug"
+			defines { "DEBUG" }
+			flags {"Symbols" }
+			objdir (_ACTION .. "/debug")
+			targetname "mixbusses_d"
+			flags { "Symbols" }
+			
+
+		configuration "Release"
+			defines { "NDEBUG" }
+			flags {"Optimize"}
+			objdir (_ACTION .. "/release")
+			targetname "mixbusses_x86"
+			flags { "EnableSSE2", "NoMinimalRebuild", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
+
+-- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
+
+  project "piano"
+    kind "WindowedApp"
+    language "C++"
+    files {
+      "../demos/piano/**.c*"
+      }
+    includedirs {
+      "../core",
+      "../audiosource/**",
+			"../filter",
+      "/libraries/sdl/include"      
+    }
+    libdirs {
+      "/libraries/sdl/lib"      
+    }
+
+		links {"StaticLib", "sdlmain", "sdl", "backend_sdl"}
+		
+		configuration "Debug"
+			defines { "DEBUG" }
+			flags {"Symbols" }
+			objdir (_ACTION .. "/debug")
+			targetname "piano_d"
+			flags { "Symbols" }
+			
+
+		configuration "Release"
+			defines { "NDEBUG" }
+			flags {"Optimize"}
+			objdir (_ACTION .. "/release")
+			targetname "piano_x86"
+			flags { "EnableSSE2", "NoMinimalRebuild", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
+
+-- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
+
+  project "multimusic"
+    kind "WindowedApp"
+    language "C++"
+    files {
+      "../demos/multimusic/**.c*"
+      }
+    includedirs {
+      "../core",
+      "../audiosource/**",
+			"../filter",
+      "/libraries/sdl/include"      
+    }
+    libdirs {
+      "/libraries/sdl/lib"      
+    }
+
+		links {"StaticLib", "sdlmain", "sdl", "backend_sdl"}
+		
+		configuration "Debug"
+			defines { "DEBUG" }
+			flags {"Symbols" }
+			objdir (_ACTION .. "/debug")
+			targetname "multimusic_d"
+			flags { "Symbols" }
+			
+
+		configuration "Release"
+			defines { "NDEBUG" }
+			flags {"Optimize"}
+			objdir (_ACTION .. "/release")
+			targetname "multimusic_x86"
+			flags { "EnableSSE2", "NoMinimalRebuild", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
+
+-- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
+
 if (os.is("Windows")) then 
 
-  project "winmm"
+  project "backend_winmm"
     kind "StaticLib"
     language "C++"
     files {
@@ -71,7 +182,7 @@ end
 
 if (os.is("Windows")) then 
 
-  project "xaudio2"
+  project "backend_xaudio2"
     kind "StaticLib"
     language "C++"
     files {
@@ -103,7 +214,7 @@ end
 
 if (os.is("Windows")) then 
 
-  project "wasapi"
+  project "backend_wasapi"
     kind "StaticLib"
     language "C++"
     files {
@@ -132,7 +243,7 @@ end
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 
-  project "sdl"
+  project "backend_sdl"
     kind "StaticLib"
     language "C++"
     files {
@@ -160,7 +271,7 @@ end
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 
-  project "portaudio"
+  project "backend_portaudio"
     kind "StaticLib"
     language "C++"
     files {
@@ -190,7 +301,7 @@ end
 
 if (not os.is("Windows")) then 
 
-  project "oss"
+  project "backend_oss"
     kind "StaticLib"
     language "C++"
     files {
@@ -219,7 +330,7 @@ end
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 
-  project "openal"
+  project "backend_openal"
     kind "StaticLib"
     language "C++"
     files {
@@ -253,22 +364,19 @@ end
 		files 
 		{ 
 			"../core/**.h", 
-	    "../core/**.cpp", 
-	    "../core/*.c",
+	    "../core/**.c*", 
 	    "../filter/**.h", 
-	    "../filter/**.cpp", 
-	    "../filter/*.c",
+	    "../filter/**.c*", 
 	    "../audiosource/**.h", 
-	    "../audiosource/**.cpp", 
-	    "../audiosource/*.c" 
+	    "../audiosource/**.c*", 
 	  }
 
 		includedirs 
 		{
 		  "../core",
 			"../core/**",
-			"../filter**",
-			"../audiosource**" 
+			"../filter",
+			"../audiosource/**" 
 		}
 
 

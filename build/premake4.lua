@@ -26,8 +26,7 @@ solution "SoLoud"
       "../demos/simplest/**.c*"
       }
     includedirs {
-      "../core",
-      "../audiosource/**"
+      "../include"
     }
 
 		links {"StaticLib"}
@@ -63,9 +62,7 @@ solution "SoLoud"
       "../demos/mixbusses/**.c*"
       }
     includedirs {
-      "../core",
-      "../audiosource/**",
-			"../filter",
+      "../include",
       "/libraries/sdl/include"      
     }
     libdirs {
@@ -99,9 +96,7 @@ solution "SoLoud"
       "../demos/piano/**.c*"
       }
     includedirs {
-      "../core",
-      "../audiosource/**",
-			"../filter",
+      "../include",
       "/libraries/sdl/include"      
     }
     libdirs {
@@ -148,9 +143,7 @@ solution "SoLoud"
       "../demos/multimusic/**.c*"
       }
     includedirs {
-      "../core",
-      "../audiosource/**",
-			"../filter",
+      "../include",
       "/libraries/sdl/include"      
     }
     libdirs {
@@ -186,7 +179,7 @@ if (os.is("Windows")) then
       "../backend/winmm/**.c*"
       }
     includedirs {
-      "../core"
+      "../include"
     }
 
 		configuration "Debug"
@@ -217,7 +210,7 @@ if (os.is("Windows")) then
       "../backend/xaudio2/**.c*"
       }
     includedirs {
-      "../core",
+      "../include",
       "C:/Program Files (x86)/Microsoft DirectX SDK (June 2010)/Include"
     }
 
@@ -250,7 +243,7 @@ if (os.is("Windows")) then
       "../backend/wasapi/**.c*"
       }
     includedirs {
-      "../core"
+      "../include"
     }
 
 		configuration "Debug"
@@ -280,7 +273,7 @@ end
       "../backend/sdl/**.c*"
       }
     includedirs {
-      "../core",
+      "../include",
       "/libraries/sdl/include"      
     }
 
@@ -309,7 +302,7 @@ end
       "../backend/portaudio/**.c*"
       }
     includedirs {
-      "../core",
+      "../include",
       "/libraries/portaudio/include"
     }
 
@@ -340,7 +333,7 @@ if (not os.is("Windows")) then
       "../backend/oss/**.c*"
       }
     includedirs {
-      "../core"
+      "../include"
     }
 
 		configuration "Debug"
@@ -370,7 +363,7 @@ end
       "../backend/openal/**.c*"
       }
     includedirs {
-      "../core",
+      "../include",
       "/libraries/openal/include"      
     }
 
@@ -397,11 +390,8 @@ end
 		language "C++"
 		files 
 		{ 
-			"../core/**.h", 
 	    "../core/**.c*", 
-	    "../filter/**.h", 
 	    "../filter/**.c*", 
-	    "../audiosource/**.h", 
 	    "../audiosource/**.c*", 
 	  }
 
@@ -410,7 +400,8 @@ end
 		  "../core",
 			"../core/**",
 			"../filter",
-			"../audiosource/**" 
+			"../audiosource/**",
+      "../include"
 		}
 
 

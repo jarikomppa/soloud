@@ -62,7 +62,7 @@ namespace SoLoud
 			case Basicwave::SQUARE:
 				for (i = 0; i < aSamples; i++)
 				{
-					aBuffer[i] = (fmod(mParent->mFreq * mOffset, 1.0f) > 0.5f) ? -1 : 1;
+					aBuffer[i] = (fmod(mParent->mFreq * mOffset, 1.0f) > 0.5f) ? -1.0f : 1.0f;
 					mOffset++;
 				}
 				break;

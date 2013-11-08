@@ -238,7 +238,7 @@ void render()
 
 	static int mode_d = 0;
 
-	if (p < 0.35f)
+	if (p < 0.25f)
 	{
 		if (mode_d != 0)
 		{
@@ -248,23 +248,32 @@ void render()
 		mode_d = 0;
 	}
 	else
-	if (p < 0.55f)
+	if (p < 0.35f)
 	{
 		if (mode_d != 1)
 		{
-			gSoloud.fadeFilterParameter(gMusicHandle, 0, 1, 2000, 1.0f);
-			gSoloud.fadeFilterParameter(gMusicHandle, 0, 3, 0, 1.0f);
+			gSoloud.fadeFilterParameter(gMusicHandle, 0, 3, 0.5f, 2.0f);
 		}
 		mode_d = 1;
 	}
 	else
+	if (p < 0.55f)
 	{
 		if (mode_d != 2)
+		{
+			gSoloud.fadeFilterParameter(gMusicHandle, 0, 1, 2000, 1.0f);
+			gSoloud.fadeFilterParameter(gMusicHandle, 0, 3, 0, 1.0f);
+		}
+		mode_d = 2;
+	}
+	else
+	{
+		if (mode_d != 3)
 		{
 			gSoloud.fadeFilterParameter(gMusicHandle, 0, 1, 200, 0.3f);
 			gSoloud.fadeFilterParameter(gMusicHandle, 0, 3, 1, 0.3f);
 		}
-		mode_d = 2;
+		mode_d = 3;
 	}
 
 	static int mode_e = 0;
@@ -297,7 +306,7 @@ void render()
 
 	if (p > 0.5f)
 	{
-		int w = (int)floor((p - 0.5f) * 400);
+		int w = (int)floor((p - 0.5f) * 600);
 		if (w > 32) w = 32;
 		drawrect((400-32)/2+12, 256-32*2-32-ypos+600-256, w/2, 64, 0xffffffff);
 		drawrect((400-32)/2+12+32-(w/2), 256-32*2-32-ypos+600-256, w/2, 64, 0xffffffff);

@@ -50,7 +50,7 @@ solution "SoLoud"
 			defines { "NDEBUG" }
 			flags {"Optimize"}
 			objdir (buildroot .. "/release")
-			targetname "simplest_x86"
+			targetname "simplest"
 			flags { "EnableSSE2", "NoMinimalRebuild", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
@@ -84,7 +84,7 @@ solution "SoLoud"
 			defines { "NDEBUG" }
 			flags {"Optimize"}
 			objdir (buildroot .. "/release")
-			targetname "mixbusses_x86"
+			targetname "mixbusses"
 			flags { "EnableSSE2", "NoMinimalRebuild", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
@@ -128,11 +128,44 @@ solution "SoLoud"
 			defines { "NDEBUG" }
 			flags {"Optimize"}
 			objdir (buildroot .. "/release")
-			targetname "piano_x86"
+			targetname "piano"
 			flags { "EnableSSE2", "NoMinimalRebuild", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
 	    if _OPTIONS["with-portmidi"] then
 	    	libdirs { "/libraries/portmidi/release" }
 	    end
+
+-- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
+
+  project "env"
+    kind "WindowedApp"
+    language "C++"
+    files {
+      "../demos/env/**.c*"
+      }
+    includedirs {
+      "../include",
+      "/libraries/sdl/include"      
+    }
+    libdirs {
+      "/libraries/sdl/lib"      
+    }
+
+		links {"StaticLib", "sdlmain", "sdl", "backend_sdl"}
+		
+		configuration "Debug"
+			defines { "DEBUG" }
+			flags {"Symbols" }
+			objdir (buildroot .. "/debug")
+			targetname "env_d"
+			flags { "Symbols" }
+			
+
+		configuration "Release"
+			defines { "NDEBUG" }
+			flags {"Optimize"}
+			objdir (buildroot .. "/release")
+			targetname "env"
+			flags { "EnableSSE2", "NoMinimalRebuild", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 
@@ -164,7 +197,7 @@ solution "SoLoud"
 			defines { "NDEBUG" }
 			flags {"Optimize"}
 			objdir (buildroot .. "/release")
-			targetname "multimusic_x86"
+			targetname "multimusic"
 			flags { "EnableSSE2", "NoMinimalRebuild", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --

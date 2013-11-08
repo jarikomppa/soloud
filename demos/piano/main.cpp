@@ -30,8 +30,6 @@ freely, subject to the following restrictions:
 #endif
 #include <math.h>
 
-#define USE_PORTMIDI
-
 #include "soloud.h"
 #include "soloud_wav.h"
 #include "soloud_basicwave.h"
@@ -304,7 +302,7 @@ int main(int argc, char *argv[])
 				sprintf(temp, "\n%x %x %x", Pm_MessageStatus(buffer[0].message), Pm_MessageData1(buffer[0].message), Pm_MessageData2(buffer[0].message));
 				OutputDebugStringA(temp);
 				if (Pm_MessageStatus(buffer[0].message) == 0x90)
-					plonk(pow(0.943875f, 0x3c - Pm_MessageData1(buffer[0].message)),Pm_MessageData2(buffer[0].message));
+					plonk(pow(0.943875f, 0x3c - Pm_MessageData1(buffer[0].message)),(float)Pm_MessageData2(buffer[0].message));
 				if (Pm_MessageStatus(buffer[0].message) == 0x80)
 					unplonk(pow(0.943875f, 0x3c - Pm_MessageData1(buffer[0].message)));
 			}

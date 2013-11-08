@@ -30,8 +30,6 @@ freely, subject to the following restrictions:
 #endif
 #include <math.h>
 
-#define USE_PORTMIDI
-
 #include "soloud.h"
 #include "soloud_wav.h"
 #include "soloud_speech.h"
@@ -198,7 +196,7 @@ int main(int argc, char *argv[])
 
 	SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
 
-	int speechtick = 0;
+	unsigned int speechtick = 0;
 	int speechcount = 0;
 
 	// Main loop: loop forever.
@@ -231,9 +229,9 @@ int main(int argc, char *argv[])
 				case SDLK_z: gMusicvol -= 0.1f; if (gMusicvol < 0) gMusicvol = 0; break;
 				case SDLK_x: gMusicvol += 0.1f; if (gMusicvol > 10) gMusicvol = 10; break;
 				}
-				gSoloud.fadeVolume(gSpeechbusHandle, gSpeechvol, 0.2);
-				gSoloud.fadeVolume(gSfxbusHandle, gSfxvol, 0.2);
-				gSoloud.fadeVolume(gMusicbusHandle, gMusicvol, 0.2);
+				gSoloud.fadeVolume(gSpeechbusHandle, gSpeechvol, 0.2f);
+				gSoloud.fadeVolume(gSfxbusHandle, gSfxvol, 0.2f);
+				gSoloud.fadeVolume(gMusicbusHandle, gMusicvol, 0.2f);
 				break;
 			case SDL_KEYUP:
 				// If escape is pressed, return (and thus, quit)

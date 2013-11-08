@@ -108,7 +108,7 @@ namespace SoLoud
 		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 	}
 
-	void Soloud::fadeFilterParameter(int aVoiceHandle, int aFilterId, int aAttributeId, float aFrom, float aTo, float aTime)
+	void Soloud::fadeFilterParameter(int aVoiceHandle, int aFilterId, int aAttributeId, float aTo, float aTime)
 	{
 		if (aFilterId < 0 || aFilterId >= FILTERS_PER_STREAM)
 			return;

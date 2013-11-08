@@ -1,5 +1,14 @@
+newoption {
+	trigger		  = "with-portmidi",
+	description = "Use portmidi to drive midi keyboard in the piano demo"
+}
+
+local buildroot = ""
+
+if _ACTION then buildroot = _ACTION end
+
 solution "SoLoud"
-  location(_ACTION)
+  location(buildroot)
 	configurations { "Debug", "Release" }
 	targetdir "../bin"
 	flags { "NoExceptions", "NoRTTI", "NoPCH" }		
@@ -30,7 +39,7 @@ solution "SoLoud"
 		configuration "Debug"
 			defines { "DEBUG" }
 			flags {"Symbols" }
-			objdir (_ACTION .. "/debug")
+			objdir (buildroot .. "/debug")
 			targetname "simplest_d"
 			flags { "Symbols" }
 			
@@ -38,7 +47,7 @@ solution "SoLoud"
 		configuration "Release"
 			defines { "NDEBUG" }
 			flags {"Optimize"}
-			objdir (_ACTION .. "/release")
+			objdir (buildroot .. "/release")
 			targetname "simplest_x86"
 			flags { "EnableSSE2", "NoMinimalRebuild", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
 
@@ -66,7 +75,7 @@ solution "SoLoud"
 		configuration "Debug"
 			defines { "DEBUG" }
 			flags {"Symbols" }
-			objdir (_ACTION .. "/debug")
+			objdir (buildroot .. "/debug")
 			targetname "mixbusses_d"
 			flags { "Symbols" }
 			
@@ -74,7 +83,7 @@ solution "SoLoud"
 		configuration "Release"
 			defines { "NDEBUG" }
 			flags {"Optimize"}
-			objdir (_ACTION .. "/release")
+			objdir (buildroot .. "/release")
 			targetname "mixbusses_x86"
 			flags { "EnableSSE2", "NoMinimalRebuild", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
 
@@ -95,23 +104,37 @@ solution "SoLoud"
     libdirs {
       "/libraries/sdl/lib"      
     }
+    
+    if _OPTIONS["with-portmidi"] then
+    	includedirs {
+    	"/libraries/portmidi/pm_common"
+    	}
+    	defines {"USE_PORTMIDI"}
+    	links { "portmidi" }
+    end
 
 		links {"StaticLib", "sdlmain", "sdl", "backend_sdl"}
 		
 		configuration "Debug"
 			defines { "DEBUG" }
 			flags {"Symbols" }
-			objdir (_ACTION .. "/debug")
+			objdir (buildroot .. "/debug")
 			targetname "piano_d"
 			flags { "Symbols" }
+	    if _OPTIONS["with-portmidi"] then
+	    	libdirs { "/libraries/portmidi/debug" }
+	    end
 			
 
 		configuration "Release"
 			defines { "NDEBUG" }
 			flags {"Optimize"}
-			objdir (_ACTION .. "/release")
+			objdir (buildroot .. "/release")
 			targetname "piano_x86"
 			flags { "EnableSSE2", "NoMinimalRebuild", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
+	    if _OPTIONS["with-portmidi"] then
+	    	libdirs { "/libraries/portmidi/release" }
+	    end
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 
@@ -136,7 +159,7 @@ solution "SoLoud"
 		configuration "Debug"
 			defines { "DEBUG" }
 			flags {"Symbols" }
-			objdir (_ACTION .. "/debug")
+			objdir (buildroot .. "/debug")
 			targetname "multimusic_d"
 			flags { "Symbols" }
 			
@@ -144,7 +167,7 @@ solution "SoLoud"
 		configuration "Release"
 			defines { "NDEBUG" }
 			flags {"Optimize"}
-			objdir (_ACTION .. "/release")
+			objdir (buildroot .. "/release")
 			targetname "multimusic_x86"
 			flags { "EnableSSE2", "NoMinimalRebuild", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
 
@@ -165,7 +188,7 @@ if (os.is("Windows")) then
 		configuration "Debug"
 			defines { "DEBUG" }
 			flags {"Symbols" }
-			objdir (_ACTION .. "/debug")
+			objdir (buildroot .. "/debug")
 			targetname "soloud_winmm_x86_d"
 			flags { "Symbols" }
 			
@@ -173,7 +196,7 @@ if (os.is("Windows")) then
 		configuration "Release"
 			defines { "NDEBUG" }
 			flags {"Optimize"}
-			objdir (_ACTION .. "/release")
+			objdir (buildroot .. "/release")
 			targetname "soloud_winmm_x86"
 			flags { "EnableSSE2", "NoMinimalRebuild", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
 end
@@ -196,7 +219,7 @@ if (os.is("Windows")) then
 		configuration "Debug"
 			defines { "DEBUG" }
 			flags {"Symbols" }
-			objdir (_ACTION .. "/debug")
+			objdir (buildroot .. "/debug")
 			targetname "soloud_xaudio2_x86_d"
 			flags { "Symbols" }
 			
@@ -204,7 +227,7 @@ if (os.is("Windows")) then
 		configuration "Release"
 			defines { "NDEBUG" }
 			flags {"Optimize"}
-			objdir (_ACTION .. "/release")
+			objdir (buildroot .. "/release")
 			targetname "soloud_xaudio2_x86"
 			flags { "EnableSSE2", "NoMinimalRebuild", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
 
@@ -227,7 +250,7 @@ if (os.is("Windows")) then
 		configuration "Debug"
 			defines { "DEBUG" }
 			flags {"Symbols" }
-			objdir (_ACTION .. "/debug")
+			objdir (buildroot .. "/debug")
 			targetname "soloud_wasapi_x86_d"
 			flags { "Symbols" }
 			
@@ -235,7 +258,7 @@ if (os.is("Windows")) then
 		configuration "Release"
 			defines { "NDEBUG" }
 			flags {"Optimize"}
-			objdir (_ACTION .. "/release")
+			objdir (buildroot .. "/release")
 			targetname "soloud_wasapi_x86"
 			flags { "EnableSSE2", "NoMinimalRebuild", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
 
@@ -257,7 +280,7 @@ end
 		configuration "Debug"
 			defines { "DEBUG" }
 			flags {"Symbols" }
-			objdir (_ACTION .. "/debug")
+			objdir (buildroot .. "/debug")
 			targetname "soloud_sdl_x86_d"
 			flags { "Symbols" }
 			
@@ -265,7 +288,7 @@ end
 		configuration "Release"
 			defines { "NDEBUG" }
 			flags {"Optimize"}
-			objdir (_ACTION .. "/release")
+			objdir (buildroot .. "/release")
 			targetname "soloud_sdl_x86"
 			flags { "EnableSSE2", "NoMinimalRebuild", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
 
@@ -285,7 +308,7 @@ end
 		configuration "Debug"
 			defines { "DEBUG" }
 			flags {"Symbols" }
-			objdir (_ACTION .. "/debug")
+			objdir (buildroot .. "/debug")
 			targetname "soloud_portaudio_x86_d"
 			flags { "Symbols" }
 			
@@ -293,7 +316,7 @@ end
 		configuration "Release"
 			defines { "NDEBUG" }
 			flags {"Optimize"}
-			objdir (_ACTION .. "/release")
+			objdir (buildroot .. "/release")
 			targetname "soloud_portaudio_x86"
 			flags { "EnableSSE2", "NoMinimalRebuild", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
 
@@ -314,7 +337,7 @@ if (not os.is("Windows")) then
 		configuration "Debug"
 			defines { "DEBUG" }
 			flags {"Symbols" }
-			objdir (_ACTION .. "/debug")
+			objdir (buildroot .. "/debug")
 			targetname "soloud_oss_x86_d"
 			flags { "Symbols" }
 			
@@ -322,7 +345,7 @@ if (not os.is("Windows")) then
 		configuration "Release"
 			defines { "NDEBUG" }
 			flags {"Optimize"}
-			objdir (_ACTION .. "/release")
+			objdir (buildroot .. "/release")
 			targetname "soloud_oss_x86"
 			flags { "EnableSSE2", "NoMinimalRebuild", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
 
@@ -344,7 +367,7 @@ end
 		configuration "Debug"
 			defines { "DEBUG" }
 			flags {"Symbols" }
-			objdir (_ACTION .. "/debug")
+			objdir (buildroot .. "/debug")
 			targetname "soloud_openal_x86_d"
 			flags { "Symbols" }
 			
@@ -352,7 +375,7 @@ end
 		configuration "Release"
 			defines { "NDEBUG" }
 			flags {"Optimize"}
-			objdir (_ACTION .. "/release")
+			objdir (buildroot .. "/release")
 			targetname "soloud_openal_x86"
 			flags { "EnableSSE2", "NoMinimalRebuild", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
     
@@ -383,7 +406,7 @@ end
 		configuration "Debug"
 			defines { "DEBUG" }
 			flags {"Symbols" }
-			objdir (_ACTION .. "/debug")
+			objdir (buildroot .. "/debug")
 			targetname "soloud_x86_d"
 			flags { "Symbols" }
 			
@@ -391,7 +414,7 @@ end
 		configuration "Release"
 			defines { "NDEBUG" }
 			flags {"Optimize"}
-			objdir (_ACTION .. "/release")
+			objdir (buildroot .. "/release")
 			targetname "soloud_x86"
 			flags { "EnableSSE2", "NoMinimalRebuild", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
 

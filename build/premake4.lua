@@ -1,11 +1,33 @@
+-- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
+
+local sdl_root       = "/libraries/sdl"
+local portmidi_root  = "/libraries/portmidi"
+local dxsdk_root     = "C:/Program Files (x86)/Microsoft DirectX SDK (June 2010)"
+local portaudio_root = "/libraries/portaudio"
+local openal_root    = "/libraries/openal"
+
+-- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
+
+local sdl_include       = sdl_root .. "/include"      
+local sdl_lib           = sdl_root .. "/lib"      
+local portmidi_include  = portmidi_root .. "/pm_common"
+local portmidi_debug    = portmidi_root .. "/debug"
+local portmidi_release  = portmidi_root .. "/release"
+local dxsdk_include     = dxsdk_root .. "/include"
+local portaudio_include = portaudio_root .. "/include"
+local openal_include    = openal_root .. "/include"
+
+local buildroot = ""
+if _ACTION then buildroot = _ACTION end
+
+-- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
+
 newoption {
 	trigger		  = "with-portmidi",
 	description = "Use portmidi to drive midi keyboard in the piano demo"
 }
 
-local buildroot = ""
-
-if _ACTION then buildroot = _ACTION end
+-- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 
 solution "SoLoud"
   location(buildroot)
@@ -63,10 +85,10 @@ solution "SoLoud"
       }
     includedirs {
       "../include",
-      "/libraries/sdl/include"      
+      sdl_include
     }
     libdirs {
-      "/libraries/sdl/lib"      
+      sdl_lib
     }
     
 
@@ -97,15 +119,15 @@ solution "SoLoud"
       }
     includedirs {
       "../include",
-      "/libraries/sdl/include"      
+      sdl_include
     }
     libdirs {
-      "/libraries/sdl/lib"      
+      sdl_lib
     }
     
     if _OPTIONS["with-portmidi"] then
     	includedirs {
-    	"/libraries/portmidi/pm_common"
+    	portmidi_include
     	}
     	defines {"USE_PORTMIDI"}
     	links { "portmidi" }
@@ -120,7 +142,7 @@ solution "SoLoud"
 			targetname "piano_d"
 			flags { "Symbols" }
 	    if _OPTIONS["with-portmidi"] then
-	    	libdirs { "/libraries/portmidi/debug" }
+	    	libdirs { portmidi_debug }
 	    end
 			
 
@@ -131,7 +153,7 @@ solution "SoLoud"
 			targetname "piano"
 			flags { "EnableSSE2", "NoMinimalRebuild", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
 	    if _OPTIONS["with-portmidi"] then
-	    	libdirs { "/libraries/portmidi/release" }
+	    	libdirs { portmidi_release }
 	    end
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
@@ -144,10 +166,10 @@ solution "SoLoud"
       }
     includedirs {
       "../include",
-      "/libraries/sdl/include"      
+      sdl_include   
     }
     libdirs {
-      "/libraries/sdl/lib"      
+      sdl_lib
     }
 
 		links {"StaticLib", "sdlmain", "sdl", "backend_sdl"}
@@ -177,10 +199,10 @@ solution "SoLoud"
       }
     includedirs {
       "../include",
-      "/libraries/sdl/include"      
+      sdl_include 
     }
     libdirs {
-      "/libraries/sdl/lib"      
+      sdl_lib
     }
 
 		links {"StaticLib", "sdlmain", "sdl", "backend_sdl"}
@@ -244,7 +266,7 @@ if (os.is("Windows")) then
       }
     includedirs {
       "../include",
-      "C:/Program Files (x86)/Microsoft DirectX SDK (June 2010)/Include"
+      dxsdk_include
     }
 
 		configuration "Debug"
@@ -307,7 +329,7 @@ end
       }
     includedirs {
       "../include",
-      "/libraries/sdl/include"      
+      sdl_include
     }
 
 		configuration "Debug"
@@ -336,7 +358,7 @@ end
       }
     includedirs {
       "../include",
-      "/libraries/portaudio/include"
+      portaudio_include
     }
 
 		configuration "Debug"
@@ -397,7 +419,7 @@ end
       }
     includedirs {
       "../include",
-      "/libraries/openal/include"      
+      openal_include
     }
 
 		configuration "Debug"

@@ -13,3 +13,11 @@ build/
 *.toc
 incoming/
 experiments/
+doc/*.html
+doc/*.tex
+doc/*.css
+doc/*.pdf
+doc/*.mobi
+doc/*.epub
+bin/audio/
+bin/

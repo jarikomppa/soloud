@@ -22,8 +22,10 @@
 <a href="legal.html">License</a><br>
 <a href="downloads.html">Downloads</a><br>
 <a href="quickstart.html">Quick Start</a><br>
+<a href="premake.html">Premake</a><br>
 <a href="concepts.html">Concepts</a><br>
 <a href="faq.html">FAQ</a><br>
+<a href="examples.html">Examples</a><br>
 <br>
 <a href="basics.html">Core: Basics</a><br>
 <a href="attributes.html">Core: Attributes</a><br>

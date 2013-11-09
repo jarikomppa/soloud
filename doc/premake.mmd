@@ -1,0 +1,25 @@
+Premake
+=======
+
+SoLoud comes with a premake4 script. If you want to build SoLoud as static library, instead of including the source files in your project, this can be handy.
+
+Premake can be downloaded from <http://industriousone.com/premake>.
+
+Unfortunately, premake4 cannot magically figure out where your libraries may be installed, so you may have to edit the premake4.lua file. The lines to edit can be found at the very beginning of the file, with the following defaults:
+
+    local sdl_root       = "/libraries/sdl"
+    local portmidi_root  = "/libraries/portmidi"
+    local dxsdk_root     = "C:/Program Files (x86)/Microsoft ..."
+    local portaudio_root = "/libraries/portaudio"
+    local openal_root    = "/libraries/openal"
+
+You will most likely want to edit at least the sdl_root variable. After your edits, you can run premake4 to generate makefiles or the IDE project files of your preference, such as:
+
+    premake4 vs2010
+    
+The current version (4.3) supports codeblocks, codelite, vs2002, vs2003, vs2005, vs2008, vs2010, xcode3 and gnu makefiles (gmake). New version with at least vs2012 support is coming soon (as of this writing).
+
+If you wish to use portmidi with the piano example, run premake with an additional parameter:
+
+    premake4 --with-portmidi vs2010
+    

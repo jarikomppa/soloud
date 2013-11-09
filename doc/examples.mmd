@@ -1,0 +1,41 @@
+Examples
+========
+
+SoLoud package comes with a few simple examples. These can be found under the 'demos' directory. Pre-built binaries for Windows can also be found in the 'bin' directory.
+
+simplest
+--------
+
+The simplest example initializes SoLoud with winmm (for windows) or portaudio (otherwise), and uses the speech synthesizer to play some sound. Once the sound has finished, the application cleans up and quits.
+
+This example also uses SoLoud's cross-platform thread library to sleep while waiting for the sound to end.
+
+multimusic
+----------
+
+The multimusic example loads two OGG music loops as well as one sound effect. You can use the keyboard keys 1 through 5 for various effects:
+
+Key   Effect
+----- --------
+1     Play sound effect at random play speed and pan
+2     Fade music 1 in and music 2 out
+3     Fade music 2 in and music 1 out
+4     Fade music relative play speed way down
+5     Fade music relative play speed to normal
+
+piano
+-----
+
+This example is a simple implementation of a playable instrument. The example also includes a simple waveform generator (soloud_basicwave.cpp/h), which can produce square, saw, sine and triangle waves. If compiled to use portmidi, you can also use a midi keyboard to drive the example.
+
+The 1234.. and qwer.. rows of your keyboard can be used to play notes. asdf.. row selects waveform, and zxcv.. row selects filters. Speech synthesizer and on-screen text describes what different keys do. Have fun experimenting!
+
+mixbusses
+---------
+
+The mixbusses example demonstrates the use of mixing busses. You can use "qw", "as" and "zx" keys to adjust volume of different busses.
+
+env
+---
+
+The env demo is a non-interactive demo of how SoLoud could be used to play environmental audio.

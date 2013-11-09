@@ -19,3 +19,21 @@ cutoff.
     gBQRFilter.setParams(SoLoud::BiquadResonantFilter::LOWPASS, 44100, 500, 2);  
     // Set the filter as the second filter of the bus
     gBus.setFilter(1, &gBQRFilter); 
+
+It's also possible to set, fade or oscillate the parameters of a "live" filter
+
+    gSoloud.fadeFilterParameter(
+      gMusicHandle, // Sound handle
+      0,            // First filter
+      SoLoud::BiquadResonantFilter::FREQUENCY, // What to adjust
+      2000,         // Target value
+      3);           // Time in seconds
+      
+Currently, four parameters can be adjusted:
+
+Parameter   Description
+----------- -------------
+SAMPLERATE  Filter's samplerate parameter
+FREQUENCY   Filter's cutoff frequency
+RESONANCE   Filter's resonance - higher means sharper cutoff
+WET         Filter's wet signal; 1.0f for fully filtered, 0.0f for original, 0.5f for half and half.

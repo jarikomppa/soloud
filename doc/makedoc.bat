@@ -1,12 +1,22 @@
 @echo off
-call pandoc -s --toc --default-image-extension=png -o soloud.html intro.mmd legal.mmd quickstart.mmd concepts.mmd faq.mmd basics.mmd attributes.mmd faders.mmd coremisc.mmd audiosource.mmd wav.mmd wavstream.mmd speech.mmd newsoundsources.mmd mixbus.mmd filters.mmd biquadfilter.mmd echofilter.mmd fftfilter.mmd backends.mmd
+echo ---------------------------------------------------------------------
+echo ---------------------------------------------------------------------
+echo Generating HTML docs
+
+call pandoc -s --toc --default-image-extension=png -o soloud.html intro.mmd legal.mmd quickstart.mmd premake.mmd concepts.mmd faq.mmd examples.mmd basics.mmd attributes.mmd faders.mmd coremisc.mmd audiosource.mmd wav.mmd wavstream.mmd speech.mmd newsoundsources.mmd mixbus.mmd filters.mmd biquadfilter.mmd echofilter.mmd fftfilter.mmd backends.mmd
+
+echo ---------------------------------------------------------------------
+echo ---------------------------------------------------------------------
+echo Generating HTML pages
 
 call pandoc -B htmlpre.txt -A htmlpost.txt --default-image-extension=png intro.mmd -o index.html
 call pandoc -B htmlpre.txt -A htmlpost.txt --default-image-extension=png legal.mmd -o legal.html
 call pandoc -B htmlpre.txt -A htmlpost.txt --default-image-extension=png downloads.mmd -o downloads.html
 call pandoc -B htmlpre.txt -A htmlpost.txt --default-image-extension=png quickstart.mmd -o quickstart.html
+call pandoc -B htmlpre.txt -A htmlpost.txt --default-image-extension=png premake.mmd -o premake.html
 call pandoc -B htmlpre.txt -A htmlpost.txt --default-image-extension=png concepts.mmd -o concepts.html
 call pandoc -B htmlpre.txt -A htmlpost.txt --default-image-extension=png faq.mmd -o faq.html
+call pandoc -B htmlpre.txt -A htmlpost.txt --default-image-extension=png examples.mmd -o examples.html
 call pandoc -B htmlpre.txt -A htmlpost.txt --default-image-extension=png basics.mmd -o basics.html
 call pandoc -B htmlpre.txt -A htmlpost.txt --default-image-extension=png attributes.mmd -o attributes.html
 call pandoc -B htmlpre.txt -A htmlpost.txt --default-image-extension=png faders.mmd -o faders.html
@@ -23,8 +33,21 @@ call pandoc -B htmlpre.txt -A htmlpost.txt --default-image-extension=png echofil
 call pandoc -B htmlpre.txt -A htmlpost.txt --default-image-extension=png fftfilter.mmd -o fftfilter.html
 call pandoc -B htmlpre.txt -A htmlpost.txt --default-image-extension=png backends.mmd -o backends.html
 
-call pandoc -N --toc  --epub-cover-image=images/cover.png -t epub3 --default-image-extension=png -S --epub-stylesheet=epub.css --epub-metadata=metadata.xml -o SoLoud.epub title.txt intro.mmd legal.mmd quickstart.mmd concepts.mmd faq.mmd basics.mmd attributes.mmd faders.mmd coremisc.mmd audiosource.mmd wav.mmd wavstream.mmd speech.mmd newsoundsources.mmd mixbus.mmd filters.mmd biquadfilter.mmd echofilter.mmd fftfilter.mmd backends.mmd
+echo ---------------------------------------------------------------------
+echo ---------------------------------------------------------------------
+echo Generating epub
+
+call pandoc -N --toc  --epub-cover-image=images/cover.png -t epub3 --default-image-extension=png -S --epub-stylesheet=epub.css --epub-metadata=metadata.xml -o SoLoud.epub title.txt intro.mmd legal.mmd quickstart.mmd premake.mmd concepts.mmd faq.mmd examples.mmd basics.mmd attributes.mmd faders.mmd coremisc.mmd audiosource.mmd wav.mmd wavstream.mmd speech.mmd newsoundsources.mmd mixbus.mmd filters.mmd biquadfilter.mmd echofilter.mmd fftfilter.mmd backends.mmd
+
+echo ---------------------------------------------------------------------
+echo ---------------------------------------------------------------------
+echo Generating mobi
+
 kindlegen SoLoud.epub -c2
+
+echo ---------------------------------------------------------------------
+echo ---------------------------------------------------------------------
+echo Generating latex
 
 call pandoc --listings --default-image-extension=pdf --chapters attributes.mmd -o attributes.tex 
 call pandoc --listings --default-image-extension=pdf --chapters audiosource.mmd -o audiosource.tex
@@ -36,6 +59,7 @@ call pandoc --listings --default-image-extension=pdf --chapters coremisc.mmd -o 
 call pandoc --listings --default-image-extension=pdf --chapters echofilter.mmd -o echofilter.tex
 call pandoc --listings --default-image-extension=pdf --chapters faders.mmd -o faders.tex
 call pandoc --listings --default-image-extension=pdf --chapters faq.mmd -o faq.tex
+call pandoc --listings --default-image-extension=pdf --chapters examples.mmd -o examples.tex
 call pandoc --listings --default-image-extension=pdf --chapters fftfilter.mmd -o fftfilter.tex
 call pandoc --listings --default-image-extension=pdf --chapters filters.mmd -o filters.tex
 call pandoc --listings --default-image-extension=pdf --chapters intro.mmd -o intro.tex
@@ -43,11 +67,20 @@ call pandoc --listings --default-image-extension=pdf --chapters legal.mmd -o leg
 call pandoc --listings --default-image-extension=pdf --chapters mixbus.mmd -o mixbus.tex
 call pandoc --listings --default-image-extension=pdf --chapters newsoundsources.mmd -o newsoundsources.tex
 call pandoc --listings --default-image-extension=pdf --chapters quickstart.mmd -o quickstart.tex
+call pandoc --listings --default-image-extension=pdf --chapters premake.mmd -o premake.tex
 call pandoc --listings --default-image-extension=pdf --chapters speech.mmd -o speech.tex
 call pandoc --listings --default-image-extension=pdf --chapters wav.mmd -o wav.tex
 call pandoc --listings --default-image-extension=pdf --chapters wavstream.mmd -o wavstream.tex
 del *.aux *.toc *.out *.log *.lg *.4ct *.4tc *.idv *.tmp *.xdv *.xref
+
+echo ---------------------------------------------------------------------
+echo ---------------------------------------------------------------------
+echo Generating pdf
+
 xelatex SoLoud.tex
 xelatex SoLoud.tex
-echo ---------------
+
+echo ---------------------------------------------------------------------
+echo ---------------------------------------------------------------------
+echo All done:
 echo soloud.pdf soloud.epub soloud.mobi soloud.html + bunch of .html files

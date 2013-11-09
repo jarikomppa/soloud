@@ -6,20 +6,20 @@ This page lists SoLoud downloads, as well as other relevant information.
 Stable Releases 
 --------------- 
 
-[soloud_20131111.zip](soloud_20131111.zip) <<- Download here
+[soloud_20131109.zip](soloud_20131109.zip) <<- Download here
 
-Documentation: [pdf](soloud_20131111.pdf) [epub](soloud_20131111.epub)  [mobi](soloud_20131111.mobi)[html](soloud_20131111.html) 
+Documentation: [PDF](soloud_20131109.pdf) | [EPUB](soloud_20131109.epub) | [MOBI](soloud_20131109.mobi) | [HTML](soloud_20131109.html) 
 
 - SoLoud "TLF" release 
 - PortAudio, winmm, oss, wasapi, xaudio2 and openal back-ends
 - Simplified cleanup - no separate cleanup functions per back-end
 - Simple cross-platform thread support for back-ends that require it
 - Filter interface revamped
-- Echo, fft and biquad resonant filters
+- Echo, fft and biquad resonant (low/high/bandpass) filters
 - Switched from ffft to a simpler (and slower) fft implementation
 - Faders can now oscillate
 - wav/ogg files can be loaded from memory 
-- AudioInstalce -> AudioSourceInstance rename
+- AudioInstance -> AudioSourceInstance rename
 - SoLoud core split into a bunch of source files to keep things manageable
 - Various changes aiming at multi-channel support; hardcoded stereo support removed
 - Audio samples no longer interlaced to simplify filter processing
@@ -29,7 +29,9 @@ Documentation: [pdf](soloud_20131111.pdf) [epub](soloud_20131111.epub)  [mobi](s
 - Resampler interface and linear resampler
 - Granularity of audio buffers fixed to a small value, configurable via soloud.h
 - Per-sample volume faders
-- Reworked example applications
+- Reworked old and added more example applications
+- Premake4 script for project files to generate static libraries
+- Reorganized files for easier handling (single include directory, etc)
 - Lots and lots and lots of bug fixes and mixer rewrites
 
 

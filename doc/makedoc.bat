@@ -33,6 +33,32 @@ call pandoc --template=html.pandoc -B htmlpre.txt -A htmlpost.txt --default-imag
 call pandoc --template=html.pandoc -B htmlpre.txt -A htmlpost.txt --default-image-extension=png fftfilter.mmd -o fftfilter.html
 call pandoc --template=html.pandoc -B htmlpre.txt -A htmlpost.txt --default-image-extension=png backends.mmd -o backends.html
 
+echo Fixing pandocs code blocks..
+
+perl -p -i.bak -e "s/code>/code>\n/g" index.html
+perl -p -i.bak -e "s/code>/code>\n/g" legal.html
+perl -p -i.bak -e "s/code>/code>\n/g" downloads.html
+perl -p -i.bak -e "s/code>/code>\n/g" quickstart.html
+perl -p -i.bak -e "s/code>/code>\n/g" premake.html
+perl -p -i.bak -e "s/code>/code>\n/g" concepts.html
+perl -p -i.bak -e "s/code>/code>\n/g" faq.html
+perl -p -i.bak -e "s/code>/code>\n/g" examples.html
+perl -p -i.bak -e "s/code>/code>\n/g" basics.html
+perl -p -i.bak -e "s/code>/code>\n/g" attributes.html
+perl -p -i.bak -e "s/code>/code>\n/g" faders.html
+perl -p -i.bak -e "s/code>/code>\n/g" coremisc.html
+perl -p -i.bak -e "s/code>/code>\n/g" audiosource.html
+perl -p -i.bak -e "s/code>/code>\n/g" wav.html
+perl -p -i.bak -e "s/code>/code>\n/g" wavstream.html
+perl -p -i.bak -e "s/code>/code>\n/g" speech.html
+perl -p -i.bak -e "s/code>/code>\n/g" newsoundsources.html
+perl -p -i.bak -e "s/code>/code>\n/g" mixbus.html
+perl -p -i.bak -e "s/code>/code>\n/g" filters.html
+perl -p -i.bak -e "s/code>/code>\n/g" biquadfilter.html
+perl -p -i.bak -e "s/code>/code>\n/g" echofilter.html
+perl -p -i.bak -e "s/code>/code>\n/g" fftfilter.html
+perl -p -i.bak -e "s/code>/code>\n/g" backends.html
+
 echo ---------------------------------------------------------------------
 echo ---------------------------------------------------------------------
 echo Generating epub

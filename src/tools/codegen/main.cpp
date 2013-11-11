@@ -17,11 +17,18 @@ struct Method
 	vector<string> mParmValue;
 };
 
+struct Enum
+{
+	string mName;
+	string mValue;
+};
+
 struct Class
 {
 	string mName;
 	string mParent;
 	vector<Method *> mMethod;
+	vector<Enum *> mEnum;
 };
 
 vector<Class *>gClass;
@@ -282,10 +289,48 @@ void parse(const char *aFilename, int aPrintProgress = 0)
 			}
 			else
 			{
-				// skip enums for now
 				if (s == "enum")
 				{
-					while (s != "}") NEXTTOKEN;
+					int enumvalue = 0;
+					NEXTTOKEN; // skip enum name
+					ALLOW("\n");
+					EXPECT("{");
+					ALLOW("\n");
+					NEXTTOKEN;
+					while (s != "}")
+					{
+						if (s == "//")
+						{
+							while (s != "\n") NEXTTOKEN;
+							NEXTTOKEN;
+						}
+						else
+						{
+							Enum *e = new Enum;
+							e->mName = s;
+							NEXTTOKEN;
+							if (s == "=")
+							{
+								NEXTTOKEN;
+								e->mValue = s;
+								enumvalue = atoi(s.c_str()) + 1;
+							}
+							else
+							{
+								if (s == "," || s == "\n")
+								{
+									char temp[256];
+									sprintf(temp, "%d", enumvalue);
+									enumvalue++;
+									e->mValue = temp;
+								}
+							}
+							ALLOW(",");
+							ALLOW("\n");
+							NEXTTOKEN;	
+							c->mEnum.push_back(e);
+						}
+					}
 					EXPECT(";");
 				}
 				else
@@ -401,6 +446,25 @@ void parse(const char *aFilename, int aPrintProgress = 0)
 	gClass.push_back(c);
 }
 
+void print_enums()
+{
+	int i;
+	for (i = 0; i < (signed)gClass.size(); i++)
+	{
+		string cn = gClass[i]->mName;
+		
+		int j;
+
+		for (j = 0; j < (signed)cn.length(); j++)
+			cn[j] = toupper(cn[j]);
+
+		for (j = 0; j < (signed)gClass[i]->mEnum.size(); j++)
+		{
+			printf("%s_%s = %s\n", cn.c_str(), gClass[i]->mEnum[j]->mName.c_str(), gClass[i]->mEnum[j]->mValue.c_str());
+		}
+	}
+}
+
 int main(int parc, char ** pars)
 {
 	printf(VERSION "\n");
@@ -425,6 +489,7 @@ int main(int parc, char ** pars)
 	parse("../include/soloud_thread.h");
 	parse("../include/soloud_wav.h");
 	parse("../include/soloud_wavstream.h");
+
 }
 
 

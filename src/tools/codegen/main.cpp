@@ -1,4 +1,28 @@
-﻿#include <stdio.h>
+﻿/*
+SoLoud audio engine
+Copyright (c) 2013 Jari Komppa
+
+This software is provided 'as-is', without any express or implied
+warranty. In no event will the authors be held liable for any damages
+arising from the use of this software.
+
+Permission is granted to anyone to use this software for any purpose,
+including commercial applications, and to alter it and redistribute it
+freely, subject to the following restrictions:
+
+   1. The origin of this software must not be misrepresented; you must not
+   claim that you wrote the original software. If you use this software
+   in a product, an acknowledgment in the product documentation would be
+   appreciated but is not required.
+
+   2. Altered source versions must be plainly marked as such, and must not be
+   misrepresented as being the original software.
+
+   3. This notice may not be removed or altered from any source
+   distribution.
+*/
+
+#include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
 #include <vector>
@@ -142,6 +166,13 @@ void parse_params(Method *m, char *b, int &ofs)
 		if (pt != "") pt += " ";
 		pt += s;
 		NEXTTOKEN;
+		if (s == ":")
+		{
+			EXPECT(":");
+			NEXTTOKEN;
+			pt = s;
+			NEXTTOKEN;
+		}
 
 		if (s == "*")
 		{
@@ -150,7 +181,7 @@ void parse_params(Method *m, char *b, int &ofs)
 		}
 		if (s == "&")
 		{
-			pt += " &";
+			pt += " *";
 			NEXTTOKEN;
 		}
 		string pn = s;
@@ -251,12 +282,12 @@ void parse(const char *aFilename, int aPrintProgress = 0)
 			if (s == "namespace")
 			{
 				NEXTTOKEN;
-				// Okay, kludge time: let's call thread functions a class, even though they're not.
+				// Okay, kludge time: let's call thread functions a class, even though they're not, so we can ignore it
 				if (s == "Thread")
 				{
 					c = new Class;
-					c->mName = s;
-					c->mParent = s;
+					c->mName = "Instance";
+					c->mParent = "Instance";
 				}
 				ALLOW("\n");
 				EXPECT("{");
@@ -367,7 +398,7 @@ void parse(const char *aFilename, int aPrintProgress = 0)
 					if (s == "virtual")
 					{
 						NEXTTOKEN;
-						vt1 += " " + s;
+						vt1 = s;
 					}
 					if (s == "~")
 					{
@@ -446,23 +477,179 @@ void parse(const char *aFilename, int aPrintProgress = 0)
 	gClass.push_back(c);
 }
 
-void print_enums()
+void fileheader(FILE * f)
 {
-	int i;
+	fprintf(f, 
+		"/* **************************************************\n"
+		" *  WARNING: this is a generated file. Do not edit. *\n"
+		" *  Any edits will be overwritten by the generator. *\n"
+		" ************************************************** */\n"
+		"\n"
+		"/*\n"
+		"SoLoud audio engine\n"
+		"Copyright (c) 2013 Jari Komppa\n"
+		"\n"
+		"This software is provided 'as-is', without any express or implied\n"
+		"warranty. In no event will the authors be held liable for any damages\n"
+		"arising from the use of this software.\n"
+		"\n"
+		"Permission is granted to anyone to use this software for any purpose,\n"
+		"including commercial applications, and to alter it and redistribute it\n"
+		"freely, subject to the following restrictions:\n"
+		"\n"
+		"   1. The origin of this software must not be misrepresented; you must not\n"
+		"   claim that you wrote the original software. If you use this software\n"
+		"   in a product, an acknowledgment in the product documentation would be\n"
+		"   appreciated but is not required.\n"
+		"\n"
+		"   2. Altered source versions must be plainly marked as such, and must not be\n"
+		"   misrepresented as being the original software.\n"
+		"\n"
+		"   3. This notice may not be removed or altered from any source\n"
+		"   distribution.\n"
+		"*/\n"
+		"\n"
+		"/* " VERSION " */\n"
+		"\n"
+		);
+}
+
+void generate_header()
+{
+	FILE * f;
+	f = fopen("soloud_c.h", "w");
+	fileheader(f);
+
+	int i, j, k;
+	int first = 1;
+	fprintf(f, 
+		"// Collected enumerations\n"
+		"enum SOLOUD_ENUMS\n"
+		"{\n");
 	for (i = 0; i < (signed)gClass.size(); i++)
 	{
-		string cn = gClass[i]->mName;
-		
-		int j;
-
-		for (j = 0; j < (signed)cn.length(); j++)
-			cn[j] = toupper(cn[j]);
-
-		for (j = 0; j < (signed)gClass[i]->mEnum.size(); j++)
+		if (gClass[i]->mName.find("Instance") == string::npos &&
+			gClass[i]->mName != "Filter" &&
+			gClass[i]->mName != "AudioSource")
 		{
-			printf("%s_%s = %s\n", cn.c_str(), gClass[i]->mEnum[j]->mName.c_str(), gClass[i]->mEnum[j]->mValue.c_str());
+			string cn = gClass[i]->mName;
+		
+			int j;
+
+			for (j = 0; j < (signed)cn.length(); j++)
+				cn[j] = toupper(cn[j]);
+
+			for (j = 0; j < (signed)gClass[i]->mEnum.size(); j++)
+			{
+				if (!first)
+				{
+					fprintf(f, ",\n");				
+				}
+				else
+				{
+					first = 0;
+				}
+				fprintf(f, "\t%s_%s = %s", cn.c_str(), gClass[i]->mEnum[j]->mName.c_str(), gClass[i]->mEnum[j]->mValue.c_str());
+			}
 		}
 	}
+	fprintf(f,
+		"\n"
+		"};\n"
+		"\n");
+
+	fprintf(f, "// Object handle typedefs\n");
+	for (i = 0; i < (signed)gClass.size(); i++)
+	{
+		if (gClass[i]->mName.find("Instance") == string::npos &&
+			gClass[i]->mName != "Filter" &&
+			gClass[i]->mName != "AudioSource")
+		{
+			fprintf(f, "typedef void * %s;\n", gClass[i]->mName.c_str());
+		}
+	}
+
+	for (i = 0; i < (signed)gClass.size(); i++)
+	{
+		if (gClass[i]->mName.find("Instance") == string::npos &&
+			gClass[i]->mName != "Filter" &&
+			gClass[i]->mName != "AudioSource")
+		{
+			fprintf(f,
+				"\n"
+				"/*\n"
+				" * %s\n"
+				" */\n",
+				gClass[i]->mName.c_str());
+			for (j = 0; j < (signed)gClass[i]->mMethod.size(); j++)
+			{
+				if (gClass[i]->mMethod[j]->mFuncName.find("Instance") == string::npos &&
+					gClass[i]->mName != gClass[i]->mMethod[j]->mRetType)
+				{
+					int has_defaults;
+					has_defaults = 0;
+					fprintf(f, 
+						"%s %s_%s(Soloud * aSoloud",
+						gClass[i]->mMethod[j]->mRetType.c_str(), 
+						gClass[i]->mName.c_str(),
+						gClass[i]->mMethod[j]->mFuncName.c_str());
+					for (k = 0; k < (signed)gClass[i]->mMethod[j]->mParmName.size(); k++)
+					{
+						if (gClass[i]->mMethod[j]->mParmValue[k] == "")
+						{
+							if (gClass[i]->mMethod[j]->mParmType[k] != "Soloud *")
+							{
+								fprintf(f, ", %s %s", 
+									gClass[i]->mMethod[j]->mParmType[k].c_str(),
+									gClass[i]->mMethod[j]->mParmName[k].c_str());
+							}
+						}
+						else
+						{
+							has_defaults = 1;
+						}
+					}
+					fprintf(f, ");\n");
+					if (has_defaults)
+					{
+						fprintf(f, 
+							"%s %s_%sEx(Soloud * aSoloud",
+							gClass[i]->mMethod[j]->mRetType.c_str(), 
+							gClass[i]->mName.c_str(),
+							gClass[i]->mMethod[j]->mFuncName.c_str());
+						int had_defaults = 0;
+						for (k = 0; k < (signed)gClass[i]->mMethod[j]->mParmName.size(); k++)
+						{
+							if (gClass[i]->mMethod[j]->mParmType[k] != "Soloud *")
+							{
+								fprintf(f, ", %s %s", 
+									gClass[i]->mMethod[j]->mParmType[k].c_str(),
+									gClass[i]->mMethod[j]->mParmName[k].c_str());
+								if (gClass[i]->mMethod[j]->mParmValue[k] != "")
+								{
+									fprintf(f, " /* = %s */", gClass[i]->mMethod[j]->mParmValue[k].c_str());
+									had_defaults = 1;
+								}
+							}
+						}
+						fprintf(f, ");\n");
+					}
+				}
+			}
+		}
+	}
+
+
+	fclose(f);
+}
+
+void generate_cpp()
+{
+	FILE * f;
+	f = fopen("soloud_c.cpp", "w");
+	fileheader(f);
+
+	fclose(f);
 }
 
 int main(int parc, char ** pars)
@@ -489,6 +676,12 @@ int main(int parc, char ** pars)
 	parse("../include/soloud_thread.h");
 	parse("../include/soloud_wav.h");
 	parse("../include/soloud_wavstream.h");
+
+	printf("Generating header..\n");
+	generate_header();
+
+	printf("Generating cpp..\n");
+	generate_cpp();
 
 }
 

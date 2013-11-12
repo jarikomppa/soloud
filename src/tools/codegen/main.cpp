@@ -181,7 +181,7 @@ void parse_params(Method *m, char *b, int &ofs)
 		}
 		if (s == "&")
 		{
-			pt += " *";
+			pt += " *"; // TODO - mark this somehow
 			NEXTTOKEN;
 		}
 		string pn = s;
@@ -392,7 +392,10 @@ void parse(const char *aFilename, int aPrintProgress = 0)
 				if (s == "public")
 				{
 					EXPECT(":");
-					omit = 0;
+					if (c->mName == "Soloud")
+						omit = !omit;
+					else
+						omit = 0;					
 				}
 				else
 				{
@@ -572,9 +575,9 @@ void generate_header()
 	fprintf(f, "// Object handle typedefs\n");
 	for (i = 0; i < (signed)gClass.size(); i++)
 	{
-		if (gClass[i]->mName.find("Instance") == string::npos &&
-			gClass[i]->mName != "Filter" &&
-			gClass[i]->mName != "AudioSource")
+		if (gClass[i]->mName.find("Instance") == string::npos)// &&
+			//gClass[i]->mName != "Filter" &&
+			//gClass[i]->mName != "AudioSource")
 		{
 			fprintf(f, "typedef void * %s;\n", gClass[i]->mName.c_str());
 		}
@@ -584,7 +587,8 @@ void generate_header()
 	{
 		if (gClass[i]->mName.find("Instance") == string::npos &&
 			gClass[i]->mName != "Filter" &&
-			gClass[i]->mName != "AudioSource")
+			gClass[i]->mName != "AudioSource" &&
+			gClass[i]->mName != "Fader")
 		{
 			fprintf(f,
 				"\n"
@@ -596,7 +600,8 @@ void generate_header()
 			
 			for (j = 0; j < (signed)gClass[i]->mMethod.size(); j++)
 			{
-				if (gClass[i]->mMethod[j]->mFuncName.find("Instance") == string::npos) 
+				if (gClass[i]->mMethod[j]->mFuncName.find("Instance") == string::npos &&
+					gClass[i]->mMethod[j]->mFuncName.find("interlace") == string::npos) 
 				{
 					if (gClass[i]->mName == gClass[i]->mMethod[j]->mRetType)
 					{
@@ -679,7 +684,7 @@ void generate_cpp()
 
 void inherit_stuff()
 {
-	int i, j, k;
+	int i, j, k, l;
 
 	for (i = 0; i < (signed)gClass.size(); i++)
 	{
@@ -695,7 +700,19 @@ void inherit_stuff()
 					{
 						if (gClass[j]->mMethod[k]->mFuncName != gClass[j]->mName)
 						{
-							gClass[i]->mMethod.push_back(gClass[j]->mMethod[k]);
+							int found = 0;
+							for (l = 0; !found && l < (signed)gClass[i]->mMethod.size(); l++)
+							{
+								if (gClass[i]->mMethod[l]->mFuncName == gClass[j]->mMethod[k]->mFuncName)
+								{
+									found = 1;
+								}
+							}
+
+							if (!found)
+							{
+								gClass[i]->mMethod.push_back(gClass[j]->mMethod[k]);
+							}
 						}
 					}
 				}

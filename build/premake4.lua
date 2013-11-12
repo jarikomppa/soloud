@@ -473,4 +473,64 @@ end
 			flags { "EnableSSE2", "NoMinimalRebuild", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
+
+	project "codegen"
+		kind "ConsoleApp"
+		language "C++"
+		files {
+		  "../src/tools/codegen/**.cpp"
+		}
+		configuration "Debug"
+			defines { "DEBUG" }
+			flags {"Symbols" }
+			objdir (buildroot .. "/debug")
+			targetname "codegen_d"
+			flags { "Symbols" }			
+
+		configuration "Release"
+			defines { "NDEBUG" }
+			flags {"Optimize"}
+			objdir (buildroot .. "/release")
+			targetname "codegen"
+			flags { "EnableSSE2", "NoMinimalRebuild", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
+
+-- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
+
+  project "c_test"
+    kind "ConsoleApp"
+    language "C++"
+    files {
+      "../demos/c_test/**.c*",
+      "../src/c_api/soloud_c.cpp"
+      }
+    includedirs {
+      "../include"
+    }
+
+		links {"StaticLib"}
+		
+		if (os.is("Windows")) 
+		then 
+			links {"backend_winmm"} 
+			files {"../src/c_api/soloud_c_winmm.cpp"}
+		else 
+			links {"backend_portaudio"} 
+			files {"../src/c_api/soloud_c_portaudio.cpp"}
+		end
+
+		configuration "Debug"
+			defines { "DEBUG" }
+			flags {"Symbols" }
+			objdir (buildroot .. "/debug")
+			targetname "c_test_d"
+			flags { "Symbols" }
 			
+
+		configuration "Release"
+			defines { "NDEBUG" }
+			flags {"Optimize"}
+			objdir (buildroot .. "/release")
+			targetname "c_test"
+			flags { "EnableSSE2", "NoMinimalRebuild", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
+
+-- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --

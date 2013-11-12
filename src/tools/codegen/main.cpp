@@ -546,6 +546,8 @@ void emit_cppstart(FILE * f)
 		"#include \"../include/soloud_wav.h\"\n"
 		"#include \"../include/soloud_wavstream.h\"\n"
 		"\n"
+		"using namespace SoLoud;\n"
+		"\n"
 		"extern \"C\"\n"
 		"{\n\n"
 	);
@@ -678,8 +680,8 @@ void emit_cppend(FILE * f)
 void generate()
 {
 	FILE * f, *cppf;
-	f = fopen("soloud_c.h", "w");
-	cppf = fopen("soloud_c.cpp", "w");
+	f = fopen("../include/soloud_c.h", "w");
+	cppf = fopen("../src/soloud_c.cpp", "w");
 	fileheader(f);
 	fileheader(cppf);
 
@@ -833,7 +835,10 @@ void generate()
 	}
 
 	fprintf(f,
+		"#ifdef  __cplusplus\n"
 		"} // extern \"C\"\n"
+		"#endif\n"
+		"\n"
 		"#endif // SOLOUD_C_H_INCLUDED\n"
 		"\n");
 
@@ -899,7 +904,10 @@ int main(int parc, char ** pars)
 	{
 		printf("\nThis program will generate the 'C' api wrapper code.\n"
 			   "You probably ran this by mistake.\n"
-			   "Use parameter 'go' to actually do something.\n\n");
+			   "Use parameter 'go' to actually do something.\n"
+			   "\n"			   
+			   "Note that output will be ../include/soloud_c.h and ../src/soloud_c.cpp.\n"
+			   "\n");
 		return 0;
 	}
 
@@ -921,6 +929,8 @@ int main(int parc, char ** pars)
 
 	printf("Generating header and cpp..\n");
 	generate();
+
+	printf("All done.\n");
 }
 
 

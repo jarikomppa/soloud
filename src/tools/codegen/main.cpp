@@ -39,6 +39,7 @@ struct Method
 	vector<string> mParmType;
 	vector<string> mParmName;
 	vector<string> mParmValue;
+	vector<int> mRef;
 };
 
 struct Enum
@@ -150,6 +151,7 @@ void parse_params(Method *m, char *b, int &ofs)
 	NEXTTOKEN;
 	while (s != ")")
 	{
+		int ref = 0;
 		string pt = "";
 		if (s == "const")
 		{
@@ -181,7 +183,8 @@ void parse_params(Method *m, char *b, int &ofs)
 		}
 		if (s == "&")
 		{
-			pt += " *"; // TODO - mark this somehow
+			pt += " *";
+			ref = 1;
 			NEXTTOKEN;
 		}
 		string pn = s;
@@ -201,8 +204,7 @@ void parse_params(Method *m, char *b, int &ofs)
 		m->mParmName.push_back(pn);
 		m->mParmType.push_back(pt);
 		m->mParmValue.push_back(pv);
-
-//		printf("\npn:\"%s\"\npt:\"%s\"\npv:\"%s\"\n", pn.c_str(), pt.c_str(), pv.c_str());
+		m->mRef.push_back(ref);
 	}
 }
 
@@ -528,11 +530,169 @@ void fileheader(FILE * f)
 		);
 }
 
-void generate_header()
+void emit_cppstart(FILE * f)
 {
-	FILE * f;
+	fprintf(f,		
+		"#include \"../include/soloud.h\"\n"
+		"#include \"../include/soloud_audiosource.h\"\n"
+		"#include \"../include/soloud_biquadresonantfilter.h\"\n"
+		"#include \"../include/soloud_bus.h\"\n"
+		"#include \"../include/soloud_echofilter.h\"\n"
+		"#include \"../include/soloud_fader.h\"\n"
+		"#include \"../include/soloud_fftfilter.h\"\n"
+		"#include \"../include/soloud_filter.h\"\n"
+		"#include \"../include/soloud_speech.h\"\n"
+		"#include \"../include/soloud_thread.h\"\n"
+		"#include \"../include/soloud_wav.h\"\n"
+		"#include \"../include/soloud_wavstream.h\"\n"
+		"\n"
+		"extern \"C\"\n"
+		"{\n\n"
+	);
+}
+
+void emit_ctor(FILE * f, const char * cl)
+{
+	fprintf(f,
+		"void * %s_create()\n"
+		"{\n"
+		"  return (void *)new %s;\n"
+		"}\n"
+		"\n", cl, cl);
+}
+
+void emit_dtor(FILE * f, const char * cl)
+{
+	fprintf(f,
+		"void %s_destroy(void * aClassPtr)\n"
+		"{\n"
+		"  delete (%s *)aClassPtr;\n"
+		"}\n"
+		"\n", cl, cl);
+}
+
+void emit_func(FILE * f, int aClass, int aMethod)
+{
+	int i;
+	Class *c = gClass[aClass];
+	Method *m = c->mMethod[aMethod];
+	fprintf(f, 
+		"%s %s_%s(void * aClassPtr", 
+		m->mRetType.c_str(), 
+		c->mName.c_str(), 
+		m->mFuncName.c_str());
+
+	int had_defaults = 0;
+	for (i = 0; i < (signed)m->mParmName.size(); i++)
+	{
+		if (m->mParmValue[i] == "")
+		{
+			fprintf(f, 
+				", %s %s",
+				m->mParmType[i].c_str(),
+				m->mParmName[i].c_str());
+		}
+		else
+		{
+			had_defaults = 1;
+		}
+	}
+	
+	fprintf(f, 
+		")\n"
+		"{\n"
+		"\t%s * cl = (%s *)aClassPtr;\n"
+		"\t%scl->%s(",
+		c->mName.c_str(),
+		c->mName.c_str(),
+		(m->mRetType == "void")?"":"return ",
+		m->mFuncName.c_str());
+
+	for (i = 0; i < (signed)m->mParmName.size(); i++)
+	{
+		if (m->mParmValue[i] == "")
+		{
+			if (i != 0)
+				fprintf(f, ", ");
+			if (m->mRef[i])
+				fprintf(f, "*");
+			fprintf(f, 
+				"%s",				
+				m->mParmName[i].c_str());
+		}
+	}
+	fprintf(f,
+		");\n"
+		"}\n"
+		"\n");
+
+	if (had_defaults)
+	{
+		fprintf(f, 
+			"%s %s_%sEx(void * aClassPtr", 
+			m->mRetType.c_str(), 
+			c->mName.c_str(), 
+			m->mFuncName.c_str());
+		for (i = 0; i < (signed)m->mParmName.size(); i++)
+		{
+			fprintf(f, 
+				", %s %s",
+				m->mParmType[i].c_str(),
+				m->mParmName[i].c_str());
+		}
+	
+		fprintf(f, 
+			")\n"
+			"{\n"
+			"\t%s * cl = (%s *)aClassPtr;\n"
+			"\t%scl->%s(",
+			c->mName.c_str(),
+			c->mName.c_str(),
+			(m->mRetType == "void")?"":"return ",
+			m->mFuncName.c_str());
+
+		for (i = 0; i < (signed)m->mParmName.size(); i++)
+		{
+			if (i != 0)
+				fprintf(f, ", ");
+			if (m->mRef[i])
+				fprintf(f, "*");
+			fprintf(f, 
+				"%s",				
+				m->mParmName[i].c_str());
+		}
+		fprintf(f,
+			");\n"
+			"}\n"
+			"\n");
+	}
+}
+
+void emit_cppend(FILE * f)
+{
+	fprintf(f,
+		"} // extern \"C\"\n"
+		"\n");
+}
+
+void generate()
+{
+	FILE * f, *cppf;
 	f = fopen("soloud_c.h", "w");
+	cppf = fopen("soloud_c.cpp", "w");
 	fileheader(f);
+	fileheader(cppf);
+
+	emit_cppstart(cppf);
+
+	fprintf(f,
+		"#ifndef SOLOUD_C_H_INCLUDED\n"
+		"#define SOLOUD_C_H_INCLUDED\n"
+		"\n"
+		"#ifdef  __cplusplus\n"
+		"extern \"C\" {\n"
+		"#endif\n");
+
 
 	int i, j, k;
 	int first = 1;
@@ -597,6 +757,7 @@ void generate_header()
 				" */\n",
 				gClass[i]->mName.c_str());
 			fprintf(f, "void %s_destroy(%s * a%s);\n", gClass[i]->mName.c_str(), gClass[i]->mName.c_str(), gClass[i]->mName.c_str());
+			emit_dtor(cppf, gClass[i]->mName.c_str());
 			
 			for (j = 0; j < (signed)gClass[i]->mMethod.size(); j++)
 			{
@@ -607,10 +768,12 @@ void generate_header()
 					{
 						// CTor
 						fprintf(f, "%s * %s_create();\n", gClass[i]->mName.c_str(), gClass[i]->mName.c_str(), gClass[i]->mName.c_str());
-						// TODO: ctors with params?
+						// TODO: ctors with params? none in soloud so far..
+						emit_ctor(cppf, gClass[i]->mName.c_str());
 					}
 					else
 					{
+						emit_func(cppf, i, j);
 						int has_defaults;
 						has_defaults = 0;
 						fprintf(f, 
@@ -669,8 +832,15 @@ void generate_header()
 		}
 	}
 
+	fprintf(f,
+		"} // extern \"C\"\n"
+		"#endif // SOLOUD_C_H_INCLUDED\n"
+		"\n");
+
+	emit_cppend(cppf);
 
 	fclose(f);
+	fclose(cppf);
 }
 
 void generate_cpp()
@@ -749,12 +919,8 @@ int main(int parc, char ** pars)
 	printf("Handling inheritance..\n");
 	inherit_stuff();
 
-	printf("Generating header..\n");
-	generate_header();
-
-	printf("Generating cpp..\n");
-	generate_cpp();
-
+	printf("Generating header and cpp..\n");
+	generate();
 }
 
 

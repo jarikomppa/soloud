@@ -214,6 +214,7 @@ void parse(const char *aFilename, int aPrintProgress = 0)
 	int newline = 0;
 	Class *c = NULL;
 	string s;
+	int omit = 0;
 	while (b[ofs])
 	{
 		NEXTTOKEN;
@@ -287,7 +288,7 @@ void parse(const char *aFilename, int aPrintProgress = 0)
 				{
 					c = new Class;
 					c->mName = "Instance";
-					c->mParent = "Instance";
+					c->mParent = "";
 				}
 				ALLOW("\n");
 				EXPECT("{");
@@ -316,6 +317,7 @@ void parse(const char *aFilename, int aPrintProgress = 0)
 					c = new Class;
 					c->mName = classname;
 					c->mParent = parentname;
+					omit = 1;
 				}
 			}
 			else
@@ -390,6 +392,7 @@ void parse(const char *aFilename, int aPrintProgress = 0)
 				if (s == "public")
 				{
 					EXPECT(":");
+					omit = 0;
 				}
 				else
 				{
@@ -438,7 +441,15 @@ void parse(const char *aFilename, int aPrintProgress = 0)
 						m->mFuncName = vt2;
 						m->mRetType = vt1;
 						parse_params(m, b, ofs);
-						c->mMethod.push_back(m);
+						if (!omit)
+						{
+							c->mMethod.push_back(m);
+						}
+						else
+						{
+							// Should clean up m or we'll leak it
+							// but what's a little memory leakage between friends?
+						}
 #ifdef PRINT_FUNCTIONS
 						printf("%s %s(", m->mRetType.c_str(), m->mFuncName.c_str());
 						int i;
@@ -581,58 +592,72 @@ void generate_header()
 				" * %s\n"
 				" */\n",
 				gClass[i]->mName.c_str());
+			fprintf(f, "void %s_destroy(%s * a%s);\n", gClass[i]->mName.c_str(), gClass[i]->mName.c_str(), gClass[i]->mName.c_str());
+			
 			for (j = 0; j < (signed)gClass[i]->mMethod.size(); j++)
 			{
-				if (gClass[i]->mMethod[j]->mFuncName.find("Instance") == string::npos &&
-					gClass[i]->mName != gClass[i]->mMethod[j]->mRetType)
+				if (gClass[i]->mMethod[j]->mFuncName.find("Instance") == string::npos) 
 				{
-					int has_defaults;
-					has_defaults = 0;
-					fprintf(f, 
-						"%s %s_%s(Soloud * aSoloud",
-						gClass[i]->mMethod[j]->mRetType.c_str(), 
-						gClass[i]->mName.c_str(),
-						gClass[i]->mMethod[j]->mFuncName.c_str());
-					for (k = 0; k < (signed)gClass[i]->mMethod[j]->mParmName.size(); k++)
+					if (gClass[i]->mName == gClass[i]->mMethod[j]->mRetType)
 					{
-						if (gClass[i]->mMethod[j]->mParmValue[k] == "")
-						{
-							if (gClass[i]->mMethod[j]->mParmType[k] != "Soloud *")
-							{
-								fprintf(f, ", %s %s", 
-									gClass[i]->mMethod[j]->mParmType[k].c_str(),
-									gClass[i]->mMethod[j]->mParmName[k].c_str());
-							}
-						}
-						else
-						{
-							has_defaults = 1;
-						}
+						// CTor
+						fprintf(f, "%s * %s_create();\n", gClass[i]->mName.c_str(), gClass[i]->mName.c_str(), gClass[i]->mName.c_str());
+						// TODO: ctors with params?
 					}
-					fprintf(f, ");\n");
-					if (has_defaults)
+					else
 					{
+						int has_defaults;
+						has_defaults = 0;
 						fprintf(f, 
-							"%s %s_%sEx(Soloud * aSoloud",
+							"%s %s_%s(%s * a%s",
 							gClass[i]->mMethod[j]->mRetType.c_str(), 
 							gClass[i]->mName.c_str(),
-							gClass[i]->mMethod[j]->mFuncName.c_str());
-						int had_defaults = 0;
+							gClass[i]->mMethod[j]->mFuncName.c_str(),
+							gClass[i]->mName.c_str(),
+							gClass[i]->mName.c_str());
 						for (k = 0; k < (signed)gClass[i]->mMethod[j]->mParmName.size(); k++)
 						{
-							if (gClass[i]->mMethod[j]->mParmType[k] != "Soloud *")
+							if (gClass[i]->mMethod[j]->mParmValue[k] == "")
 							{
-								fprintf(f, ", %s %s", 
-									gClass[i]->mMethod[j]->mParmType[k].c_str(),
-									gClass[i]->mMethod[j]->mParmName[k].c_str());
-								if (gClass[i]->mMethod[j]->mParmValue[k] != "")
+								if (gClass[i]->mMethod[j]->mParmType[k] != "Soloud *")
 								{
-									fprintf(f, " /* = %s */", gClass[i]->mMethod[j]->mParmValue[k].c_str());
-									had_defaults = 1;
+									fprintf(f, ", %s %s", 
+										gClass[i]->mMethod[j]->mParmType[k].c_str(),
+										gClass[i]->mMethod[j]->mParmName[k].c_str());
 								}
+							}
+							else
+							{
+								has_defaults = 1;
 							}
 						}
 						fprintf(f, ");\n");
+						if (has_defaults)
+						{
+							fprintf(f, 
+								"%s %s_%sEx(%s * a%s",
+								gClass[i]->mMethod[j]->mRetType.c_str(), 
+								gClass[i]->mName.c_str(),
+								gClass[i]->mMethod[j]->mFuncName.c_str(),
+								gClass[i]->mName.c_str(),
+								gClass[i]->mName.c_str());
+							int had_defaults = 0;
+							for (k = 0; k < (signed)gClass[i]->mMethod[j]->mParmName.size(); k++)
+							{
+								if (gClass[i]->mMethod[j]->mParmType[k] != "Soloud *")
+								{
+									fprintf(f, ", %s %s", 
+										gClass[i]->mMethod[j]->mParmType[k].c_str(),
+										gClass[i]->mMethod[j]->mParmName[k].c_str());
+									if (gClass[i]->mMethod[j]->mParmValue[k] != "")
+									{
+										fprintf(f, " /* = %s */", gClass[i]->mMethod[j]->mParmValue[k].c_str());
+										had_defaults = 1;
+									}
+								}
+							}
+							fprintf(f, ");\n");
+						}
 					}
 				}
 			}
@@ -650,6 +675,33 @@ void generate_cpp()
 	fileheader(f);
 
 	fclose(f);
+}
+
+void inherit_stuff()
+{
+	int i, j, k;
+
+	for (i = 0; i < (signed)gClass.size(); i++)
+	{
+		if (gClass[i]->mParent != "")
+		{
+			for (j = 0; j < (signed)gClass.size(); j++)
+			{
+				if (gClass[j]->mName == gClass[i]->mParent)
+				{
+					// Only handle single level of inheritance for now. If more are needed,
+					// this needs to be recursive.
+					for (k = 0; k < (signed)gClass[j]->mMethod.size(); k++)
+					{
+						if (gClass[j]->mMethod[k]->mFuncName != gClass[j]->mName)
+						{
+							gClass[i]->mMethod.push_back(gClass[j]->mMethod[k]);
+						}
+					}
+				}
+			}
+		}
+	}
 }
 
 int main(int parc, char ** pars)
@@ -676,6 +728,9 @@ int main(int parc, char ** pars)
 	parse("../include/soloud_thread.h");
 	parse("../include/soloud_wav.h");
 	parse("../include/soloud_wavstream.h");
+
+	printf("Handling inheritance..\n");
+	inherit_stuff();
 
 	printf("Generating header..\n");
 	generate_header();

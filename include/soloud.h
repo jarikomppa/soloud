@@ -96,11 +96,6 @@ namespace SoLoud
 			ENABLE_VISUALIZATION = 2,
 		};
 
-		// Initialize SoLoud. Called by the back-end.
-		void init(int aSamplerate, int aBufferSize, int aFlags);
-		// Mix and return N stereo samples in the buffer. Called by the back-end.
-		void mix(float *aBuffer, int aSamples);
-
 		// Deinitialize SoLoud. Must be called before shutting down.
 		void deinit();
 
@@ -201,6 +196,12 @@ namespace SoLoud
 
 		// Rest of the stuff is used internally.
 	public:
+		// Initialize SoLoud. Called by the back-end.
+		void init(int aSamplerate, int aBufferSize, int aFlags);
+		// Mix and return N stereo samples in the buffer. Called by the back-end.
+		void mix(float *aBuffer, int aSamples);
+
+
 		// Perform mixing for a specific bus
 		void mixBus(float *aBuffer, int aSamples, float *aScratch, int aBus, float aSamplerate);
 		// Scratch buffer, used for resampling.

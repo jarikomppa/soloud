@@ -30,6 +30,8 @@ freely, subject to the following restrictions:
 
 #define VERSION "SoLoud C-Api Code Generator (c)2013 Jari Komppa http://iki.fi/sol/"
 
+#define OUTDIR "../src/c_api/"
+
 using namespace std;
 
 struct Method
@@ -577,6 +579,13 @@ void emit_dtor(FILE * f, const char * cl)
 		"\n", cl, cl);
 }
 
+void emit_cppend(FILE * f)
+{
+	fprintf(f,
+		"} // extern \"C\"\n"
+		"\n");
+}
+
 void emit_func(FILE * f, int aClass, int aMethod)
 {
 	int i;
@@ -586,8 +595,12 @@ void emit_func(FILE * f, int aClass, int aMethod)
 
 	if (c->mName == "Soloud" && m->mFuncName.find("_init") != string::npos)
 	{
-		// Init function, needs a bit of special handling.
+		// Init function, needs "a bit" of special handling.
 		initfunc = 1;
+		string fn = OUTDIR "soloud_c_" + m->mFuncName.substr(0, m->mFuncName.find_first_of('_')) + ".cpp";
+		f = fopen(fn.c_str(), "w");
+		fileheader(f);
+		emit_cppstart(f);
 	}
 
 	if (initfunc)
@@ -730,20 +743,20 @@ void emit_func(FILE * f, int aClass, int aMethod)
 			"}\n"
 			"\n");
 	}
+
+	if (initfunc)
+	{
+		emit_cppend(f);
+		fclose(f);
+	}
 }
 
-void emit_cppend(FILE * f)
-{
-	fprintf(f,
-		"} // extern \"C\"\n"
-		"\n");
-}
 
 void generate()
 {
 	FILE * f, *cppf;
 	f = fopen("../include/soloud_c.h", "w");
-	cppf = fopen("../src/soloud_c.cpp", "w");
+	cppf = fopen(OUTDIR "soloud_c.cpp", "w");
 	fileheader(f);
 	fileheader(cppf);
 
@@ -968,7 +981,7 @@ int main(int parc, char ** pars)
 			   "You probably ran this by mistake.\n"
 			   "Use parameter 'go' to actually do something.\n"
 			   "\n"			   
-			   "Note that output will be ../include/soloud_c.h and ../src/soloud_c.cpp.\n"
+			   "Note that output will be ../include/soloud_c.h and " OUTDIR "soloud_c*.cpp.\n"
 			   "\n");
 		return 0;
 	}

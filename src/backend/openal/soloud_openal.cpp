@@ -41,6 +41,58 @@ static ALuint source = 0;
 static int frequency = 0;
 static volatile int threadrun = 0;
 
+typedef ALCdevice* (*alc_OpenDevice)(const ALCchar *devicename);
+typedef ALCcontext* (*alc_CreateContext)(ALCdevice *device, const ALCint* attrlist);
+typedef ALCboolean (*alc_MakeContextCurrent)(ALCcontext *context);
+typedef void (*al_GetSourcei)(ALuint source, ALenum param, ALint *value);
+typedef void (*al_SourceQueueBuffers)(ALuint source, ALsizei nb, const ALuint *buffers);
+typedef void (*al_SourceUnqueueBuffers)(ALuint source, ALsizei nb, ALuint *buffers);
+typedef void (*al_BufferData)(ALuint buffer, ALenum format, const ALvoid *data, ALsizei size, ALsizei freq);
+typedef void (*al_SourcePlay)(ALuint source);
+typedef void (*al_GenBuffers)(ALsizei n, ALuint *buffers);
+typedef void (*al_GenSources)(ALsizei n, ALuint *sources);
+
+static alc_OpenDevice dAlcOpenDevice;
+static alc_CreateContext dAlcCreateContext;
+static alc_MakeContextCurrent dAlcMakeContextCurrent;
+static al_GetSourcei dAlGetSourcei;
+static al_SourceQueueBuffers dAlSourceQueueBuffers;
+static al_SourceUnqueueBuffers dAlSourceUnqueueBuffers;
+static al_BufferData dAlBufferData;
+static al_SourcePlay dAlSourcePlay;
+static al_GenBuffers dAlGenBuffers;
+static al_GenSources dAlGenSources;
+
+#ifdef WINDOWS_VERSION
+#include <windows.h>
+
+static HMODULE openDll()
+{
+    return LoadLibraryA("soft_oal.dll");
+}
+
+static void* getDllProc(HMODULE aDllHandle, const char *aProcName)
+{
+    return GetProcAddress(aDllHandle, aProcName);
+}
+
+#else
+#include <dlfcn.h> // dll functions
+
+typedef void* HMODULE;
+
+static HMODULE openDll()
+{
+    return dlopen("libopenal.so", RTLD_LAZY);
+}
+
+static void* getDllProc(HMODULE aLibrary, const char *aProcName)
+{
+    return dlsym(aLibrary, aProcName);
+}
+
+#endif
+
 namespace SoLoud
 {
 	void soloud_openal_deinit(SoLoud::Soloud *aSoloud)
@@ -71,7 +123,7 @@ namespace SoLoud
 		ALuint buffer = 0;
 		ALint buffersProcessed = 0;
 		ALint state;
-		alGetSourcei(source, AL_BUFFERS_PROCESSED, &buffersProcessed);
+		dAlGetSourcei(source, AL_BUFFERS_PROCESSED, &buffersProcessed);
 
 		float mixbuf[BUFFER_SIZE*2];
 		short downbuf[BUFFER_SIZE*2];
@@ -83,16 +135,16 @@ namespace SoLoud
 			for (i = 0; i < BUFFER_SIZE*2; i++)
 				downbuf[i] = (short)floor(mixbuf[i] * 0x7fff);
 
-			alSourceUnqueueBuffers(source, 1, &buffer);
+			dAlSourceUnqueueBuffers(source, 1, &buffer);
 
-			alBufferData(buffer, format, downbuf, BUFFER_SIZE*4, frequency);
+			dAlBufferData(buffer, format, downbuf, BUFFER_SIZE*4, frequency);
 
-			alSourceQueueBuffers(source, 1, &buffer);
+			dAlSourceQueueBuffers(source, 1, &buffer);
 		}
 
-		alGetSourcei(source, AL_SOURCE_STATE, &state);
+		dAlGetSourcei(source, AL_SOURCE_STATE, &state);
 		if (state != AL_PLAYING)
-			alSourcePlay(source);
+			dAlSourcePlay(source);
 	}
 
 	static void openal_thread(void *aParam)
@@ -108,19 +160,44 @@ namespace SoLoud
 
 	int openal_init(SoLoud::Soloud *aSoloud, int aFlags, int aSamplerate, int aBuffer)
 	{
+        HMODULE dll = openDll();
+        if (0 == dll)
+        {
+            return -1;
+        }
+
+        dAlcOpenDevice = static_cast<alc_OpenDevice>(getDllProc(dll, "alcOpenDevice"));
+        dAlcCreateContext = static_cast<alc_CreateContext>(getDllProc(dll, "alcCreateContext"));
+        dAlcMakeContextCurrent = static_cast<alc_MakeContextCurrent>(getDllProc(dll, "alcMakeContextCurrent"));
+        dAlGetSourcei = static_cast<al_GetSourcei>(getDllProc(dll, "alGetSourcei"));
+        dAlSourceQueueBuffers = static_cast<al_SourceQueueBuffers>(getDllProc(dll, "alSourceQueueBuffers"));
+        dAlSourceUnqueueBuffers = static_cast<al_SourceUnqueueBuffers>(getDllProc(dll, "alSourceUnqueueBuffers"));
+        dAlBufferData = static_cast<al_BufferData>(getDllProc(dll, "alBufferData"));
+        dAlSourcePlay = static_cast<al_SourcePlay>(getDllProc(dll, "alSourcePlay"));
+        dAlGenBuffers = static_cast<al_GenBuffers>(getDllProc(dll, "alGenBuffers"));
+        dAlGenSources = static_cast<al_GenSources>(getDllProc(dll, "alGenSources"));
+
+        if ((0 == dAlcOpenDevice) || (0 == dAlcCreateContext) || (0 == dAlcMakeContextCurrent)
+            || (0 == dAlGetSourcei) || (0 == dAlSourceQueueBuffers) 
+            || (0 == dAlSourceUnqueueBuffers) || (0 == dAlBufferData) || (0 == dAlSourcePlay)
+            || (0 == dAlGenBuffers) || (0 == dAlGenSources))
+        {
+            return -2;
+        }
+
 		aSoloud->init(aSamplerate,aBuffer,aFlags);
 		aSoloud->mBackendCleanupFunc = soloud_openal_deinit;
 		aSoloud->mMutex = Thread::createMutex();
 		aSoloud->mLockMutexFunc = openal_mutex_lock;
 		aSoloud->mUnlockMutexFunc = openal_mutex_unlock;
 
-		device = alcOpenDevice(NULL);
-		context = alcCreateContext(device, NULL);
-		alcMakeContextCurrent(context);
+		device = dAlcOpenDevice(NULL);
+		context = dAlcCreateContext(device, NULL);
+		dAlcMakeContextCurrent(context);
 		format = AL_FORMAT_STEREO16;
 		ALuint buffers[NUM_BUFFERS];
-		alGenBuffers(NUM_BUFFERS, buffers);
-		alGenSources(1, &source);
+		dAlGenBuffers(NUM_BUFFERS, buffers);
+		dAlGenSources(1, &source);
 
 		frequency = aSamplerate;
 
@@ -130,11 +207,11 @@ namespace SoLoud
 			data[i] = 0;
 		for (i = 0; i < NUM_BUFFERS; i++)
 		{
-			alBufferData(buffers[i], format, data, BUFFER_SIZE, frequency);
-			alSourceQueueBuffers(source, 1, &buffers[i]);
+			dAlBufferData(buffers[i], format, data, BUFFER_SIZE, frequency);
+			dAlSourceQueueBuffers(source, 1, &buffers[i]);
 		}
 
-		alSourcePlay(source);
+		dAlSourcePlay(source);
 
 		Thread::createThread(openal_thread, (void*)aSoloud);
 

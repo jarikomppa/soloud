@@ -23,6 +23,7 @@ freely, subject to the following restrictions:
 */
 #include <stdlib.h>
 #if defined(_MSC_VER)
+#define WINDOWS_VERSION
 #include "SDL.h"
 #else
 #include "SDL/SDL.h"
@@ -82,16 +83,18 @@ static void* getDllProc(void * aLibrary, const char *aProcName)
 
 static int load_dll()
 {
+#ifdef WINDOWS_VERSION
+	HMODULE dll = NULL;
+#else
+	void * dll = NULL;
+#endif
+
 	if (dSDL_OpenAudio != NULL)
 	{
 		return 1;
 	}
 
-#ifdef WINDOWS_VERSION
-	HMODULE dll = openDll();
-#else
-	void * dll = openDll();
-#endif
+    dll = openDll();
 
     if (dll)
     {

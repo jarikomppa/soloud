@@ -68,8 +68,9 @@ namespace SoLoud
 
 	Soloud::~Soloud()
 	{
-		deinit();
+		// let's stop all sounds before deinit, so we don't mess up our mutexes
 		stopAll();
+		deinit();
 		int i;
 		for (i = 0; i < FILTERS_PER_STREAM; i++)
 		{
@@ -83,6 +84,8 @@ namespace SoLoud
 		if (mBackendCleanupFunc)
 			mBackendCleanupFunc(this);
 		mBackendCleanupFunc = 0;
+		mLockMutexFunc = 0;
+		mUnlockMutexFunc = 0;
 	}
 
 	void Soloud::init(int aSamplerate, int aBufferSize, int aFlags)

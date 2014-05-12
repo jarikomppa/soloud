@@ -47,7 +47,7 @@ namespace SoLoud
 
 	int Soloud::getVoiceFromHandle(int aVoiceHandle) const
 	{
-		if (aVoiceHandle < 0) 
+		if (aVoiceHandle <= 0) 
 		{
 			return -1;
 		}

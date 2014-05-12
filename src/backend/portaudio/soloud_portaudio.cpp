@@ -29,11 +29,14 @@ freely, subject to the following restrictions:
 #include "soloud.h"
 #include "soloud_thread.h"
 
-typedef PaError (*Pa_InitializeProc)( void );
-typedef PaError (*Pa_TerminateProc)( void );
-typedef PaError (*Pa_CloseStreamProc)( PaStream *stream );
-typedef PaError (*Pa_StartStreamProc)( PaStream *stream );
-typedef PaError (*Pa_OpenDefaultStreamProc)( PaStream** stream,
+extern "C"
+{
+	int dll_Pa_found();
+	PaError dll_Pa_Initialize( void );
+	PaError dll_Pa_Terminate( void );
+	PaError dll_Pa_CloseStream( PaStream *stream );
+	PaError dll_Pa_StartStream( PaStream *stream );
+	PaError dll_Pa_OpenDefaultStream( PaStream** stream,
                               int numInputChannels,
                               int numOutputChannels,
                               PaSampleFormat sampleFormat,
@@ -41,46 +44,8 @@ typedef PaError (*Pa_OpenDefaultStreamProc)( PaStream** stream,
                               unsigned long framesPerBuffer,
                               PaStreamCallback *streamCallback,
                               void *userData );
+};
 
-static Pa_InitializeProc dPa_Initialize;
-static Pa_TerminateProc dPa_Terminate;
-static Pa_CloseStreamProc dPa_CloseStream;
-static Pa_StartStreamProc dPa_StartStream;
-static Pa_OpenDefaultStreamProc dPa_OpenDefaultStream;
-
-
-
-#ifdef WINDOWS_VERSION
-#include <Windows.h>
-
-static int opendll(const char *dllfilename)
-{
-    HMODULE dllh = LoadLibrary(dllfilename);
-    return (int)dllh;
-}
-
-static void *getdllproc(int dllhandle, const char *procname)
-{
-    HMODULE dllh = (HMODULE)dllhandle;
-    return GetProcAddress(dllh, procname);
-}
-
-#else
-#include <dlfcn.h> // dll functions
-
-static void* opendll(const char *dllfilename)
-{
-    void* library = dlopen(dllfilename, RTLD_LAZY);
-    return library;
-}
-
-static void *getdllproc(void* dllhandle, const char *procname)
-{
-    void* library = dllhandle;
-    return dlsym(library,procname);
-}
-
-#endif
 
 
 namespace SoLoud
@@ -114,8 +79,8 @@ namespace SoLoud
 
 	void soloud_portaudio_deinit(SoLoud::Soloud *aSoloud)
 	{
-		dPa_CloseStream(gStream);
-		dPa_Terminate();
+		dll_Pa_CloseStream(gStream);
+		dll_Pa_Terminate();
 		Thread::destroyMutex(aSoloud->mMutex);
 		aSoloud->mMutex = 0;
 		aSoloud->mLockMutexFunc = 0;
@@ -124,23 +89,7 @@ namespace SoLoud
 
 	int portaudio_init(SoLoud::Soloud *aSoloud, int aFlags, int aSamplerate, int aBuffer)
 	{
-#ifdef WINDOWS_VERSION
-		int h = opendll("portaudio_x86.dll");
-#else
-		void *h = opendll("libportaudio_x86.so");
-#endif
-
-		dPa_Initialize = (Pa_InitializeProc)getdllproc(h,"Pa_Initialize");
-		dPa_Terminate = (Pa_TerminateProc)getdllproc(h,"Pa_Terminate");
-		dPa_CloseStream = (Pa_CloseStreamProc)getdllproc(h,"Pa_CloseStream");
-		dPa_StartStream = (Pa_StartStreamProc)getdllproc(h,"Pa_StartStream");
-		dPa_OpenDefaultStream = (Pa_OpenDefaultStreamProc)getdllproc(h,"Pa_OpenDefaultStream");
-
-		if (dPa_Initialize == NULL ||
-			dPa_Terminate == NULL ||
-			dPa_CloseStream == NULL ||
-			dPa_StartStream == NULL ||
-			dPa_OpenDefaultStream == NULL)
+		if (!dll_Pa_found())
 			return -1;
 
 		aSoloud->init(aSamplerate, aBuffer * 2, aFlags);
@@ -148,9 +97,9 @@ namespace SoLoud
 		aSoloud->mMutex = Thread::createMutex();
 		aSoloud->mLockMutexFunc = portaudio_mutex_lock;
 		aSoloud->mUnlockMutexFunc = portaudio_mutex_unlock;
-		dPa_Initialize();
-		dPa_OpenDefaultStream(&gStream, 0, 2, paFloat32, aSamplerate, paFramesPerBufferUnspecified, portaudio_callback, (void*)aSoloud);
-		dPa_StartStream(gStream);
+		dll_Pa_Initialize();
+		dll_Pa_OpenDefaultStream(&gStream, 0, 2, paFloat32, aSamplerate, paFramesPerBufferUnspecified, portaudio_callback, (void*)aSoloud);
+		dll_Pa_StartStream(gStream);
 		return 0;
 	}
 	

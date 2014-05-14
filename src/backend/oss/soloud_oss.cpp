@@ -1,6 +1,6 @@
 /*
 SoLoud audio engine
-Copyright (c) 2013 Jari Komppa
+Copyright (c) 2013-2014 Jari Komppa
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -170,7 +170,7 @@ namespace SoLoud
         aSoloud->mMutex = Thread::createMutex();
         aSoloud->mLockMutexFunc = Thread::lockMutex;
         aSoloud->mUnlockMutexFunc = Thread::unlockMutex;
-        aSoloud->init(aSamplerate, data->samples * data->channels, aFlags);
+        aSoloud->postinit(aSamplerate, data->samples * data->channels, aFlags);
         data->threadHandle = Thread::createThread(ossThread, data);
         if (0 == data->threadHandle)
         {

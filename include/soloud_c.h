@@ -38,6 +38,15 @@ extern "C" {
 // Collected enumerations
 enum SOLOUD_ENUMS
 {
+	SOLOUD_AUTO = 0,
+	SOLOUD_SDL = 1,
+	SOLOUD_SDL2 = 2,
+	SOLOUD_PORTAUDIO = 3,
+	SOLOUD_WINMM = 4,
+	SOLOUD_XAUDIO2 = 5,
+	SOLOUD_WASAPI = 6,
+	SOLOUD_OSS = 7,
+	SOLOUD_OPENAL = 8,
 	SOLOUD_CLIP_ROUNDOFF = 1,
 	SOLOUD_ENABLE_VISUALIZATION = 2,
 	BIQUADRESONANTFILTER_NONE = 0,
@@ -71,6 +80,8 @@ typedef void * WavStream;
  */
 void Soloud_destroy(Soloud * aSoloud);
 Soloud * Soloud_create();
+int Soloud_init(Soloud * aSoloud);
+int Soloud_initEx(Soloud * aSoloud, int aFlags /* = Soloud::CLIP_ROUNDOFF */, int aBackend /* = Soloud::AUTO */, int aSamplerate /* = Soloud::AUTO */, int aBufferSize /* = Soloud::AUTO */);
 void Soloud_deinit(Soloud * aSoloud);
 int Soloud_play(Soloud * aSoloud, AudioSource * aSound);
 int Soloud_playEx(Soloud * aSoloud, AudioSource * aSound, float aVolume /* = 1.0f */, float aPan /* = 0.0f */, int aPaused /* = 0 */, int aBus /* = 0 */);
@@ -116,20 +127,6 @@ void Soloud_oscillateGlobalVolume(Soloud * aSoloud, float aFrom, float aTo, floa
 void Soloud_setGlobalFilter(Soloud * aSoloud, int aFilterId, Filter * aFilter);
 float * Soloud_calcFFT(Soloud * aSoloud);
 float * Soloud_getWave(Soloud * aSoloud);
-int Soloud_sdl_init(Soloud * aSoloud);
-int Soloud_sdl_initEx(Soloud * aSoloud, int aFlags /* = Soloud::CLIP_ROUNDOFF */, int aSamplerate /* = 44100 */, int aBuffer /* = 2048 */);
-int Soloud_openal_init(Soloud * aSoloud);
-int Soloud_openal_initEx(Soloud * aSoloud, int aFlags /* = Soloud::CLIP_ROUNDOFF */, int aSamplerate /* = 44100 */, int aBuffer /* = 2048 */);
-int Soloud_portaudio_init(Soloud * aSoloud);
-int Soloud_portaudio_initEx(Soloud * aSoloud, int aFlags /* = Soloud::CLIP_ROUNDOFF */, int aSamplerate /* = 44100 */, int aBuffer /* = 2048 */);
-int Soloud_winmm_init(Soloud * aSoloud);
-int Soloud_winmm_initEx(Soloud * aSoloud, int aFlags /* = Soloud::CLIP_ROUNDOFF */, int aSamplerate /* = 44100 */, int aBuffer /* = 4096 */);
-int Soloud_xaudio2_init(Soloud * aSoloud);
-int Soloud_xaudio2_initEx(Soloud * aSoloud, int aFlags /* = Soloud::CLIP_ROUNDOFF */, int aSamplerate /* = 44100 */, int aBuffer /* = 2048 */);
-int Soloud_wasapi_init(Soloud * aSoloud);
-int Soloud_wasapi_initEx(Soloud * aSoloud, int aFlags /* = Soloud::CLIP_ROUNDOFF */, int aSamplerate /* = 44100 */, int aBuffer /* = 4096 */);
-int Soloud_oss_init(Soloud * aSoloud);
-int Soloud_oss_initEx(Soloud * aSoloud, int aFlags /* = Soloud::CLIP_ROUNDOFF */, int aSamplerate /* = 44100 */, int aBuffer /* = 2048 */);
 
 /*
  * BiquadResonantFilter

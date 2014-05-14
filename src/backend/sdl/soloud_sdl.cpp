@@ -99,7 +99,7 @@ namespace SoLoud
 		}
 		aSoloud->mBackendData = new float[as2.samples*4];
 
-		aSoloud->init(as2.freq, as2.samples * 2, aFlags);
+		aSoloud->postinit(as2.freq, as2.samples * 2, aFlags);
 
 		aSoloud->mLockMutexFunc = soloud_sdl_lockmutex;
 		aSoloud->mUnlockMutexFunc = soloud_sdl_unlockmutex;

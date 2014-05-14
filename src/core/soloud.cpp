@@ -25,7 +25,7 @@ freely, subject to the following restrictions:
 #include <string.h>
 #include <stdlib.h> // rand
 #include <math.h> // sin
-#include "soloud.h"
+#include "soloud_internal.h"
 
 namespace SoLoud
 {
@@ -88,8 +88,123 @@ namespace SoLoud
 		mUnlockMutexFunc = 0;
 	}
 
-	void Soloud::init(int aSamplerate, int aBufferSize, int aFlags)
-	{
+	int Soloud::init(int aFlags, int aBackend, int aSamplerate, int aBufferSize)
+	{		
+		int samplerate = 44100;
+		int buffersize = 2048;
+		int inited = 0;
+
+		if (aSamplerate != Soloud::AUTO) samplerate = aSamplerate;
+		if (aBufferSize != Soloud::AUTO) buffersize = aBufferSize;
+
+		if (aBackend == Soloud::SDL || 
+			aBackend == Soloud::SDL2 ||
+			aBackend == Soloud::AUTO)
+		{
+			if (aBufferSize == Soloud::AUTO) buffersize = 2048;
+
+			int ret = sdl_init(this, aFlags, samplerate, buffersize);
+			if (ret == 0)
+				inited = 1;
+
+			if (ret != 0 && aBackend != Soloud::AUTO)
+				return ret;			
+		}
+
+		if (!inited &&
+			(aBackend == Soloud::PORTAUDIO ||
+			aBackend == Soloud::AUTO))
+		{
+			if (aBufferSize == Soloud::AUTO) buffersize = 2048;
+
+			int ret = portaudio_init(this, aFlags, samplerate, buffersize);
+			if (ret == 0)
+				inited = 1;
+
+			if (ret != 0 && aBackend != Soloud::AUTO)
+				return ret;			
+		}
+
+#ifdef WINDOWS_VERSION
+		if (!inited &&
+			(aBackend == Soloud::XAUDIO2 ||
+			aBackend == Soloud::AUTO))
+		{
+			if (aBufferSize == Soloud::AUTO) buffersize = 4096;
+
+			int ret = xaudio2_init(this, aFlags, samplerate, buffersize);
+			if (ret == 0)
+				inited = 1;
+
+			if (ret != 0 && aBackend != Soloud::AUTO)
+				return ret;			
+		}
+
+		if (!inited &&
+			(aBackend == Soloud::WINMM ||
+			aBackend == Soloud::AUTO))
+		{
+			if (aBufferSize == Soloud::AUTO) buffersize = 4096;
+
+			int ret = winmm_init(this, aFlags, samplerate, buffersize);
+			if (ret == 0)
+				inited = 1;
+
+			if (ret != 0 && aBackend != Soloud::AUTO)
+				return ret;			
+		}
+
+		if (!inited &&
+			(aBackend == Soloud::WASAPI ||
+			aBackend == Soloud::AUTO))
+		{
+			if (aBufferSize == Soloud::AUTO) buffersize = 4096;
+
+			int ret = wasapi_init(this, aFlags, samplerate, buffersize);
+			if (ret == 0)
+				inited = 1;
+
+			if (ret != 0 && aBackend != Soloud::AUTO)
+				return ret;			
+		}
+#else //!WINDOWS_VERSION
+
+		if (!inited &&
+			(aBackend == Soloud::OSS ||
+			aBackend == Soloud::AUTO))
+		{
+			if (aBufferSize == Soloud::AUTO) buffersize = 2048;
+
+			int ret = oss_init(this, aFlags, samplerate, buffersize);
+			if (ret == 0)
+				inited = 1;
+
+			if (ret != 0 && aBackend != Soloud::AUTO)
+				return ret;			
+		}
+#endif
+
+		if (!inited &&
+			(aBackend == Soloud::OPENAL ||
+			aBackend == Soloud::AUTO))
+		{
+			if (aBufferSize == Soloud::AUTO) buffersize = 4096;
+
+			int ret = openal_init(this, aFlags, samplerate, buffersize);
+			if (ret == 0)
+				inited = 1;
+
+			if (ret != 0 && aBackend != Soloud::AUTO)
+				return ret;			
+		}
+
+		if (!inited)
+			return -10;
+		return 0;
+	}
+
+	void Soloud::postinit(int aSamplerate, int aBufferSize, int aFlags)
+	{		
 		mGlobalVolume = 1;
 		mSamplerate = aSamplerate;
 		mBufferSize = aBufferSize;

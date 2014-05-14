@@ -33,11 +33,8 @@ int main(int parc, char ** pars)
 
 	Speech_setText(speech, "1 2 3       A B C        Doooooo    Reeeeee    Miiiiii    Faaaaaa    Soooooo    Laaaaaa    Tiiiiii    Doooooo!");
 
-#ifdef _WIN32
-	Soloud_winmm_initEx(soloud, SOLOUD_CLIP_ROUNDOFF | SOLOUD_ENABLE_VISUALIZATION, 44100, 4096);
-#else
-	Soloud_portaudio_initEx(soloud, SOLOUD_CLIP_ROUNDOFF | SOLOUD_ENABLE_VISUALIZATION, 44100, 4096);
-#endif
+	Soloud_initEx(soloud,SOLOUD_CLIP_ROUNDOFF | SOLOUD_ENABLE_VISUALIZATION, SOLOUD_AUTO, SOLOUD_AUTO, SOLOUD_AUTO);
+
 	Soloud_setGlobalVolume(soloud, 4);
 	Soloud_play(soloud, speech);
 

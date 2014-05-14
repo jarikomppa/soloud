@@ -119,7 +119,7 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
-	SoLoud::sdl_init(&gSoloud, SoLoud::Soloud::CLIP_ROUNDOFF | SoLoud::Soloud::ENABLE_VISUALIZATION);
+	gSoloud.init(SoLoud::Soloud::CLIP_ROUNDOFF | SoLoud::Soloud::ENABLE_VISUALIZATION);
 
 	// Register SDL_Quit to be called at exit; makes sure things are
 	// cleaned up when we quit.

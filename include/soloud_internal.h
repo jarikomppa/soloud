@@ -1,0 +1,59 @@
+/*
+SoLoud audio engine
+Copyright (c) 2013-2014 Jari Komppa
+
+This software is provided 'as-is', without any express or implied
+warranty. In no event will the authors be held liable for any damages
+arising from the use of this software.
+
+Permission is granted to anyone to use this software for any purpose,
+including commercial applications, and to alter it and redistribute it
+freely, subject to the following restrictions:
+
+   1. The origin of this software must not be misrepresented; you must not
+   claim that you wrote the original software. If you use this software
+   in a product, an acknowledgment in the product documentation would be
+   appreciated but is not required.
+
+   2. Altered source versions must be plainly marked as such, and must not be
+   misrepresented as being the original software.
+
+   3. This notice may not be removed or altered from any source
+   distribution.
+*/
+
+#ifndef SOLOUD_INTERNAL_H
+#define SOLOUD_INTERNAL_H
+
+#include "soloud.h"
+
+namespace SoLoud
+{
+	// SDL back-end initialization call
+	int sdl_init(SoLoud::Soloud *aSoloud, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 2048);
+
+	// OpenAL back-end initialization call
+	int openal_init(SoLoud::Soloud *aSoloud, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 2048);
+
+	// PortAudio back-end initialization call
+	int portaudio_init(SoLoud::Soloud *aSoloud, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 2048);
+
+	// WinMM back-end initialization call
+	int winmm_init(SoLoud::Soloud *aSoloud, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 4096);
+
+	// XAudio2 back-end initialization call
+	int xaudio2_init(SoLoud::Soloud *aSoloud, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 2048);
+
+	// WASAPI back-end initialization call
+	int wasapi_init(SoLoud::Soloud *aSoloud, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 4096);
+
+	// OSS back-end initialization call
+	int oss_init(SoLoud::Soloud *aSoloud, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 2048);
+
+	// Deinterlace samples in a buffer. From 12121212 to 11112222
+	void deinterlace_samples(const float *aSourceBuffer, float *aDestBuffer, int aSamples, int aChannels);
+
+	// Interlace samples in a buffer. From 11112222 to 12121212
+	void interlace_samples(const float *aSourceBuffer, float *aDestBuffer, int aSamples, int aChannels);
+};
+#endif

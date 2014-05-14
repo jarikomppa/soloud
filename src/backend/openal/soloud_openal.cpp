@@ -127,7 +127,7 @@ namespace SoLoud
 		if (!dll_al_found())
 			return -1;
 
-		aSoloud->init(aSamplerate,aBuffer,aFlags);
+		aSoloud->postinit(aSamplerate,aBuffer,aFlags);
 		aSoloud->mBackendCleanupFunc = soloud_openal_deinit;
 		aSoloud->mMutex = Thread::createMutex();
 		aSoloud->mLockMutexFunc = openal_mutex_lock;

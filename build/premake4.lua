@@ -27,6 +27,11 @@ newoption {
 	description = "Use portmidi to drive midi keyboard in the piano demo"
 }
 
+newoption {
+	trigger		  = "with-xaudio2",
+	description = "Include xaudio2 in build"
+}
+
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 
 solution "SoLoud"
@@ -53,13 +58,6 @@ solution "SoLoud"
 
 		links {"StaticLib"}
 		
-		if (os.is("Windows")) 
-		then 
-			links {"backend_winmm"} 
-		else 
-			links {"backend_portaudio"} 
-		end
-
 		configuration "Debug"
 			defines { "DEBUG" }
 			flags {"Symbols" }
@@ -92,7 +90,7 @@ solution "SoLoud"
     }
     
 
-		links {"StaticLib", "sdlmain", "sdl", "backend_sdl"}
+		links {"StaticLib", "sdlmain", "sdl"}
 		
 		configuration "Debug"
 			defines { "DEBUG" }
@@ -133,7 +131,7 @@ solution "SoLoud"
     	links { "portmidi" }
     end
 
-		links {"StaticLib", "sdlmain", "sdl", "backend_sdl"}
+		links {"StaticLib", "sdlmain", "sdl"}
 		
 		configuration "Debug"
 			defines { "DEBUG" }
@@ -172,7 +170,7 @@ solution "SoLoud"
       sdl_lib
     }
 
-		links {"StaticLib", "sdlmain", "sdl", "backend_sdl"}
+		links {"StaticLib", "sdlmain", "sdl"}
 		
 		configuration "Debug"
 			defines { "DEBUG" }
@@ -205,7 +203,7 @@ solution "SoLoud"
       sdl_lib
     }
 
-		links {"StaticLib", "sdlmain", "sdl", "backend_sdl"}
+		links {"StaticLib", "sdlmain", "sdl"}
 		
 		configuration "Debug"
 			defines { "DEBUG" }
@@ -222,221 +220,6 @@ solution "SoLoud"
 			targetname "multimusic"
 			flags { "EnableSSE2", "NoMinimalRebuild", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
 
--- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
-
-if (os.is("Windows")) then 
-
-  project "backend_winmm"
-    kind "StaticLib"
-		targetdir "../lib"
-    language "C++"
-    files {
-      "../src/backend/winmm/**.c*"
-      }
-    includedirs {
-      "../include"
-    }
-
-		configuration "Debug"
-			defines { "DEBUG" }
-			flags {"Symbols" }
-			objdir (buildroot .. "/debug")
-			targetname "soloud_winmm_x86_d"
-			flags { "Symbols" }
-			
-
-		configuration "Release"
-			defines { "NDEBUG" }
-			flags {"Optimize"}
-			objdir (buildroot .. "/release")
-			targetname "soloud_winmm_x86"
-			flags { "EnableSSE2", "NoMinimalRebuild", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
-end
-
--- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
-
-if (os.is("Windows")) then 
-
-  project "backend_xaudio2"
-    kind "StaticLib"
-		targetdir "../lib"
-    language "C++"
-    files {
-      "../src/backend/xaudio2/**.c*"
-      }
-    includedirs {
-      "../include",
-      dxsdk_include
-    }
-
-		configuration "Debug"
-			defines { "DEBUG" }
-			flags {"Symbols" }
-			objdir (buildroot .. "/debug")
-			targetname "soloud_xaudio2_x86_d"
-			flags { "Symbols" }
-			
-
-		configuration "Release"
-			defines { "NDEBUG" }
-			flags {"Optimize"}
-			objdir (buildroot .. "/release")
-			targetname "soloud_xaudio2_x86"
-			flags { "EnableSSE2", "NoMinimalRebuild", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
-
-end
-
--- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
-
-if (os.is("Windows")) then 
-
-  project "backend_wasapi"
-    kind "StaticLib"
-		targetdir "../lib"
-    language "C++"
-    files {
-      "../src/backend/wasapi/**.c*"
-      }
-    includedirs {
-      "../include"
-    }
-
-		configuration "Debug"
-			defines { "DEBUG" }
-			flags {"Symbols" }
-			objdir (buildroot .. "/debug")
-			targetname "soloud_wasapi_x86_d"
-			flags { "Symbols" }
-			
-
-		configuration "Release"
-			defines { "NDEBUG" }
-			flags {"Optimize"}
-			objdir (buildroot .. "/release")
-			targetname "soloud_wasapi_x86"
-			flags { "EnableSSE2", "NoMinimalRebuild", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
-
-end
-
--- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
-
-  project "backend_sdl"
-    kind "StaticLib"
-		targetdir "../lib"
-    language "C++"
-    files {
-      "../src/backend/sdl/**.c*"
-      }
-    includedirs {
-      "../include",
-      sdl_include
-    }
-
-		configuration "Debug"
-			defines { "DEBUG" }
-			flags {"Symbols" }
-			objdir (buildroot .. "/debug")
-			targetname "soloud_sdl_x86_d"
-			flags { "Symbols" }
-			
-
-		configuration "Release"
-			defines { "NDEBUG" }
-			flags {"Optimize"}
-			objdir (buildroot .. "/release")
-			targetname "soloud_sdl_x86"
-			flags { "EnableSSE2", "NoMinimalRebuild", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
-
--- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
-
-  project "backend_portaudio"
-    kind "StaticLib"
-		targetdir "../lib"
-    language "C++"
-    files {
-      "../src/backend/portaudio/**.c*"
-      }
-    includedirs {
-      "../include",
-      portaudio_include
-    }
-
-		configuration "Debug"
-			defines { "DEBUG" }
-			flags {"Symbols" }
-			objdir (buildroot .. "/debug")
-			targetname "soloud_portaudio_x86_d"
-			flags { "Symbols" }
-			
-
-		configuration "Release"
-			defines { "NDEBUG" }
-			flags {"Optimize"}
-			objdir (buildroot .. "/release")
-			targetname "soloud_portaudio_x86"
-			flags { "EnableSSE2", "NoMinimalRebuild", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
-
--- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
-
-if (not os.is("Windows")) then 
-
-  project "backend_oss"
-    kind "StaticLib"
-		targetdir "../lib"
-    language "C++"
-    files {
-      "../src/backend/oss/**.c*"
-      }
-    includedirs {
-      "../include"
-    }
-
-		configuration "Debug"
-			defines { "DEBUG" }
-			flags {"Symbols" }
-			objdir (buildroot .. "/debug")
-			targetname "soloud_oss_x86_d"
-			flags { "Symbols" }
-			
-
-		configuration "Release"
-			defines { "NDEBUG" }
-			flags {"Optimize"}
-			objdir (buildroot .. "/release")
-			targetname "soloud_oss_x86"
-			flags { "EnableSSE2", "NoMinimalRebuild", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
-
-end
-
--- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
-
-  project "backend_openal"
-    kind "StaticLib"
-		targetdir "../lib"
-    language "C++"
-    files {
-      "../src/backend/openal/**.c*"
-      }
-    includedirs {
-      "../include",
-      openal_include
-    }
-
-		configuration "Debug"
-			defines { "DEBUG" }
-			flags {"Symbols" }
-			objdir (buildroot .. "/debug")
-			targetname "soloud_openal_x86_d"
-			flags { "Symbols" }
-			
-
-		configuration "Release"
-			defines { "NDEBUG" }
-			flags {"Optimize"}
-			objdir (buildroot .. "/release")
-			targetname "soloud_openal_x86"
-			flags { "EnableSSE2", "NoMinimalRebuild", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
-    
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 
 	project "StaticLib"
@@ -456,6 +239,66 @@ end
       "../include"
 		}
 
+    files {
+      "../src/backend/openal/**.c*"
+      }
+    includedirs {
+      "../include",
+      openal_include
+    }
+
+if (not os.is("Windows")) then 
+    files {
+      "../src/backend/oss/**.c*"
+      }
+    includedirs {
+      "../include"
+    }    
+end
+
+    files {
+      "../src/backend/portaudio/**.c*"
+      }
+    includedirs {
+      "../include",
+      portaudio_include
+    }
+
+    files {
+      "../src/backend/sdl/**.c*"
+      }
+    includedirs {
+      "../include",
+      sdl_include
+    }
+    
+if (os.is("Windows")) then 
+    files {
+      "../src/backend/wasapi/**.c*"
+      }
+    includedirs {
+      "../include"
+    }
+
+if _OPTIONS["with-xaudio2"] then
+  	defines {"USE_XAUDIO2"}
+end    
+    files {
+      "../src/backend/xaudio2/**.c*"
+      }
+    includedirs {
+      "../include",
+      dxsdk_include
+    }
+    files {
+      "../src/backend/winmm/**.c*"
+      }
+    includedirs {
+      "../include"
+    }
+    
+    
+end
 
 		configuration "Debug"
 			defines { "DEBUG" }
@@ -509,14 +352,6 @@ end
 
 		links {"StaticLib"}
 		
-		if (os.is("Windows")) 
-		then 
-			links {"backend_winmm"} 
-			files {"../src/c_api/soloud_c_winmm.cpp"}
-		else 
-			links {"backend_portaudio"} 
-			files {"../src/c_api/soloud_c_portaudio.cpp"}
-		end
 
 		configuration "Debug"
 			defines { "DEBUG" }

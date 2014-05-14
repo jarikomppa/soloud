@@ -352,7 +352,7 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
-	SoLoud::sdl_init(&gSoloud, SoLoud::Soloud::CLIP_ROUNDOFF, 44100, 2048);
+	gSoloud.init();
 	gSoloud.setGlobalVolume(0.75);
 	gSoloud.setPostClipScaler(0.75);
 

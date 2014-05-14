@@ -205,7 +205,7 @@ namespace SoLoud
         aSoloud->mLockMutexFunc = Thread::lockMutex;
         aSoloud->mUnlockMutexFunc = Thread::unlockMutex;
         data->soloud = aSoloud;
-        aSoloud->init(aSamplerate, data->bufferFrames * format.nChannels, aFlags);
+        aSoloud->postinit(aSamplerate, data->bufferFrames * format.nChannels, aFlags);
         data->thread = Thread::createThread(wasapiThread, data);
         if (0 == data->thread)
         {

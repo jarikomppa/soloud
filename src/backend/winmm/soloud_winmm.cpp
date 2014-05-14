@@ -171,7 +171,7 @@ namespace SoLoud
         aSoloud->mMutex = Thread::createMutex();
         aSoloud->mLockMutexFunc = Thread::lockMutex;
         aSoloud->mUnlockMutexFunc = Thread::unlockMutex;
-        aSoloud->init(aSamplerate, data->samples * format.nChannels, aFlags);
+        aSoloud->postinit(aSamplerate, data->samples * format.nChannels, aFlags);
         data->threadHandle = Thread::createThread(winMMThread, data);
         if (0 == data->threadHandle)
         {

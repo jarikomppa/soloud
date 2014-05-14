@@ -39,11 +39,7 @@ int main(int argc, char *argv[])
 	speech.setText("1 2 3   1 2 3   Hello world. Welcome to So-Loud.");
 
 	// initialize SoLoud.
-#ifdef _WIN32
-	SoLoud::winmm_init(&soloud); // On windows, simplest thing is to use WinMM
-#else
-	SoLoud::portaudio_init(&soloud); // On other platforms, portaudio is probably the best option
-#endif
+	soloud.init();
 
 	// Play the sound source (we could do this several times if we wanted)
 	soloud.play(speech);

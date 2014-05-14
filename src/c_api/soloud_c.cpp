@@ -57,6 +57,18 @@ void * Soloud_create()
   return (void *)new Soloud;
 }
 
+int Soloud_init(void * aClassPtr)
+{
+	Soloud * cl = (Soloud *)aClassPtr;
+	return cl->init();
+}
+
+int Soloud_initEx(void * aClassPtr, int aFlags, int aBackend, int aSamplerate, int aBufferSize)
+{
+	Soloud * cl = (Soloud *)aClassPtr;
+	return cl->init(aFlags, aBackend, aSamplerate, aBufferSize);
+}
+
 void Soloud_deinit(void * aClassPtr)
 {
 	Soloud * cl = (Soloud *)aClassPtr;

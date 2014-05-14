@@ -89,12 +89,28 @@ namespace SoLoud
 		// DTor
 		~Soloud();
 
+		enum BACKENDS
+		{
+			AUTO = 0,
+			SDL,
+			SDL2,
+			PORTAUDIO,
+			WINMM,
+			XAUDIO2,
+			WASAPI,
+			OSS,
+			OPENAL
+		};
+
 		enum FLAGS
 		{
 			// Use round-off clipper
 			CLIP_ROUNDOFF = 1,
 			ENABLE_VISUALIZATION = 2,
 		};
+
+		// Initialize SoLoud. Must be called before SoLoud can be used.
+		int init(int aFlags = Soloud::CLIP_ROUNDOFF, int aBackend = Soloud::AUTO, int aSamplerate = Soloud::AUTO, int aBufferSize = Soloud::AUTO);
 
 		// Deinitialize SoLoud. Must be called before shutting down.
 		void deinit();
@@ -196,11 +212,10 @@ namespace SoLoud
 
 		// Rest of the stuff is used internally.
 	public:
-		// Initialize SoLoud. Called by the back-end.
-		void init(int aSamplerate, int aBufferSize, int aFlags);
 		// Mix and return N stereo samples in the buffer. Called by the back-end.
 		void mix(float *aBuffer, int aSamples);
-
+		// Handle rest of initialization (called from backend)
+		void postinit(int aSamplerate, int aBufferSize, int aFlags);
 
 		// Perform mixing for a specific bus
 		void mixBus(float *aBuffer, int aSamples, float *aScratch, int aBus, float aSamplerate);
@@ -261,33 +276,6 @@ namespace SoLoud
 		// Snapshot of wave data for visualization
 		float mWaveData[256];
 	};
-
-	// SDL back-end initialization call
-	int sdl_init(SoLoud::Soloud *aSoloud, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 2048);
-
-	// OpenAL back-end initialization call
-	int openal_init(SoLoud::Soloud *aSoloud, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 2048);
-
-	// PortAudio back-end initialization call
-	int portaudio_init(SoLoud::Soloud *aSoloud, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 2048);
-
-	// WinMM back-end initialization call
-	int winmm_init(SoLoud::Soloud *aSoloud, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 4096);
-
-	// XAudio2 back-end initialization call
-	int xaudio2_init(SoLoud::Soloud *aSoloud, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 2048);
-
-	// WASAPI back-end initialization call
-	int wasapi_init(SoLoud::Soloud *aSoloud, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 4096);
-
-	// OSS back-end initialization call
-	int oss_init(SoLoud::Soloud *aSoloud, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 2048);
-
-	// Deinterlace samples in a buffer. From 12121212 to 11112222
-	void deinterlace_samples(const float *aSourceBuffer, float *aDestBuffer, int aSamples, int aChannels);
-
-	// Interlace samples in a buffer. From 11112222 to 12121212
-	void interlace_samples(const float *aSourceBuffer, float *aDestBuffer, int aSamples, int aChannels);
 };
 
 #endif 

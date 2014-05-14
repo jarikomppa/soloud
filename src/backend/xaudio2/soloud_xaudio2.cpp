@@ -25,11 +25,11 @@ freely, subject to the following restrictions:
 #include "soloud.h"
 #include "soloud_thread.h"
 
-#ifndef WINDOWS_VERSION
+#if !defined(WINDOWS_VERSION) || !defined(USE_XAUDIO2)
 
 namespace SoLoud
 {
-	int wasapi_xaudio2(Soloud *aSoloud, int aFlags, int aSamplerate, int aBuffer)
+	int xaudio2_init(Soloud *aSoloud, int aFlags, int aSamplerate, int aBuffer)
 	{
 		return -1;
 	}
@@ -239,7 +239,7 @@ namespace SoLoud
         aSoloud->mLockMutexFunc = Thread::lockMutex;
         aSoloud->mUnlockMutexFunc = Thread::unlockMutex;
         data->soloud = aSoloud;
-        aSoloud->init(aSamplerate, aBuffer * format.nChannels, aFlags);
+        aSoloud->postinit(aSamplerate, aBuffer * format.nChannels, aFlags);
         data->thread = Thread::createThread(xaudio2Thread, data);
         if (0 == data->thread)
         {

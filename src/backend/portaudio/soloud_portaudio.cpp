@@ -92,7 +92,7 @@ namespace SoLoud
 		if (!dll_Pa_found())
 			return -1;
 
-		aSoloud->init(aSamplerate, aBuffer * 2, aFlags);
+		aSoloud->postinit(aSamplerate, aBuffer * 2, aFlags);
 		aSoloud->mBackendCleanupFunc = soloud_portaudio_deinit;
 		aSoloud->mMutex = Thread::createMutex();
 		aSoloud->mLockMutexFunc = portaudio_mutex_lock;

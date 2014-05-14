@@ -246,7 +246,7 @@ int main(int argc, char *argv[])
     }
 #endif
 
-	SoLoud::sdl_init(&gSoloud, SoLoud::Soloud::CLIP_ROUNDOFF | SoLoud::Soloud::ENABLE_VISUALIZATION, 44100, 2048);
+	gSoloud.init(SoLoud::Soloud::CLIP_ROUNDOFF | SoLoud::Soloud::ENABLE_VISUALIZATION);
 	gSoloud.setGlobalVolume(0.75);
 	gSoloud.setPostClipScaler(0.75);
 //	gBus.setFilter(0, &gBQRFilter);

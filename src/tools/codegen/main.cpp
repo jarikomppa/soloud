@@ -1,6 +1,6 @@
 ﻿/*
 SoLoud audio engine
-Copyright (c) 2013 Jari Komppa
+Copyright (c) 2013-2014 Jari Komppa
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -509,7 +509,7 @@ void fileheader(FILE * f)
 		"\n"
 		"/*\n"
 		"SoLoud audio engine\n"
-		"Copyright (c) 2013 Jari Komppa\n"
+		"Copyright (c) 2013-2014 Jari Komppa\n"
 		"\n"
 		"This software is provided 'as-is', without any express or implied\n"
 		"warranty. In no event will the authors be held liable for any damages\n"

@@ -28,7 +28,7 @@ freely, subject to the following restrictions:
 #include <vector>
 #include <string>
 
-#define VERSION "SoLoud C-Api Code Generator (c)2013 Jari Komppa http://iki.fi/sol/"
+#define VERSION "SoLoud C-Api Code Generator (c)2013-2014 Jari Komppa http://iki.fi/sol/"
 
 #define OUTDIR "../src/c_api/"
 

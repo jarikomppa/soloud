@@ -27,7 +27,7 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-/* SoLoud C-Api Code Generator (c)2013 Jari Komppa http://iki.fi/sol/ */
+/* SoLoud C-Api Code Generator (c)2013-2014 Jari Komppa http://iki.fi/sol/ */
 
 #ifndef SOLOUD_C_H_INCLUDED
 #define SOLOUD_C_H_INCLUDED
@@ -83,6 +83,7 @@ Soloud * Soloud_create();
 int Soloud_init(Soloud * aSoloud);
 int Soloud_initEx(Soloud * aSoloud, int aFlags /* = Soloud::CLIP_ROUNDOFF */, int aBackend /* = Soloud::AUTO */, int aSamplerate /* = Soloud::AUTO */, int aBufferSize /* = Soloud::AUTO */);
 void Soloud_deinit(Soloud * aSoloud);
+int Soloud_getVersion(Soloud * aSoloud);
 int Soloud_play(Soloud * aSoloud, AudioSource * aSound);
 int Soloud_playEx(Soloud * aSoloud, AudioSource * aSound, float aVolume /* = 1.0f */, float aPan /* = 0.0f */, int aPaused /* = 0 */, int aBus /* = 0 */);
 void Soloud_seek(Soloud * aSoloud, int aVoiceHandle, float aSeconds);

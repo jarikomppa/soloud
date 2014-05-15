@@ -754,11 +754,16 @@ void emit_func(FILE * f, int aClass, int aMethod)
 
 void generate()
 {
-	FILE * f, *cppf;
+	FILE * f, *cppf, *deff;
 	f = fopen("../include/soloud_c.h", "w");
 	cppf = fopen(OUTDIR "soloud_c.cpp", "w");
+	deff = fopen(OUTDIR "soloud.def", "w");
 	fileheader(f);
 	fileheader(cppf);
+
+	fprintf(deff,
+		"LIBRARY soloud\n"
+		"EXPORTS\n");
 
 	emit_cppstart(cppf);
 
@@ -834,6 +839,7 @@ void generate()
 				" */\n",
 				gClass[i]->mName.c_str());
 			fprintf(f, "void %s_destroy(%s * a%s);\n", gClass[i]->mName.c_str(), gClass[i]->mName.c_str(), gClass[i]->mName.c_str());
+			fprintf(deff, "\t%s_destroy\n", gClass[i]->mName.c_str());
 			emit_dtor(cppf, gClass[i]->mName.c_str());
 			
 			for (j = 0; j < (signed)gClass[i]->mMethod.size(); j++)
@@ -845,6 +851,7 @@ void generate()
 					{
 						// CTor
 						fprintf(f, "%s * %s_create();\n", gClass[i]->mName.c_str(), gClass[i]->mName.c_str(), gClass[i]->mName.c_str());
+						fprintf(deff, "\t%s_create\n", gClass[i]->mName.c_str());
 						// TODO: ctors with params? none in soloud so far..
 						emit_ctor(cppf, gClass[i]->mName.c_str());
 					}
@@ -860,6 +867,9 @@ void generate()
 							gClass[i]->mMethod[j]->mFuncName.c_str(),
 							gClass[i]->mName.c_str(),
 							gClass[i]->mName.c_str());
+						fprintf(deff, "\t%s_%s\n", gClass[i]->mName.c_str(), gClass[i]->mMethod[j]->mFuncName.c_str());
+
+
 						for (k = 0; k < (signed)gClass[i]->mMethod[j]->mParmName.size(); k++)
 						{
 							if (gClass[i]->mMethod[j]->mParmValue[k] == "")
@@ -886,6 +896,7 @@ void generate()
 								gClass[i]->mMethod[j]->mFuncName.c_str(),
 								gClass[i]->mName.c_str(),
 								gClass[i]->mName.c_str());
+							fprintf(deff, "\t%s_%sEx\n", gClass[i]->mName.c_str(), gClass[i]->mMethod[j]->mFuncName.c_str());
 							int had_defaults = 0;
 							for (k = 0; k < (signed)gClass[i]->mMethod[j]->mParmName.size(); k++)
 							{
@@ -921,6 +932,7 @@ void generate()
 
 	fclose(f);
 	fclose(cppf);
+	fclose(deff);
 }
 
 void generate_cpp()

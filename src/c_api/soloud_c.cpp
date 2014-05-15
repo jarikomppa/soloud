@@ -27,7 +27,7 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-/* SoLoud C-Api Code Generator (c)2013 Jari Komppa http://iki.fi/sol/ */
+/* SoLoud C-Api Code Generator (c)2013-2014 Jari Komppa http://iki.fi/sol/ */
 
 #include "../include/soloud.h"
 #include "../include/soloud_audiosource.h"
@@ -73,6 +73,12 @@ void Soloud_deinit(void * aClassPtr)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
 	cl->deinit();
+}
+
+int Soloud_getVersion(void * aClassPtr)
+{
+	Soloud * cl = (Soloud *)aClassPtr;
+	return cl->getVersion();
 }
 
 int Soloud_play(void * aClassPtr, AudioSource * aSound)

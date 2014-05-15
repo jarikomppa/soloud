@@ -369,3 +369,45 @@ end
 			flags { "EnableSSE2", "NoMinimalRebuild", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
+
+	project "SharedLib"
+		kind "SharedLib"
+		targetdir "../lib"
+		language "C++"
+		files 
+		{ 
+	      "../src/c_api/**.c*"
+  	    }
+
+		includedirs 
+		{
+		  "../src/**",
+          "../include"
+		}
+
+		links {"StaticLib"}
+
+if (os.is("Windows")) then 
+	linkoptions { "/DEF:\"../../src/c_api/soloud.def\"" }
+end
+
+		configuration "Debug"
+			defines { "DEBUG" }
+			flags {"Symbols" }
+			objdir (buildroot .. "/debug")
+			targetname "soloud_x86_d"
+			implibdir("../lib")
+			implibname "soloud_dll_x86_d"
+			flags { "Symbols" }
+			
+
+		configuration "Release"
+			defines { "NDEBUG" }
+			flags {"Optimize"}
+			objdir (buildroot .. "/release")			
+			targetname "soloud_x86"
+			implibdir("../lib")
+			implibname("soloud_dll_x86")
+			flags { "EnableSSE2", "NoMinimalRebuild", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
+
+-- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --

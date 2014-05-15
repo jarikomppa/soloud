@@ -14,8 +14,8 @@ the library, loads a sample and plays it:
     SoLoud::Soloud soloud; // Engine core
     SoLoud::Wav sample;    // One sample
 
-    // Initialize SoLoud (with SDL)
-    SoLoud::sdl_init(&soloud);
+    // Initialize SoLoud (automatic back-end selection)
+    soloud.init();
 
     sample.load("pew_pew.wav"); // Load a wave file
     soloud.play(sample);        // Play it
@@ -36,6 +36,9 @@ function returns a handle you can use. For example:
 If the sound doesn't exist anymore (either it's ended or you've played
 so many sounds at once it's channel has been taken over by some other
 sound), the handle is still safe to use - it just doesn't do anything.
+
+There's also a pure "C" version of the whole API which can be used from non-c
+languages by using SoLoud as an DLL.
 
 How free?
 ---------

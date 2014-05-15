@@ -1,10 +1,6 @@
 Quick Start
 ===========
 
-Note: SoLoud supports several different "back ends", but this quickstart
-guide assumes you're using SDL; the primary difference is that to use a
-different back-end, you call the desired back-end's init function
-(instead of SDL's).
 
 Download SoLoud
 ---------------
@@ -46,10 +42,13 @@ heap, including in a class as members, etc.
 Initialize SoLoud
 -----------------
 
-After your SDL\_Init call, include a call to initialize SoLoud. The call
-takes a pointer to the SoLoud core object.
+In your application, once you have your framework up (for instance after your 
+SDL\_Init call), include a call to initialize SoLoud.
 
-    SoLoud::sdl_init(&gSoloud);
+    gSoloud.init();
+    
+The call has a bunch of optional parameters if you'd rather pick the replay
+back-end and its parameters yourself; the default should work for most cases.
 
 Set up sound sources
 --------------------

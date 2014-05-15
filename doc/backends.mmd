@@ -11,20 +11,20 @@ addition to the optional mutex function pointers.
 Studying the existing back-end implementations' source code, in addition
 to this page, will help creating new ones.
 
-Soloud.init()
+Soloud.postinit()
 -------------
 
-The back-end should call Soloud.init() once it knows what it can do.
+The back-end should call Soloud.postinit() once it knows what it can do.
 
-    void init(int aSamplerate, // Sample rate, in hz
-              int aBufferSize, // Buffer size, in samples
-              int aFlags);     // Flags
+    void postinit(int aSamplerate, // Sample rate, in hz
+                  int aBufferSize, // Buffer size, in samples
+                  int aFlags);     // Flags
 
 The channels and flags most likely come directly from the application,
 while sample rate and buffer size may depend on how the back-end does
 things. The buffer size should be the maximum number of samples the
 back-end requests on one call. Making it bigger doesn't affect latency,
-but causes SoLoud to create too big internal mixing buffers.
+but causes SoLoud to create larger than necessary internal mixing buffers.
 
 Soloud.mix()
 ------------

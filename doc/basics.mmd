@@ -16,7 +16,7 @@ is made, the result is undefined. As in, bad. Most likely, a crash.
 Bluescreens in Windows are not out of the question.
 
     SoLoud::Soloud *soloud = new SoLoud::Soloud; // object created
-    SoLoud::sdl_init(soloud);   // back-end initialization
+    soloud->init();             // back-end initialization
     ...
     soloud->deinit();           // clean-up
     delete soloud;              // this cleans up too

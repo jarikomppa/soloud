@@ -28,6 +28,11 @@ freely, subject to the following restrictions:
 
 namespace SoLoud
 {
+	int Soloud::getVersion() const
+	{
+		return SOLOUD_VERSION;
+	}
+
 	float Soloud::getPostClipScaler() const
 	{
 		return mPostClipScaler;

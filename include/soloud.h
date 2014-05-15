@@ -36,6 +36,8 @@ freely, subject to the following restrictions:
 #define WINDOWS_VERSION
 #endif
 
+#define SOLOUD_VERSION 100
+
 /////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////
 // Configuration defines
@@ -114,6 +116,9 @@ namespace SoLoud
 
 		// Deinitialize SoLoud. Must be called before shutting down.
 		void deinit();
+
+		// Query SoLoud version number (should equal to SOLOUD_VERSION macro)
+		int getVersion() const;
 
 		// Start playing a sound. Returns voice handle, which can be ignored or used to alter the playing sound's parameters.
 		int play(AudioSource &aSound, float aVolume = 1.0f, float aPan = 0.0f, int aPaused = 0, int aBus = 0);

@@ -41,6 +41,7 @@ freely, subject to the following restrictions:
 #include "../include/soloud_thread.h"
 #include "../include/soloud_wav.h"
 #include "../include/soloud_wavstream.h"
+#include "../include/soloud_sfxr.h"
 
 using namespace SoLoud;
 
@@ -520,6 +521,58 @@ void WavStream_setLooping(void * aClassPtr, int aLoop)
 void WavStream_setFilter(void * aClassPtr, int aFilterId, Filter * aFilter)
 {
 	WavStream * cl = (WavStream *)aClassPtr;
+	cl->setFilter(aFilterId, aFilter);
+}
+
+void Sfxr_destroy(void * aClassPtr)
+{
+  delete (Sfxr *)aClassPtr;
+}
+
+unsigned int Sfxr_rand(void * aClassPtr)
+{
+	Sfxr * cl = (Sfxr *)aClassPtr;
+	return cl->rand();
+}
+
+void Sfxr_srand(void * aClassPtr, int aSeed)
+{
+	Sfxr * cl = (Sfxr *)aClassPtr;
+	cl->srand(aSeed);
+}
+
+void * Sfxr_create()
+{
+  return (void *)new Sfxr;
+}
+
+void Sfxr_resetParams(void * aClassPtr)
+{
+	Sfxr * cl = (Sfxr *)aClassPtr;
+	cl->resetParams();
+}
+
+int Sfxr_loadParams(void * aClassPtr, const char * aFilename)
+{
+	Sfxr * cl = (Sfxr *)aClassPtr;
+	return cl->loadParams(aFilename);
+}
+
+void Sfxr_loadPreset(void * aClassPtr, int aPresetNo, int aRandSeed)
+{
+	Sfxr * cl = (Sfxr *)aClassPtr;
+	cl->loadPreset(aPresetNo, aRandSeed);
+}
+
+void Sfxr_setLooping(void * aClassPtr, int aLoop)
+{
+	Sfxr * cl = (Sfxr *)aClassPtr;
+	cl->setLooping(aLoop);
+}
+
+void Sfxr_setFilter(void * aClassPtr, int aFilterId, Filter * aFilter)
+{
+	Sfxr * cl = (Sfxr *)aClassPtr;
 	cl->setFilter(aFilterId, aFilter);
 }
 

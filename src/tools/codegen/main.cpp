@@ -551,6 +551,7 @@ void emit_cppstart(FILE * f)
 		"#include \"../include/soloud_thread.h\"\n"
 		"#include \"../include/soloud_wav.h\"\n"
 		"#include \"../include/soloud_wavstream.h\"\n"
+		"#include \"../include/soloud_sfxr.h\"\n"
 		"\n"
 		"using namespace SoLoud;\n"
 		"\n"
@@ -1010,6 +1011,7 @@ int main(int parc, char ** pars)
 	parse("../include/soloud_thread.h");
 	parse("../include/soloud_wav.h");
 	parse("../include/soloud_wavstream.h");
+	parse("../include/soloud_sfxr.h");
 
 	printf("Handling inheritance..\n");
 	inherit_stuff();

@@ -59,7 +59,14 @@ enum SOLOUD_ENUMS
 	BIQUADRESONANTFILTER_WET = 3,
 	FFTFILTER_OVER = 0,
 	FFTFILTER_SUBSTRACT = 1,
-	FFTFILTER_MULTIPLY = 2
+	FFTFILTER_MULTIPLY = 2,
+	SFXR_COIN = 0,
+	SFXR_LASER = 1,
+	SFXR_EXPLOSION = 2,
+	SFXR_POWERUP = 3,
+	SFXR_HURT = 4,
+	SFXR_JUMP = 5,
+	SFXR_BLIP = 6
 };
 
 // Object handle typedefs
@@ -74,6 +81,7 @@ typedef void * Filter;
 typedef void * Speech;
 typedef void * Wav;
 typedef void * WavStream;
+typedef void * Sfxr;
 
 /*
  * Soloud
@@ -188,6 +196,19 @@ WavStream * WavStream_create();
 void WavStream_load(WavStream * aWavStream, const char * aFilename);
 void WavStream_setLooping(WavStream * aWavStream, int aLoop);
 void WavStream_setFilter(WavStream * aWavStream, int aFilterId, Filter * aFilter);
+
+/*
+ * Sfxr
+ */
+void Sfxr_destroy(Sfxr * aSfxr);
+unsigned int Sfxr_rand(Sfxr * aSfxr);
+void Sfxr_srand(Sfxr * aSfxr, int aSeed);
+Sfxr * Sfxr_create();
+void Sfxr_resetParams(Sfxr * aSfxr);
+int Sfxr_loadParams(Sfxr * aSfxr, const char * aFilename);
+void Sfxr_loadPreset(Sfxr * aSfxr, int aPresetNo, int aRandSeed);
+void Sfxr_setLooping(Sfxr * aSfxr, int aLoop);
+void Sfxr_setFilter(Sfxr * aSfxr, int aFilterId, Filter * aFilter);
 #ifdef  __cplusplus
 } // extern "C"
 #endif

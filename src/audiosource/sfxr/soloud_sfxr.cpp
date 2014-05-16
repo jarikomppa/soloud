@@ -74,11 +74,11 @@ namespace SoLoud
 				if(mParent->p_freq_limit>0.0f)
 					playing_sample=false;
 			}
-			float rfperiod=fperiod;
+			float rfperiod=(float)fperiod;
 			if(vib_amp>0.0f)
 			{
 				vib_phase+=vib_speed;
-				rfperiod=fperiod*(1.0+sin(vib_phase)*vib_amp);
+				rfperiod=(float)(fperiod*(1.0+sin(vib_phase)*vib_amp));
 			}
 			period=(int)rfperiod;
 			if(period<8) period=8;
@@ -222,7 +222,7 @@ namespace SoLoud
 			if(fltdmp>0.8f) fltdmp=0.8f;
 			fltphp=0.0f;
 			flthp=pow(mParent->p_hpf_freq, 2.0f)*0.1f;
-			flthp_d=1.0+mParent->p_hpf_ramp*0.0003f;
+			flthp_d=(float)(1.0+mParent->p_hpf_ramp*0.0003f);
 			// reset vibrato
 			vib_phase=0.0f;
 			vib_speed=pow(mParent->p_vib_speed, 2.0f)*0.01f;
@@ -489,7 +489,10 @@ namespace SoLoud
 		int version=0;
 		fread(&version, 1, sizeof(int), file);
 		if(version!=100 && version!=101 && version!=102)
+		{
+			fclose(file);
 			return 1;
+		}
 
 		fread(&wave_type, 1, sizeof(int), file);
 

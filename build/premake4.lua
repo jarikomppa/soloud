@@ -32,6 +32,11 @@ newoption {
 	description = "Include xaudio2 in build"
 }
 
+newoption {
+	trigger		  = "with-libmodplug",
+	description = "Include libmodplug in build"
+}
+
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 
 solution "SoLoud"
@@ -57,6 +62,9 @@ solution "SoLoud"
     }
 
 		links {"StaticLib"}
+if _OPTIONS["with-libmodplug"] then
+		links {"libmodplug"}
+end		
 		
 		configuration "Debug"
 			defines { "DEBUG" }
@@ -222,10 +230,49 @@ solution "SoLoud"
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 
+if _OPTIONS["with-libmodplug"] then
+	project "libmodplug"
+		kind "StaticLib"
+		targetdir "../lib"
+		language "C++"
+
+		defines { "MODPLUG_STATIC" }
+
+		files 
+		{ 
+	    "../ext/libmodplug/src/**.cpp*"
+	  }
+
+		includedirs 
+		{
+	    "../ext/libmodplug/src/**"
+		}
+
+		configuration "Debug"
+			defines { "DEBUG" }
+			flags {"Symbols" }
+			objdir (buildroot .. "/debug")
+			targetname "libmodplug_d"
+			flags { "Symbols" }
+			
+
+		configuration "Release"
+			defines { "NDEBUG" }
+			flags {"Optimize"}
+			objdir (buildroot .. "/release")
+			targetname "libmodplug"
+			flags { "EnableSSE2", "NoMinimalRebuild", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
+end    
+
+-- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
+
 	project "StaticLib"
 		kind "StaticLib"
 		targetdir "../lib"
 		language "C++"
+
+		defines { "MODPLUG_STATIC" }
+		
 		files 
 		{ 
 	    "../src/audiosource/**.c*",
@@ -296,8 +343,7 @@ end
     includedirs {
       "../include"
     }
-    
-    
+        
 end
 
 		configuration "Debug"
@@ -323,6 +369,9 @@ end
 		files {
 		  "../src/tools/codegen/**.cpp"
 		}
+if _OPTIONS["with-libmodplug"] then
+		defines { "WITH_MODPLUG" }
+end		
 		configuration "Debug"
 			defines { "DEBUG" }
 			flags {"Symbols" }
@@ -351,7 +400,10 @@ end
     }
 
 		links {"StaticLib"}
-		
+if _OPTIONS["with-libmodplug"] then
+		links {"libmodplug"}
+end		
+	
 
 		configuration "Debug"
 			defines { "DEBUG" }
@@ -386,6 +438,9 @@ end
 		}
 
 		links {"StaticLib"}
+if _OPTIONS["with-libmodplug"] then
+		links {"libmodplug"}
+end
 
 if (os.is("Windows")) then 
 	linkoptions { "/DEF:\"../../src/c_api/soloud.def\"" }

@@ -82,6 +82,7 @@ typedef void * Speech;
 typedef void * Wav;
 typedef void * WavStream;
 typedef void * Sfxr;
+typedef void * Modplug;
 
 /*
  * Soloud
@@ -209,6 +210,15 @@ int Sfxr_loadParams(Sfxr * aSfxr, const char * aFilename);
 void Sfxr_loadPreset(Sfxr * aSfxr, int aPresetNo, int aRandSeed);
 void Sfxr_setLooping(Sfxr * aSfxr, int aLoop);
 void Sfxr_setFilter(Sfxr * aSfxr, int aFilterId, Filter * aFilter);
+
+/*
+ * Modplug
+ */
+void Modplug_destroy(Modplug * aModplug);
+Modplug * Modplug_create();
+int Modplug_load(Modplug * aModplug, const char * aFilename);
+void Modplug_setLooping(Modplug * aModplug, int aLoop);
+void Modplug_setFilter(Modplug * aModplug, int aFilterId, Filter * aFilter);
 #ifdef  __cplusplus
 } // extern "C"
 #endif

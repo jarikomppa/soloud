@@ -42,6 +42,7 @@ freely, subject to the following restrictions:
 #include "../include/soloud_wav.h"
 #include "../include/soloud_wavstream.h"
 #include "../include/soloud_sfxr.h"
+#include "../include/soloud_modplug.h"
 
 using namespace SoLoud;
 
@@ -573,6 +574,34 @@ void Sfxr_setLooping(void * aClassPtr, int aLoop)
 void Sfxr_setFilter(void * aClassPtr, int aFilterId, Filter * aFilter)
 {
 	Sfxr * cl = (Sfxr *)aClassPtr;
+	cl->setFilter(aFilterId, aFilter);
+}
+
+void Modplug_destroy(void * aClassPtr)
+{
+  delete (Modplug *)aClassPtr;
+}
+
+void * Modplug_create()
+{
+  return (void *)new Modplug;
+}
+
+int Modplug_load(void * aClassPtr, const char * aFilename)
+{
+	Modplug * cl = (Modplug *)aClassPtr;
+	return cl->load(aFilename);
+}
+
+void Modplug_setLooping(void * aClassPtr, int aLoop)
+{
+	Modplug * cl = (Modplug *)aClassPtr;
+	cl->setLooping(aLoop);
+}
+
+void Modplug_setFilter(void * aClassPtr, int aFilterId, Filter * aFilter)
+{
+	Modplug * cl = (Modplug *)aClassPtr;
 	cl->setFilter(aFilterId, aFilter);
 }
 

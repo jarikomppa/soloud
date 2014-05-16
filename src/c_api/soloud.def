@@ -1,4 +1,3 @@
-LIBRARY soloud
 EXPORTS
 	Soloud_destroy
 	Soloud_create
@@ -91,3 +90,8 @@ EXPORTS
 	Sfxr_loadPreset
 	Sfxr_setLooping
 	Sfxr_setFilter
+	Modplug_destroy
+	Modplug_create
+	Modplug_load
+	Modplug_setLooping
+	Modplug_setFilter

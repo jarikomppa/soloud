@@ -553,6 +553,10 @@ void emit_cppstart(FILE * f)
 		"#include \"../include/soloud_wav.h\"\n"
 		"#include \"../include/soloud_wavstream.h\"\n"
 		"#include \"../include/soloud_sfxr.h\"\n"
+#if defined(WITH_MODPLUG)
+		"#include \"../include/soloud_modplug.h\"\n"
+#endif
+
 		"\n"
 		"using namespace SoLoud;\n"
 		"\n"
@@ -764,7 +768,7 @@ void generate()
 	fileheader(cppf);
 
 	fprintf(deff,
-		"LIBRARY soloud\n"
+//		"LIBRARY soloud\n"
 		"EXPORTS\n");
 
 	emit_cppstart(cppf);
@@ -1013,7 +1017,9 @@ int main(int parc, char ** pars)
 	parse("../include/soloud_wav.h");
 	parse("../include/soloud_wavstream.h");
 	parse("../include/soloud_sfxr.h");
-
+#if defined(WITH_MODPLUG)
+	parse("../include/soloud_modplug.h");
+#endif
 	printf("Handling inheritance..\n");
 	inherit_stuff();
 

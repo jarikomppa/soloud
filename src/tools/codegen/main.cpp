@@ -71,6 +71,7 @@ char * loadfile(const char *aFilename)
 	buf[len] = '\n';
 	buf[len+1] = 0;
 	fread(buf,1,len,f);
+	fclose(f);
 	return buf;
 }
 
@@ -851,7 +852,7 @@ void generate()
 					if (gClass[i]->mName == gClass[i]->mMethod[j]->mRetType)
 					{
 						// CTor
-						fprintf(f, "%s * %s_create();\n", gClass[i]->mName.c_str(), gClass[i]->mName.c_str(), gClass[i]->mName.c_str());
+						fprintf(f, "%s * %s_create();\n", gClass[i]->mName.c_str(), gClass[i]->mName.c_str());
 						fprintf(deff, "\t%s_create\n", gClass[i]->mName.c_str());
 						// TODO: ctors with params? none in soloud so far..
 						emit_ctor(cppf, gClass[i]->mName.c_str());

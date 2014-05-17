@@ -52,6 +52,9 @@ EXPORTS
 	BiquadResonantFilter_destroy
 	BiquadResonantFilter_create
 	BiquadResonantFilter_setParams
+	LofiFilter_destroy
+	LofiFilter_create
+	LofiFilter_setParams
 	Bus_destroy
 	Bus_create
 	Bus_setFilter

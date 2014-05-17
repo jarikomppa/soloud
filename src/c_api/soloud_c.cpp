@@ -32,6 +32,7 @@ freely, subject to the following restrictions:
 #include "../include/soloud.h"
 #include "../include/soloud_audiosource.h"
 #include "../include/soloud_biquadresonantfilter.h"
+#include "../include/soloud_lofifilter.h"
 #include "../include/soloud_bus.h"
 #include "../include/soloud_echofilter.h"
 #include "../include/soloud_fader.h"
@@ -361,6 +362,22 @@ void BiquadResonantFilter_setParams(void * aClassPtr, int aType, float aSampleRa
 {
 	BiquadResonantFilter * cl = (BiquadResonantFilter *)aClassPtr;
 	cl->setParams(aType, aSampleRate, aFrequency, aResonance);
+}
+
+void LofiFilter_destroy(void * aClassPtr)
+{
+  delete (LofiFilter *)aClassPtr;
+}
+
+void * LofiFilter_create()
+{
+  return (void *)new LofiFilter;
+}
+
+void LofiFilter_setParams(void * aClassPtr, float aSampleRate, float aBitdepth)
+{
+	LofiFilter * cl = (LofiFilter *)aClassPtr;
+	cl->setParams(aSampleRate, aBitdepth);
 }
 
 void Bus_destroy(void * aClassPtr)

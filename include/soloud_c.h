@@ -57,6 +57,8 @@ enum SOLOUD_ENUMS
 	BIQUADRESONANTFILTER_FREQUENCY = 1,
 	BIQUADRESONANTFILTER_RESONANCE = 2,
 	BIQUADRESONANTFILTER_WET = 3,
+	LOFIFILTER_SAMPLERATE = 0,
+	LOFIFILTER_BITDEPTH = 1,
 	FFTFILTER_OVER = 0,
 	FFTFILTER_SUBSTRACT = 1,
 	FFTFILTER_MULTIPLY = 2,
@@ -73,6 +75,7 @@ enum SOLOUD_ENUMS
 typedef void * Soloud;
 typedef void * AudioSource;
 typedef void * BiquadResonantFilter;
+typedef void * LofiFilter;
 typedef void * Bus;
 typedef void * EchoFilter;
 typedef void * Fader;
@@ -144,6 +147,13 @@ float * Soloud_getWave(Soloud * aSoloud);
 void BiquadResonantFilter_destroy(BiquadResonantFilter * aBiquadResonantFilter);
 BiquadResonantFilter * BiquadResonantFilter_create();
 void BiquadResonantFilter_setParams(BiquadResonantFilter * aBiquadResonantFilter, int aType, float aSampleRate, float aFrequency, float aResonance);
+
+/*
+ * LofiFilter
+ */
+void LofiFilter_destroy(LofiFilter * aLofiFilter);
+LofiFilter * LofiFilter_create();
+void LofiFilter_setParams(LofiFilter * aLofiFilter, float aSampleRate, float aBitdepth);
 
 /*
  * Bus

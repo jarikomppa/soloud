@@ -402,4 +402,12 @@ namespace SoLoud
 	{
 		return new WavStreamInstance(this);
 	}
+
+	float WavStream::getLength()
+	{
+		if (mBaseSamplerate == 0)
+			return 0;
+		return mSampleCount / mBaseSamplerate;
+	}
+
 };

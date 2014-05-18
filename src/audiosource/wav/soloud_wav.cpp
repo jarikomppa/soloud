@@ -412,4 +412,11 @@ namespace SoLoud
 	{
 		return new WavInstance(this);
 	}
+
+	float Wav::getLength()
+	{
+		if (mBaseSamplerate == 0)
+			return 0;
+		return mSampleCount / mBaseSamplerate;
+	}
 };

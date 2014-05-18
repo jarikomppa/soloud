@@ -272,6 +272,9 @@ end
 		language "C++"
 
 		defines { "MODPLUG_STATIC" }
+if _OPTIONS["with-libmodplug"] then
+		defines { "WITH_MODPLUG" }
+end		
 		
 		files 
 		{ 

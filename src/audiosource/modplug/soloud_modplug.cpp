@@ -25,22 +25,26 @@ freely, subject to the following restrictions:
 #include <stdlib.h>
 #include <stdio.h>
 #include "soloud_modplug.h"
+#ifdef WITH_MODPLUG
 #include "../ext/libmodplug/src/modplug.h"
-
+#endif
 
 namespace SoLoud
 {
 
 	ModplugInstance::ModplugInstance(Modplug *aParent)
 	{
+#ifdef WITH_MODPLUG
 		mParent = aParent;
 		ModPlugFile* mpf = ModPlug_Load((const void*)mParent->mData, mParent->mDataLen);
 		mModplugfile = (void*)mpf;
 		mPlaying = mpf != NULL;		
+#endif
 	}
 
 	void ModplugInstance::getAudio(float *aBuffer, int aSamples)
 	{
+#ifdef WITH_MODPLUG
 		if (mModplugfile == NULL)
 			return;
 		int buf[1024];
@@ -72,25 +76,32 @@ namespace SoLoud
 			for (i = outofs; i < aSamples; i++)
 				aBuffer[i] = aBuffer[i + aSamples] = 0;
 		}
-		
+#endif		
 	}
 
 	int ModplugInstance::hasEnded()
 	{
+#ifdef WITH_MODPLUG
 		return !mPlaying;
+#else
+		return 1;
+#endif
 	}
 
 	ModplugInstance::~ModplugInstance()
 	{
+#ifdef WITH_MODPLUG
 		if (mModplugfile)
 		{
 			ModPlug_Unload((ModPlugFile*)mModplugfile);
 		}
 		mModplugfile = 0;
+#endif
 	}
 
 	int Modplug::load(const char* aFilename)
 	{
+#ifdef WITH_MODPLUG
 		FILE * f = fopen(aFilename, "rb");
 		if (!f)
 		{
@@ -125,10 +136,14 @@ namespace SoLoud
 		}
 		ModPlug_Unload(mpf);
 		return 0;
+#else
+		return -100;
+#endif
 	}
 
 	Modplug::Modplug()
 	{
+#ifdef WITH_MODPLUG
 		mBaseSamplerate = 44100;
 		mChannels = 2;
 		mData = 0;
@@ -145,13 +160,16 @@ namespace SoLoud
 		mps.mLoopCount = 0;
 		mps.mFlags = MODPLUG_ENABLE_OVERSAMPLING;
 		ModPlug_SetSettings(&mps);
+#endif
 	}
 
 	Modplug::~Modplug()
 	{
+#ifdef WITH_MODPLUG
 		delete[] mData;
 		mData = 0;
 		mDataLen = 0;
+#endif
 	}
 
 	AudioSourceInstance * Modplug::createInstance() 

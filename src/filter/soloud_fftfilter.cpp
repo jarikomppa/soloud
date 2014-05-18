@@ -164,22 +164,24 @@ namespace SoLoud
 			for (i = 0; i < SAMPLE_GRANULARITY; i++)
 			{
 				n = b[i*2+0] * mParent->mScale;
+				aBuffer[i] += (n - aBuffer[i]) * mParam[0];
 			}
 			break;
 		case FFTFilter::SUBSTRACT:
 			for (i = 0; i < SAMPLE_GRANULARITY; i++)
 			{
 				n -= b[i*2+0] * mParent->mScale;
+				aBuffer[i] += (n - aBuffer[i]) * mParam[0];
 			}
 			break;
 		case FFTFilter::MULTIPLY:
 			for (i = 0; i < SAMPLE_GRANULARITY; i++)
 			{
 				n *= b[i*2+0] * mParent->mScale;
+				aBuffer[i] += (n - aBuffer[i]) * mParam[0];
 			}
 			break;
 		}
-		aBuffer[i] += (n - aBuffer[i]) * mParam[0];
 	}
 
 	FFTFilterInstance::~FFTFilterInstance()

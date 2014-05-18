@@ -87,7 +87,7 @@ namespace SoLoud
 			}
 		}
 
-		if (mSampleCount < 0)
+		if (mSampleCount < 0 && aSamples > samples_out)
 		{
 			memset(aBuffer + samples_out, 0, sizeof(float) * (aSamples - samples_out));				
 		}

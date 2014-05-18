@@ -33,8 +33,9 @@ namespace SoLoud
 	LofiFilterInstance::LofiFilterInstance(LofiFilter *aParent)
 	{
 		mParent = aParent;
-		mSampleRate = aParent->mSampleRate;
-		mBitdepth = aParent->mBitdepth;
+		initParams(3);
+		mParam[SAMPLERATE] = aParent->mSampleRate;
+		mParam[BITDEPTH] = aParent->mBitdepth;
 		mChannelData[0].mSample = 0;
 		mChannelData[0].mSamplesToSkip = 0;
 		mChannelData[1].mSample = 0;
@@ -43,88 +44,24 @@ namespace SoLoud
 
 	void LofiFilterInstance::filterChannel(float *aBuffer, int aSamples, float aSamplerate, float aTime, int aChannel, int aChannels)
 	{
-		if (mSampleRateFader.mActive > 0)
-		{
-			mSampleRate = mSampleRateFader.get(aTime);
-		}
-		if (mBitdepthFader.mActive > 0)
-		{
-			mBitdepth = mBitdepthFader.get(aTime);
-		}
+		updateParams(aTime);
 
 		int i;
 		for (i = 0; i < aSamples; i++)
 		{
 			if (mChannelData[aChannel].mSamplesToSkip <= 0)
 			{
-				mChannelData[aChannel].mSamplesToSkip += (aSamplerate / mSampleRate) - 1;
-				float q = pow(2, mBitdepth);
+				mChannelData[aChannel].mSamplesToSkip += (aSamplerate / mParam[SAMPLERATE]) - 1;
+				float q = pow(2, mParam[BITDEPTH]);
 				mChannelData[aChannel].mSample = floor(q*aBuffer[i])/q;
 			}
 			else
 			{
 				mChannelData[aChannel].mSamplesToSkip--;
 			}
-			aBuffer[i] = mChannelData[aChannel].mSample;			
+			aBuffer[i] += (mChannelData[aChannel].mSample - aBuffer[i]) * mParam[WET];
 		}
 
-	}
-
-	void LofiFilterInstance::setFilterParameter(int aAttributeId, float aValue)
-	{
-		switch (aAttributeId)
-		{
-		case LofiFilter::SAMPLERATE:
-			mSampleRateFader.mActive = 0;
-			mSampleRate = aValue;
-			break;
-		case LofiFilter::BITDEPTH:
-			mBitdepthFader.mActive = 0;
-			mBitdepth = aValue;
-			break;
-		}
-	}
-
-	float LofiFilterInstance::getFilterParameter(int aAttributeId)
-	{
-		switch (aAttributeId)
-		{
-		case LofiFilter::BITDEPTH:
-			return mBitdepth;
-		case LofiFilter::SAMPLERATE:
-			return mSampleRate;
-		}
-		return 0;
-	}
-
-	void LofiFilterInstance::fadeFilterParameter(int aAttributeId, float aTo, float aTime, float aStartTime)
-	{
-		if (aTime <= 0) return;
-		switch (aAttributeId)
-		{
-		case LofiFilter::SAMPLERATE:
-			if (mSampleRate == aTo) return;
-			mSampleRateFader.set(mSampleRate, aTo, aTime, aStartTime);
-			break;
-		case LofiFilter::BITDEPTH:
-			if (mBitdepth == aTo) return;
-			mBitdepthFader.set(mBitdepth, aTo, aTime, aStartTime);
-			break;
-		}
-	}
-
-	void LofiFilterInstance::oscillateFilterParameter(int aAttributeId, float aFrom, float aTo, float aTime, float aStartTime)
-	{
-		if (aFrom == aTo || aTime <= 0) return;
-		switch (aAttributeId)
-		{
-		case LofiFilter::SAMPLERATE:
-			mSampleRateFader.setLFO(aFrom, aTo, aTime, aStartTime);
-			break;
-		case LofiFilter::BITDEPTH:
-			mBitdepthFader.setLFO(aFrom, aTo, aTime, aStartTime);
-			break;
-		}
 	}
 
 	LofiFilterInstance::~LofiFilterInstance()

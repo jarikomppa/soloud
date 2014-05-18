@@ -26,29 +26,88 @@ freely, subject to the following restrictions:
 
 namespace SoLoud
 {
+
+	Filter::Filter()
+	{
+	}
+
 	Filter::~Filter()
 	{
+	}
+	
+	FilterInstance::FilterInstance()
+	{
+		mNumParams = 0;
+		mParamChanged = 0;
+		mParam = 0;
+		mParamFader = 0;
+	}
+
+	void FilterInstance::initParams(int aNumParams)
+	{		
+		mNumParams = aNumParams;
+		mParam = new float[mNumParams];
+		mParamFader = new Fader[mNumParams];
+		int i;
+		for (i = 0; i < mNumParams; i++)
+		{
+			mParam[i] = 0;
+			mParamFader[i].mActive = 0;
+		}
+		mParam[0] = 1; // set 'wet' to 1
+	}
+
+	void FilterInstance::updateParams(float aTime)
+	{
+		int i;
+		for (i = 0; i < mNumParams; i++)
+		{
+			if (mParamFader[i].mActive > 0)
+			{
+				mParamChanged |= 1 << i;
+				mParam[i] = mParamFader[i].get(aTime);
+			}
+		}
 	}
 
 	FilterInstance::~FilterInstance()
 	{
+		delete[] mParam;
+		delete[] mParamFader;
 	}
 
 	void FilterInstance::setFilterParameter(int aAttributeId, float aValue)
 	{
+		if (aAttributeId < 0 || aAttributeId >= mNumParams)
+			return;
+
+		mParamFader[aAttributeId].mActive = 0;
+		mParam[aAttributeId] = aValue;
+		mParamChanged |= 1 << aAttributeId;
 	}
 
 	void FilterInstance::fadeFilterParameter(int aAttributeId, float aTo, float aTime, float aStartTime)
 	{
+		if (aAttributeId < 0 || aAttributeId >= mNumParams || aTime <= 0 || aTo == mParam[aAttributeId])
+			return;
+
+		mParamFader[aAttributeId].set(mParam[aAttributeId], aTo, aTime, aStartTime);
 	}
 
 	void FilterInstance::oscillateFilterParameter(int aAttributeId, float aFrom, float aTo, float aTime, float aStartTime)
 	{
+		if (aAttributeId < 0 || aAttributeId >= mNumParams || aTime <= 0 || aFrom == aTo)
+			return;
+
+		mParamFader[aAttributeId].setLFO(aFrom, aTo, aTime, aStartTime);
 	}
 
 	float FilterInstance::getFilterParameter(int aAttributeId)
 	{
-		return 0;
+		if (aAttributeId < 0 || aAttributeId >= mNumParams)
+			return 0;
+
+		return mParam[aAttributeId];
 	}
 
 	void FilterInstance::filter(float *aBuffer, int aSamples, int aChannels, float aSamplerate, float aTime)

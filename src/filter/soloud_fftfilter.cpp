@@ -32,6 +32,7 @@ namespace SoLoud
 	{
 		mParent = aParent;
 		mBuffer = 0;
+		initParams(1);
 	}
 
 
@@ -122,6 +123,11 @@ namespace SoLoud
 
 	void FFTFilterInstance::filterChannel(float *aBuffer, int aSamples, float aSamplerate, float aTime, int aChannel, int aChannels)
 	{
+		if (aChannel == 0)
+		{
+			updateParams(aTime);
+		}
+
 		if (mBuffer == 0)
 		{
 			mBuffer = new float[SAMPLE_GRANULARITY * 2];
@@ -150,27 +156,30 @@ namespace SoLoud
 
 		smbFft(b,l,1);
 
+		float n = 0;
+
 		switch (mParent->mCombine)
 		{
 		case FFTFilter::OVER:
 			for (i = 0; i < SAMPLE_GRANULARITY; i++)
 			{
-				aBuffer[i] = b[i*2+0] * mParent->mScale;
+				n = b[i*2+0] * mParent->mScale;
 			}
 			break;
 		case FFTFilter::SUBSTRACT:
 			for (i = 0; i < SAMPLE_GRANULARITY; i++)
 			{
-				aBuffer[i] -= b[i*2+0] * mParent->mScale;
+				n -= b[i*2+0] * mParent->mScale;
 			}
 			break;
 		case FFTFilter::MULTIPLY:
 			for (i = 0; i < SAMPLE_GRANULARITY; i++)
 			{
-				aBuffer[i] *= b[i*2+0] * mParent->mScale;
+				n *= b[i*2+0] * mParent->mScale;
 			}
 			break;
 		}
+		aBuffer[i] += (n - aBuffer[i]) * mParam[0];
 	}
 
 	FFTFilterInstance::~FFTFilterInstance()

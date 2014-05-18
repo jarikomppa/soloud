@@ -37,20 +37,17 @@ namespace SoLoud
 
 	class LofiFilterInstance : public FilterInstance
 	{
+		enum FILTERPARAMS
+		{
+			WET,
+			SAMPLERATE,
+			BITDEPTH
+		};
 		LofiChannelData mChannelData[2];
-		Fader mBitdepthFader;
-		Fader mSampleRateFader;
-		float mBitdepth;
-		float mSampleRate;
 		
-
 		LofiFilter *mParent;
 	public:
 		virtual void filterChannel(float *aBuffer, int aSamples, float aSamplerate, float aTime, int aChannel, int aChannels);
-		virtual void setFilterParameter(int aAttributeId, float aValue);
-		virtual float getFilterParameter(int aAttributeId);
-		virtual void fadeFilterParameter(int aAttributeId, float aTo, float aTime, float aStartTime);
-		virtual void oscillateFilterParameter(int aAttributeId, float aFrom, float aTo, float aTime, float aStartTime);
 		virtual ~LofiFilterInstance();
 		LofiFilterInstance(LofiFilter *aParent);
 	};
@@ -60,6 +57,7 @@ namespace SoLoud
 	public:
 		enum FILTERPARAMS
 		{
+			WET,
 			SAMPLERATE,
 			BITDEPTH
 		};

@@ -33,10 +33,14 @@ namespace SoLoud
 		mBuffer = 0;
 		mBufferLength = 0;
 		mOffset = 0;
+		initParams(1);
+
 	}
 
 	void EchoFilterInstance::filter(float *aBuffer, int aSamples, int aChannels, float aSamplerate, float aTime)
 	{
+		updateParams(aTime);
+
 		if (mBuffer == 0)
 		{
 			mBufferLength = (int)ceil(mParent->mDelay * aSamplerate);
@@ -58,7 +62,7 @@ namespace SoLoud
 				int bchofs = j * aSamples;
 				float n = aBuffer[i + bchofs] + mBuffer[mOffset + chofs] * decay;
 				mBuffer[mOffset + chofs] = n;
-				aBuffer[i + bchofs] = n;
+				aBuffer[i + bchofs] += (n - aBuffer[i + bchofs]) * mParam[0];
 			}
 			mOffset = (mOffset + 1) % mBufferLength;
 		}

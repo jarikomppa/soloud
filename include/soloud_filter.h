@@ -27,9 +27,19 @@ freely, subject to the following restrictions:
 
 namespace SoLoud
 {
+	class Fader;
+
 	class FilterInstance
 	{
 	public:
+		int mNumParams;
+		int mParamChanged;
+		float *mParam;
+		Fader *mParamFader;
+		
+		FilterInstance();
+		virtual void initParams(int aNumParams);
+		virtual void updateParams(float aTime);
 		virtual void filter(float *aBuffer, int aSamples, int aChannels, float aSamplerate, float aTime);
 		virtual void filterChannel(float *aBuffer, int aSamples, float aSamplerate, float aTime, int aChannel, int aChannels);
 		virtual float getFilterParameter(int aAttributeId);
@@ -42,6 +52,7 @@ namespace SoLoud
 	class Filter
 	{
 	public:
+		Filter();
 		virtual FilterInstance *createInstance() = 0;
 		virtual ~Filter();
 	};

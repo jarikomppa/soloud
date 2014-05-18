@@ -36,29 +36,24 @@ namespace SoLoud
 
 	class BiquadResonantFilterInstance : public FilterInstance
 	{
+		enum FILTERATTRIBUTE
+		{
+			WET = 0,
+			SAMPLERATE = 1,
+			FREQUENCY = 2,
+			RESONANCE = 3
+		};
+
 		int mActive;
 		BQRStateData mState[2];
 		float mA0, mA1, mA2, mB1, mB2;
 		int mDirty;
 		int mFilterType;
-		float mSampleRate;
-		float mFrequency;
-		float mResonance;
-		float mWetSignal;
-
-		Fader mResonanceFader;
-		Fader mFrequencyFader;
-		Fader mSampleRateFader;
-		Fader mWetSignalFader;
 
 		BiquadResonantFilter *mParent;
 		void calcBQRParams();
 	public:
 		virtual void filterChannel(float *aBuffer, int aSamples, float aSamplerate, float aTime, int aChannel, int aChannels);
-		virtual void setFilterParameter(int aAttributeId, float aValue);
-		virtual float getFilterParameter(int aAttributeId);
-		virtual void fadeFilterParameter(int aAttributeId, float aTo, float aTime, float aStartTime);
-		virtual void oscillateFilterParameter(int aAttributeId, float aFrom, float aTo, float aTime, float aStartTime);
 		virtual ~BiquadResonantFilterInstance();
 		BiquadResonantFilterInstance(BiquadResonantFilter *aParent);
 	};
@@ -75,10 +70,10 @@ namespace SoLoud
 		};
 		enum FILTERATTRIBUTE
 		{
-			SAMPLERATE = 0,
-			FREQUENCY = 1,
-			RESONANCE = 2,
-			WET = 3
+			WET = 0,
+			SAMPLERATE = 1,
+			FREQUENCY = 2,
+			RESONANCE = 3
 		};
 		int mFilterType;
 		float mSampleRate;

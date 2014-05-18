@@ -163,6 +163,7 @@ namespace SoLoud
 		case FFTFilter::OVER:
 			for (i = 0; i < SAMPLE_GRANULARITY; i++)
 			{
+				n = aBuffer[i];
 				n = b[i*2+0] * mParent->mScale;
 				aBuffer[i] += (n - aBuffer[i]) * mParam[0];
 			}
@@ -170,6 +171,7 @@ namespace SoLoud
 		case FFTFilter::SUBSTRACT:
 			for (i = 0; i < SAMPLE_GRANULARITY; i++)
 			{
+				n = aBuffer[i];
 				n -= b[i*2+0] * mParent->mScale;
 				aBuffer[i] += (n - aBuffer[i]) * mParam[0];
 			}
@@ -177,6 +179,7 @@ namespace SoLoud
 		case FFTFilter::MULTIPLY:
 			for (i = 0; i < SAMPLE_GRANULARITY; i++)
 			{
+				n = aBuffer[i];
 				n *= b[i*2+0] * mParent->mScale;
 				aBuffer[i] += (n - aBuffer[i]) * mParam[0];
 			}

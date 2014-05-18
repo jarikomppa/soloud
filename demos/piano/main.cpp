@@ -240,10 +240,13 @@ int main(int argc, char *argv[])
 
 #ifdef USE_PORTMIDI
 	Pm_OpenInput(&midi, Pm_GetDefaultInputDeviceID(), NULL, 100, NULL, NULL);
-	Pm_SetFilter(midi, PM_FILT_REALTIME);
-    while (Pm_Poll(midi)) {
-        Pm_Read(midi, buffer, 1);
-    }
+	if (midi)
+	{
+		Pm_SetFilter(midi, PM_FILT_REALTIME);
+		while (Pm_Poll(midi)) {
+			Pm_Read(midi, buffer, 1);
+		}
+	}
 #endif
 
 	gSoloud.init(SoLoud::Soloud::CLIP_ROUNDOFF | SoLoud::Soloud::ENABLE_VISUALIZATION);
@@ -292,19 +295,22 @@ int main(int argc, char *argv[])
 		// Render stuff
 		render();
 #ifdef USE_PORTMIDI
-		int i = Pm_Poll(midi);
-		if (i)
+		if (midi)
 		{
-			i = Pm_Read(midi, buffer, 1);
+			int i = Pm_Poll(midi);
 			if (i)
 			{
-				char temp[200];
-				sprintf(temp, "\n%x %x %x", Pm_MessageStatus(buffer[0].message), Pm_MessageData1(buffer[0].message), Pm_MessageData2(buffer[0].message));
-				OutputDebugStringA(temp);
-				if (Pm_MessageStatus(buffer[0].message) == 0x90)
-					plonk(pow(0.943875f, 0x3c - Pm_MessageData1(buffer[0].message)),(float)Pm_MessageData2(buffer[0].message));
-				if (Pm_MessageStatus(buffer[0].message) == 0x80)
-					unplonk(pow(0.943875f, 0x3c - Pm_MessageData1(buffer[0].message)));
+				i = Pm_Read(midi, buffer, 1);
+				if (i)
+				{
+					char temp[200];
+					sprintf(temp, "\n%x %x %x", Pm_MessageStatus(buffer[0].message), Pm_MessageData1(buffer[0].message), Pm_MessageData2(buffer[0].message));
+					OutputDebugStringA(temp);
+					if (Pm_MessageStatus(buffer[0].message) == 0x90)
+						plonk(pow(0.943875f, 0x3c - Pm_MessageData1(buffer[0].message)),(float)Pm_MessageData2(buffer[0].message));
+					if (Pm_MessageStatus(buffer[0].message) == 0x80)
+						unplonk(pow(0.943875f, 0x3c - Pm_MessageData1(buffer[0].message)));
+				}
 			}
 		}
 #endif

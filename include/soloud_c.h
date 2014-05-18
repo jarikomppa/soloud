@@ -84,6 +84,7 @@ typedef void * Filter;
 typedef void * Speech;
 typedef void * Wav;
 typedef void * WavStream;
+typedef void * Prg;
 typedef void * Sfxr;
 typedef void * Modplug;
 
@@ -209,11 +210,17 @@ void WavStream_setLooping(WavStream * aWavStream, int aLoop);
 void WavStream_setFilter(WavStream * aWavStream, int aFilterId, Filter * aFilter);
 
 /*
+ * Prg
+ */
+void Prg_destroy(Prg * aPrg);
+Prg * Prg_create();
+unsigned int Prg_rand(Prg * aPrg);
+void Prg_srand(Prg * aPrg, int aSeed);
+
+/*
  * Sfxr
  */
 void Sfxr_destroy(Sfxr * aSfxr);
-unsigned int Sfxr_rand(Sfxr * aSfxr);
-void Sfxr_srand(Sfxr * aSfxr, int aSeed);
 Sfxr * Sfxr_create();
 void Sfxr_resetParams(Sfxr * aSfxr);
 int Sfxr_loadParams(Sfxr * aSfxr, const char * aFilename);

@@ -84,9 +84,11 @@ EXPORTS
 	WavStream_load
 	WavStream_setLooping
 	WavStream_setFilter
+	Prg_destroy
+	Prg_create
+	Prg_rand
+	Prg_srand
 	Sfxr_destroy
-	Sfxr_rand
-	Sfxr_srand
 	Sfxr_create
 	Sfxr_resetParams
 	Sfxr_loadParams

@@ -543,6 +543,7 @@ void emit_cppstart(FILE * f)
 		"#include \"../include/soloud.h\"\n"
 		"#include \"../include/soloud_audiosource.h\"\n"
 		"#include \"../include/soloud_biquadresonantfilter.h\"\n"
+		"#include \"../include/soloud_lofifilter.h\"\n"
 		"#include \"../include/soloud_bus.h\"\n"
 		"#include \"../include/soloud_echofilter.h\"\n"
 		"#include \"../include/soloud_fader.h\"\n"
@@ -1007,6 +1008,7 @@ int main(int parc, char ** pars)
 	parse("../include/soloud.h");
 	parse("../include/soloud_audiosource.h");
 	parse("../include/soloud_biquadresonantfilter.h");
+	parse("../include/soloud_lofifilter.h");
 	parse("../include/soloud_bus.h");
 	parse("../include/soloud_echofilter.h");
 	parse("../include/soloud_fader.h");

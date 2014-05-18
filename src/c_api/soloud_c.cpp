@@ -542,21 +542,31 @@ void WavStream_setFilter(void * aClassPtr, int aFilterId, Filter * aFilter)
 	cl->setFilter(aFilterId, aFilter);
 }
 
-void Sfxr_destroy(void * aClassPtr)
+void Prg_destroy(void * aClassPtr)
 {
-  delete (Sfxr *)aClassPtr;
+  delete (Prg *)aClassPtr;
 }
 
-unsigned int Sfxr_rand(void * aClassPtr)
+void * Prg_create()
 {
-	Sfxr * cl = (Sfxr *)aClassPtr;
+  return (void *)new Prg;
+}
+
+unsigned int Prg_rand(void * aClassPtr)
+{
+	Prg * cl = (Prg *)aClassPtr;
 	return cl->rand();
 }
 
-void Sfxr_srand(void * aClassPtr, int aSeed)
+void Prg_srand(void * aClassPtr, int aSeed)
 {
-	Sfxr * cl = (Sfxr *)aClassPtr;
+	Prg * cl = (Prg *)aClassPtr;
 	cl->srand(aSeed);
+}
+
+void Sfxr_destroy(void * aClassPtr)
+{
+  delete (Sfxr *)aClassPtr;
 }
 
 void * Sfxr_create()

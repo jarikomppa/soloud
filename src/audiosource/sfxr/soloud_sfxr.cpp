@@ -31,14 +31,45 @@ freely, subject to the following restrictions:
 namespace SoLoud
 {
 
+	Prg::Prg()
+	{		
+	}
+
+	void Prg::srand(int aSeed)
+	{
+		index = 0;
+		int i;
+		for (i = 0; i < 16; i++)
+			state[i] = aSeed + i * aSeed + i;
+	}
+
+	// WELL512 implementation, public domain by Chris Lomont
+	unsigned int Prg::rand()
+	{
+		unsigned int a, b, c, d;
+		a = state[index];
+		c = state[(index+13)&15];
+		b = a^c^(a<<16)^(c<<15);
+		c = state[(index+9)&15];
+		c ^= (c>>11);
+		a = state[index] = b^c;
+		d = a^((a<<5)&0xDA442D24UL);
+		index = (index + 15)&15;
+		a = state[index];
+		state[index] = a^b^d^(a<<2)^(b<<18)^(c<<28);
+		return state[index];
+	}
+
 	SfxrInstance::SfxrInstance(Sfxr *aParent)
 	{
 		mParent = aParent;
+		mParams = aParent->mParams;
+		mRand.srand(0x792352);
 		resetSample(false);
 		playing_sample = 1;
 	}
 
-#define frnd(x) ((float)(mParent->rand()%10001)/10000*(x))
+#define frnd(x) ((float)(mRand.rand()%10001)/10000*(x))
 
 	void SfxrInstance::getAudio(float *aBuffer, int aSamples)
 	{
@@ -71,7 +102,7 @@ namespace SoLoud
 			if(fperiod>fmaxperiod)
 			{
 				fperiod=fmaxperiod;
-				if(mParent->p_freq_limit>0.0f)
+				if(mParams.p_freq_limit>0.0f)
 					playing_sample=false;
 			}
 			float rfperiod=(float)fperiod;
@@ -97,7 +128,7 @@ namespace SoLoud
 			if(env_stage==0)
 				env_vol=(float)env_time/env_length[0];
 			if(env_stage==1)
-				env_vol=1.0f+pow(1.0f-(float)env_time/env_length[1], 1.0f)*2.0f*mParent->p_env_punch;
+				env_vol=1.0f+pow(1.0f-(float)env_time/env_length[1], 1.0f)*2.0f*mParams.p_env_punch;
 			if(env_stage==2)
 				env_vol=1.0f-(float)env_time/env_length[2];
 
@@ -122,13 +153,13 @@ namespace SoLoud
 				{
 					//				phase=0;
 					phase%=period;
-					if(mParent->wave_type==3)
+					if(mParams.wave_type==3)
 						for(int i=0;i<32;i++)
 							noise_buffer[i]=frnd(2.0f)-1.0f;
 				}
 				// base waveform
 				float fp=(float)phase/period;
-				switch(mParent->wave_type)
+				switch(mParams.wave_type)
 				{
 				case 0: // square
 					if(fp<square_duty)
@@ -151,7 +182,7 @@ namespace SoLoud
 				fltw*=fltw_d;
 				if(fltw<0.0f) fltw=0.0f;
 				if(fltw>0.1f) fltw=0.1f;
-				if(mParent->p_lpf_freq!=1.0f)
+				if(mParams.p_lpf_freq!=1.0f)
 				{
 					fltdp+=(sample-fltp)*fltw;
 					fltdp-=fltdp*fltdmp;
@@ -173,9 +204,9 @@ namespace SoLoud
 				// final accumulation and envelope application
 				ssample+=sample*env_vol;
 			}
-			ssample=ssample/8*mParent->master_vol;
+			ssample=ssample/8*mParams.master_vol;
 
-			ssample*=2.0f*mParent->sound_vol;
+			ssample*=2.0f*mParams.sound_vol;
 
 			if(buffer!=NULL)
 			{
@@ -196,49 +227,49 @@ namespace SoLoud
 	{
 		if(!aRestart)
 			phase=0;
-		fperiod=100.0/(mParent->p_base_freq*mParent->p_base_freq+0.001);
+		fperiod=100.0/(mParams.p_base_freq*mParams.p_base_freq+0.001);
 		period=(int)fperiod;
-		fmaxperiod=100.0/(mParent->p_freq_limit*mParent->p_freq_limit+0.001);
-		fslide=1.0-pow((double)mParent->p_freq_ramp, 3.0)*0.01;
-		fdslide=-pow((double)mParent->p_freq_dramp, 3.0)*0.000001;
-		square_duty=0.5f-mParent->p_duty*0.5f;
-		square_slide=-mParent->p_duty_ramp*0.00005f;
-		if(mParent->p_arp_mod>=0.0f)
-			arp_mod=1.0-pow((double)mParent->p_arp_mod, 2.0)*0.9;
+		fmaxperiod=100.0/(mParams.p_freq_limit*mParams.p_freq_limit+0.001);
+		fslide=1.0-pow((double)mParams.p_freq_ramp, 3.0)*0.01;
+		fdslide=-pow((double)mParams.p_freq_dramp, 3.0)*0.000001;
+		square_duty=0.5f-mParams.p_duty*0.5f;
+		square_slide=-mParams.p_duty_ramp*0.00005f;
+		if(mParams.p_arp_mod>=0.0f)
+			arp_mod=1.0-pow((double)mParams.p_arp_mod, 2.0)*0.9;
 		else
-			arp_mod=1.0+pow((double)mParent->p_arp_mod, 2.0)*10.0;
+			arp_mod=1.0+pow((double)mParams.p_arp_mod, 2.0)*10.0;
 		arp_time=0;
-		arp_limit=(int)(pow(1.0f-mParent->p_arp_speed, 2.0f)*20000+32);
-		if(mParent->p_arp_speed==1.0f)
+		arp_limit=(int)(pow(1.0f-mParams.p_arp_speed, 2.0f)*20000+32);
+		if(mParams.p_arp_speed==1.0f)
 			arp_limit=0;
 		if(!aRestart)
 		{
 			// reset filter
 			fltp=0.0f;
 			fltdp=0.0f;
-			fltw=pow(mParent->p_lpf_freq, 3.0f)*0.1f;
-			fltw_d=1.0f+mParent->p_lpf_ramp*0.0001f;
-			fltdmp=5.0f/(1.0f+pow(mParent->p_lpf_resonance, 2.0f)*20.0f)*(0.01f+fltw);
+			fltw=pow(mParams.p_lpf_freq, 3.0f)*0.1f;
+			fltw_d=1.0f+mParams.p_lpf_ramp*0.0001f;
+			fltdmp=5.0f/(1.0f+pow(mParams.p_lpf_resonance, 2.0f)*20.0f)*(0.01f+fltw);
 			if(fltdmp>0.8f) fltdmp=0.8f;
 			fltphp=0.0f;
-			flthp=pow(mParent->p_hpf_freq, 2.0f)*0.1f;
-			flthp_d=(float)(1.0+mParent->p_hpf_ramp*0.0003f);
+			flthp=pow(mParams.p_hpf_freq, 2.0f)*0.1f;
+			flthp_d=(float)(1.0+mParams.p_hpf_ramp*0.0003f);
 			// reset vibrato
 			vib_phase=0.0f;
-			vib_speed=pow(mParent->p_vib_speed, 2.0f)*0.01f;
-			vib_amp=mParent->p_vib_strength*0.5f;
+			vib_speed=pow(mParams.p_vib_speed, 2.0f)*0.01f;
+			vib_amp=mParams.p_vib_strength*0.5f;
 			// reset envelope
 			env_vol=0.0f;
 			env_stage=0;
 			env_time=0;
-			env_length[0]=(int)(mParent->p_env_attack*mParent->p_env_attack*100000.0f);
-			env_length[1]=(int)(mParent->p_env_sustain*mParent->p_env_sustain*100000.0f);
-			env_length[2]=(int)(mParent->p_env_decay*mParent->p_env_decay*100000.0f);
+			env_length[0]=(int)(mParams.p_env_attack*mParams.p_env_attack*100000.0f);
+			env_length[1]=(int)(mParams.p_env_sustain*mParams.p_env_sustain*100000.0f);
+			env_length[2]=(int)(mParams.p_env_decay*mParams.p_env_decay*100000.0f);
 
-			fphase=pow(mParent->p_pha_offset, 2.0f)*1020.0f;
-			if(mParent->p_pha_offset<0.0f) fphase=-fphase;
-			fdphase=pow(mParent->p_pha_ramp, 2.0f)*1.0f;
-			if(mParent->p_pha_ramp<0.0f) fdphase=-fdphase;
+			fphase=pow(mParams.p_pha_offset, 2.0f)*1020.0f;
+			if(mParams.p_pha_offset<0.0f) fphase=-fphase;
+			fdphase=pow(mParams.p_pha_ramp, 2.0f)*1.0f;
+			if(mParams.p_pha_ramp<0.0f) fdphase=-fdphase;
 			iphase=abs((int)fphase);
 			ipp=0;
 			for(int i=0;i<1024;i++)
@@ -248,236 +279,212 @@ namespace SoLoud
 				noise_buffer[i]=frnd(2.0f)-1.0f;
 
 			rep_time=0;
-			rep_limit=(int)(pow(1.0f-mParent->p_repeat_speed, 2.0f)*20000+32);
-			if(mParent->p_repeat_speed==0.0f)
+			rep_limit=(int)(pow(1.0f-mParams.p_repeat_speed, 2.0f)*20000+32);
+			if(mParams.p_repeat_speed==0.0f)
 				rep_limit=0;
 		}
 	}
 
-	void Sfxr::srand(int aSeed)
-	{
-		index = 0;
-		int i;
-		for (i = 0; i < 16; i++)
-			state[i] = aSeed + i * aSeed + i;
-	}
 
-	// WELL512 implementation, public domain by Chris Lomont
-	unsigned int Sfxr::rand()
-	{
-		unsigned int a, b, c, d;
-		a = state[index];
-		c = state[(index+13)&15];
-		b = a^c^(a<<16)^(c<<15);
-		c = state[(index+9)&15];
-		c ^= (c>>11);
-		a = state[index] = b^c;
-		d = a^((a<<5)&0xDA442D24UL);
-		index = (index + 15)&15;
-		a = state[index];
-		state[index] = a^b^d^(a<<2)^(b<<18)^(c<<28);
-		return state[index];
-	}
-
-#define rnd(n) (rand()%(n+1))
+#define rnd(n) (mRand.rand()%(n+1))
 #undef frnd
-#define frnd(x) ((float)(rand()%10001)/10000*(x))
+#define frnd(x) ((float)(mRand.rand()%10001)/10000*(x))
 
 
 	void Sfxr::loadPreset(int aPresetNo, int aRandSeed)
 	{
 		resetParams();
-		srand(aRandSeed);
+		mRand.srand(aRandSeed);
 		switch(aPresetNo)
 		{
 		case 0: // pickup/coin
-			p_base_freq=0.4f+frnd(0.5f);
-			p_env_attack=0.0f;
-			p_env_sustain=frnd(0.1f);
-			p_env_decay=0.1f+frnd(0.4f);
-			p_env_punch=0.3f+frnd(0.3f);
+			mParams.p_base_freq=0.4f+frnd(0.5f);
+			mParams.p_env_attack=0.0f;
+			mParams.p_env_sustain=frnd(0.1f);
+			mParams.p_env_decay=0.1f+frnd(0.4f);
+			mParams.p_env_punch=0.3f+frnd(0.3f);
 			if(rnd(1))
 			{
-				p_arp_speed=0.5f+frnd(0.2f);
-				p_arp_mod=0.2f+frnd(0.4f);
+				mParams.p_arp_speed=0.5f+frnd(0.2f);
+				mParams.p_arp_mod=0.2f+frnd(0.4f);
 			}
 			break;
 		case 1: // laser/shoot
-			wave_type=rnd(2);
-			if(wave_type==2 && rnd(1))
-				wave_type=rnd(1);
-			p_base_freq=0.5f+frnd(0.5f);
-			p_freq_limit=p_base_freq-0.2f-frnd(0.6f);
-			if(p_freq_limit<0.2f) p_freq_limit=0.2f;
-			p_freq_ramp=-0.15f-frnd(0.2f);
+			mParams.wave_type=rnd(2);
+			if(mParams.wave_type==2 && rnd(1))
+				mParams.wave_type=rnd(1);
+			mParams.p_base_freq=0.5f+frnd(0.5f);
+			mParams.p_freq_limit=mParams.p_base_freq-0.2f-frnd(0.6f);
+			if(mParams.p_freq_limit<0.2f) mParams.p_freq_limit=0.2f;
+			mParams.p_freq_ramp=-0.15f-frnd(0.2f);
 			if(rnd(2)==0)
 			{
-				p_base_freq=0.3f+frnd(0.6f);
-				p_freq_limit=frnd(0.1f);
-				p_freq_ramp=-0.35f-frnd(0.3f);
+				mParams.p_base_freq=0.3f+frnd(0.6f);
+				mParams.p_freq_limit=frnd(0.1f);
+				mParams.p_freq_ramp=-0.35f-frnd(0.3f);
 			}
 			if(rnd(1))
 			{
-				p_duty=frnd(0.5f);
-				p_duty_ramp=frnd(0.2f);
+				mParams.p_duty=frnd(0.5f);
+				mParams.p_duty_ramp=frnd(0.2f);
 			}
 			else
 			{
-				p_duty=0.4f+frnd(0.5f);
-				p_duty_ramp=-frnd(0.7f);
+				mParams.p_duty=0.4f+frnd(0.5f);
+				mParams.p_duty_ramp=-frnd(0.7f);
 			}
-			p_env_attack=0.0f;
-			p_env_sustain=0.1f+frnd(0.2f);
-			p_env_decay=frnd(0.4f);
+			mParams.p_env_attack=0.0f;
+			mParams.p_env_sustain=0.1f+frnd(0.2f);
+			mParams.p_env_decay=frnd(0.4f);
 			if(rnd(1))
-				p_env_punch=frnd(0.3f);
+				mParams.p_env_punch=frnd(0.3f);
 			if(rnd(2)==0)
 			{
-				p_pha_offset=frnd(0.2f);
-				p_pha_ramp=-frnd(0.2f);
+				mParams.p_pha_offset=frnd(0.2f);
+				mParams.p_pha_ramp=-frnd(0.2f);
 			}
 			if(rnd(1))
-				p_hpf_freq=frnd(0.3f);
+				mParams.p_hpf_freq=frnd(0.3f);
 			break;
 		case 2: // explosion
-			wave_type=3;
+			mParams.wave_type=3;
 			if(rnd(1))
 			{
-				p_base_freq=0.1f+frnd(0.4f);
-				p_freq_ramp=-0.1f+frnd(0.4f);
+				mParams.p_base_freq=0.1f+frnd(0.4f);
+				mParams.p_freq_ramp=-0.1f+frnd(0.4f);
 			}
 			else
 			{
-				p_base_freq=0.2f+frnd(0.7f);
-				p_freq_ramp=-0.2f-frnd(0.2f);
+				mParams.p_base_freq=0.2f+frnd(0.7f);
+				mParams.p_freq_ramp=-0.2f-frnd(0.2f);
 			}
-			p_base_freq*=p_base_freq;
+			mParams.p_base_freq*=mParams.p_base_freq;
 			if(rnd(4)==0)
-				p_freq_ramp=0.0f;
+				mParams.p_freq_ramp=0.0f;
 			if(rnd(2)==0)
-				p_repeat_speed=0.3f+frnd(0.5f);
-			p_env_attack=0.0f;
-			p_env_sustain=0.1f+frnd(0.3f);
-			p_env_decay=frnd(0.5f);
+				mParams.p_repeat_speed=0.3f+frnd(0.5f);
+			mParams.p_env_attack=0.0f;
+			mParams.p_env_sustain=0.1f+frnd(0.3f);
+			mParams.p_env_decay=frnd(0.5f);
 			if(rnd(1)==0)
 			{
-				p_pha_offset=-0.3f+frnd(0.9f);
-				p_pha_ramp=-frnd(0.3f);
+				mParams.p_pha_offset=-0.3f+frnd(0.9f);
+				mParams.p_pha_ramp=-frnd(0.3f);
 			}
-			p_env_punch=0.2f+frnd(0.6f);
+			mParams.p_env_punch=0.2f+frnd(0.6f);
 			if(rnd(1))
 			{
-				p_vib_strength=frnd(0.7f);
-				p_vib_speed=frnd(0.6f);
+				mParams.p_vib_strength=frnd(0.7f);
+				mParams.p_vib_speed=frnd(0.6f);
 			}
 			if(rnd(2)==0)
 			{
-				p_arp_speed=0.6f+frnd(0.3f);
-				p_arp_mod=0.8f-frnd(1.6f);
+				mParams.p_arp_speed=0.6f+frnd(0.3f);
+				mParams.p_arp_mod=0.8f-frnd(1.6f);
 			}
 			break;
 		case 3: // powerup
 			if(rnd(1))
-				wave_type=1;
+				mParams.wave_type=1;
 			else
-				p_duty=frnd(0.6f);
+				mParams.p_duty=frnd(0.6f);
 			if(rnd(1))
 			{
-				p_base_freq=0.2f+frnd(0.3f);
-				p_freq_ramp=0.1f+frnd(0.4f);
-				p_repeat_speed=0.4f+frnd(0.4f);
+				mParams.p_base_freq=0.2f+frnd(0.3f);
+				mParams.p_freq_ramp=0.1f+frnd(0.4f);
+				mParams.p_repeat_speed=0.4f+frnd(0.4f);
 			}
 			else
 			{
-				p_base_freq=0.2f+frnd(0.3f);
-				p_freq_ramp=0.05f+frnd(0.2f);
+				mParams.p_base_freq=0.2f+frnd(0.3f);
+				mParams.p_freq_ramp=0.05f+frnd(0.2f);
 				if(rnd(1))
 				{
-					p_vib_strength=frnd(0.7f);
-					p_vib_speed=frnd(0.6f);
+					mParams.p_vib_strength=frnd(0.7f);
+					mParams.p_vib_speed=frnd(0.6f);
 				}
 			}
-			p_env_attack=0.0f;
-			p_env_sustain=frnd(0.4f);
-			p_env_decay=0.1f+frnd(0.4f);
+			mParams.p_env_attack=0.0f;
+			mParams.p_env_sustain=frnd(0.4f);
+			mParams.p_env_decay=0.1f+frnd(0.4f);
 			break;
 		case 4: // hit/hurt
-			wave_type=rnd(2);
-			if(wave_type==2)
-				wave_type=3;
-			if(wave_type==0)
-				p_duty=frnd(0.6f);
-			p_base_freq=0.2f+frnd(0.6f);
-			p_freq_ramp=-0.3f-frnd(0.4f);
-			p_env_attack=0.0f;
-			p_env_sustain=frnd(0.1f);
-			p_env_decay=0.1f+frnd(0.2f);
+			mParams.wave_type=rnd(2);
+			if(mParams.wave_type==2)
+				mParams.wave_type=3;
+			if(mParams.wave_type==0)
+				mParams.p_duty=frnd(0.6f);
+			mParams.p_base_freq=0.2f+frnd(0.6f);
+			mParams.p_freq_ramp=-0.3f-frnd(0.4f);
+			mParams.p_env_attack=0.0f;
+			mParams.p_env_sustain=frnd(0.1f);
+			mParams.p_env_decay=0.1f+frnd(0.2f);
 			if(rnd(1))
-				p_hpf_freq=frnd(0.3f);
+				mParams.p_hpf_freq=frnd(0.3f);
 			break;
 		case 5: // jump
-			wave_type=0;
-			p_duty=frnd(0.6f);
-			p_base_freq=0.3f+frnd(0.3f);
-			p_freq_ramp=0.1f+frnd(0.2f);
-			p_env_attack=0.0f;
-			p_env_sustain=0.1f+frnd(0.3f);
-			p_env_decay=0.1f+frnd(0.2f);
+			mParams.wave_type=0;
+			mParams.p_duty=frnd(0.6f);
+			mParams.p_base_freq=0.3f+frnd(0.3f);
+			mParams.p_freq_ramp=0.1f+frnd(0.2f);
+			mParams.p_env_attack=0.0f;
+			mParams.p_env_sustain=0.1f+frnd(0.3f);
+			mParams.p_env_decay=0.1f+frnd(0.2f);
 			if(rnd(1))
-				p_hpf_freq=frnd(0.3f);
+				mParams.p_hpf_freq=frnd(0.3f);
 			if(rnd(1))
-				p_lpf_freq=1.0f-frnd(0.6f);
+				mParams.p_lpf_freq=1.0f-frnd(0.6f);
 			break;
 		case 6: // blip/select
-			wave_type=rnd(1);
-			if(wave_type==0)
-				p_duty=frnd(0.6f);
-			p_base_freq=0.2f+frnd(0.4f);
-			p_env_attack=0.0f;
-			p_env_sustain=0.1f+frnd(0.1f);
-			p_env_decay=frnd(0.2f);
-			p_hpf_freq=0.1f;
+			mParams.wave_type=rnd(1);
+			if(mParams.wave_type==0)
+				mParams.p_duty=frnd(0.6f);
+			mParams.p_base_freq=0.2f+frnd(0.4f);
+			mParams.p_env_attack=0.0f;
+			mParams.p_env_sustain=0.1f+frnd(0.1f);
+			mParams.p_env_decay=frnd(0.2f);
+			mParams.p_hpf_freq=0.1f;
 			break;
 		}
 	}
 	
 	void Sfxr::resetParams()
 	{
-		wave_type=0;
+		mParams.wave_type=0;
 
-		p_base_freq=0.3f;
-		p_freq_limit=0.0f;
-		p_freq_ramp=0.0f;
-		p_freq_dramp=0.0f;
-		p_duty=0.0f;
-		p_duty_ramp=0.0f;
+		mParams.p_base_freq=0.3f;
+		mParams.p_freq_limit=0.0f;
+		mParams.p_freq_ramp=0.0f;
+		mParams.p_freq_dramp=0.0f;
+		mParams.p_duty=0.0f;
+		mParams.p_duty_ramp=0.0f;
 
-		p_vib_strength=0.0f;
-		p_vib_speed=0.0f;
-		p_vib_delay=0.0f;
+		mParams.p_vib_strength=0.0f;
+		mParams.p_vib_speed=0.0f;
+		mParams.p_vib_delay=0.0f;
 
-		p_env_attack=0.0f;
-		p_env_sustain=0.3f;
-		p_env_decay=0.4f;
-		p_env_punch=0.0f;
+		mParams.p_env_attack=0.0f;
+		mParams.p_env_sustain=0.3f;
+		mParams.p_env_decay=0.4f;
+		mParams.p_env_punch=0.0f;
 
-		filter_on=false;
-		p_lpf_resonance=0.0f;
-		p_lpf_freq=1.0f;
-		p_lpf_ramp=0.0f;
-		p_hpf_freq=0.0f;
-		p_hpf_ramp=0.0f;
+		mParams.filter_on=false;
+		mParams.p_lpf_resonance=0.0f;
+		mParams.p_lpf_freq=1.0f;
+		mParams.p_lpf_ramp=0.0f;
+		mParams.p_hpf_freq=0.0f;
+		mParams.p_hpf_ramp=0.0f;
 	
-		p_pha_offset=0.0f;
-		p_pha_ramp=0.0f;
+		mParams.p_pha_offset=0.0f;
+		mParams.p_pha_ramp=0.0f;
 
-		p_repeat_speed=0.0f;
+		mParams.p_repeat_speed=0.0f;
 
-		p_arp_speed=0.0f;
-		p_arp_mod=0.0f;
+		mParams.p_arp_speed=0.0f;
+		mParams.p_arp_mod=0.0f;
 
-		master_vol=0.05f;
-		sound_vol=0.5f;
+		mParams.master_vol=0.05f;
+		mParams.sound_vol=0.5f;
 	}
 
 	int Sfxr::loadParams(const char* aFilename)
@@ -494,46 +501,46 @@ namespace SoLoud
 			return 1;
 		}
 
-		fread(&wave_type, 1, sizeof(int), file);
+		fread(&mParams.wave_type, 1, sizeof(int), file);
 
 
-		sound_vol=0.5f;
+		mParams.sound_vol=0.5f;
 		if(version==102)
-			fread(&sound_vol, 1, sizeof(float), file);
+			fread(&mParams.sound_vol, 1, sizeof(float), file);
 
-		fread(&p_base_freq, 1, sizeof(float), file);
-		fread(&p_freq_limit, 1, sizeof(float), file);
-		fread(&p_freq_ramp, 1, sizeof(float), file);
+		fread(&mParams.p_base_freq, 1, sizeof(float), file);
+		fread(&mParams.p_freq_limit, 1, sizeof(float), file);
+		fread(&mParams.p_freq_ramp, 1, sizeof(float), file);
 		if(version>=101)
-			fread(&p_freq_dramp, 1, sizeof(float), file);
-		fread(&p_duty, 1, sizeof(float), file);
-		fread(&p_duty_ramp, 1, sizeof(float), file);
+			fread(&mParams.p_freq_dramp, 1, sizeof(float), file);
+		fread(&mParams.p_duty, 1, sizeof(float), file);
+		fread(&mParams.p_duty_ramp, 1, sizeof(float), file);
 
-		fread(&p_vib_strength, 1, sizeof(float), file);
-		fread(&p_vib_speed, 1, sizeof(float), file);
-		fread(&p_vib_delay, 1, sizeof(float), file);
+		fread(&mParams.p_vib_strength, 1, sizeof(float), file);
+		fread(&mParams.p_vib_speed, 1, sizeof(float), file);
+		fread(&mParams.p_vib_delay, 1, sizeof(float), file);
 
-		fread(&p_env_attack, 1, sizeof(float), file);
-		fread(&p_env_sustain, 1, sizeof(float), file);
-		fread(&p_env_decay, 1, sizeof(float), file);
-		fread(&p_env_punch, 1, sizeof(float), file);
+		fread(&mParams.p_env_attack, 1, sizeof(float), file);
+		fread(&mParams.p_env_sustain, 1, sizeof(float), file);
+		fread(&mParams.p_env_decay, 1, sizeof(float), file);
+		fread(&mParams.p_env_punch, 1, sizeof(float), file);
 
-		fread(&filter_on, 1, sizeof(bool), file);
-		fread(&p_lpf_resonance, 1, sizeof(float), file);
-		fread(&p_lpf_freq, 1, sizeof(float), file);
-		fread(&p_lpf_ramp, 1, sizeof(float), file);
-		fread(&p_hpf_freq, 1, sizeof(float), file);
-		fread(&p_hpf_ramp, 1, sizeof(float), file);
+		fread(&mParams.filter_on, 1, sizeof(bool), file);
+		fread(&mParams.p_lpf_resonance, 1, sizeof(float), file);
+		fread(&mParams.p_lpf_freq, 1, sizeof(float), file);
+		fread(&mParams.p_lpf_ramp, 1, sizeof(float), file);
+		fread(&mParams.p_hpf_freq, 1, sizeof(float), file);
+		fread(&mParams.p_hpf_ramp, 1, sizeof(float), file);
 	
-		fread(&p_pha_offset, 1, sizeof(float), file);
-		fread(&p_pha_ramp, 1, sizeof(float), file);
+		fread(&mParams.p_pha_offset, 1, sizeof(float), file);
+		fread(&mParams.p_pha_ramp, 1, sizeof(float), file);
 
-		fread(&p_repeat_speed, 1, sizeof(float), file);
+		fread(&mParams.p_repeat_speed, 1, sizeof(float), file);
 
 		if(version>=101)
 		{
-			fread(&p_arp_speed, 1, sizeof(float), file);
-			fread(&p_arp_mod, 1, sizeof(float), file);
+			fread(&mParams.p_arp_speed, 1, sizeof(float), file);
+			fread(&mParams.p_arp_mod, 1, sizeof(float), file);
 		}
 
 		fclose(file);

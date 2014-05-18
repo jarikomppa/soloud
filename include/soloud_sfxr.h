@@ -30,11 +30,66 @@ freely, subject to the following restrictions:
 
 namespace SoLoud
 {
+
+	class Prg
+	{
+	public:
+		// random generator
+		Prg();
+		unsigned int state[16];
+		unsigned int index;
+		unsigned int rand();
+		void srand(int aSeed);
+	};
+
+	struct SfxrParams
+	{
+		int wave_type;
+
+		float p_base_freq;
+		float p_freq_limit;
+		float p_freq_ramp;
+		float p_freq_dramp;
+		float p_duty;
+		float p_duty_ramp;
+
+		float p_vib_strength;
+		float p_vib_speed;
+		float p_vib_delay;
+
+		float p_env_attack;
+		float p_env_sustain;
+		float p_env_decay;
+		float p_env_punch;
+
+		bool filter_on;
+		float p_lpf_resonance;
+		float p_lpf_freq;
+		float p_lpf_ramp;
+		float p_hpf_freq;
+		float p_hpf_ramp;
+
+		float p_pha_offset;
+		float p_pha_ramp;
+
+		float p_repeat_speed;
+
+		float p_arp_speed;
+		float p_arp_mod;
+
+		float master_vol;
+
+		float sound_vol;
+	};
+
 	class Sfxr;
 
 	class SfxrInstance : public AudioSourceInstance
 	{
 		Sfxr *mParent;
+
+		Prg mRand;
+		SfxrParams mParams;
 
 		bool playing_sample;
 		int phase;
@@ -83,42 +138,7 @@ namespace SoLoud
 	class Sfxr : public AudioSource
 	{
 	public:
-		int wave_type;
-
-		float p_base_freq;
-		float p_freq_limit;
-		float p_freq_ramp;
-		float p_freq_dramp;
-		float p_duty;
-		float p_duty_ramp;
-
-		float p_vib_strength;
-		float p_vib_speed;
-		float p_vib_delay;
-
-		float p_env_attack;
-		float p_env_sustain;
-		float p_env_decay;
-		float p_env_punch;
-
-		bool filter_on;
-		float p_lpf_resonance;
-		float p_lpf_freq;
-		float p_lpf_ramp;
-		float p_hpf_freq;
-		float p_hpf_ramp;
-
-		float p_pha_offset;
-		float p_pha_ramp;
-
-		float p_repeat_speed;
-
-		float p_arp_speed;
-		float p_arp_mod;
-
-		float master_vol;
-
-		float sound_vol;
+		SfxrParams mParams;
 
 		enum SFXR_PRESETS 
 		{
@@ -131,12 +151,8 @@ namespace SoLoud
 			BLIP
 		};
 
-		// random generator
-		unsigned int state[16];
-		unsigned int index;
-		unsigned int rand();
-		void srand(int aSeed);
-
+		Prg mRand;
+		
 		Sfxr();
 		void resetParams();
 		int loadParams(const char* aFilename);		

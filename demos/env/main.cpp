@@ -242,8 +242,8 @@ void render()
 	{
 		if (mode_d != 0)
 		{
-			gSoloud.fadeFilterParameter(gMusicHandle, 0, 1, 200, 0.2f);
-			gSoloud.fadeFilterParameter(gMusicHandle, 0, 3, 1, 0.2f);
+			gSoloud.fadeFilterParameter(gMusicHandle, 0, SoLoud::BiquadResonantFilter::FREQUENCY, 200, 0.2f);
+			gSoloud.fadeFilterParameter(gMusicHandle, 0, SoLoud::BiquadResonantFilter::WET, 1, 0.2f);
 		}
 		mode_d = 0;
 	}
@@ -252,7 +252,7 @@ void render()
 	{
 		if (mode_d != 1)
 		{
-			gSoloud.fadeFilterParameter(gMusicHandle, 0, 3, 0.5f, 2.0f);
+			gSoloud.fadeFilterParameter(gMusicHandle, 0, SoLoud::BiquadResonantFilter::WET, 0.5f, 2.0f);
 		}
 		mode_d = 1;
 	}
@@ -261,8 +261,8 @@ void render()
 	{
 		if (mode_d != 2)
 		{
-			gSoloud.fadeFilterParameter(gMusicHandle, 0, 1, 2000, 1.0f);
-			gSoloud.fadeFilterParameter(gMusicHandle, 0, 3, 0, 1.0f);
+			gSoloud.fadeFilterParameter(gMusicHandle, 0, SoLoud::BiquadResonantFilter::FREQUENCY, 2000, 1.0f);
+			gSoloud.fadeFilterParameter(gMusicHandle, 0, SoLoud::BiquadResonantFilter::WET, 0, 1.0f);
 		}
 		mode_d = 2;
 	}
@@ -270,8 +270,8 @@ void render()
 	{
 		if (mode_d != 3)
 		{
-			gSoloud.fadeFilterParameter(gMusicHandle, 0, 1, 200, 0.3f);
-			gSoloud.fadeFilterParameter(gMusicHandle, 0, 3, 1, 0.3f);
+			gSoloud.fadeFilterParameter(gMusicHandle, 0, SoLoud::BiquadResonantFilter::FREQUENCY, 200, 0.3f);
+			gSoloud.fadeFilterParameter(gMusicHandle, 0, SoLoud::BiquadResonantFilter::WET, 1, 0.3f);
 		}
 		mode_d = 3;
 	}
@@ -328,9 +328,9 @@ void render()
 	drawstring(temp,0,60);
 	sprintf(temp, "Music pan: %3.3f", gSoloud.getPan(gMusicHandle));
 	drawstring(temp,0,80);
-	sprintf(temp, "Music filter wet: %3.3f", gSoloud.getFilterParameter(gMusicHandle,0,3));
+	sprintf(temp, "Music filter wet: %3.3f", gSoloud.getFilterParameter(gMusicHandle,0,SoLoud::BiquadResonantFilter::WET));
 	drawstring(temp,0,100);
-	sprintf(temp, "Music filter freq: %3.3f", gSoloud.getFilterParameter(gMusicHandle,0,1));
+	sprintf(temp, "Music filter freq: %3.3f", gSoloud.getFilterParameter(gMusicHandle,0,SoLoud::BiquadResonantFilter::FREQUENCY));
 	drawstring(temp,0,120);
 
 	// Unlock if needed

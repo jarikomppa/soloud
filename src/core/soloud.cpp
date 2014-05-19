@@ -27,10 +27,23 @@ freely, subject to the following restrictions:
 #include <math.h> // sin
 #include "soloud_internal.h"
 
+//#define FLOATING_POINT_DEBUG
+
+#ifdef FLOATING_POINT_DEBUG
+#include <float.h>
+#endif
+
 namespace SoLoud
 {
 	Soloud::Soloud()
 	{
+#ifdef FLOATING_POINT_DEBUG
+		unsigned int u;
+		u = _controlfp(0, 0);
+		u = u & ~(_EM_INVALID | /*_EM_DENORMAL |*/ _EM_ZERODIVIDE | _EM_OVERFLOW /*| _EM_UNDERFLOW  | _EM_INEXACT*/);
+		_controlfp(u, _MCW_EM);
+#endif
+		
 		mScratch = NULL;
 		mScratchSize = 0;
 		mScratchNeeded = 0;

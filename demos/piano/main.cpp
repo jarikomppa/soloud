@@ -135,12 +135,16 @@ void render()
 		for (i = 0; i < 256; i++)
 		{			
 			int v = 256-(int)floor(fft[i] * 127 * 0.1);
+			if (v < 0) v = 0;
+			if (v > 256) v = 256;
 			for (j = v; j < 256; j++)
 			{
 				putpixel(i,j,0x0000ff);
 			}
 
 			v = (int)floor(buf[i] * 127 + 128);
+			if (v < 0) v = 0;
+			if (v > 256) v = 256;
 			for (j = 0; j < 6; j++)
 			{
 				putpixel(i,j+v,0xff0000);
@@ -359,7 +363,7 @@ int main(int argc, char *argv[])
 				case SDLK_m: 
 					gBQRFilter.setParams(SoLoud::BiquadResonantFilter::LOWPASS, 44100, 1000, 2);  
 					gBus.setFilter(1, &gBQRFilter); 
-					gSoloud.oscillateFilterParameter(bushandle, 1, 1, 500, 6000, 4);  
+					gSoloud.oscillateFilterParameter(bushandle, 1, SoLoud::BiquadResonantFilter::FREQUENCY, 500, 6000, 4);  
 					say("Oscillating low pass filter");
 					break; 				
 				case SDLK_a: 

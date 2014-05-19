@@ -33,14 +33,17 @@ freely, subject to the following restrictions:
 #include "soloud.h"
 #include "soloud_wav.h"
 #include "soloud_wavstream.h"
+#include "soloud_sfxr.h"
 
 
 SoLoud::Soloud gSoloud;
-SoLoud::Wav gSfx;
+SoLoud::Sfxr gSfx;
 SoLoud::WavStream gMusic1, gMusic2;
 int gMusichandle1, gMusichandle2;
 
 SDL_Surface *screen;
+SDL_Surface *font;
+
 
 void putpixel(int x, int y, int color)
 {
@@ -49,6 +52,33 @@ void putpixel(int x, int y, int color)
 	unsigned int *ptr = (unsigned int*)screen->pixels;
 	int lineoffset = y * (screen->pitch / 4);
 	ptr[lineoffset + x] = color;
+}
+
+int drawchar(int ch, int x, int y)
+{
+	int i, j, maxx = 0;
+	for (i = 0; i < 16; i++)
+	{
+		for (j = 0; j < 16; j++)
+		{
+			if (((char*)font->pixels)[((ch-32)*16+i)*16+j])
+			{
+				putpixel(x+j,y+i,0xffffffff);
+				if (j > maxx) maxx = j;
+			}
+		}
+	}
+	return maxx + 1;
+}
+
+void drawstring(char * s, int x, int y)
+{
+	while (*s)
+	{
+		x += drawchar(*s, x, y);
+		if (*s == 32) x += 3;
+		s++;
+	}
 }
 
 
@@ -77,12 +107,16 @@ void render()
 		for (i = 0; i < 256; i++)
 		{			
 			int v = 256-(int)floor(fft[i] * 127);
+			if (v < 0) v = 0;
+			if (v > 256) v = 256;
 			for (j = v; j < 256; j++)
 			{
 				putpixel(i,j,0x0000ff);
 			}
 
 			v = (int)floor(buf[i] * 127 + 128);
+			if (v < 0) v = 0;
+			if (v > 256) v = 256;
 			for (j = 0; j < 6; j++)
 			{
 				putpixel(i,j+v,0xff0000);
@@ -92,6 +126,10 @@ void render()
 			last = v;
 		}
 	}
+
+	drawstring("1-6: sfxr sound effects",0,0);
+	drawstring("7-8: switch music",0,16);
+	drawstring("9-0: slow down/speed up",0,32);
 
 	// Unlock if needed
 	if (SDL_MUSTLOCK(screen)) 
@@ -105,7 +143,6 @@ void render()
 // Entry point
 int main(int argc, char *argv[])
 {
-	gSfx.load("audio/hit.ogg");
 	gMusic1.load("audio/algebra_loop.ogg");
 	gMusic2.load("audio/delphi_loop.ogg");
 
@@ -127,6 +164,7 @@ int main(int argc, char *argv[])
 
 	// Attempt to create a 640x480 window with 32bit pixels.
 	screen = SDL_SetVideoMode(400, 256, 32, SDL_SWSURFACE);
+	font = SDL_LoadBMP("graphics/font.bmp");
 
 	// If we fail, return error.
 	if ( screen == NULL ) 
@@ -140,9 +178,12 @@ int main(int argc, char *argv[])
 	gSoloud.setProtectVoice(gMusichandle1, 1);
 	gSoloud.setProtectVoice(gMusichandle2, 1);
 
+	int cycle = 0;
+
 	// Main loop: loop forever.
 	while (1)
 	{
+		cycle++;
 		// Render stuff
 		render();
 		int h;
@@ -156,27 +197,46 @@ int main(int argc, char *argv[])
 				switch (event.key.keysym.sym)
 				{
 				case SDLK_1: 
-					h = gSoloud.play(gSfx, 1, ((rand()%512)-256)/256.0f);
-					gSoloud.setRelativePlaySpeed(h, (rand()%512)/256.0f + 0.1f);
-					gSoloud.fadePan(h, 0, 0.5f);
+					gSfx.loadPreset(SoLoud::Sfxr::EXPLOSION, cycle);
+					gSoloud.play(gSfx, 1, ((rand()%512)-256)/256.0f);
 					break;
-				case SDLK_2:
+				case SDLK_2: 
+					gSfx.loadPreset(SoLoud::Sfxr::BLIP, cycle);
+					gSoloud.play(gSfx, 1, ((rand()%512)-256)/256.0f);
+					break;
+				case SDLK_3: 
+					gSfx.loadPreset(SoLoud::Sfxr::COIN, cycle);
+					gSoloud.play(gSfx, 1, ((rand()%512)-256)/256.0f);
+					break;
+				case SDLK_4: 
+					gSfx.loadPreset(SoLoud::Sfxr::HURT, cycle);
+					gSoloud.play(gSfx, 1, ((rand()%512)-256)/256.0f);
+					break;
+				case SDLK_5: 
+					gSfx.loadPreset(SoLoud::Sfxr::JUMP, cycle);
+					gSoloud.play(gSfx, 1, ((rand()%512)-256)/256.0f);
+					break;
+				case SDLK_6: 
+					gSfx.loadPreset(SoLoud::Sfxr::LASER, cycle);
+					gSoloud.play(gSfx, 1, ((rand()%512)-256)/256.0f);
+					break;
+				case SDLK_7:
 					gSoloud.setPause(gMusichandle1, 0);
 					gSoloud.fadeVolume(gMusichandle1, 1, 2);
 					gSoloud.fadeVolume(gMusichandle2, 0, 2);
 					gSoloud.schedulePause(gMusichandle2, 2);
 					break;
-				case SDLK_3:
+				case SDLK_8:
 					gSoloud.setPause(gMusichandle2, 0);
 					gSoloud.fadeVolume(gMusichandle2, 1, 2);
 					gSoloud.fadeVolume(gMusichandle1, 0, 2);
 					gSoloud.schedulePause(gMusichandle1, 2);
 					break;
-				case SDLK_4:
+				case SDLK_9:
 					gSoloud.fadeRelativePlaySpeed(gMusichandle1, 0.2f, 5);
 					gSoloud.fadeRelativePlaySpeed(gMusichandle2, 0.2f, 5);
 					break;
-				case SDLK_5:
+				case SDLK_0:
 					gSoloud.fadeRelativePlaySpeed(gMusichandle1, 1, 5);
 					gSoloud.fadeRelativePlaySpeed(gMusichandle2, 1, 5);
 					break;

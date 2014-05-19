@@ -37,20 +37,25 @@ namespace SoLoud
 			stopSound(aSound);
 		}
 
+		// Creation of an audio instance may take significant amount of time,
+		// so let's not do it inside the audio thread mutex.
+		aSound.mSoloud = this;
+		SoLoud::AudioSourceInstance *instance = aSound.createInstance();
+
 		if (mLockMutexFunc) mLockMutexFunc(mMutex);
 		int ch = findFreeVoice();
 		if (ch < 0) 
 		{
 			if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+			delete instance;
 			return -1;
 		}
 		if (!aSound.mAudioSourceID)
 		{
 			aSound.mAudioSourceID = mAudioSourceID;
 			mAudioSourceID++;
-			aSound.mSoloud = this;
 		}
-		mVoice[ch] = aSound.createInstance();
+		mVoice[ch] = instance;
 		mVoice[ch]->mAudioSourceID = aSound.mAudioSourceID;
 		mVoice[ch]->mBusHandle = aBus;
 		mVoice[ch]->init(mPlayIndex, aSound.mBaseSamplerate, aSound.mChannels, aSound.mFlags);

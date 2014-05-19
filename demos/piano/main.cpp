@@ -37,6 +37,7 @@ freely, subject to the following restrictions:
 #include "soloud_speech.h"
 #include "soloud_fftfilter.h"
 #include "soloud_biquadresonantfilter.h"
+#include "soloud_lofifilter.h"
 
 #ifdef USE_PORTMIDI
 #include "portmidi.h"
@@ -57,6 +58,7 @@ SoLoud::EchoFilter gFilter;		// Simple echo filter
 SoLoud::BiquadResonantFilter gBQRFilter;   // BQR filter
 SoLoud::Bus gBus;
 SoLoud::FFTFilter gFftFilter;
+SoLoud::LofiFilter gLofiFilter;
 
 float gAttack = 0.02f;
 float gRelease = 0.5f;
@@ -336,36 +338,41 @@ int main(int argc, char *argv[])
 					gEcho = 0;
 					break;
 				case SDLK_x: 
-					gBus.setFilter(0, &gFilter); 
+					gBus.setFilter(1, &gFilter); 
 					say("Echo filter");
 					gEcho = 1;
 					break;
 				case SDLK_c: 
 					gBQRFilter.setParams(SoLoud::BiquadResonantFilter::LOWPASS, 44100, 1000, 2);  
-					gBus.setFilter(1, &gBQRFilter); 
+					gBus.setFilter(2, &gBQRFilter); 
 					say("Low pass filter 1000 hz");
 					break;
 				case SDLK_v: 
 					gBQRFilter.setParams(SoLoud::BiquadResonantFilter::LOWPASS, 44100, 500, 8);   
-					gBus.setFilter(1, &gBQRFilter); 
+					gBus.setFilter(2, &gBQRFilter); 
 					say("Low pass filter 500 hz");
 					break;
 				case SDLK_b: 
 					gBQRFilter.setParams(SoLoud::BiquadResonantFilter::HIGHPASS, 44100, 1000, 8); 
-					gBus.setFilter(1, &gBQRFilter); 
+					gBus.setFilter(2, &gBQRFilter); 
 					say("High pass filter 1000 hz");
 					break;
 				case SDLK_n: 
 					gBQRFilter.setParams(SoLoud::BiquadResonantFilter::BANDPASS, 44100, 1000, 1); 
-					gBus.setFilter(1, &gBQRFilter); 
+					gBus.setFilter(2, &gBQRFilter); 
 					say("Band pass filter 1000 hz");
 					break;
 				case SDLK_m: 
 					gBQRFilter.setParams(SoLoud::BiquadResonantFilter::LOWPASS, 44100, 1000, 2);  
-					gBus.setFilter(1, &gBQRFilter); 
-					gSoloud.oscillateFilterParameter(bushandle, 1, SoLoud::BiquadResonantFilter::FREQUENCY, 500, 6000, 4);  
+					gBus.setFilter(2, &gBQRFilter); 
+					gSoloud.oscillateFilterParameter(bushandle, 2, SoLoud::BiquadResonantFilter::FREQUENCY, 500, 6000, 4);  
 					say("Oscillating low pass filter");
-					break; 				
+					break;
+				case SDLK_l:
+					gLofiFilter.setParams(8000, 3);
+					gBus.setFilter(0, &gLofiFilter); 
+					say("Low-fidelity filter");
+					break;
 				case SDLK_a: 
 					gWaveSelect = 0;
 					gWave.setWaveform(SoLoud::Basicwave::SINE); 

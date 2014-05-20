@@ -130,8 +130,8 @@ Soloud.setFilterParameter()
 Sets a parameter for a live instance of a filter. The filter must
 support changing of live parameters; otherwise this call does nothing.
 
-    soloud.setFilterParameter(bar,lp,cutoff,1000); 
-    // set bar's low pass to cut at 1000hz
+    soloud.setFilterParameter(h, 3, FILTER::CUTOFF, 1000); 
+    // set h's 3rd filter's "cutoff" value to 1000
 
 Soloud.getFilterParameter()
 ---------------------------
@@ -139,5 +139,5 @@ Soloud.getFilterParameter()
 Gets a parameter from a live instance of a filter. The filter must
 support changing of live parameters; otherwise this call returns zero.
 
-    float v = soloud.getFilterParameter(bar,lp,cutoff); 
-    // get bar's low pass cutoff
+    float v = soloud.getFilterParameter(h,3,FILTER::CUTOFF); 
+    // get h's 3rd filter's "cutoff" value

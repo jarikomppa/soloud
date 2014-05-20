@@ -1,0 +1,28 @@
+SoLoud::LofiFilter
+============================
+
+The lofi filter is a signal degrading filter. You can adjust both
+the bit depth and the sample rate of the output, and these parameters
+can also be adjusted (and even faded) on the fly.
+
+    // Set up low-pass filter
+    gLofiFilter.setParams(8000, 5);  
+    // Set the filter as the first filter of the bus
+    gBus.setFilter(0, &gLofiFilter); 
+
+It's also possible to set, fade or oscillate the parameters of a "live" filter
+
+    gSoloud.fadeFilterParameter(
+      gMusicHandle, // Sound handle
+      0,            // First filter
+      SoLoud::LofiFilter::BITDEPTH, // What to adjust
+      2,            // Target value
+      3);           // Time in seconds
+      
+Currently, four parameters can be adjusted:
+
+Parameter   Description
+----------- -------------
+WET         Filter's wet signal; 1.0f for fully filtered, 0.0f for original, 0.5f for half and half.
+SAMPLERATE  Filter's samplerate parameter
+BITDEPTH    Filter's bit-depth parameter

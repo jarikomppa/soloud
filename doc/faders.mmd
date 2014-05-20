@@ -140,8 +140,8 @@ Soloud.fadeFilterParameter()
 Fades a parameter on a live instance of a filter. The filter must
 support changing of live parameters; otherwise this call does nothing.
 
-    soloud.fadeFilterParameter(bar,lp,cutoff,1000,1); 
-    // Fades bar's low pass to cut at 1000hz
+    soloud.fadeFilterParameter(h,3,FILTER::CUTOFF,1000,1); 
+    // Fades h's 3rd filter CUTOFF to 1000 in 1 second
 
 Soloud.oscillateFilterParameter()
 ---------------------------------
@@ -149,5 +149,5 @@ Soloud.oscillateFilterParameter()
 Oscillates a parameter on a live instance of a filter. The filter must
 support changing of live parameters; otherwise this call does nothing.
 
-    soloud.setFilterParameter(bar,lp,cutoff,500,1000,2); 
-    // Oscillates the bar's lp filter's cutoff between 500 and 1kHz
+    soloud.setFilterParameter(h,3,FILTER::CUTOFF,500,1000,2); 
+    // Oscillates the h's 3rd filter's CUTOFF between 500 and 1000

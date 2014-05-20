@@ -19,7 +19,14 @@ Also note that the granularity is likely to be rather high (possibly
 around 45ms), so using this as the sole clock source for animation will
 lead to rather low framerate (possibly around 20hz). To fix this, either
 use some other clock source and only sync with the stream time
-occasionally, or use some kind of low-pass filter.
+occasionally, or use some kind of low-pass filter, such as..
+
+    mytime = (mytime * 9 + soloud.getStreamTime(h)) / 10;
+    
+While not perfect, that's way better than using the stream time directly.
+
+![Low-pass filtered time values](images/time)
+
 
 Soloud.isValidChannelHandle()
 -----------------------------
@@ -27,7 +34,7 @@ Soloud.isValidChannelHandle()
 The isValidChannelHandle function can be used to check if a handle is
 still valid.
 
-    if (soloud.isValidChannelHandle(h)) delete foobar;
+    if (!soloud.isValidChannelHandle(h)) delete foobar;
 
 If the handle is invalid, the isValidChannelHandle will return 0.
 
@@ -49,7 +56,7 @@ Sets, or clears, the global filter.
 
 Setting the global filter to NULL will clear the global filter. The
 default maximum number of global filters active is 4, but this can be
-changed in a global constant in soloud.h.
+changed in a global constant in soloud.h (and rebuilding SoLoud).
 
 Soloud.calcFFT()
 ----------------

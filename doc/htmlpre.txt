@@ -49,6 +49,7 @@
 <a href="biquadfilter.html">SoLoud::BiquadReso..</a><br>
 <a href="echofilter.html">SoLoud::EchoFilter</a><br>
 <a href="fftfilter.html">SoLoud::FFTFilter</a><br>
+<a href="lofifilter.html">SoLoud::LofiFilter</a><br>
 <br>
 <a href="backends.html">Back-ends</a><br>
 <hr>

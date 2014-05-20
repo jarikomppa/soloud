@@ -41,11 +41,14 @@ most of them.
              int aPaused = 0,      // Not paused
              int aBus = 0);        // Primary bus
 
+Unless you know what you're doing, leave the aBus parameter to zero.
+
 The play function returns a channel handle which can be used to adjust
 the parameters of the sound while it's playing. The most common
 parameters can be set with the play function parameters, but for more
 complex processing you may want to start the sound paused, adjust the
 parameters, and then un-pause it.
+
 
     int h = soloud.play(sound, 1, 0, 1);  // start paused
     soloud.setRelativePlaySpeed(h, 0.8f); // change a parameter

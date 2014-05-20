@@ -23,5 +23,13 @@ If you wish to use portmidi with the piano example, run premake with an addition
 
     premake4 --with-portmidi vs2010
 
-If you wish to include the xaudio2 back-end, use the parameter --with-xaudio2. The back-end is not included by default due to the requirement of xaudio2.lib.
+If you wish to include the xaudio2 back-end, use the parameter:
+
+    premake4 --with-xaudio2 vs2010
+
+The back-end is not included by default due to the requirement of xaudio2.lib.
+
+To include libmodplug, yet another parameter is needed:
+
+    premake4 --with-libmodplug vs2010
     

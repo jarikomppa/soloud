@@ -37,17 +37,21 @@ If the sound doesn't exist anymore (either it's ended or you've played
 so many sounds at once it's channel has been taken over by some other
 sound), the handle is still safe to use - it just doesn't do anything.
 
-There's also a pure "C" version of the whole API which can be used from non-c
-languages by using SoLoud as an DLL.
+There's also a pure "C" version of the whole API which can even be used 
+from non-c languages by using SoLoud as an DLL.
 
 How free?
 ---------
 
-SoLoud is released under the ZLib/LibPNG license. That means you can use
-it in free or commercial applications as much as you want. You can
-modify it. You don't need to give the changes back. You don't need to
-release the source code. You don't need to add a splash screen. You
-don't need to mention it in your printed manual.
+SoLoud is released under the ZLib/LibPNG license. That means, among 
+other things, that:
+
+- You can use it in free or commercial applications as much as you want. 
+- You can modify it. (But you don't need to).
+- You don't need to give the changes back. (But you can).
+- You don't need to release the source code. (But you can).
+- You don't need to add a splash screen. (But you can).
+- You don't need to mention it in your printed manual. (But you can).
 
 Basically the only things the license forbids are suing me, or claiming
 that you made SoLoud. If you redistribute the source code, the license
@@ -56,6 +60,8 @@ needs to be there. But not with the binaries.
 Parts of the SoLoud package were not made by me, and those either have a
 similar license, or more permissive (such as Unlicense, CC0, WTFPL or
 Public Domain).
+
+
 
 How Powerful?
 -------------
@@ -69,6 +75,8 @@ with powerful functionality. Some of the features include:
 - Mixing busses for grouping of audio into different uses and adjusting their attributes in one go.
 - Gapless looping.
 - Playing several ogg streams at once.
+- Sound effects synthesizer.
+- Modplug library capable of playing various multi-channel music formats (including mod, s3m, it, xm, mid, abc).
 - Easy cleanup.
 
 There's a Catch, Right?
@@ -82,7 +90,7 @@ stereo.
 It quite probably isn't as fast. As of this writing, it has no
 specialized assembler optimizations, for any platform.
 
-It certainly doesn't come with the support you get from a commercial
+It definitely doesn't come with the support you get from a commercial
 library.
 
 If you're planning to make a multi-million budgeted console game, this

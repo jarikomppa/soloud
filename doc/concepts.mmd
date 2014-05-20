@@ -6,10 +6,13 @@ Back end
 
 SoLoud itself "only" performs audio mixing and some resource handling.
 For it to be useful, it needs one or more sound source and a back end.
-Some other audio systems call back-ends 'sink's. Examples of back-ends 
-would be winmm, portaudio, wasapi and SDL audio. SoLoud comes with 
-several back-ends, and is designed to make back-ends relatively easy to
-implement.
+Some other audio systems use the term 'sink' for the back-ends. 
+Examples of back-ends would be winmm, portaudio, wasapi and SDL audio. 
+SoLoud comes with several back-ends, and is designed to make back-ends 
+relatively easy to implement.
+
+Different back-ends have different characteristics, such as how much
+latency they introduce.
 
 Channel
 -------
@@ -18,6 +21,10 @@ One audio stream can contain one or more channels. Typical audio sources
 are either mono (containing one channel) or stereo (containing two
 channels), but surround sound audio sources may practically have any
 number of channels.
+
+In module music (such as mod, s3m, xm, it), "channel" means one of the
+concurrent sounds played, regardless of speaker configuration. Confusing,
+yes.
 
 Stream
 ------
@@ -66,7 +73,7 @@ clipper, however, is easier to use.
 Sample
 ------
 
-The real world has continious signals, whuch would require infinite
+The real world has continuous signals, which would require infinite
 amount of storage to store (unless you can figure out some kind of
 complicated mathematical formula that represents the signal). So, we
 store discrete samples of signals instead. These samples have
@@ -75,7 +82,7 @@ towards floating point samples.
 
 SoLoud also uses floating point samples internally. First and foremost,
 it makes everything much simpler, and second, modern computing devices
-have become fast enough that this is not really an issue anymore.
+have become fast enough that this is not really a performance issue anymore.
 
 Floating point samples also take more space than, for instance, 16 bit
 samples, but memory and storage sizes have also grown enough to make
@@ -87,9 +94,15 @@ Sample Rate
 -----------
 
 The sample rate represents the number of samples used, per second.
-Typical sample rates are 8000hz, 22050hz, 44100hz and 48000hz. Higher
+Typical sample rates are 8000Hz, 22050Hz, 44100Hz and 48000Hz. Higher
 the sample rates mean clearer sound, but also bigger files, more memory
 and higher processing power requirements.
+
+Hz
+--
+
+Hertz, SI unit of frequency. 1Hz means "once per second", 10Hz means 
+"10 times per second", and 192kHz means "192000 times per second".
 
 Play Speed
 ----------
@@ -113,11 +126,13 @@ Resampling
 
 SoLoud has to perform resampling when mixing. In an ideal case, all of
 the sources and the destination sample rate are the same, and no
-resampling is needed, but this is often not true. Currently, SoLoud
-supports "point sample" resampling, which means it simply skips or
-repeats samples as needed, as well as "linear interpolation", which
-calculates linear interpolation of samples. Higher quality resamplers
-are planned.
+resampling is needed, but this is often not true. 
+
+Currently, SoLoud supports "point sample" resampling, which means it 
+simply skips or repeats samples as needed, as well as "linear 
+interpolation", which calculates linear interpolation of samples. 
+
+Higher quality resamplers are planned.
 
 Pan
 ---
@@ -151,7 +166,8 @@ sample data, while sound instances contain information about an
 As an analogue, if you think of an old vinyl record, the sound source is
 the record, and you can put as many playheads - the instances - on the
 record. All of the playheads can also move at different speeds, output
-to a different pan position and volume.
+to a different pan position and volume, as well as different filter 
+settings.
 
 Latency
 -------
@@ -178,8 +194,9 @@ Filter
 Audio streams can also be modified on the fly for various effects.
 Typical uses are different environmental effects such as echoes or
 reverb, or low pass (bassy sound) / high pass (tinny sound) filters, but
-basically any kind of modification can be done; the primary limitation
-is the processor power.
+basically any kind of modification can be done; the primary limitations
+are processor power, imagination, and developer's skill in digital
+signal processing.
 
 SoLoud lets you hook several filters to a single audio stream, as well
 as to the global audio output.
@@ -190,6 +207,8 @@ Mixing Bus
 In addition to mixing audio streams together at the "global" level,
 SoLoud includes mixing busses which let you mix together groups of audio
 streams. These serve several purposes.
+
+![Mix busses concept](images/mixbus)
 
 The most typical use would be to let the user change the volume of
 different kinds of audio sources - music, sound effects, speech. In this

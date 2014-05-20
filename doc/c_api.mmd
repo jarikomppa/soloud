@@ -1,0 +1,66 @@
+"C"-api / DLL
+=============
+
+In order to support non-c++ environments, SoLoud also has a "C" API.
+
+All of the existing interfaces can be used via the "C" API, but 
+features that require extending SoLoud are not available.
+
+Codegen
+-------
+
+The API is automatically generated from the c++ sources via the 
+codegen tool that is part of the SoLoud sources. In most cases you
+won't need to use the codegen yourself.
+
+The codegen tool parses the SoLoud headers and generates the needed
+headers and wrapper cpp code, as well as the DLL .def file.
+
+API
+---
+
+The "C" API mirrors the c++ API.
+
+If the c++ API functions have default parameters, two functions
+are generated: one without the default parameters, and one with. 
+The one where you can change the default parameters is postfixed Ex, 
+such as Soloud_init and Soloud_initEx.
+
+As an example, here's a simple example in the C++ api:
+
+    SoLoud::Soloud soloud;
+    SoLoud::Speech speech;
+
+    speech.setText("Hello c++ api");
+
+    soloud.init(SoLoud::Soloud::CLIP_ROUNDOFF | 
+                SoLoud::Soloud::ENABLE_VISUALIZATION)
+
+    soloud.setGlobalVolume(4);
+    soloud.play(speech);
+
+    // ...
+
+    soloud.deinit();
+        
+Converted to the "C" API, this becomes:
+
+    Soloud *soloud = Soloud_create();
+    Speech *speech = Speech_create();
+
+    Speech_setText(speech, "Hello c-api");
+
+    Soloud_initEx(soloud, SOLOUD_CLIP_ROUNDOFF | SOLOUD_ENABLE_VISUALIZATION, 
+                  SOLOUD_AUTO, SOLOUD_AUTO, SOLOUD_AUTO);
+
+    Soloud_setGlobalVolume(soloud, 4);
+    Soloud_play(soloud, speech);
+
+    // ...
+
+    Soloud_deinit(soloud);
+        
+    Speech_destroy(speech);
+    Soloud_destroy(soloud);
+
+

@@ -1,0 +1,41 @@
+SoLoud::Sfxr
+===========
+
+The SoLoud::Sfxr is a "retro" sound effect synthesizer based
+on the original Sfxr by Tomas Pettersson.
+
+![Sfxr interface](images/sfxr)
+
+The original sfxr tool was designed to easily generate sound
+effects for Ludum Dare 48h games. SoLoud includes the same
+engine built in, so you can (should you wish) make every
+coin, explosion etc. sound different.
+
+Sfxr.loadPreset()
+-----------------
+
+You can simply tell Sfxr to use one of the presets 
+(COIN, LASER, EXPLOSION, POWERUP, HURT, JUMP, BLIP). Each of the
+presets has several random components, so you can get virtually
+unlimited variations of each. (Not all variants sound good, though).
+
+    void loadPreset(int aPresetNo, int aRandSeed); // Preset to load
+
+If loading fails, the effect will be silent.
+
+    SoLoud::Sfxr coin;
+    coin.loadPreset(Sfxr::COIN, 3247);
+
+Sfxr.loadParams()
+----------
+
+Effect parameters can also be loaded from a configuration file
+saved from the sfxr tool.
+
+    int loadParams(const char *aFilename); // File to load
+
+If loading fails, the return is non-zero.
+
+    SoLoud::Sfxr boom;
+    boom.loadParams("boom.sfx");
+

@@ -3,7 +3,7 @@ echo ---------------------------------------------------------------------
 echo ---------------------------------------------------------------------
 echo Generating HTML docs
 
-call pandoc -s --toc --default-image-extension=png -o soloud.html intro.mmd legal.mmd quickstart.mmd premake.mmd concepts.mmd faq.mmd examples.mmd c_api.mmd basics.mmd attributes.mmd faders.mmd coremisc.mmd audiosource.mmd wav.mmd wavstream.mmd speech.mmd newsoundsources.mmd mixbus.mmd filters.mmd biquadfilter.mmd echofilter.mmd fftfilter.mmd backends.mmd
+call pandoc -s --toc --default-image-extension=png -o soloud.html intro.mmd legal.mmd quickstart.mmd premake.mmd concepts.mmd faq.mmd examples.mmd c_api.mmd basics.mmd attributes.mmd faders.mmd coremisc.mmd audiosource.mmd wav.mmd wavstream.mmd speech.mmd sfxr.mmd newsoundsources.mmd mixbus.mmd filters.mmd biquadfilter.mmd echofilter.mmd fftfilter.mmd backends.mmd
 
 echo ---------------------------------------------------------------------
 echo ---------------------------------------------------------------------
@@ -26,6 +26,7 @@ call pandoc --template=html.pandoc -B htmlpre.txt -A htmlpost.txt --default-imag
 call pandoc --template=html.pandoc -B htmlpre.txt -A htmlpost.txt --default-image-extension=png wav.mmd -o wav.html
 call pandoc --template=html.pandoc -B htmlpre.txt -A htmlpost.txt --default-image-extension=png wavstream.mmd -o wavstream.html
 call pandoc --template=html.pandoc -B htmlpre.txt -A htmlpost.txt --default-image-extension=png speech.mmd -o speech.html
+call pandoc --template=html.pandoc -B htmlpre.txt -A htmlpost.txt --default-image-extension=png sfxr.mmd -o sfxr.html
 call pandoc --template=html.pandoc -B htmlpre.txt -A htmlpost.txt --default-image-extension=png newsoundsources.mmd -o newsoundsources.html
 call pandoc --template=html.pandoc -B htmlpre.txt -A htmlpost.txt --default-image-extension=png mixbus.mmd -o mixbus.html 
 call pandoc --template=html.pandoc -B htmlpre.txt -A htmlpost.txt --default-image-extension=png filters.mmd -o filters.html
@@ -53,6 +54,7 @@ perl -p -i.bak -e "s/code>/code>\n/g" audiosource.html
 perl -p -i.bak -e "s/code>/code>\n/g" wav.html
 perl -p -i.bak -e "s/code>/code>\n/g" wavstream.html
 perl -p -i.bak -e "s/code>/code>\n/g" speech.html
+perl -p -i.bak -e "s/code>/code>\n/g" sfxr.html
 perl -p -i.bak -e "s/code>/code>\n/g" newsoundsources.html
 perl -p -i.bak -e "s/code>/code>\n/g" mixbus.html
 perl -p -i.bak -e "s/code>/code>\n/g" filters.html
@@ -65,7 +67,7 @@ echo ---------------------------------------------------------------------
 echo ---------------------------------------------------------------------
 echo Generating epub
 
-call pandoc -N --toc  --epub-cover-image=images/cover.png -t epub3 --default-image-extension=png -S --epub-stylesheet=epub.css --epub-metadata=metadata.xml -o SoLoud.epub title.txt intro.mmd legal.mmd quickstart.mmd premake.mmd concepts.mmd faq.mmd examples.mmd basics.mmd c_api.mmd attributes.mmd faders.mmd coremisc.mmd audiosource.mmd wav.mmd wavstream.mmd speech.mmd newsoundsources.mmd mixbus.mmd filters.mmd biquadfilter.mmd echofilter.mmd fftfilter.mmd backends.mmd
+call pandoc -N --toc  --epub-cover-image=images/cover.png -t epub3 --default-image-extension=png -S --epub-stylesheet=epub.css --epub-metadata=metadata.xml -o SoLoud.epub title.txt intro.mmd legal.mmd quickstart.mmd premake.mmd concepts.mmd faq.mmd examples.mmd basics.mmd c_api.mmd attributes.mmd faders.mmd coremisc.mmd audiosource.mmd wav.mmd wavstream.mmd speech.mmd sfxr.mmd newsoundsources.mmd mixbus.mmd filters.mmd biquadfilter.mmd echofilter.mmd fftfilter.mmd backends.mmd
 
 echo ---------------------------------------------------------------------
 echo ---------------------------------------------------------------------
@@ -98,6 +100,7 @@ call pandoc --listings --default-image-extension=pdf --chapters newsoundsources.
 call pandoc --listings --default-image-extension=pdf --chapters quickstart.mmd -o quickstart.tex
 call pandoc --listings --default-image-extension=pdf --chapters premake.mmd -o premake.tex
 call pandoc --listings --default-image-extension=pdf --chapters speech.mmd -o speech.tex
+call pandoc --listings --default-image-extension=pdf --chapters sfxr.mmd -o sfxr.tex
 call pandoc --listings --default-image-extension=pdf --chapters wav.mmd -o wav.tex
 call pandoc --listings --default-image-extension=pdf --chapters wavstream.mmd -o wavstream.tex
 del *.aux *.toc *.out *.log *.lg *.4ct *.4tc *.idv *.tmp *.xdv *.xref

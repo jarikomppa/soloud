@@ -39,6 +39,7 @@
 <a href="wav.html">SoLoud::Wav</a><br>
 <a href="wavstream.html">SoLoud::WavStream</a><br>
 <a href="speech.html">SoLoud::Speech</a><br>
+<a href="sfxr.html">SoLoud::Sfxr</a><br>
 <a href="newsoundsources.html">New Audio Sources</a><br>
 <br>
 <a href="mixbus.html">SoLoud::Bus</a><br>

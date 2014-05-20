@@ -9,16 +9,20 @@ Wav files, as well as Ogg Vorbis files. Both of these only support a
 limited feature set of said formats, so you may experience some issues
 with strange files.
 
-Additionally, SoLoud comes with a speech synthesizer.
+Additionally, SoLoud comes with a speech synthesizer and a retro sound
+effect synthesizer Sfxr.
+
+Finally, SoLoud includes libmodplug, through which it can play 669, abc, 
+amf, ams, dbm, dmf, dsm, far, it, j2b, mdl, med, mid, mod, mt2, mtm, okt, 
+pat, psm, ptm, s3m, stm, ult, umx, xm, as well as wider support for wav 
+files than the stand-alone wav audio source. (Due to the size of 
+libmodplug, SoLoud can be compiled without it).
 
 The interface for audio sources is relatively simple, so new formats and
 noise generators, as well as audio filters, can be made.
 
 An example sin/saw/triangle/square generator is also available, as part
 of the "piano" example.
-
-Since there are several liberally-licensed audio sources available, the
-number of formats SoLoud will support is likely to grow in the future.
 
 What dependencies does it have?
 -------------------------------
@@ -32,8 +36,7 @@ painless as possible.
 Is there a DLL / C-Interface?
 -----------------------------
 
-Not yet. This has been requested though, so one may appear at some
-point.
+Yes! This DLL can be used from non-c++ environments through the "C" interface.
 
 What's the animal in the logo?
 ------------------------------

@@ -1,0 +1,29 @@
+SoLoud::Modplug
+===============
+
+The SoLoud::Modplug is a module-playing engine, capable of
+replaying wide variety of multichannel music (669, abc, 
+amf, ams, dbm, dmf, dsm, far, it, j2b, mdl, med, mid, mod, mt2, mtm, okt, 
+pat, psm, ptm, s3m, stm, ult, umx, xm). It also loads wav files, and
+may support wider support for wav files than the stand-alone wav audio source. 
+
+Due to its size, it's possible to compile SoLoud without the modplug
+support.
+
+The midi formats (.mid and .abc) require a library of instruments (patches) to be
+available. One free set can be downloaded from the SoLoud downloads page. By default, 
+the patches are loaded from pat/ directory.
+
+
+Modplug.load()
+-----------------
+
+You tell modplug to load a file with the load function:
+
+    int load(const char *aFilename); // File to load
+
+If loading fails, the return is non-zero.
+
+    SoLoud::Modplug spacedeb;
+    spacedeb.load("spacedeb.mod");
+

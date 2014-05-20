@@ -6,11 +6,11 @@ may be in 8 or 16 bit raw RIFF WAV files, or compressed Ogg Vorbis
 files.
 
 The sounds are loaded and converted to float samples, which means that
-every second of a 44100hz stereo sound takes about 350kB of memory. The
+every second of a 44100Hz stereo sound takes about 350kB of memory. The
 good side is, after loading, these samples are very lightweight, as
 their processing is mostly just a memory copy.
 
-For lenghty samples like background music, you may want to use
+For lengthy samples like background music, you may want to use
 SoLoud::WavStream instead.
 
 Wav.load()

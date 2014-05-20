@@ -13,7 +13,7 @@ The object may be global, member variable, or even a local variable, it
 can be allocated from the heap or the stack, as long as the above demand
 is met. If the back-end gets destroyed before the back-end clean-up call
 is made, the result is undefined. As in, bad. Most likely, a crash.
-Bluescreens in Windows are not out of the question.
+Blue screens in Windows are not out of the question.
 
     SoLoud::Soloud *soloud = new SoLoud::Soloud; // object created
     soloud->init();             // back-end initialization
@@ -23,7 +23,7 @@ Bluescreens in Windows are not out of the question.
 
 Seriously: remember to call the cleanup function. The SoLoud object
 destructor also calls the cleanup function, but if you perform your
-application's teardown in an unpredictable order (such as having the
+application's tear-down in an unpredictable order (such as having the
 SoLoud object be a global variable), the back-end may end up trying to
 use resources that are no longer available. So, it's best to call the
 cleanup function manually.

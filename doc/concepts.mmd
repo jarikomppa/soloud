@@ -59,7 +59,7 @@ things tend to break. Same goes for audio.
 
 SoLoud handles all audio as floats, but performs clipping before passing
 the samples out, so all values are in the -1..1 range. There's two ways
-SoLoud can perform the clipping; the most straghtforward is simply to
+SoLoud can perform the clipping; the most straightforward is simply to
 set all values outside this range to the border value, or alternatively
 a roundoff calculation can be performed, which "compresses" the loud
 sounds. The more quiet sounds are largely unchanged, while the loud end

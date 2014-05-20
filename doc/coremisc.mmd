@@ -17,7 +17,7 @@ earlier.
 
 Also note that the granularity is likely to be rather high (possibly
 around 45ms), so using this as the sole clock source for animation will
-lead to rather low framerate (possibly around 20hz). To fix this, either
+lead to rather low framerate (possibly around 20Hz). To fix this, either
 use some other clock source and only sync with the stream time
 occasionally, or use some kind of low-pass filter, such as..
 
@@ -100,3 +100,9 @@ is used to generate visualization FFT data.
 For this function to work properly, you also need to initialize SoLoud
 with the Soloud::ENABLE\_VISUALIZATION flag. Otherwise the source data
 will not be gathered, and the result is undefined (probably zero).
+
+Soloud.getVersion()
+-------------------
+
+Returns the version of the SoLoud library. Same as SOLOUD_VERSION macro.
+Mostly useful when using the DLL, to check the DLL's library version.

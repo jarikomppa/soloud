@@ -3,10 +3,49 @@ Downloads
 
 This page lists SoLoud downloads, as well as other relevant information.
 
+Development
+-----------
+You can find the latest, bleeding-edge version on GitHub at: <https://github.com/jarikomppa/soloud>. Note that the latest development version may be unstable.
+
+There's a mailing list at <http://groups.google.com/d/forum/soloud>
+
+Finally, there's #soloud on ircnet, if you want to pop by.
+
+Swag
+----
+Yes, someone asked. So, you can buy SoLoud swag here: <http://solstuff.spreadshirt.fi/>
+
+Additional files
+----------------
+[timgm6mb_pat.zip](timgm6mb_pat.zip) Free MIDI patches for the libmodplug .mid / .abc playing (around 11MB zip) by [http://www.timbrechbill.com](http://www.timbrechbill.com), converted from sf2 to .pat files with [http://alsa.opensrc.org/Unsf](unsf).
+
+    "I created some of the samples myself and all others are either public 
+    domain or fall under the terms of the GNU General Public License." 
+    -- Tim Brechbill - http://www.timbrechbill.com
+
+
 Stable Releases 
 --------------- 
 
-[soloud_20131109.zip](soloud_20131109.zip) <<- Download here
+[soloud_2014????.zip](soloud_2014????.zip) <<- Download here
+
+Documentation: [PDF](soloud_2014????.pdf) | [EPUB](soloud_2014????.epub) | [MOBI](soloud_2014????.mobi) | [HTML](soloud_2014????.html) 
+
+- SoLoud "ELF" release
+- Critical bug fix: process was sometimes left hanging at application quit.
+- Audio instance creation moved outside the audio thread mutex (some instance creation may take quite a bit of time, causing stutter)
+- Wav/wavstream now can report length of the stream in seconds via getLength()
+- Filter interface has simplified parameter handling to make writing new filters easier
+- Lo-fi filter
+- Libmodplug audio source for various formats (669, abc, amf, ams, dbm, dmf, dsm, far, it, j2b, mdl, med, mid, mod, mt2, mtm, okt, pat, psm, ptm, s3m, stm, ult, umx, xm, as well as wider support for wav files).
+- SFXR audio source for old school sound effects
+- Greatly simplified init pattern; no need (if you don't want) to care about which back-end to use
+- Dynamic linking of most back-ends
+- "C" API code generator
+- DLL based on the "C" API
+- Misc smaller fixes and reorganization
+
+[soloud_20131109.zip](soloud_20131109.zip) 
 
 Documentation: [PDF](soloud_20131109.pdf) | [EPUB](soloud_20131109.epub) | [MOBI](soloud_20131109.mobi) | [HTML](soloud_20131109.html) 
 
@@ -52,14 +91,3 @@ Documentation: [PDF](soloud_20131109.pdf) | [EPUB](soloud_20131109.epub) | [MOBI
 
 The package contains all sources, and pre-compiled win32 binaries. The sources should(tm) be portable to other platforms.
 
-Development
------------
-You can find the latest, bleeding-edge version on GitHub at: <https://github.com/jarikomppa/soloud>. Note that the latest development version may be unstable.
-
-There's a mailing list at <http://groups.google.com/d/forum/soloud>
-
-Finally, there's #soloud on ircnet, if you want to pop by.
-
-Swag
-----
-Yes, someone asked. So, you can buy SoLoud swag here: <http://solstuff.spreadshirt.fi/>

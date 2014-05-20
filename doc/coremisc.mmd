@@ -29,7 +29,7 @@ still valid.
 
     if (soloud.isValidChannelHandle(h)) delete foobar;
 
-If the handle is invalid, the getPause will return 0.
+If the handle is invalid, the isValidChannelHandle will return 0.
 
 Soloud.getActiveVoiceCount()
 ----------------------------
@@ -38,7 +38,7 @@ Returns the number of concurrent sounds that are playing at the moment.
 
     if (soloud.getActiveVoiceCount() == 0) enjoy_the_silence();
 
-If the handle is invalid, the getPause will return 0.
+If the handle is invalid, the getActiveVoiceCount will return 0.
 
 Soloud.setGlobalFilter()
 ------------------------

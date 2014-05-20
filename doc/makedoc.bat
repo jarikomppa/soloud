@@ -3,7 +3,7 @@ echo ---------------------------------------------------------------------
 echo ---------------------------------------------------------------------
 echo Generating HTML docs
 
-call pandoc -s --toc --default-image-extension=png -o soloud.html intro.mmd legal.mmd quickstart.mmd premake.mmd concepts.mmd faq.mmd examples.mmd basics.mmd attributes.mmd faders.mmd coremisc.mmd audiosource.mmd wav.mmd wavstream.mmd speech.mmd newsoundsources.mmd mixbus.mmd filters.mmd biquadfilter.mmd echofilter.mmd fftfilter.mmd backends.mmd
+call pandoc -s --toc --default-image-extension=png -o soloud.html intro.mmd legal.mmd quickstart.mmd premake.mmd concepts.mmd faq.mmd examples.mmd c_api.mmd basics.mmd attributes.mmd faders.mmd coremisc.mmd audiosource.mmd wav.mmd wavstream.mmd speech.mmd newsoundsources.mmd mixbus.mmd filters.mmd biquadfilter.mmd echofilter.mmd fftfilter.mmd backends.mmd
 
 echo ---------------------------------------------------------------------
 echo ---------------------------------------------------------------------
@@ -17,6 +17,7 @@ call pandoc --template=html.pandoc -B htmlpre.txt -A htmlpost.txt --default-imag
 call pandoc --template=html.pandoc -B htmlpre.txt -A htmlpost.txt --default-image-extension=png concepts.mmd -o concepts.html
 call pandoc --template=html.pandoc -B htmlpre.txt -A htmlpost.txt --default-image-extension=png faq.mmd -o faq.html
 call pandoc --template=html.pandoc -B htmlpre.txt -A htmlpost.txt --default-image-extension=png examples.mmd -o examples.html
+call pandoc --template=html.pandoc -B htmlpre.txt -A htmlpost.txt --default-image-extension=png c_api.mmd -o c_api.html
 call pandoc --template=html.pandoc -B htmlpre.txt -A htmlpost.txt --default-image-extension=png basics.mmd -o basics.html
 call pandoc --template=html.pandoc -B htmlpre.txt -A htmlpost.txt --default-image-extension=png attributes.mmd -o attributes.html
 call pandoc --template=html.pandoc -B htmlpre.txt -A htmlpost.txt --default-image-extension=png faders.mmd -o faders.html
@@ -44,6 +45,7 @@ perl -p -i.bak -e "s/code>/code>\n/g" concepts.html
 perl -p -i.bak -e "s/code>/code>\n/g" faq.html
 perl -p -i.bak -e "s/code>/code>\n/g" examples.html
 perl -p -i.bak -e "s/code>/code>\n/g" basics.html
+perl -p -i.bak -e "s/code>/code>\n/g" c_api.html
 perl -p -i.bak -e "s/code>/code>\n/g" attributes.html
 perl -p -i.bak -e "s/code>/code>\n/g" faders.html
 perl -p -i.bak -e "s/code>/code>\n/g" coremisc.html
@@ -63,7 +65,7 @@ echo ---------------------------------------------------------------------
 echo ---------------------------------------------------------------------
 echo Generating epub
 
-call pandoc -N --toc  --epub-cover-image=images/cover.png -t epub3 --default-image-extension=png -S --epub-stylesheet=epub.css --epub-metadata=metadata.xml -o SoLoud.epub title.txt intro.mmd legal.mmd quickstart.mmd premake.mmd concepts.mmd faq.mmd examples.mmd basics.mmd attributes.mmd faders.mmd coremisc.mmd audiosource.mmd wav.mmd wavstream.mmd speech.mmd newsoundsources.mmd mixbus.mmd filters.mmd biquadfilter.mmd echofilter.mmd fftfilter.mmd backends.mmd
+call pandoc -N --toc  --epub-cover-image=images/cover.png -t epub3 --default-image-extension=png -S --epub-stylesheet=epub.css --epub-metadata=metadata.xml -o SoLoud.epub title.txt intro.mmd legal.mmd quickstart.mmd premake.mmd concepts.mmd faq.mmd examples.mmd basics.mmd c_api.mmd attributes.mmd faders.mmd coremisc.mmd audiosource.mmd wav.mmd wavstream.mmd speech.mmd newsoundsources.mmd mixbus.mmd filters.mmd biquadfilter.mmd echofilter.mmd fftfilter.mmd backends.mmd
 
 echo ---------------------------------------------------------------------
 echo ---------------------------------------------------------------------
@@ -79,6 +81,7 @@ call pandoc --listings --default-image-extension=pdf --chapters attributes.mmd -
 call pandoc --listings --default-image-extension=pdf --chapters audiosource.mmd -o audiosource.tex
 call pandoc --listings --default-image-extension=pdf --chapters backends.mmd -o backends.tex
 call pandoc --listings --default-image-extension=pdf --chapters basics.mmd -o basics.tex
+call pandoc --listings --default-image-extension=pdf --chapters c_api.mmd -o c_api.tex
 call pandoc --listings --default-image-extension=pdf --chapters biquadfilter.mmd -o biquadfilter.tex
 call pandoc --listings --default-image-extension=pdf --chapters concepts.mmd -o concepts.tex
 call pandoc --listings --default-image-extension=pdf --chapters coremisc.mmd -o coremisc.tex 

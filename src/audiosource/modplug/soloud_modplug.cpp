@@ -157,7 +157,7 @@ namespace SoLoud
 		mps.mResamplingMode = MODPLUG_RESAMPLE_LINEAR;
 		mps.mStereoSeparation = 128;
 		mps.mMaxMixChannels = 64;
-		mps.mLoopCount = 0;
+		mps.mLoopCount = -1;
 		mps.mFlags = MODPLUG_ENABLE_OVERSAMPLING;
 		ModPlug_SetSettings(&mps);
 #endif

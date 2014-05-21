@@ -45,7 +45,7 @@ namespace SoLoud
 		enum COMBINETYPES
 		{
 			OVER,
-			SUBSTRACT,
+			SUBTRACT,
 			MULTIPLY
 		};
 		virtual FilterInstance *createInstance();

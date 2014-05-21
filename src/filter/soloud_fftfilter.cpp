@@ -168,7 +168,7 @@ namespace SoLoud
 				aBuffer[i] += (n - aBuffer[i]) * mParam[0];
 			}
 			break;
-		case FFTFilter::SUBSTRACT:
+		case FFTFilter::SUBTRACT:
 			for (i = 0; i < SAMPLE_GRANULARITY; i++)
 			{
 				n = aBuffer[i];
@@ -195,7 +195,7 @@ namespace SoLoud
 	FFTFilter::FFTFilter()
 	{
 		mScale = 0.002f;
-		mCombine = SUBSTRACT;
+		mCombine = SUBTRACT;
 		mShift = -15;
 	}
 

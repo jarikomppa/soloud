@@ -81,7 +81,7 @@ namespace SoLoud
 	int sdl_init(SoLoud::Soloud *aSoloud, int aFlags, int aSamplerate, int aBuffer)
 	{
 		if (!dll_SDL_found())
-			return -1;
+			return DLL_NOT_FOUND;
 
 		aSoloud->mMutex = dll_SDL_CreateMutex();
 		SDL_AudioSpec as;
@@ -95,7 +95,7 @@ namespace SoLoud
 		SDL_AudioSpec as2;
 		if (dll_SDL_OpenAudio(&as, &as2) < 0)
 		{
-			return 1;
+			return UNKNOWN_ERROR;
 		}
 		aSoloud->mBackendData = new float[as2.samples*4];
 

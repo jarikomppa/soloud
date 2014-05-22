@@ -73,10 +73,14 @@ namespace SoLoud
 		setParams(4000, 3);
 	}
 
-	void LofiFilter::setParams(float aSampleRate, float aBitdepth)
+	int LofiFilter::setParams(float aSampleRate, float aBitdepth)
 	{
+		if (aSampleRate <= 0 || aBitdepth <= 0)
+			return INVALID_PARAMETER;
+
 		mSampleRate = aSampleRate;
 		mBitdepth = aBitdepth;
+		return 0;
 	}
 
 	LofiFilter::~LofiFilter()

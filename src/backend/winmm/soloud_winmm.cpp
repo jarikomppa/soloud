@@ -31,7 +31,7 @@ namespace SoLoud
 {
 	int winmm_init(Soloud *aSoloud, int aFlags, int aSamplerate, int aBuffer)
 	{
-		return -1;
+		return NOT_IMPLEMENTED;
 	}
 };
 
@@ -135,12 +135,12 @@ namespace SoLoud
         data->bufferEndEvent = CreateEvent(0, FALSE, FALSE, 0);
         if (0 == data->bufferEndEvent)
         {
-            return 1;
+            return UNKNOWN_ERROR;
         }
         data->audioProcessingDoneEvent = CreateEvent(0, FALSE, FALSE, 0);
         if (0 == data->audioProcessingDoneEvent)
         {
-            return 2;
+            return UNKNOWN_ERROR;
         }
         WAVEFORMATEX format;
         ZeroMemory(&format, sizeof(WAVEFORMATEX));
@@ -153,7 +153,7 @@ namespace SoLoud
         if (MMSYSERR_NOERROR != waveOutOpen(&data->waveOut, WAVE_MAPPER, &format, 
                             reinterpret_cast<DWORD_PTR>(data->bufferEndEvent), 0, CALLBACK_EVENT)) 
         {
-            return 3;
+            return UNKNOWN_ERROR;
         }
         data->buffer = new float[data->samples*format.nChannels];
         for (int i=0;i<BUFFER_COUNT;++i) 
@@ -165,7 +165,7 @@ namespace SoLoud
             if (MMSYSERR_NOERROR != waveOutPrepareHeader(data->waveOut, &data->header[i], 
                                                          sizeof(WAVEHDR))) 
             {
-                return 4;
+                return UNKNOWN_ERROR;
             }
         }
         aSoloud->mMutex = Thread::createMutex();
@@ -175,7 +175,7 @@ namespace SoLoud
         data->threadHandle = Thread::createThread(winMMThread, data);
         if (0 == data->threadHandle)
         {
-            return 5;
+            return UNKNOWN_ERROR;
         }
         return 0;
     }

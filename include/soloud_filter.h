@@ -38,7 +38,7 @@ namespace SoLoud
 		Fader *mParamFader;
 		
 		FilterInstance();
-		virtual void initParams(int aNumParams);
+		virtual int initParams(int aNumParams);
 		virtual void updateParams(float aTime);
 		virtual void filter(float *aBuffer, int aSamples, int aChannels, float aSamplerate, float aTime);
 		virtual void filterChannel(float *aBuffer, int aSamples, float aSamplerate, float aTime, int aChannel, int aChannels);

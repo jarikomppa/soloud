@@ -111,13 +111,17 @@ namespace SoLoud
 		return 0;
 	}	
 
-	void Speech::setText(char *aText)
+	int Speech::setText(char *aText)
 	{
-		mSoloud->stopSound(*this);
+		if (aText == NULL)
+			return INVALID_PARAMETER;
+
+		stop();
 		mElement.clear();
 		darray phone;
 		xlate_string(aText, &phone);
 		mFrames = klatt::phone_to_elm(phone.getData(), phone.getSize(), &mElement);
+		return 0;
 	}
 
 	Speech::Speech()

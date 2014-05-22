@@ -47,20 +47,22 @@ enum SOLOUD_ENUMS
 	SOLOUD_WASAPI = 6,
 	SOLOUD_OSS = 7,
 	SOLOUD_OPENAL = 8,
+	SOLOUD_BACKEND_MAX = 9,
 	SOLOUD_CLIP_ROUNDOFF = 1,
 	SOLOUD_ENABLE_VISUALIZATION = 2,
 	BIQUADRESONANTFILTER_NONE = 0,
 	BIQUADRESONANTFILTER_LOWPASS = 1,
 	BIQUADRESONANTFILTER_HIGHPASS = 2,
 	BIQUADRESONANTFILTER_BANDPASS = 3,
-	BIQUADRESONANTFILTER_SAMPLERATE = 0,
-	BIQUADRESONANTFILTER_FREQUENCY = 1,
-	BIQUADRESONANTFILTER_RESONANCE = 2,
-	BIQUADRESONANTFILTER_WET = 3,
-	LOFIFILTER_SAMPLERATE = 0,
-	LOFIFILTER_BITDEPTH = 1,
+	BIQUADRESONANTFILTER_WET = 0,
+	BIQUADRESONANTFILTER_SAMPLERATE = 1,
+	BIQUADRESONANTFILTER_FREQUENCY = 2,
+	BIQUADRESONANTFILTER_RESONANCE = 3,
+	LOFIFILTER_WET = 0,
+	LOFIFILTER_SAMPLERATE = 1,
+	LOFIFILTER_BITDEPTH = 2,
 	FFTFILTER_OVER = 0,
-	FFTFILTER_SUBSTRACT = 1,
+	FFTFILTER_SUBTRACT = 1,
 	FFTFILTER_MULTIPLY = 2,
 	SFXR_COIN = 0,
 	SFXR_LASER = 1,
@@ -97,12 +99,13 @@ int Soloud_init(Soloud * aSoloud);
 int Soloud_initEx(Soloud * aSoloud, int aFlags /* = Soloud::CLIP_ROUNDOFF */, int aBackend /* = Soloud::AUTO */, int aSamplerate /* = Soloud::AUTO */, int aBufferSize /* = Soloud::AUTO */);
 void Soloud_deinit(Soloud * aSoloud);
 int Soloud_getVersion(Soloud * aSoloud);
+const char * Soloud_getErrorString(Soloud * aSoloud, int aErrorCode);
 int Soloud_play(Soloud * aSoloud, AudioSource * aSound);
 int Soloud_playEx(Soloud * aSoloud, AudioSource * aSound, float aVolume /* = 1.0f */, float aPan /* = 0.0f */, int aPaused /* = 0 */, int aBus /* = 0 */);
 void Soloud_seek(Soloud * aSoloud, int aVoiceHandle, float aSeconds);
 void Soloud_stop(Soloud * aSoloud, int aVoiceHandle);
 void Soloud_stopAll(Soloud * aSoloud);
-void Soloud_stopSound(Soloud * aSoloud, AudioSource * aSound);
+void Soloud_stopAudioSource(Soloud * aSoloud, AudioSource * aSound);
 void Soloud_setFilterParameter(Soloud * aSoloud, int aVoiceHandle, int aFilterId, int aAttributeId, float aValue);
 float Soloud_getFilterParameter(Soloud * aSoloud, int aVoiceHandle, int aFilterId, int aAttributeId);
 void Soloud_fadeFilterParameter(Soloud * aSoloud, int aVoiceHandle, int aFilterId, int aAttributeId, float aTo, float aTime);
@@ -147,14 +150,14 @@ float * Soloud_getWave(Soloud * aSoloud);
  */
 void BiquadResonantFilter_destroy(BiquadResonantFilter * aBiquadResonantFilter);
 BiquadResonantFilter * BiquadResonantFilter_create();
-void BiquadResonantFilter_setParams(BiquadResonantFilter * aBiquadResonantFilter, int aType, float aSampleRate, float aFrequency, float aResonance);
+int BiquadResonantFilter_setParams(BiquadResonantFilter * aBiquadResonantFilter, int aType, float aSampleRate, float aFrequency, float aResonance);
 
 /*
  * LofiFilter
  */
 void LofiFilter_destroy(LofiFilter * aLofiFilter);
 LofiFilter * LofiFilter_create();
-void LofiFilter_setParams(LofiFilter * aLofiFilter, float aSampleRate, float aBitdepth);
+int LofiFilter_setParams(LofiFilter * aLofiFilter, float aSampleRate, float aBitdepth);
 
 /*
  * Bus
@@ -165,49 +168,55 @@ void Bus_setFilter(Bus * aBus, int aFilterId, Filter * aFilter);
 int Bus_play(Bus * aBus, AudioSource * aSound);
 int Bus_playEx(Bus * aBus, AudioSource * aSound, float aVolume /* = 1.0f */, float aPan /* = 0.0f */, int aPaused /* = 0 */);
 void Bus_setLooping(Bus * aBus, int aLoop);
+void Bus_stop(Bus * aBus);
 
 /*
  * EchoFilter
  */
 void EchoFilter_destroy(EchoFilter * aEchoFilter);
 EchoFilter * EchoFilter_create();
-void EchoFilter_setParams(EchoFilter * aEchoFilter, float aDelay, float aDecay);
+int EchoFilter_setParams(EchoFilter * aEchoFilter, float aDelay, float aDecay);
 
 /*
  * FFTFilter
  */
 void FFTFilter_destroy(FFTFilter * aFFTFilter);
 FFTFilter * FFTFilter_create();
-void FFTFilter_setParameters(FFTFilter * aFFTFilter, int aShift);
-void FFTFilter_setParametersEx(FFTFilter * aFFTFilter, int aShift, int aCombine /* = 0 */, float aScale /* = 0.002 */);
+int FFTFilter_setParameters(FFTFilter * aFFTFilter, int aShift);
+int FFTFilter_setParametersEx(FFTFilter * aFFTFilter, int aShift, int aCombine /* = 0 */, float aScale /* = 0.002 */);
 
 /*
  * Speech
  */
 void Speech_destroy(Speech * aSpeech);
 Speech * Speech_create();
-void Speech_setText(Speech * aSpeech, char * aText);
+int Speech_setText(Speech * aSpeech, char * aText);
 void Speech_setLooping(Speech * aSpeech, int aLoop);
 void Speech_setFilter(Speech * aSpeech, int aFilterId, Filter * aFilter);
+void Speech_stop(Speech * aSpeech);
 
 /*
  * Wav
  */
 void Wav_destroy(Wav * aWav);
 Wav * Wav_create();
-void Wav_load(Wav * aWav, const char * aFilename);
-void Wav_loadMem(Wav * aWav, unsigned char * aMem, int aLength);
+int Wav_load(Wav * aWav, const char * aFilename);
+int Wav_loadMem(Wav * aWav, unsigned char * aMem, int aLength);
+float Wav_getLength(Wav * aWav);
 void Wav_setLooping(Wav * aWav, int aLoop);
 void Wav_setFilter(Wav * aWav, int aFilterId, Filter * aFilter);
+void Wav_stop(Wav * aWav);
 
 /*
  * WavStream
  */
 void WavStream_destroy(WavStream * aWavStream);
 WavStream * WavStream_create();
-void WavStream_load(WavStream * aWavStream, const char * aFilename);
+int WavStream_load(WavStream * aWavStream, const char * aFilename);
+float WavStream_getLength(WavStream * aWavStream);
 void WavStream_setLooping(WavStream * aWavStream, int aLoop);
 void WavStream_setFilter(WavStream * aWavStream, int aFilterId, Filter * aFilter);
+void WavStream_stop(WavStream * aWavStream);
 
 /*
  * Prg
@@ -224,9 +233,10 @@ void Sfxr_destroy(Sfxr * aSfxr);
 Sfxr * Sfxr_create();
 void Sfxr_resetParams(Sfxr * aSfxr);
 int Sfxr_loadParams(Sfxr * aSfxr, const char * aFilename);
-void Sfxr_loadPreset(Sfxr * aSfxr, int aPresetNo, int aRandSeed);
+int Sfxr_loadPreset(Sfxr * aSfxr, int aPresetNo, int aRandSeed);
 void Sfxr_setLooping(Sfxr * aSfxr, int aLoop);
 void Sfxr_setFilter(Sfxr * aSfxr, int aFilterId, Filter * aFilter);
+void Sfxr_stop(Sfxr * aSfxr);
 
 /*
  * Modplug
@@ -236,6 +246,7 @@ Modplug * Modplug_create();
 int Modplug_load(Modplug * aModplug, const char * aFilename);
 void Modplug_setLooping(Modplug * aModplug, int aLoop);
 void Modplug_setFilter(Modplug * aModplug, int aFilterId, Filter * aFilter);
+void Modplug_stop(Modplug * aModplug);
 #ifdef  __cplusplus
 } // extern "C"
 #endif

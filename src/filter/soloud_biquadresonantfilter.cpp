@@ -157,12 +157,17 @@ namespace SoLoud
 		setParams(LOWPASS, 44100, 1000, 2);
 	}
 
-	void BiquadResonantFilter::setParams(int aType, float aSampleRate, float aFrequency, float aResonance)
+	int BiquadResonantFilter::setParams(int aType, float aSampleRate, float aFrequency, float aResonance)
 	{
+		if (aType < 0 || aType > 3 || aSampleRate <= 0 || aFrequency <= 0 || aResonance <= 0)
+			return INVALID_PARAMETER;
+
 		mFilterType = aType;
 		mSampleRate = aSampleRate;
 		mFrequency = aFrequency;
 		mResonance = aResonance;
+
+		return 0;
 	}
 
 	BiquadResonantFilter::~BiquadResonantFilter()

@@ -48,7 +48,7 @@ namespace SoLoud
 		float mDecay;
 		virtual FilterInstance *createInstance();
 		EchoFilter();
-		void setParams(float aDelay, float aDecay);
+		int setParams(float aDelay, float aDecay);
 	};
 }
 

@@ -62,6 +62,7 @@ freely, subject to the following restrictions:
 #include "soloud_fader.h"
 #include "soloud_audiosource.h"
 #include "soloud_bus.h"
+#include "soloud_error.h"
 
 namespace SoLoud
 {
@@ -69,7 +70,6 @@ namespace SoLoud
 
 	typedef void (*mutexCallFunction)(void *aMutexPtr);
 	typedef void (*soloudCallFunction)(Soloud *aSoloud);
-
 
 	// Soloud core class.
 	class Soloud
@@ -101,7 +101,8 @@ namespace SoLoud
 			XAUDIO2,
 			WASAPI,
 			OSS,
-			OPENAL
+			OPENAL,
+			BACKEND_MAX,
 		};
 
 		enum FLAGS
@@ -119,6 +120,9 @@ namespace SoLoud
 
 		// Query SoLoud version number (should equal to SOLOUD_VERSION macro)
 		int getVersion() const;
+
+		// Translate error number to an asciiz string
+		const char * getErrorString(int aErrorCode) const;
 
 		// Start playing a sound. Returns voice handle, which can be ignored or used to alter the playing sound's parameters.
 		int play(AudioSource &aSound, float aVolume = 1.0f, float aPan = 0.0f, int aPaused = 0, int aBus = 0);

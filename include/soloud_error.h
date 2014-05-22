@@ -21,41 +21,21 @@ freely, subject to the following restrictions:
    3. This notice may not be removed or altered from any source
    distribution.
 */
-
-#ifndef SOLOUD_FFTFILTER_H
-#define SOLOUD_FFTFILTER_H
+#ifndef SOLOUD_ERROR_H
+#define SOLOUD_ERROR_H
 
 namespace SoLoud
 {
-	class FFTFilter;
-
-	class FFTFilterInstance : public FilterInstance
+	enum SOLOUD_ERRORS
 	{
-		float *mBuffer;
-		FFTFilter *mParent;
-	public:
-		virtual void filterChannel(float *aBuffer, int aSamples, float aSamplerate, float aTime, int aChannel, int aChannels);
-		virtual ~FFTFilterInstance();
-		FFTFilterInstance(FFTFilter *aParent);
+		NO_ERROR          = 0,  // No error
+		INVALID_PARAMETER = -1, // Some parameter is invalid
+		FILE_NOT_FOUND    = -2, // File not found
+		FILE_LOAD_FAILED  = -3, // File found, but could not be loaded
+		DLL_NOT_FOUND     = -4, // DLL not found, or wrong DLL
+		OUT_OF_MEMORY     = -5, // Out of memory
+		NOT_IMPLEMENTED   = -6, // Feature not implemented
+		UNKNOWN_ERROR     = -7  // Other error
 	};
-
-	class FFTFilter : public Filter
-	{
-	public:
-		enum COMBINETYPES
-		{
-			OVER,
-			SUBTRACT,
-			MULTIPLY
-		};
-		virtual FilterInstance *createInstance();
-		FFTFilter();
-		int setParameters(int aShift, int aCombine = 0, float aScale = 0.002);
-	public:
-		float mScale;
-		int mCombine;
-		int mShift;
-	};
-}
-
+};
 #endif

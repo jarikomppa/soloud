@@ -31,7 +31,7 @@ namespace SoLoud
 {
     int oss_init(Soloud *aSoloud, int aFlags, int aSamplerate, int aBuffer)
 	{
-		return -1;
+		return NOT_IMPLEMENTED;
 	}
 };
 
@@ -129,41 +129,41 @@ namespace SoLoud
         }
         if (!deviceIsOpen)
         {
-            return 1;
+            return UNKNOWN_ERROR;
         }
         int flags = fcntl(data->ossDeviceHandle, F_GETFL);
         flags &= ~O_NONBLOCK;
         if (-1 == fcntl(data->ossDeviceHandle, F_SETFL, flags))
         {
-            return 2;
+            return UNKNOWN_ERROR;
         }        
         int format = AFMT_S16_NE;
         if (-1 == ioctl(data->ossDeviceHandle, SNDCTL_DSP_SETFMT, &format))
         {
-            return 3;
+            return UNKNOWN_ERROR;
         }
         if (format != AFMT_S16_NE)
         {
-            return 4;
+            return UNKNOWN_ERROR;
         }
         int channels = 2;
         data->channels = channels;
         if (-1 == ioctl(data->ossDeviceHandle, SNDCTL_DSP_CHANNELS, &data->channels))
         {
-            return 5;
+            return UNKNOWN_ERROR;
         }
         if (channels != data->channels)
         {
-            return 6;
+            return UNKNOWN_ERROR;
         }
         int speed = aSamplerate;
         if (-1 == ioctl(data->ossDeviceHandle, SNDCTL_DSP_SPEED, &speed))
         {
-            return 7;
+            return UNKNOWN_ERROR;
         }
         if (speed != aSamplerate)
         {
-            return 8;
+            return UNKNOWN_ERROR;
         }
         data->buffer = new float[data->samples*data->channels];
         data->sampleBuffer = new short[data->samples*data->channels];
@@ -174,7 +174,7 @@ namespace SoLoud
         data->threadHandle = Thread::createThread(ossThread, data);
         if (0 == data->threadHandle)
         {
-            return 9;
+            return UNKNOWN_ERROR;
         }
         return 0;
     }

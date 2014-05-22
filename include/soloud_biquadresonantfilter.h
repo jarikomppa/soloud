@@ -81,7 +81,7 @@ namespace SoLoud
 		float mResonance;
 		virtual BiquadResonantFilterInstance *createInstance();
 		BiquadResonantFilter();
-		void setParams(int aType, float aSampleRate, float aFrequency, float aResonance);
+		int setParams(int aType, float aSampleRate, float aFrequency, float aResonance);
 		virtual ~BiquadResonantFilter();
 	};
 }

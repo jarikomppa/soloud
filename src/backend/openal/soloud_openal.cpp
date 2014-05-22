@@ -126,7 +126,7 @@ namespace SoLoud
 	int openal_init(SoLoud::Soloud *aSoloud, int aFlags, int aSamplerate, int aBuffer)
 	{
 		if (!dll_al_found())
-			return -1;
+			return DLL_NOT_FOUND;
 
 		aSoloud->postinit(aSamplerate,aBuffer,aFlags);
 		aSoloud->mBackendCleanupFunc = soloud_openal_deinit;

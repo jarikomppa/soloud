@@ -31,7 +31,7 @@ namespace SoLoud
 {
 	int xaudio2_init(Soloud *aSoloud, int aFlags, int aSamplerate, int aBuffer)
 	{
-		return -1;
+		return NOT_IMPLEMENTED;
 	}
 };
 
@@ -190,7 +190,7 @@ namespace SoLoud
     {
         if (FAILED(CoInitializeEx(0, COINIT_MULTITHREADED)))
         {
-            return 1;
+            return UNKOWN_ERROR;
         }
         XAudio2Data *data = new XAudio2Data;
         ZeroMemory(data, sizeof(XAudio2Data));
@@ -199,12 +199,12 @@ namespace SoLoud
         data->bufferEndEvent = CreateEvent(0, FALSE, FALSE, 0);
         if (0 == data->bufferEndEvent)
         {
-            return 2;
+            return UNKOWN_ERROR;
         }
         data->audioProcessingDoneEvent = CreateEvent(0, FALSE, FALSE, 0);
         if (0 == data->audioProcessingDoneEvent)
         {
-            return 3;
+            return UNKOWN_ERROR;
         }
         WAVEFORMATEX format;
         ZeroMemory(&format, sizeof(WAVEFORMATEX));
@@ -216,18 +216,18 @@ namespace SoLoud
         format.wBitsPerSample = sizeof(float)*8;
         if (FAILED(XAudio2Create(&data->xaudio2)))
         {
-            return 4;
+            return UNKOWN_ERROR;
         }
         if (FAILED(data->xaudio2->CreateMasteringVoice(&data->masteringVoice, 
                                                        format.nChannels, aSamplerate))) 
         {
-            return 5;
+            return UNKOWN_ERROR;
         }
         data->voiceCb = new VoiceCallback(data->bufferEndEvent);
         if (FAILED(data->xaudio2->CreateSourceVoice(&data->sourceVoice, 
                    &format, XAUDIO2_VOICE_NOSRC|XAUDIO2_VOICE_NOPITCH, 2.f, data->voiceCb))) 
         {
-            return 6;
+            return UNKOWN_ERROR;
         }
         data->bufferLengthBytes = aBuffer * format.nChannels * sizeof(float);
         for (int i=0;i<BUFFER_COUNT;++i)
@@ -243,7 +243,7 @@ namespace SoLoud
         data->thread = Thread::createThread(xaudio2Thread, data);
         if (0 == data->thread)
         {
-            return 7;
+            return UNKOWN_ERROR;
         }
         data->sourceVoice->Start();
         return 0;

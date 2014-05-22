@@ -292,16 +292,16 @@ namespace SoLoud
 	
 #define MAKEDWORD(a,b,c,d) (((d) << 24) | ((c) << 16) | ((b) << 8) | (a))
 
-	void WavStream::loadwav(FILE * fp)
+	int WavStream::loadwav(FILE * fp)
 	{
 		int wavsize = read32(fp);
 		if (read32(fp) != MAKEDWORD('W','A','V','E'))
 		{
-			return;
+			return FILE_LOAD_FAILED;
 		}
 		if (read32(fp) != MAKEDWORD('f','m','t',' '))
 		{
-			return;
+			return FILE_LOAD_FAILED;
 		}
 		int subchunk1size = read32(fp);
 		int audioformat = read16(fp);
@@ -315,7 +315,7 @@ namespace SoLoud
 			subchunk1size != 16 ||
 			(bitspersample != 8 && bitspersample != 16))
 		{
-			return;
+			return FILE_LOAD_FAILED;
 		}
 		
 		int chunk = read32(fp);
@@ -331,7 +331,7 @@ namespace SoLoud
 		
 		if (chunk != MAKEDWORD('d','a','t','a'))
 		{
-			return;
+			return FILE_LOAD_FAILED;
 		}
 
 		int readchannels = 1;
@@ -352,14 +352,16 @@ namespace SoLoud
 		mBaseSamplerate = (float)samplerate;
 		mSampleCount = samples;
 		mOgg = 0;
+
+		return 0;
 	}
 
-	void WavStream::loadogg(FILE * fp)
+	int WavStream::loadogg(FILE * fp)
 	{
 		fseek(fp,0,SEEK_SET);
 		int e;
 		stb_vorbis *v = stb_vorbis_open_file(fp, 0, &e, NULL);
-		if (!v) return;
+		if (!v) return FILE_LOAD_FAILED;
 		stb_vorbis_info info = stb_vorbis_get_info(v);
 		if (info.channels > 1)
 		{
@@ -370,30 +372,47 @@ namespace SoLoud
 		stb_vorbis_close(v);
 		mOgg = 1;
 
-		mSampleCount = samples;		
+		mSampleCount = samples;
+
+		return 0;
 	}
 
-	void WavStream::load(const char *aFilename)
+	int WavStream::load(const char *aFilename)
 	{
 		delete[] mFilename;
 		mFilename = 0;
 		mSampleCount = 0;
 		FILE * fp = fopen(aFilename, "rb");
-		if (!fp) return;
-		int tag = read32(fp);
-		if (tag == MAKEDWORD('O','g','g','S'))
-		{
-			loadogg(fp);
-		}
-		if (tag == MAKEDWORD('R','I','F','F'))
-		{
-			loadwav(fp);
-		}
-
+		if (!fp) return FILE_NOT_FOUND;
+		
 		int len = strlen(aFilename);
-		mFilename = new char[len+1];
+		mFilename = new char[len+1];		
 		memcpy(mFilename, aFilename, len);
 		mFilename[len] = 0;
+		
+		int tag = read32(fp);
+		int res = 0;
+		if (tag == MAKEDWORD('O','g','g','S'))
+		{
+			res = loadogg(fp);
+		}
+		else
+		if (tag == MAKEDWORD('R','I','F','F'))
+		{
+			res = loadwav(fp);
+		}
+		else
+		{
+			res = FILE_LOAD_FAILED;
+		}
+
+		if (res)
+		{
+			delete[] mFilename;
+			mFilename = 0;
+			fclose(fp);
+			return res;
+		}
 
 		fclose(fp);
 	}

@@ -103,6 +103,9 @@ namespace SoLoud
 
 	int Soloud::init(int aFlags, int aBackend, int aSamplerate, int aBufferSize)
 	{		
+		if (aBackend < 0 || aBackend >= BACKEND_MAX || aSamplerate < 0 || aBufferSize < 0)
+			return INVALID_PARAMETER;
+
 		int samplerate = 44100;
 		int buffersize = 2048;
 		int inited = 0;
@@ -229,6 +232,23 @@ namespace SoLoud
 		mFlags = aFlags;
 		mPostClipScaler = 0.5f;
 	}
+
+	const char * Soloud::getErrorString(int aErrorCode) const
+	{
+		switch (aErrorCode)
+		{
+		case NO_ERROR: return "No error";
+		case INVALID_PARAMETER: return "Some parameter is invalid";
+		case FILE_NOT_FOUND: return "File not found";
+		case FILE_LOAD_FAILED: return "File found, but could not be loaded";
+		case DLL_NOT_FOUND: return "DLL not found, or wrong DLL";
+		case OUT_OF_MEMORY: return "Out of memory";
+		case NOT_IMPLEMENTED: return "Feature not implemented";
+		/*case UNKNOWN_ERROR: return "Other error";*/
+		}
+		return "Other error";
+	}
+
 
 	float * Soloud::getWave()
 	{

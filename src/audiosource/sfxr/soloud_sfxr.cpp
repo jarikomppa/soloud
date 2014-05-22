@@ -291,8 +291,11 @@ namespace SoLoud
 #define frnd(x) ((float)(mRand.rand()%10001)/10000*(x))
 
 
-	void Sfxr::loadPreset(int aPresetNo, int aRandSeed)
+	int Sfxr::loadPreset(int aPresetNo, int aRandSeed)
 	{
+		if (aPresetNo < 0 || aPresetNo > 6)
+			return INVALID_PARAMETER;
+
 		resetParams();
 		mRand.srand(aRandSeed);
 		switch(aPresetNo)
@@ -446,6 +449,7 @@ namespace SoLoud
 			mParams.p_hpf_freq=0.1f;
 			break;
 		}
+		return 0;
 	}
 	
 	void Sfxr::resetParams()
@@ -491,14 +495,14 @@ namespace SoLoud
 	{
 		FILE* file=fopen(aFilename, "rb");
 		if(!file)
-			return 1;
+			return FILE_NOT_FOUND;
 
 		int version=0;
 		fread(&version, 1, sizeof(int), file);
 		if(version!=100 && version!=101 && version!=102)
 		{
 			fclose(file);
-			return 1;
+			return FILE_LOAD_FAILED;
 		}
 
 		fread(&mParams.wave_type, 1, sizeof(int), file);

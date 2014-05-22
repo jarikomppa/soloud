@@ -90,7 +90,7 @@ namespace SoLoud
 	int portaudio_init(SoLoud::Soloud *aSoloud, int aFlags, int aSamplerate, int aBuffer)
 	{
 		if (!dll_Pa_found())
-			return -1;
+			return DLL_NOT_FOUND;
 
 		aSoloud->postinit(aSamplerate, aBuffer * 2, aFlags);
 		aSoloud->mBackendCleanupFunc = soloud_portaudio_deinit;

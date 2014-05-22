@@ -31,7 +31,7 @@ namespace SoLoud
 {
 	int wasapi_init(Soloud *aSoloud, int aFlags, int aSamplerate, int aBuffer)
 	{
-		return -1;
+		return NOT_IMPLEMENTED;
 	}
 };
 
@@ -137,7 +137,7 @@ namespace SoLoud
     {
         if (FAILED(CoInitializeEx(0, COINIT_MULTITHREADED)))
         {
-            return 1;
+            return UNKNOWN_ERROR;
         }
         WASAPIData *data = new WASAPIData;
         ZeroMemory(data, sizeof(WASAPIData));
@@ -146,28 +146,28 @@ namespace SoLoud
         data->bufferEndEvent = CreateEvent(0, FALSE, FALSE, 0);
         if (0 == data->bufferEndEvent)
         {
-            return 2;
+            return UNKNOWN_ERROR;
         }
         data->audioProcessingDoneEvent = CreateEvent(0, FALSE, FALSE, 0);
         if (0 == data->audioProcessingDoneEvent)
         {
-            return 3;
+            return UNKNOWN_ERROR;
         }
         if (FAILED(CoCreateInstance(__uuidof(MMDeviceEnumerator), 0, CLSCTX_ALL, 
                    __uuidof(IMMDeviceEnumerator), 
                    reinterpret_cast<void**>(&data->deviceEnumerator)))) 
         {
-            return 4;
+            return UNKNOWN_ERROR;
         }
         if (FAILED(data->deviceEnumerator->GetDefaultAudioEndpoint(eRender, eConsole, 
                                                                    &data->device))) 
         {
-            return 5;
+            return UNKNOWN_ERROR;
         }
         if (FAILED(data->device->Activate(__uuidof(IAudioClient), CLSCTX_ALL, 0, 
                                           reinterpret_cast<void**>(&data->audioClient)))) 
         {
-            return 6;
+            return UNKNOWN_ERROR;
         }
         WAVEFORMATEX format;
         ZeroMemory(&format, sizeof(WAVEFORMATEX));
@@ -183,21 +183,21 @@ namespace SoLoud
                                                  AUDCLNT_STREAMFLAGS_EVENTCALLBACK, 
                                                  dur, 0, &format, 0))) 
         {
-            return 7;
+            return UNKNOWN_ERROR;
         }
         data->bufferFrames = 0;
         if (FAILED(data->audioClient->GetBufferSize(&data->bufferFrames)))
         {
-            return 8;
+            return UNKNOWN_ERROR;
         }
         if (FAILED(data->audioClient->GetService(__uuidof(IAudioRenderClient), 
                                                  reinterpret_cast<void**>(&data->renderClient)))) 
         {
-            return 9;
+            return UNKNOWN_ERROR;
         }
         if (FAILED(data->audioClient->SetEventHandle(data->bufferEndEvent)))
         {
-            return 10;
+            return UNKNOWN_ERROR;
         }
         data->channels = format.nChannels;
         data->buffer = new float[data->bufferFrames * format.nChannels];
@@ -209,7 +209,7 @@ namespace SoLoud
         data->thread = Thread::createThread(wasapiThread, data);
         if (0 == data->thread)
         {
-            return 11;
+            return UNKNOWN_ERROR;
         }
         return 0;
     }

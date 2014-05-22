@@ -84,6 +84,12 @@ int Soloud_getVersion(void * aClassPtr)
 	return cl->getVersion();
 }
 
+const char * Soloud_getErrorString(void * aClassPtr, int aErrorCode)
+{
+	Soloud * cl = (Soloud *)aClassPtr;
+	return cl->getErrorString(aErrorCode);
+}
+
 int Soloud_play(void * aClassPtr, AudioSource * aSound)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
@@ -114,10 +120,10 @@ void Soloud_stopAll(void * aClassPtr)
 	cl->stopAll();
 }
 
-void Soloud_stopSound(void * aClassPtr, AudioSource * aSound)
+void Soloud_stopAudioSource(void * aClassPtr, AudioSource * aSound)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
-	cl->stopSound(*aSound);
+	cl->stopAudioSource(*aSound);
 }
 
 void Soloud_setFilterParameter(void * aClassPtr, int aVoiceHandle, int aFilterId, int aAttributeId, float aValue)
@@ -358,10 +364,10 @@ void * BiquadResonantFilter_create()
   return (void *)new BiquadResonantFilter;
 }
 
-void BiquadResonantFilter_setParams(void * aClassPtr, int aType, float aSampleRate, float aFrequency, float aResonance)
+int BiquadResonantFilter_setParams(void * aClassPtr, int aType, float aSampleRate, float aFrequency, float aResonance)
 {
 	BiquadResonantFilter * cl = (BiquadResonantFilter *)aClassPtr;
-	cl->setParams(aType, aSampleRate, aFrequency, aResonance);
+	return cl->setParams(aType, aSampleRate, aFrequency, aResonance);
 }
 
 void LofiFilter_destroy(void * aClassPtr)
@@ -374,10 +380,10 @@ void * LofiFilter_create()
   return (void *)new LofiFilter;
 }
 
-void LofiFilter_setParams(void * aClassPtr, float aSampleRate, float aBitdepth)
+int LofiFilter_setParams(void * aClassPtr, float aSampleRate, float aBitdepth)
 {
 	LofiFilter * cl = (LofiFilter *)aClassPtr;
-	cl->setParams(aSampleRate, aBitdepth);
+	return cl->setParams(aSampleRate, aBitdepth);
 }
 
 void Bus_destroy(void * aClassPtr)
@@ -414,6 +420,12 @@ void Bus_setLooping(void * aClassPtr, int aLoop)
 	cl->setLooping(aLoop);
 }
 
+void Bus_stop(void * aClassPtr)
+{
+	Bus * cl = (Bus *)aClassPtr;
+	cl->stop();
+}
+
 void EchoFilter_destroy(void * aClassPtr)
 {
   delete (EchoFilter *)aClassPtr;
@@ -424,10 +436,10 @@ void * EchoFilter_create()
   return (void *)new EchoFilter;
 }
 
-void EchoFilter_setParams(void * aClassPtr, float aDelay, float aDecay)
+int EchoFilter_setParams(void * aClassPtr, float aDelay, float aDecay)
 {
 	EchoFilter * cl = (EchoFilter *)aClassPtr;
-	cl->setParams(aDelay, aDecay);
+	return cl->setParams(aDelay, aDecay);
 }
 
 void FFTFilter_destroy(void * aClassPtr)
@@ -440,16 +452,16 @@ void * FFTFilter_create()
   return (void *)new FFTFilter;
 }
 
-void FFTFilter_setParameters(void * aClassPtr, int aShift)
+int FFTFilter_setParameters(void * aClassPtr, int aShift)
 {
 	FFTFilter * cl = (FFTFilter *)aClassPtr;
-	cl->setParameters(aShift);
+	return cl->setParameters(aShift);
 }
 
-void FFTFilter_setParametersEx(void * aClassPtr, int aShift, int aCombine, float aScale)
+int FFTFilter_setParametersEx(void * aClassPtr, int aShift, int aCombine, float aScale)
 {
 	FFTFilter * cl = (FFTFilter *)aClassPtr;
-	cl->setParameters(aShift, aCombine, aScale);
+	return cl->setParameters(aShift, aCombine, aScale);
 }
 
 void Speech_destroy(void * aClassPtr)
@@ -462,10 +474,10 @@ void * Speech_create()
   return (void *)new Speech;
 }
 
-void Speech_setText(void * aClassPtr, char * aText)
+int Speech_setText(void * aClassPtr, char * aText)
 {
 	Speech * cl = (Speech *)aClassPtr;
-	cl->setText(aText);
+	return cl->setText(aText);
 }
 
 void Speech_setLooping(void * aClassPtr, int aLoop)
@@ -480,6 +492,12 @@ void Speech_setFilter(void * aClassPtr, int aFilterId, Filter * aFilter)
 	cl->setFilter(aFilterId, aFilter);
 }
 
+void Speech_stop(void * aClassPtr)
+{
+	Speech * cl = (Speech *)aClassPtr;
+	cl->stop();
+}
+
 void Wav_destroy(void * aClassPtr)
 {
   delete (Wav *)aClassPtr;
@@ -490,16 +508,22 @@ void * Wav_create()
   return (void *)new Wav;
 }
 
-void Wav_load(void * aClassPtr, const char * aFilename)
+int Wav_load(void * aClassPtr, const char * aFilename)
 {
 	Wav * cl = (Wav *)aClassPtr;
-	cl->load(aFilename);
+	return cl->load(aFilename);
 }
 
-void Wav_loadMem(void * aClassPtr, unsigned char * aMem, int aLength)
+int Wav_loadMem(void * aClassPtr, unsigned char * aMem, int aLength)
 {
 	Wav * cl = (Wav *)aClassPtr;
-	cl->loadMem(aMem, aLength);
+	return cl->loadMem(aMem, aLength);
+}
+
+float Wav_getLength(void * aClassPtr)
+{
+	Wav * cl = (Wav *)aClassPtr;
+	return cl->getLength();
 }
 
 void Wav_setLooping(void * aClassPtr, int aLoop)
@@ -514,6 +538,12 @@ void Wav_setFilter(void * aClassPtr, int aFilterId, Filter * aFilter)
 	cl->setFilter(aFilterId, aFilter);
 }
 
+void Wav_stop(void * aClassPtr)
+{
+	Wav * cl = (Wav *)aClassPtr;
+	cl->stop();
+}
+
 void WavStream_destroy(void * aClassPtr)
 {
   delete (WavStream *)aClassPtr;
@@ -524,10 +554,16 @@ void * WavStream_create()
   return (void *)new WavStream;
 }
 
-void WavStream_load(void * aClassPtr, const char * aFilename)
+int WavStream_load(void * aClassPtr, const char * aFilename)
 {
 	WavStream * cl = (WavStream *)aClassPtr;
-	cl->load(aFilename);
+	return cl->load(aFilename);
+}
+
+float WavStream_getLength(void * aClassPtr)
+{
+	WavStream * cl = (WavStream *)aClassPtr;
+	return cl->getLength();
 }
 
 void WavStream_setLooping(void * aClassPtr, int aLoop)
@@ -540,6 +576,12 @@ void WavStream_setFilter(void * aClassPtr, int aFilterId, Filter * aFilter)
 {
 	WavStream * cl = (WavStream *)aClassPtr;
 	cl->setFilter(aFilterId, aFilter);
+}
+
+void WavStream_stop(void * aClassPtr)
+{
+	WavStream * cl = (WavStream *)aClassPtr;
+	cl->stop();
 }
 
 void Prg_destroy(void * aClassPtr)
@@ -586,10 +628,10 @@ int Sfxr_loadParams(void * aClassPtr, const char * aFilename)
 	return cl->loadParams(aFilename);
 }
 
-void Sfxr_loadPreset(void * aClassPtr, int aPresetNo, int aRandSeed)
+int Sfxr_loadPreset(void * aClassPtr, int aPresetNo, int aRandSeed)
 {
 	Sfxr * cl = (Sfxr *)aClassPtr;
-	cl->loadPreset(aPresetNo, aRandSeed);
+	return cl->loadPreset(aPresetNo, aRandSeed);
 }
 
 void Sfxr_setLooping(void * aClassPtr, int aLoop)
@@ -602,6 +644,12 @@ void Sfxr_setFilter(void * aClassPtr, int aFilterId, Filter * aFilter)
 {
 	Sfxr * cl = (Sfxr *)aClassPtr;
 	cl->setFilter(aFilterId, aFilter);
+}
+
+void Sfxr_stop(void * aClassPtr)
+{
+	Sfxr * cl = (Sfxr *)aClassPtr;
+	cl->stop();
 }
 
 void Modplug_destroy(void * aClassPtr)
@@ -630,6 +678,12 @@ void Modplug_setFilter(void * aClassPtr, int aFilterId, Filter * aFilter)
 {
 	Modplug * cl = (Modplug *)aClassPtr;
 	cl->setFilter(aFilterId, aFilter);
+}
+
+void Modplug_stop(void * aClassPtr)
+{
+	Modplug * cl = (Modplug *)aClassPtr;
+	cl->stop();
 }
 
 } // extern "C"

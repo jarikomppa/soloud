@@ -5,12 +5,13 @@ EXPORTS
 	Soloud_initEx
 	Soloud_deinit
 	Soloud_getVersion
+	Soloud_getErrorString
 	Soloud_play
 	Soloud_playEx
 	Soloud_seek
 	Soloud_stop
 	Soloud_stopAll
-	Soloud_stopSound
+	Soloud_stopAudioSource
 	Soloud_setFilterParameter
 	Soloud_getFilterParameter
 	Soloud_fadeFilterParameter
@@ -61,6 +62,7 @@ EXPORTS
 	Bus_play
 	Bus_playEx
 	Bus_setLooping
+	Bus_stop
 	EchoFilter_destroy
 	EchoFilter_create
 	EchoFilter_setParams
@@ -73,17 +75,22 @@ EXPORTS
 	Speech_setText
 	Speech_setLooping
 	Speech_setFilter
+	Speech_stop
 	Wav_destroy
 	Wav_create
 	Wav_load
 	Wav_loadMem
+	Wav_getLength
 	Wav_setLooping
 	Wav_setFilter
+	Wav_stop
 	WavStream_destroy
 	WavStream_create
 	WavStream_load
+	WavStream_getLength
 	WavStream_setLooping
 	WavStream_setFilter
+	WavStream_stop
 	Prg_destroy
 	Prg_create
 	Prg_rand
@@ -95,8 +102,10 @@ EXPORTS
 	Sfxr_loadPreset
 	Sfxr_setLooping
 	Sfxr_setFilter
+	Sfxr_stop
 	Modplug_destroy
 	Modplug_create
 	Modplug_load
 	Modplug_setLooping
 	Modplug_setFilter
+	Modplug_stop

@@ -214,16 +214,16 @@ namespace SoLoud
 
 #define MAKEDWORD(a,b,c,d) (((d) << 24) | ((c) << 16) | ((b) << 8) | (a))
 
-    void Wav::loadwav(DataReader *aReader)
+    int Wav::loadwav(DataReader *aReader)
 	{
 		/*int wavsize =*/ aReader->read32();
 		if (aReader->read32() != MAKEDWORD('W','A','V','E'))
 		{
-			return;
+			return FILE_LOAD_FAILED;
 		}
 		if (aReader->read32() != MAKEDWORD('f','m','t',' '))
 		{
-			return;
+			return FILE_LOAD_FAILED;
 		}
 		int subchunk1size = aReader->read32();
 		int audioformat = aReader->read16();
@@ -237,7 +237,7 @@ namespace SoLoud
 			subchunk1size != 16 ||
 			(bitspersample != 8 && bitspersample != 16))
 		{
-			return;
+			return FILE_LOAD_FAILED;
 		}
 		
 		int chunk = aReader->read32();
@@ -253,7 +253,7 @@ namespace SoLoud
 		
 		if (chunk != MAKEDWORD('d','a','t','a'))
 		{
-			return;
+			return FILE_LOAD_FAILED;
 		}
 
 		int readchannels = 1;
@@ -322,9 +322,11 @@ namespace SoLoud
 		}
 		mBaseSamplerate = (float)samplerate;
 		mSampleCount = samples;
+
+		return 0;
 	}
 
-	void Wav::loadogg(stb_vorbis *aVorbis)
+	int Wav::loadogg(stb_vorbis *aVorbis)
 	{
         stb_vorbis_info info = stb_vorbis_get_info(aVorbis);
 		mBaseSamplerate = (float)info.sample_rate;
@@ -359,9 +361,11 @@ namespace SoLoud
 			samples += n;
 		}
         stb_vorbis_close(aVorbis);
+
+		return 0;
 	}
 
-    void Wav::testAndLoadFile(DataReader *aReader)
+    int Wav::testAndLoadFile(DataReader *aReader)
     {
 		delete[] mData;
 		mData = 0;
@@ -380,32 +384,37 @@ namespace SoLoud
             {
 				v = stb_vorbis_open_file(aReader->filePtr(), 0, &e, 0);
             }
+
 			if (0 != v)
             {
-				loadogg(v);
+				return loadogg(v);
             }
+			return FILE_LOAD_FAILED;
 		} 
         else if (tag == MAKEDWORD('R','I','F','F')) 
         {
-			loadwav(aReader);
+			return loadwav(aReader);
 		}
     }
 
-	void Wav::load(const char *aFilename)
+	int Wav::load(const char *aFilename)
 	{
 		DataReader dr;
 		if (!dr.open(aFilename))
         {
-			return;
+			return FILE_NOT_FOUND;
         }
-		testAndLoadFile(&dr);
+		return testAndLoadFile(&dr);
 	}
 
-	void Wav::loadMem(unsigned char *aMem, int aLength)
+	int Wav::loadMem(unsigned char *aMem, int aLength)
 	{
+		if (aMem == NULL || aLength <= 0)
+			return INVALID_PARAMETER;
+
 		DataReader dr;
         dr.open(aMem, aLength);
-		testAndLoadFile(&dr);
+		return testAndLoadFile(&dr);
 	}
 
 	AudioSourceInstance *Wav::createInstance()

@@ -204,10 +204,15 @@ namespace SoLoud
 		return new FFTFilterInstance(this);
 	}
 
-	void FFTFilter::setParameters(int aShift, int aCombine, float aScale)
+	int FFTFilter::setParameters(int aShift, int aCombine, float aScale)
 	{
+		if (aCombine < 0 || aCombine > 2)
+			return INVALID_PARAMETER;
+
 		mShift = aShift;
 		mCombine = aCombine;
 		mScale = aScale;
+
+		return 0;
 	}
 }

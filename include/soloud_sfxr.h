@@ -156,7 +156,7 @@ namespace SoLoud
 		Sfxr();
 		void resetParams();
 		int loadParams(const char* aFilename);		
-		void loadPreset(int aPresetNo, int aRandSeed);
+		int loadPreset(int aPresetNo, int aRandSeed);
 		virtual AudioSourceInstance *createInstance();
 	};
 };

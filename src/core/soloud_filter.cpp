@@ -43,11 +43,22 @@ namespace SoLoud
 		mParamFader = 0;
 	}
 
-	void FilterInstance::initParams(int aNumParams)
+	int FilterInstance::initParams(int aNumParams)
 	{		
 		mNumParams = aNumParams;
 		mParam = new float[mNumParams];
 		mParamFader = new Fader[mNumParams];
+
+		if (mParam == NULL || mParamFader == NULL)
+		{
+			delete[] mParam;
+			delete[] mParamFader;
+			mParam = NULL;
+			mParamFader = NULL;
+			mNumParams = 0;
+			return OUT_OF_MEMORY;
+		}
+
 		int i;
 		for (i = 0; i < mNumParams; i++)
 		{
@@ -55,6 +66,8 @@ namespace SoLoud
 			mParamFader[i].mActive = 0;
 		}
 		mParam[0] = 1; // set 'wet' to 1
+
+		return 0;
 	}
 
 	void FilterInstance::updateParams(float aTime)

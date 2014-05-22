@@ -24,12 +24,13 @@ freely, subject to the following restrictions:
 #include <stdlib.h>
 #include <math.h>
 
+#include "soloud.h"
+#include "soloud_thread.h"
+
 #include "AL/al.h"
 #include "AL/alc.h"
 #include "AL/alext.h"
 
-#include "soloud.h"
-#include "soloud_thread.h"
 
 #define NUM_BUFFERS 2
 #define BUFFER_SIZE 4096

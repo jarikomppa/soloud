@@ -34,7 +34,7 @@ namespace SoLoud
 		if (aSound.mFlags & AudioSource::SINGLE_INSTANCE)
 		{
 			// Only one instance allowed, stop others
-			stopSound(aSound);
+			aSound.stop();
 		}
 
 		// Creation of an audio instance may take significant amount of time,
@@ -121,7 +121,7 @@ namespace SoLoud
 		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 	}
 
-	void Soloud::stopSound(AudioSource &aSound)
+	void Soloud::stopAudioSource(AudioSource &aSound)
 	{
 		if (aSound.mAudioSourceID)
 		{

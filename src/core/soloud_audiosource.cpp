@@ -146,7 +146,7 @@ namespace SoLoud
 	{
 		if (mSoloud)
 		{
-			mSoloud->stopSound(*this);
+			mSoloud->stopAudioSource(*this);
 		}
 	}
 
@@ -179,6 +179,14 @@ namespace SoLoud
 		if (aFilterId < 0 || aFilterId >= FILTERS_PER_STREAM)
 			return;
 		mFilter[aFilterId] = aFilter;
+	}
+
+	void AudioSource::stop()
+	{
+		if (mSoloud)
+		{
+			mSoloud->stopAudioSource(*this);
+		}
 	}
 };
 

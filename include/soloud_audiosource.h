@@ -154,6 +154,8 @@ namespace SoLoud
 		virtual ~AudioSource();
 		// Create instance from the audio source. Called from within Soloud class.
 		virtual AudioSourceInstance *createInstance() = 0;
+		// Stop all instances of this audio source
+		void stop();
 	};
 };
 

@@ -410,6 +410,13 @@ void parse(const char *aFilename, int aPrintProgress = 0)
 				{
 					// possibly function
 					string vt1 = s;
+
+					if (s == "const")
+					{
+						NEXTTOKEN;
+						vt1 += " " + s;
+					}
+
 					if (s == "virtual")
 					{
 						NEXTTOKEN;
@@ -425,6 +432,7 @@ void parse(const char *aFilename, int aPrintProgress = 0)
 						EXPECT(";");
 						continue;
 					}
+
 
 					if (s == "unsigned")
 					{

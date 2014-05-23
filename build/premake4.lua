@@ -1,3 +1,4 @@
+
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 
 local sdl_root       = "/libraries/sdl"
@@ -33,9 +34,63 @@ newoption {
 }
 
 newoption {
+	trigger		  = "with-sdl-only",
+	description = "Only include sdl in build"
+}
+
+newoption {
+	trigger		  = "with-native-only",
+	description = "Only native backends (winmm/oss) in build"
+}
+
+newoption {
 	trigger		  = "with-libmodplug",
 	description = "Include libmodplug in build"
 }
+
+local WITH_SDL = 1
+local WITH_PORTAUDIO = 1
+local WITH_OPENAL = 1
+local WITH_XAUDIO2 = 0
+local WITH_WINMM = 0
+local WITH_WASAPI = 0
+local WITH_OSS = 1
+
+if (os.is("Windows")) then
+	WITH_XAUDIO2 = 0
+	WITH_WINMM = 1
+	WITH_WASAPI = 1
+	WITH_OSS = 0
+end
+
+if _OPTIONS["with-xaudio2"] then
+	WITH_XAUDIO2 =1  	
+end
+
+if _OPTIONS["with-sdl-only"] then
+	WITH_SDL = 1
+	WITH_PORTAUDIO = 0
+	WITH_OPENAL = 0
+	WITH_XAUDIO2 = 0
+	WITH_WINMM = 0
+	WITH_WASAPI = 0
+	WITH_OSS = 0
+end
+
+if _OPTIONS["with-native-only"] then
+	WITH_SDL = 0
+	WITH_PORTAUDIO = 0
+	WITH_OPENAL = 0
+	WITH_XAUDIO2 = 0
+	WITH_WINMM = 0
+	WITH_WASAPI = 0
+	WITH_OSS = 0
+	if (os.is("Windows")) then
+		WITH_WINMM = 1
+	else
+	  WITH_OSS = 1
+	end
+end
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 
@@ -288,7 +343,8 @@ end
 		  "../src/**",
       "../include"
 		}
-
+if (WITH_OPENAL == 1) then
+    defines {"WITH_OPENAL"}
     files {
       "../src/backend/openal/**.c*"
       }
@@ -296,8 +352,10 @@ end
       "../include",
       openal_include
     }
+end    
 
-if (not os.is("Windows")) then 
+if (WITH_OSS == 1) then 
+    defines {"WITH_OSS"}
     files {
       "../src/backend/oss/**.c*"
       }
@@ -306,6 +364,9 @@ if (not os.is("Windows")) then
     }    
 end
 
+if (WITH_PORTAUDIO == 1) then
+    defines {"WITH_PORTAUDIO"}
+    
     files {
       "../src/backend/portaudio/**.c*"
       }
@@ -313,7 +374,10 @@ end
       "../include",
       portaudio_include
     }
+end
 
+if (WITH_SDL == 1) then
+		defines { "WITH_SDL" }
     files {
       "../src/backend/sdl/**.c*"
       }
@@ -321,18 +385,21 @@ end
       "../include",
       sdl_include
     }
+end
+
     
-if (os.is("Windows")) then 
+if (WITH_WASAPI == 1) then 
+		defines { "WITH_WASAPI" }
     files {
       "../src/backend/wasapi/**.c*"
       }
     includedirs {
       "../include"
     }
+end
 
-if _OPTIONS["with-xaudio2"] then
-  	defines {"USE_XAUDIO2"}
-end    
+if (WITH_XAUDIO2 == 1) then
+    defines {"WITH_XAUDIO2"}
     files {
       "../src/backend/xaudio2/**.c*"
       }
@@ -340,13 +407,16 @@ end
       "../include",
       dxsdk_include
     }
+end
+    
+if (WITH_WINMM == 1) then
+		defines { "WITH_WINMM" }
     files {
       "../src/backend/winmm/**.c*"
       }
     includedirs {
       "../include"
-    }
-        
+    }        
 end
 
 		configuration "Debug"

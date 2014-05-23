@@ -25,7 +25,7 @@ freely, subject to the following restrictions:
 #include "soloud.h"
 #include "soloud_thread.h"
 
-#if !defined(WINDOWS_VERSION) || !defined(USE_XAUDIO2)
+#if !defined(WITH_XAUDIO2)
 
 namespace SoLoud
 {

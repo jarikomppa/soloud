@@ -24,10 +24,22 @@ freely, subject to the following restrictions:
 #include <stdlib.h>
 #include <math.h>
 
-#include "portaudio.h"
-
 #include "soloud.h"
 #include "soloud_thread.h"
+
+#if !defined(WITH_PORTAUDIO)
+
+namespace SoLoud
+{
+	int portaudio_init(SoLoud::Soloud *aSoloud, int aFlags, int aSamplerate, int aBuffer)
+	{
+		return NOT_IMPLEMENTED;
+	}
+}
+#else
+
+#include "portaudio.h"
+
 
 extern "C"
 {
@@ -104,3 +116,4 @@ namespace SoLoud
 	}
 	
 };
+#endif

@@ -27,6 +27,17 @@ freely, subject to the following restrictions:
 #include "soloud.h"
 #include "soloud_thread.h"
 
+#if !defined(WITH_OPENAL)
+
+namespace SoLoud
+{
+	int openal_init(SoLoud::Soloud *aSoloud, int aFlags, int aSamplerate, int aBuffer)
+	{
+		return NOT_IMPLEMENTED;
+	}
+}
+#else
+
 #include "AL/al.h"
 #include "AL/alc.h"
 #include "AL/alext.h"
@@ -161,3 +172,4 @@ namespace SoLoud
 		return 0;
 	}	
 };
+#endif

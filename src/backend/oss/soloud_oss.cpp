@@ -25,7 +25,7 @@ freely, subject to the following restrictions:
 #include "soloud.h"
 #include "soloud_thread.h"
 
-#ifdef WINDOWS_VERSION
+#if !defined(WITH_OSS)
 
 namespace SoLoud
 {

@@ -22,6 +22,21 @@ freely, subject to the following restrictions:
    distribution.
 */
 #include <stdlib.h>
+
+#include "soloud.h"
+
+#if !defined(WITH_SDL)
+
+namespace SoLoud
+{
+	int sdl_init(SoLoud::Soloud *aSoloud, int aFlags, int aSamplerate, int aBuffer)
+	{
+		return NOT_IMPLEMENTED;
+	}
+}
+
+#else
+
 #if defined(_MSC_VER)
 #include "SDL.h"
 #else
@@ -29,7 +44,6 @@ freely, subject to the following restrictions:
 #endif
 #include <math.h>
 
-#include "soloud.h"
 
 extern "C"
 {
@@ -110,3 +124,4 @@ namespace SoLoud
 	}
 	
 };
+#endif

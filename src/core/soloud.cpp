@@ -33,6 +33,11 @@ freely, subject to the following restrictions:
 #include <float.h>
 #endif
 
+#if !defined(WITH_SDL) && !defined(WITH_PORTAUDIO) && !defined(WITH_OPENAL) && !defined(WITH_XAUDIO2) && !defined(WITH_WINMM) && !defined(WITH_WASAPI) && !defined(WITH_OSS)
+#error It appears you haven't enabled any of the back-ends. Please #define one or more of the WITH_ defines (or use premake)
+#endif
+
+
 namespace SoLoud
 {
 	Soloud::Soloud()
@@ -113,6 +118,7 @@ namespace SoLoud
 		if (aSamplerate != Soloud::AUTO) samplerate = aSamplerate;
 		if (aBufferSize != Soloud::AUTO) buffersize = aBufferSize;
 
+#if defined(WITH_SDL)
 		if (aBackend == Soloud::SDL || 
 			aBackend == Soloud::SDL2 ||
 			aBackend == Soloud::AUTO)
@@ -126,7 +132,9 @@ namespace SoLoud
 			if (ret != 0 && aBackend != Soloud::AUTO)
 				return ret;			
 		}
+#endif
 
+#if defined(WITH_PORTAUDIO)
 		if (!inited &&
 			(aBackend == Soloud::PORTAUDIO ||
 			aBackend == Soloud::AUTO))
@@ -140,8 +148,9 @@ namespace SoLoud
 			if (ret != 0 && aBackend != Soloud::AUTO)
 				return ret;			
 		}
+#endif
 
-#ifdef WINDOWS_VERSION
+#if defined(WITH_XAUDIO2)
 		if (!inited &&
 			(aBackend == Soloud::XAUDIO2 ||
 			aBackend == Soloud::AUTO))
@@ -155,7 +164,9 @@ namespace SoLoud
 			if (ret != 0 && aBackend != Soloud::AUTO)
 				return ret;			
 		}
+#endif
 
+#if defined(WITH_WINMM)
 		if (!inited &&
 			(aBackend == Soloud::WINMM ||
 			aBackend == Soloud::AUTO))
@@ -169,7 +180,9 @@ namespace SoLoud
 			if (ret != 0 && aBackend != Soloud::AUTO)
 				return ret;			
 		}
+#endif
 
+#if defined(WITH_WASAPI)
 		if (!inited &&
 			(aBackend == Soloud::WASAPI ||
 			aBackend == Soloud::AUTO))
@@ -183,8 +196,9 @@ namespace SoLoud
 			if (ret != 0 && aBackend != Soloud::AUTO)
 				return ret;			
 		}
-#else //!WINDOWS_VERSION
+#endif
 
+#if defined(WITH_OSS)
 		if (!inited &&
 			(aBackend == Soloud::OSS ||
 			aBackend == Soloud::AUTO))
@@ -200,6 +214,7 @@ namespace SoLoud
 		}
 #endif
 
+#if defined(WITH_OPENAL)
 		if (!inited &&
 			(aBackend == Soloud::OPENAL ||
 			aBackend == Soloud::AUTO))
@@ -213,7 +228,7 @@ namespace SoLoud
 			if (ret != 0 && aBackend != Soloud::AUTO)
 				return ret;			
 		}
-
+#endif
 		if (!inited)
 			return -10;
 		return 0;

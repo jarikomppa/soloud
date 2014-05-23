@@ -106,6 +106,13 @@ static int load_dll()
 	    dSDL_mutexP = (SDLmutexP)getDllProc(dll, "SDL_mutexP");
 	    dSDL_mutexV = (SDLmutexV)getDllProc(dll, "SDL_mutexV");
 
+		// SDL2 renames the functions (and a good thing, too)
+		if (dSDL_mutexP == NULL)
+			dSDL_mutexP = (SDLmutexP)getDllProc(dll, "SDL_LockMutex");
+		if (dSDL_mutexV == NULL)
+			dSDL_mutexV = (SDLmutexP)getDllProc(dll, "SDL_UnlockMutex");
+
+
         if (dSDL_OpenAudio && 
         	dSDL_CloseAudio &&
         	dSDL_PauseAudio &&

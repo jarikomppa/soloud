@@ -415,6 +415,7 @@ namespace SoLoud
 		}
 
 		fclose(fp);
+		return 0;
 	}
 
 	AudioSourceInstance *WavStream::createInstance()

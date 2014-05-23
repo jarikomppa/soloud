@@ -122,7 +122,7 @@ namespace SoLoud
 			mData = 0;
 			mDataLen = 0;
 			fclose(f);
-			return -2;
+			return OUT_OF_MEMORY;
 		}
 		fread(mData,1,mDataLen,f);
 		fclose(f);
@@ -132,12 +132,12 @@ namespace SoLoud
 		{
 			delete[] mData;
 			mDataLen = 0;
-			return -3;
+			return FILE_LOAD_FAILED;
 		}
 		ModPlug_Unload(mpf);
 		return 0;
 #else
-		return -100;
+		return NOT_IMPLEMENTED;
 #endif
 	}
 

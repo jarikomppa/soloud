@@ -395,6 +395,7 @@ namespace SoLoud
         {
 			return loadwav(aReader);
 		}
+		return FILE_LOAD_FAILED;
     }
 
 	int Wav::load(const char *aFilename)

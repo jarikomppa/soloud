@@ -111,7 +111,7 @@ namespace SoLoud
 		return 0;
 	}	
 
-	int Speech::setText(char *aText)
+	int Speech::setText(const char *aText)
 	{
 		if (aText == NULL)
 			return INVALID_PARAMETER;

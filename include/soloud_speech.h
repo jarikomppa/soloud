@@ -39,7 +39,7 @@ namespace SoLoud
 		int mFrames;
 		darray mElement;
 		Speech();
-		int setText(char *aText);
+		int setText(const char *aText);
 		virtual ~Speech();
 		virtual AudioSourceInstance *createInstance();
 	};

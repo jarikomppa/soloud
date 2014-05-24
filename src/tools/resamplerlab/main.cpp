@@ -169,6 +169,16 @@ void drawstring(const char *aString, int aX, int aY, int *aBitmap, int aBitmapWi
 
 #define SAMPLE_GRANULARITY 512
 
+float catmullrom(float t, float p0, float p1, float p2, float p3)
+{
+return 0.5f * (
+              (2 * p1) +
+              (-p0 + p2) * t +
+              (2 * p0 - 5 * p1 + 4 * p2 - p3) * t * t +
+              (-p0 + 3 * p1 - 3 * p2 + p3) * t * t * t
+              );
+}
+
 void resample_experiment(float *aSrc,
                           float *aSrc1,
                           float *aDst,
@@ -184,7 +194,40 @@ void resample_experiment(float *aSrc,
   for (i = 0; i < aDstSampleCount; i++, pos += aStepFixed)
   {
     int p = pos >> 16;
-    aDst[i] = aSrc[p];
+    int f = pos & 0xffff;
+
+	float s0, s1, s2, s3;
+
+	if (p < 3)
+	{
+		s3 = aSrc1[512+p-3];
+	}
+	else
+	{
+		s3 = aSrc[p-3];
+	}
+
+	if (p < 2)
+	{
+		s2 = aSrc1[512+p-2];
+	}
+	else
+	{
+		s2 = aSrc[p-2];
+	}
+
+	if (p < 1)
+	{
+		s1 = aSrc1[512+p-1];
+	}
+	else
+	{
+		s1 = aSrc[p-1];
+	}
+
+	s0 = aSrc[p];
+
+    aDst[i] = catmullrom(f/65536.0f,s3,s2,s1,s0);
   }
 }
 

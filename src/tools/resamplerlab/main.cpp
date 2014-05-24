@@ -547,7 +547,7 @@ void plot_diff(const char *aFilename, int aSampleCount, int aHeight, float *aSrc
 	
 	for (i = 0; i < 512; i++)
 	{			
-		int v = (aHeight/2)-(int)floor(fftdata[i] * (aHeight/8));
+		int v = (aHeight/2)-(int)floor(fftdata[i] * (aHeight/50));
 		if (v < 0) v = 0;
 		if (v > aHeight/2) v = aHeight/2;
 		int j;
@@ -580,7 +580,7 @@ void plot_diff(const char *aFilename, int aSampleCount, int aHeight, float *aSrc
 	
 	for (i = 0; i < 512; i++)
 	{			
-		int v = aHeight-(int)floor(fftdata[i] * (aHeight/8));
+		int v = aHeight-(int)floor(fftdata[i] * (aHeight/50));
 		if (v < aHeight/2) v = aHeight/2;
 		if (v > aHeight) v = aHeight;
 		int j;

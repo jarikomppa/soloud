@@ -35,13 +35,13 @@ enum Eparm_e
 class Element
 {
 public:
-	  char *mName; // unused
-	  char mRK;
-	  char mDU;
-	  char mUD;
+	  const char *mName; // unused
+	  const char mRK;
+	  const char mDU;
+	  const char mUD;
 	  unsigned char mFont; // unused
-	  char  *mDict; // unused
-	  char  *mIpa; // unused
+	  const char  *mDict; // unused
+	  const char  *mIpa; // unused
 	  int   mFeat; // only ELM_FEATURE_VWL
 	  Interp mInterpolator[ELM_COUNT];
  };

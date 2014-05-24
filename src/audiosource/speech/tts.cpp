@@ -1362,7 +1362,7 @@ int xlate_string(const char *string, darray *phone)
 
 						case '[':
 							{
-								char *e = strchr(s, ']');
+								const char *e = strchr(s, ']');
 
 								if (e)
 								{

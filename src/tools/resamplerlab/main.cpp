@@ -31,6 +31,11 @@ freely, subject to the following restrictions:
 #define TAU 6.283185307179586476925286766559f
 #endif
 
+#ifndef M_PI
+#define M_PI 3.14159265359f
+#endif
+
+
 unsigned char TFX_AsciiFontdata[12*256] = {
   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,// ' '
   0, 12, 30, 30, 30, 12, 12,  0, 12, 12,  0,  0,// '!'
@@ -221,74 +226,161 @@ void resample_linear(float *aSrc,
   }
 }
 
+static void smbFft(float *fftBuffer, int fftFrameSizeLog, int sign)
+/* 
+	* COPYRIGHT 1996 Stephan M. Bernsee <smb [AT] dspdimension [DOT] com>
+	*
+	* 						The Wide Open License (WOL)
+	*
+	* Permission to use, copy, modify, distribute and sell this software and its
+	* documentation for any purpose is hereby granted without fee, provided that
+	* the above copyright notice and this license appear in all source copies. 
+	* THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT EXPRESS OR IMPLIED WARRANTY OF
+	* ANY KIND. See http://www.dspguru.com/wol.htm for more information.
+	*
+	* Sign = -1 is FFT, 1 is iFFT (inverse)
+	* Fills fftBuffer[0...2*fftFrameSize-1] with the Fourier transform of the
+	* time domain data in fftBuffer[0...2*fftFrameSize-1]. 
+	* The FFT array takes and returns the cosine and sine parts in an interleaved 
+	* manner, ie.	fftBuffer[0] = cosPart[0], fftBuffer[1] = sinPart[0], asf. 
+	* fftFrameSize	must be a power of 2. 
+	* It expects a complex input signal (see footnote 2), ie. when working with 
+	* 'common' audio signals our input signal has to be passed as 
+	* {in[0],0.,in[1],0.,in[2],0.,...} asf. 
+	* In that case, the transform of the frequencies of interest is in 
+	* fftBuffer[0...fftFrameSize].
+*/
+{
+	float wr, wi, arg, *p1, *p2, temp;
+	float tr, ti, ur, ui, *p1r, *p1i, *p2r, *p2i;
+	int i, bitm, j, le, le2, k;
+	int fftFrameSize = 1 << fftFrameSizeLog;
+
+	for (i = 2; i < 2 * fftFrameSize - 2; i += 2) 
+	{
+		for (bitm = 2, j = 0; bitm < 2 * fftFrameSize; bitm <<= 1) 
+		{
+			if (i & bitm) j++;
+			j <<= 1;
+		}
+
+		if (i < j) 
+		{
+			p1 = fftBuffer+i; 
+			p2 = fftBuffer+j;
+			temp = *p1; 
+			*(p1++) = *p2;
+			*(p2++) = temp; 
+			temp = *p1;
+			*p1 = *p2; 
+			*p2 = temp;
+		}
+	}
+	for (k = 0, le = 2; k < fftFrameSizeLog; k++) 
+	{
+		le <<= 1;
+		le2 = le >> 1;
+		ur = 1.0;
+		ui = 0.0;
+		arg = (float)(M_PI / (le2 >> 1));
+		wr = cos(arg);
+		wi = sign * sin(arg);
+		for (j = 0; j < le2; j += 2) 
+		{
+			p1r = fftBuffer + j; 
+			p1i = p1r + 1;
+			p2r = p1r + le2; 
+			p2i = p2r + 1;
+			for (i = j; i < 2 * fftFrameSize; i += le) 
+			{
+				tr = *p2r * ur - *p2i * ui;
+				ti = *p2r * ui + *p2i * ur;
+				*p2r = *p1r - tr; 
+				*p2i = *p1i - ti;
+				*p1r += tr; 
+				*p1i += ti;
+				p1r += le; 
+				p1i += le;
+				p2r += le; 
+				p2i += le;
+			}
+			tr = ur * wr - ui * wi;
+			ui = ur * wi + ui * wr;
+			ur = tr;
+		}
+	}
+}
+
+
 void plot_diff(const char *aFilename, int aSampleCount, int aHeight, float *aSrc1, float *aSrc2, int aColor1, int aColor2, int aBgColor, int aGridColor)
 {
-	int *bitmap = new int[aSampleCount * aHeight];
+	int width = aSampleCount + 512;
+	int *bitmap = new int[width * aHeight];
 	int i;
-	for (i = 0; i < aSampleCount * aHeight; i++)
+	for (i = 0; i < width * aHeight; i++)
 	{
 		bitmap[i] = aBgColor;
 	}
 
 	for (i = 0; i < aSampleCount; i++)
 	{
-		bitmap[(aHeight / 2) * aSampleCount + i] = aGridColor;
+		bitmap[(aHeight / 2) * width + i] = aGridColor;
 
 		if (i & 1)
 		{
-			bitmap[((aHeight * 1) / 4) * aSampleCount + i] = aGridColor;
-			bitmap[((aHeight * 3) / 4) * aSampleCount + i] = aGridColor;
+			bitmap[((aHeight * 1) / 4) * width + i] = aGridColor;
+			bitmap[((aHeight * 3) / 4) * width + i] = aGridColor;
 		}
 
 		if ((i & 3) == 0)
 		{
-			bitmap[((aHeight * 1) / 8) * aSampleCount + i] = aGridColor;
-			bitmap[((aHeight * 3) / 8) * aSampleCount + i] = aGridColor;
-			bitmap[((aHeight * 5) / 8) * aSampleCount + i] = aGridColor;
-			bitmap[((aHeight * 7) / 8) * aSampleCount + i] = aGridColor;
+			bitmap[((aHeight * 1) / 8) * width + i] = aGridColor;
+			bitmap[((aHeight * 3) / 8) * width + i] = aGridColor;
+			bitmap[((aHeight * 5) / 8) * width + i] = aGridColor;
+			bitmap[((aHeight * 7) / 8) * width + i] = aGridColor;
 		}
 
 		if ((i & 7) == 0)
 		{
-			bitmap[((aHeight * 1) / 16) * aSampleCount + i] = aGridColor;
-			bitmap[((aHeight * 3) / 16) * aSampleCount + i] = aGridColor;
-			bitmap[((aHeight * 5) / 16) * aSampleCount + i] = aGridColor;
-			bitmap[((aHeight * 7) / 16) * aSampleCount + i] = aGridColor;
-			bitmap[((aHeight * 9) / 16) * aSampleCount + i] = aGridColor;
-			bitmap[((aHeight * 11) / 16) * aSampleCount + i] = aGridColor;
-			bitmap[((aHeight * 13) / 16) * aSampleCount + i] = aGridColor;
-			bitmap[((aHeight * 15) / 16) * aSampleCount + i] = aGridColor;
+			bitmap[((aHeight * 1) / 16) * width + i] = aGridColor;
+			bitmap[((aHeight * 3) / 16) * width + i] = aGridColor;
+			bitmap[((aHeight * 5) / 16) * width + i] = aGridColor;
+			bitmap[((aHeight * 7) / 16) * width + i] = aGridColor;
+			bitmap[((aHeight * 9) / 16) * width + i] = aGridColor;
+			bitmap[((aHeight * 11) / 16) * width + i] = aGridColor;
+			bitmap[((aHeight * 13) / 16) * width + i] = aGridColor;
+			bitmap[((aHeight * 15) / 16) * width + i] = aGridColor;
 		}
 	}
 
 	for (i = 0; i < aHeight; i++)
 	{
-		bitmap[i * aSampleCount + aSampleCount / 2] = aGridColor;
+		bitmap[i * width + aSampleCount / 2] = aGridColor;
 
 		if (i & 1)
 		{
-			bitmap[i * aSampleCount + (aSampleCount * 1) / 4] = aGridColor;
-			bitmap[i * aSampleCount + (aSampleCount * 3) / 4] = aGridColor;
+			bitmap[i * width + (aSampleCount * 1) / 4] = aGridColor;
+			bitmap[i * width + (aSampleCount * 3) / 4] = aGridColor;
 		}
 
 		if ((i & 3) == 0)
 		{
-			bitmap[i * aSampleCount + (aSampleCount * 1) / 8] = aGridColor;
-			bitmap[i * aSampleCount + (aSampleCount * 3) / 8] = aGridColor;
-			bitmap[i * aSampleCount + (aSampleCount * 5) / 8] = aGridColor;
-			bitmap[i * aSampleCount + (aSampleCount * 7) / 8] = aGridColor;
+			bitmap[i * width + (aSampleCount * 1) / 8] = aGridColor;
+			bitmap[i * width + (aSampleCount * 3) / 8] = aGridColor;
+			bitmap[i * width + (aSampleCount * 5) / 8] = aGridColor;
+			bitmap[i * width + (aSampleCount * 7) / 8] = aGridColor;
 		}
 
 		if ((i & 7) == 0)
 		{
-			bitmap[i * aSampleCount + (aSampleCount * 1) / 16] = aGridColor;
-			bitmap[i * aSampleCount + (aSampleCount * 3) / 16] = aGridColor;
-			bitmap[i * aSampleCount + (aSampleCount * 5) / 16] = aGridColor;
-			bitmap[i * aSampleCount + (aSampleCount * 7) / 16] = aGridColor;
-			bitmap[i * aSampleCount + (aSampleCount * 9) / 16] = aGridColor;
-			bitmap[i * aSampleCount + (aSampleCount * 11) / 16] = aGridColor;
-			bitmap[i * aSampleCount + (aSampleCount * 13) / 16] = aGridColor;
-			bitmap[i * aSampleCount + (aSampleCount * 15) / 16] = aGridColor;
+			bitmap[i * width + (aSampleCount * 1) / 16] = aGridColor;
+			bitmap[i * width + (aSampleCount * 3) / 16] = aGridColor;
+			bitmap[i * width + (aSampleCount * 5) / 16] = aGridColor;
+			bitmap[i * width + (aSampleCount * 7) / 16] = aGridColor;
+			bitmap[i * width + (aSampleCount * 9) / 16] = aGridColor;
+			bitmap[i * width + (aSampleCount * 11) / 16] = aGridColor;
+			bitmap[i * width + (aSampleCount * 13) / 16] = aGridColor;
+			bitmap[i * width + (aSampleCount * 15) / 16] = aGridColor;
 		}
 	}
 
@@ -309,7 +401,7 @@ void plot_diff(const char *aFilename, int aSampleCount, int aHeight, float *aSrc
 			float j;
 			for (j = v1; j <= v2; j++)
 			{
-				bitmap[(int)floor(j) * aSampleCount + i] = aColor1;
+				bitmap[(int)floor(j) * width + i] = aColor1;
 			}
 		}
 
@@ -328,13 +420,13 @@ void plot_diff(const char *aFilename, int aSampleCount, int aHeight, float *aSrc
 			float j;
 			for (j = v1; j <= v2; j++)
 			{
-				bitmap[(int)floor(j) * aSampleCount + i] = aColor2;
+				bitmap[(int)floor(j) * width + i] = aColor2;
 			}
 		}
 	}
 
-	drawstring("SoLoud Resampler Lab - http://soloud-audio.com", 0, 0, bitmap, aSampleCount, 0xff000000);
-	drawstring(aFilename, 0, 12, bitmap, aSampleCount, 0xff000000);
+	drawstring("SoLoud Resampler Lab - http://soloud-audio.com", 0, 0, bitmap, width, 0xff000000);
+	drawstring(aFilename, 0, 12, bitmap, width, 0xff000000);
 	char tempstr[1024];
 
 	/*
@@ -347,9 +439,9 @@ void plot_diff(const char *aFilename, int aSampleCount, int aHeight, float *aSrc
 		diffsum += diff;
 	}
 	sprintf(tempstr, "Avg diff:%3.7f", diffsum / aSampleCount);
-	drawstring(tempstr, 0, aHeight-12*2, bitmap, aSampleCount, 0xff000000);
+	drawstring(tempstr, 0, aHeight-12*2, bitmap, width, 0xff000000);
 	sprintf(tempstr, "Max diff:%3.7f", maxdiff);
-	drawstring(tempstr, 0, aHeight-12*1, bitmap, aSampleCount, 0xff000000);
+	drawstring(tempstr, 0, aHeight-12*1, bitmap, width, 0xff000000);
 	*/
 
 	float maxdiff_d = 0;
@@ -364,12 +456,80 @@ void plot_diff(const char *aFilename, int aSampleCount, int aHeight, float *aSrc
 	}
 	
 	sprintf(tempstr, "Avg d diff:%3.7f", diffsum_d / aSampleCount);
-	drawstring(tempstr, aSampleCount/2, aHeight-12*2, bitmap, aSampleCount, 0xff000000);
+	drawstring(tempstr, aSampleCount/2, aHeight-12*2, bitmap, width, 0xff000000);
 	sprintf(tempstr, "Max d diff:%3.7f", maxdiff_d);
-	drawstring(tempstr, aSampleCount/2, aHeight-12*1, bitmap, aSampleCount, 0xff000000);
+	drawstring(tempstr, aSampleCount/2, aHeight-12*1, bitmap, width, 0xff000000);
 
+	float temp[2048];
+	float fftdata[512];
+	for (i = 0; i < 256; i++)
+	{
+		temp[i*2] = aSrc1[i];
+		temp[i*2+1] = 0;
+		temp[i+512] = 0;
+		temp[i+768] = 0;
+		temp[i+1024] = 0;
+		temp[i+1280] = 0;
+		temp[i+1536] = 0;
+		temp[i+1792] = 0;
+	}
 
-	stbi_write_png(aFilename, aSampleCount, aHeight, 4, bitmap, aSampleCount * 4);
+	smbFft(temp, 10, -1);
+
+	for (i = 0; i < 512; i++)
+	{
+		float real = temp[i*2];
+		float imag = temp[i*2+1];
+		fftdata[i] = sqrt(real*real+imag*imag);
+	}
+	
+	for (i = 0; i < 512; i++)
+	{			
+		int v = (aHeight/2)-(int)floor(fftdata[i] * (aHeight/8));
+		if (v < 0) v = 0;
+		if (v > aHeight/2) v = aHeight/2;
+		int j;
+		for (j = v; j < aHeight/2; j++)
+		{
+			bitmap[aSampleCount + i + j * width] = aColor1;
+		}
+	}
+	
+	for (i = 0; i < 256; i++)
+	{
+		temp[i*2] = aSrc2[i];
+		temp[i*2+1] = 0;
+		temp[i+512] = 0;
+		temp[i+768] = 0;
+		temp[i+1024] = 0;
+		temp[i+1280] = 0;
+		temp[i+1536] = 0;
+		temp[i+1792] = 0;
+	}
+
+	smbFft(temp, 10, -1);
+
+	for (i = 0; i < 512; i++)
+	{
+		float real = temp[i*2];
+		float imag = temp[i*2+1];
+		fftdata[i] = sqrt(real*real+imag*imag);
+	}
+	
+	for (i = 0; i < 512; i++)
+	{			
+		int v = aHeight-(int)floor(fftdata[i] * (aHeight/8));
+		if (v < aHeight/2) v = aHeight/2;
+		if (v > aHeight) v = aHeight;
+		int j;
+		for (j = v; j < aHeight; j++)
+		{
+			bitmap[aSampleCount + i + j * width] = aColor2;
+		}
+	}
+	
+
+	stbi_write_png(aFilename, width, aHeight, 4, bitmap, width * 4);
 	delete[] bitmap;
 }
 
@@ -408,33 +568,33 @@ void upsampletest(int aResampler, int aFunction, float aMultiplier, FILE *aIndex
 		func = "sin";
 		for (i = 0; i < 512; i++)
 		{
-			a[i] = sin(i/256.0f * TAU);
+			a[i] = sin(4 * i/512.0f * TAU);
 		}
 		for (i = 0; i < src_samples; i++)
 		{
-			temp[i] = sin(i/256.0f * TAU * aMultiplier);
+			temp[i] = sin(4 * i/512.0f * TAU * aMultiplier);
 		}
 		break;
 	case 1:
 		func = "saw";
 		for (i = 0; i < 512; i++)
 		{
-			a[i] = saw(i/256.0f * TAU);
+			a[i] = saw(4 * i/512.0f * TAU);
 		}
 		for (i = 0; i < src_samples; i++)
 		{
-			temp[i] = saw(i/256.0f * TAU * aMultiplier);
+			temp[i] = saw(4 * i/512.0f * TAU * aMultiplier);
 		}
 		break;
 	case 2:
 		func = "sqr";
 		for (i = 0; i < 512; i++)
 		{
-			a[i] = square(i/256.0f * TAU);
+			a[i] = square(4 * i/512.0f * TAU);
 		}
 		for (i = 0; i < src_samples; i++)
 		{
-			temp[i] = square(i/256.0f * TAU * aMultiplier);
+			temp[i] = square(4 * i/512.0f * TAU * aMultiplier);
 		}
 		break;
 	}

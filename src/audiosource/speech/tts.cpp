@@ -5,7 +5,7 @@
 #include "darray.h"
 #include "tts.h"
 
-static char *ASCII[] =
+static const char *ASCII[] =
 {
 	"null", "", "", "",
 	"", "", "", "",
@@ -63,13 +63,13 @@ static char *ASCII[] =
 };
 
 /* Context definitions */
-static char Anything[] = "";
+static const char Anything[] = "";
 /* No context requirement */
 
-static char Nothing[] = " ";
+static const char Nothing[] = " ";
 /* Context is beginning or end of word */
 
-static char Silent[] = "";
+static const char Silent[] = "";
 /* No phonemes */
 
 
@@ -78,7 +78,7 @@ static char Silent[] = "";
 #define RIGHT_PART      2
 #define OUT_PART        3
 
-typedef char *Rule[4];
+typedef const char *Rule[4];
 /* Rule is an array of 4 character pointers */
 
 
@@ -594,7 +594,7 @@ static Rule *Rules[] =
 };
 
 
-static char *Cardinals[] =
+static const char *Cardinals[] =
 {
 	"zero", "one", "two", "three", "four", 
 	"five", "six", "seven", "eight", "nine", 
@@ -603,14 +603,14 @@ static char *Cardinals[] =
 };
 
 
-static char *Twenties[] =
+static const char *Twenties[] =
 {
 	"twenty", "thirty", "forty", "fifty",
 	"sixty", "seventy", "eighty", "ninety"
 };
 
 
-static char *Ordinals[] =
+static const char *Ordinals[] =
 {
 	"zeroth", "first", "second", "third", "fourth", 
 	"fifth", "sixth", "seventh","eighth", "ninth",
@@ -619,7 +619,7 @@ static char *Ordinals[] =
 };
 
 
-static char *Ord_twenties[] =
+static const char *Ord_twenties[] =
 {
 	"twentieth", "thirtieth", "fortieth", "fiftieth",
 	"sixtieth", "seventieth", "eightieth", "ninetieth"
@@ -847,12 +847,12 @@ static int isconsonant(int chr)
 }
 
 static int leftmatch(
-	char *pattern,                    /* first char of pattern to match in text */
-	char *context)                     /* last char of text to be matched */
+	const char *pattern,                    /* first char of pattern to match in text */
+	const char *context)                     /* last char of text to be matched */
 
 {
-	char *pat;
-	char *text;
+	const char *pat;
+	const char *text;
 	int count;
 
 	if (*pattern == '\0')
@@ -941,11 +941,11 @@ static int leftmatch(
 }
 
 static int rightmatch(
-	char *pattern,                    /* first char of pattern to match in text */
-	char *context)                     /* last char of text to be matched */
+	const char *pattern,                    /* first char of pattern to match in text */
+	const char *context)                     /* last char of text to be matched */
 {
-	char *pat;
-	char *text;
+	const char *pat;
+	const char *text;
 
 	if (*pattern == '\0')
 		/* null string matches any context */
@@ -1076,7 +1076,7 @@ static int rightmatch(
 	return 1;
 }
 
-static void phone_cat(darray *arg, char *s)
+static void phone_cat(darray *arg, const char *s)
 {
 	char ch;
 
@@ -1090,7 +1090,7 @@ static int find_rule(darray *arg, char *word, int index, Rule *rules)
 	for (;;)                         /* Search for the rule */
 	{
 		Rule *rule;
-		char *left,
+		const char *left,
 			*match,
 			*right,
 			*output;
@@ -1153,7 +1153,7 @@ static void guess_word(darray *arg, char *word)
 }
 
 
-static int NRL(char *s, int n, darray *phone)
+static int NRL(const char *s, int n, darray *phone)
 {
 	int old = phone->getSize();
 	char *word = (char *) malloc(n + 3);
@@ -1179,7 +1179,7 @@ static int NRL(char *s, int n, darray *phone)
 }
 
 
-static int spell_out(char *word, int n, darray *phone)
+static int spell_out(const char *word, int n, darray *phone)
 {
 	int nph = 0;
 
@@ -1191,7 +1191,7 @@ static int spell_out(char *word, int n, darray *phone)
 	return nph;
 }
 
-static int suspect_word(char *s, int n)
+static int suspect_word(const char *s, int n)
 {
 	int i = 0;
 	int seen_lower = 0;
@@ -1221,7 +1221,7 @@ static int suspect_word(char *s, int n)
 	return !seen_vowel || (seen_upper && seen_lower) || !seen_lower;
 }
 
-static int xlate_word(char *word, int n, darray *phone)
+static int xlate_word(const char *word, int n, darray *phone)
 {
 	int nph = 0;
 
@@ -1253,10 +1253,10 @@ static int xlate_word(char *word, int n, darray *phone)
 }
 
 
-int xlate_string(char *string, darray *phone)
+int xlate_string(const char *string, darray *phone)
 {
 	int nph = 0;
-	char *s = string;
+	const char *s = string;
 	char ch;
 
 	while (isspace(ch = *s))
@@ -1264,7 +1264,7 @@ int xlate_string(char *string, darray *phone)
 
 	while ((ch = *s))
 	{
-		char *word = s;
+		const char *word = s;
 
 		if (isalpha(ch))
 		{
@@ -1319,7 +1319,7 @@ int xlate_string(char *string, darray *phone)
 			else
 				if (ch == '[' && strchr(s, ']'))
 				{
-					char *word = s;
+					const char *word = s;
 
 					while (*s && *s++ != ']')
 						/* nothing */

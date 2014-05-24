@@ -190,7 +190,7 @@ int FFTFilter_setParametersEx(FFTFilter * aFFTFilter, int aShift, int aCombine /
  */
 void Speech_destroy(Speech * aSpeech);
 Speech * Speech_create();
-int Speech_setText(Speech * aSpeech, char * aText);
+int Speech_setText(Speech * aSpeech, const char * aText);
 void Speech_setLooping(Speech * aSpeech, int aLoop);
 void Speech_setFilter(Speech * aSpeech, int aFilterId, Filter * aFilter);
 void Speech_stop(Speech * aSpeech);

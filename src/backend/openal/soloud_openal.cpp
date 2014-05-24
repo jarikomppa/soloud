@@ -38,10 +38,14 @@ namespace SoLoud
 }
 #else
 
+#ifdef __APPLE__
+#include "OpenAL/al.h"
+#include "OpenAL/alc.h"
+#else
 #include "AL/al.h"
 #include "AL/alc.h"
 #include "AL/alext.h"
-
+#endif
 
 #define NUM_BUFFERS 2
 #define BUFFER_SIZE 4096

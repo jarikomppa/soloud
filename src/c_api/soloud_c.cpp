@@ -474,7 +474,7 @@ void * Speech_create()
   return (void *)new Speech;
 }
 
-int Speech_setText(void * aClassPtr, char * aText)
+int Speech_setText(void * aClassPtr, const char * aText)
 {
 	Speech * cl = (Speech *)aClassPtr;
 	return cl->setText(aText);

@@ -24,9 +24,14 @@ freely, subject to the following restrictions:
 #include <stdlib.h>
 #include <math.h>
 
+#ifdef __APPLE__
+#include "OpenAL/al.h"
+#include "OpenAL/alc.h"
+#else
 #include "AL/al.h"
 #include "AL/alc.h"
 #include "AL/alext.h"
+#endif
 
 #if defined(_MSC_VER)
 #define WINDOWS_VERSION

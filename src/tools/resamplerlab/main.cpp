@@ -52,7 +52,6 @@ void resample_pointsample(float *aSrc,
   }
 }
 
-
 void resample_linear(float *aSrc,
                      float *aSrc1,
                      float *aDst,
@@ -162,18 +161,44 @@ void plot_diff(const char *aFilename, int aSampleCount, int aHeight, float *aSrc
 		}
 	}
 
-	for (i = 0; i < aSampleCount; i++)
+	for (i = 0; i < aSampleCount-1; i++)
 	{
-		if (aSrc1[i] > -1 && aSrc1[i] < 1)
+		if (aSrc1[i] > -2 && aSrc1[i] < 2 && aSrc1[i+1] > -2 && aSrc1[i+1] < 2)
 		{
-			float v = 1 - (aSrc1[i] + 1) / 2;
-			bitmap[(int)floor(v * aHeight) * aSampleCount + i] = aColor1;
+			float v1 = 0.5 - (aSrc1[i] + 1) / 4 + 0.25;
+			float v2 = 0.5 - (aSrc1[i+1] + 1) / 4 + 0.25;
+			v1 *= aHeight;
+			v2 *= aHeight;
+			if (v1 > v2)
+			{
+				float t = v1;
+				v1 = v2;
+				v2 = t;
+			}
+			float j;
+			for (j = v1; j <= v2; j++)
+			{
+				bitmap[(int)floor(j) * aSampleCount + i] = aColor1;
+			}
 		}
 
-		if (aSrc2[i] > -1 && aSrc2[i] < 1)
+		if (aSrc2[i] > -2 && aSrc2[i] < 2 && aSrc2[i+1] > -2 && aSrc2[i+1] < 2)
 		{
-			float v = 1 - (aSrc2[i] + 1) / 2;
-			bitmap[(int)floor(v * aHeight) * aSampleCount + i] = aColor2;
+			float v1 = 0.5 - (aSrc2[i] + 1) / 4 + 0.25;
+			float v2 = 0.5 - (aSrc2[i+1] + 1) / 4 + 0.25;
+			v1 *= aHeight;
+			v2 *= aHeight;
+			if (v1 > v2)
+			{
+				float t = v1;
+				v1 = v2;
+				v2 = t;
+			}
+			float j;
+			for (j = v1; j <= v2; j++)
+			{
+				bitmap[(int)floor(j) * aSampleCount + i] = aColor2;
+			}
 		}
 	}
 	stbi_write_png(aFilename, aSampleCount, aHeight, 4, bitmap, aSampleCount * 4);
@@ -187,16 +212,35 @@ float saw(float v)
 	return (float)(t-0.5)*2;
 }
 
-int main(int parc, char ** pars)
+float square(float v)
 {
-	float *a, *b;
+	float t = v / TAU;
+	t = t - floor(t);
+	if (t > 0.5) return 1;
+	return -1;
+}
+
+void upsampletest()
+{
+	float *a, *b, *temp;
 	a = new float[512];
 	b = new float[512];
+	temp = new float[512];
+	
+	float multiplier = 5;
+
 	int i;
 	for (i = 0; i < 512; i++)
 	{
-		a[i] = sin(i/256.0f * TAU);
-		b[i] = saw(i/256.0f * TAU);
+		a[i] = square(i/256.0f * TAU);
+		temp[i] = square(i/256.0f * TAU * multiplier);
 	}
+	//resample_pointsample(temp,temp,b,0,512,11025,44100,floor(0.25*65536));
+	resample_linear(temp,temp,b,0,512,441200/multiplier,44100,floor(65536/multiplier));
 	plot_diff("test.png",512,256,a,b,0xff0000ff, 0xffff0000,0xffffffff,0xffcccccc);
+}
+
+int main(int parc, char ** pars)
+{
+	upsampletest();
 }

@@ -169,6 +169,25 @@ void drawstring(const char *aString, int aX, int aY, int *aBitmap, int aBitmapWi
 
 #define SAMPLE_GRANULARITY 512
 
+void resample_experiment(float *aSrc,
+                          float *aSrc1,
+                          float *aDst,
+                          int aSrcOffset,
+                          int aDstSampleCount,
+                          float aSrcSamplerate,
+                          float aDstSamplerate,
+                          int aStepFixed)
+{
+  int i;
+  int pos = aSrcOffset;
+
+  for (i = 0; i < aDstSampleCount; i++, pos += aStepFixed)
+  {
+    int p = pos >> 16;
+    aDst[i] = aSrc[p];
+  }
+}
+
 void resample_pointsample(float *aSrc,
                           float *aSrc1,
                           float *aDst,
@@ -568,48 +587,79 @@ void upsampletest(int aResampler, int aFunction, float aMultiplier, FILE *aIndex
 		func = "sin";
 		for (i = 0; i < 512; i++)
 		{
-			a[i] = sin(4 * i/512.0f * TAU);
+			a[i] = sin(4 * i / 512.0f * TAU);
 		}
 		for (i = 0; i < src_samples; i++)
 		{
-			temp[i] = sin(4 * i/512.0f * TAU * aMultiplier);
+			temp[i] = sin(4 * i / 512.0f * TAU * aMultiplier);
 		}
 		break;
 	case 1:
 		func = "saw";
 		for (i = 0; i < 512; i++)
 		{
-			a[i] = saw(4 * i/512.0f * TAU);
+			a[i] = saw(4 * i / 512.0f * TAU);
 		}
 		for (i = 0; i < src_samples; i++)
 		{
-			temp[i] = saw(4 * i/512.0f * TAU * aMultiplier);
+			temp[i] = saw(4 * i / 512.0f * TAU * aMultiplier);
 		}
 		break;
 	case 2:
 		func = "sqr";
 		for (i = 0; i < 512; i++)
 		{
-			a[i] = square(4 * i/512.0f * TAU);
+			a[i] = square(4 * i / 512.0f * TAU);
 		}
 		for (i = 0; i < src_samples; i++)
 		{
-			temp[i] = square(4 * i/512.0f * TAU * aMultiplier);
+			temp[i] = square(4 * i / 512.0f * TAU * aMultiplier);
 		}
 		break;
 	}
 
-	switch (aResampler)
+	int step_fixed = (int)floor(65536 / aMultiplier);
+
+	int curr = 0;
+	int prev = 0;
+	int samples_out = 0;
+	int mSrcOffset = 0;
+
+	while (samples_out < 512)
 	{
-	//case 0:
-	default:
-		samp = "point";
-		resample_pointsample(temp,temp,b,0,512,44100/aMultiplier,44100,(int)floor(65536/aMultiplier));
-		break;
-	case 1:
-		samp = "linear";
-		resample_linear(temp,temp,b,0,512,44100/aMultiplier,44100,(int)floor(65536/aMultiplier));
-		break;
+		int writesamples;
+
+		writesamples = ((512 * 65536) - mSrcOffset) / step_fixed + 1;
+
+		// avoid reading past the current buffer..
+		if (((writesamples * step_fixed + mSrcOffset) >> 16) >= SAMPLE_GRANULARITY + 1)
+			writesamples--;
+
+		if (writesamples > (512 - samples_out)) writesamples = 512 - samples_out;
+
+		switch (aResampler)
+		{
+		//case 0:
+		default:
+			samp = "point";
+			resample_pointsample(temp + curr, temp + prev, b + samples_out, mSrcOffset, writesamples, 44100 / aMultiplier, 44100, step_fixed);
+			break;
+		case 1:
+			samp = "linear";
+			resample_linear(temp + curr, temp + prev, b + samples_out, mSrcOffset, writesamples, 44100 / aMultiplier, 44100, step_fixed);
+			break;
+		case 2:
+			samp = "experiment";
+			resample_experiment(temp + curr, temp + prev, b + samples_out, mSrcOffset, writesamples, 44100 / aMultiplier, 44100, step_fixed);
+			break;
+		}
+		samples_out += writesamples;
+		mSrcOffset += writesamples * step_fixed;
+		prev = curr;
+		curr += 512;
+		mSrcOffset = mSrcOffset & 65535;
+		//if (mSrcOffset < 0) mSrcOffset = 0;
+		//while (mSrcOffset < 0) mSrcOffset += step_fixed;
 	}
 
 	char tempstr[1024];
@@ -619,7 +669,7 @@ void upsampletest(int aResampler, int aFunction, float aMultiplier, FILE *aIndex
 	}
 	else
 	{
-		sprintf(tempstr, "%s_%s_0_%02dx.png", samp, func, (int)aMultiplier*100);
+		sprintf(tempstr, "%s_%s_0_%04dx.png", samp, func, (int)(aMultiplier*10000));
 	}
 
 	plot_diff(tempstr, 512, 256, a, b, 0xff0000ff, 0xffff0000, 0xffffffff, 0xffcccccc);
@@ -629,10 +679,12 @@ void upsampletest(int aResampler, int aFunction, float aMultiplier, FILE *aIndex
 	delete[] a;
 	delete[] b;
 	delete[] temp;
+	printf(".");
 }
 
 int main(int parc, char ** pars)
 {
+	setbuf(stdout, NULL);
 	FILE * indexf = fopen("index.html", "w");
 	fprintf(indexf,
 		"<html>\n<body>\n");
@@ -641,9 +693,17 @@ int main(int parc, char ** pars)
 	{
 		for (k = 0; k < 5; k++)
 		{
-			for (samp = 0; samp < 2; samp++)
+			for (samp = 0; samp < 3; samp++)
 			{
 				upsampletest(samp, func, (float)(k * k * 3 + 2), indexf);
+			}
+			fprintf(indexf, "<br><br>\n");
+		}
+		for (k = 0; k < 5; k++)
+		{
+			for (samp = 0; samp < 3; samp++)
+			{
+				upsampletest(samp, func, (float)(1.0f / (k * k * 3 + 2)), indexf);
 			}
 			fprintf(indexf, "<br><br>\n");
 		}

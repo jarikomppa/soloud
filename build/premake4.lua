@@ -48,6 +48,11 @@ newoption {
 	description = "Include libmodplug in build"
 }
 
+newoption {
+	trigger		  = "with-tools",
+	description = "Include (optional) tools in build"
+}
+
 local WITH_SDL = 1
 local WITH_PORTAUDIO = 1
 local WITH_OPENAL = 1
@@ -435,6 +440,7 @@ end
 			flags { "EnableSSE2", "NoMinimalRebuild", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
+if _OPTIONS["with-tools"] then
 
 	project "codegen"
 		kind "ConsoleApp"
@@ -458,6 +464,33 @@ end
 			objdir (buildroot .. "/release")
 			targetname "codegen"
 			flags { "EnableSSE2", "NoMinimalRebuild", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
+end
+
+-- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
+
+if _OPTIONS["with-tools"] then
+
+	project "resamplerlab"
+		kind "ConsoleApp"
+		language "C++"
+		files {
+		  "../src/tools/resamplerlab/**.c*"
+		}
+
+		configuration "Debug"
+			defines { "DEBUG" }
+			flags {"Symbols" }
+			objdir (buildroot .. "/debug")
+			targetname "resamplerlab_d"
+			flags { "Symbols" }			
+
+		configuration "Release"
+			defines { "NDEBUG" }
+			flags {"Optimize"}
+			objdir (buildroot .. "/release")
+			targetname "resamplerlab"
+			flags { "EnableSSE2", "NoMinimalRebuild", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
+end
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 

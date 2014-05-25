@@ -33,7 +33,7 @@ freely, subject to the following restrictions:
 #include <float.h>
 #endif
 
-#if !defined(WITH_SDL) && !defined(WITH_PORTAUDIO) && !defined(WITH_OPENAL) && !defined(WITH_XAUDIO2) && !defined(WITH_WINMM) && !defined(WITH_WASAPI) && !defined(WITH_OSS)
+#if !defined(WITH_SDL) && !defined(WITH_PORTAUDIO) && !defined(WITH_OPENAL) && !defined(WITH_XAUDIO2) && !defined(WITH_WINMM) && !defined(WITH_WASAPI) && !defined(WITH_OSS) && !defined(WITH_SDL_NONDYN)
 #error It appears you haven't enabled any of the back-ends. Please #define one or more of the WITH_ defines (or use premake)
 #endif
 
@@ -117,6 +117,22 @@ namespace SoLoud
 
 		if (aSamplerate != Soloud::AUTO) samplerate = aSamplerate;
 		if (aBufferSize != Soloud::AUTO) buffersize = aBufferSize;
+
+#if defined(WITH_SDL_NONDYN)
+		if (aBackend == Soloud::SDL || 
+			aBackend == Soloud::SDL2 ||
+			aBackend == Soloud::AUTO)
+		{
+			if (aBufferSize == Soloud::AUTO) buffersize = 2048;
+
+			int ret = sdlnondyn_init(this, aFlags, samplerate, buffersize);
+			if (ret == 0)
+				inited = 1;
+
+			if (ret != 0 && aBackend != Soloud::AUTO)
+				return ret;			
+		}
+#endif
 
 #if defined(WITH_SDL)
 		if (aBackend == Soloud::SDL || 

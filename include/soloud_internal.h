@@ -32,6 +32,9 @@ namespace SoLoud
 	// SDL back-end initialization call
 	int sdl_init(SoLoud::Soloud *aSoloud, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 2048);
 
+	// SDL "non-dynamic" back-end initialization call
+	int sdlnondyn_init(SoLoud::Soloud *aSoloud, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 2048);
+
 	// OpenAL back-end initialization call
 	int openal_init(SoLoud::Soloud *aSoloud, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 2048);
 

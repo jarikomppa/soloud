@@ -39,6 +39,11 @@ newoption {
 }
 
 newoption {
+	trigger		  = "with-sdlnondyn-only",
+	description = "Only include sdl that doesn't use dyndll in build"
+}
+
+newoption {
 	trigger		  = "with-native-only",
 	description = "Only native backends (winmm/oss) in build"
 }
@@ -54,6 +59,7 @@ newoption {
 }
 
 local WITH_SDL = 1
+local WITH_SDL_NONDYN = 0
 local WITH_PORTAUDIO = 1
 local WITH_OPENAL = 1
 local WITH_XAUDIO2 = 0
@@ -74,6 +80,17 @@ end
 
 if _OPTIONS["with-sdl-only"] then
 	WITH_SDL = 1
+	WITH_PORTAUDIO = 0
+	WITH_OPENAL = 0
+	WITH_XAUDIO2 = 0
+	WITH_WINMM = 0
+	WITH_WASAPI = 0
+	WITH_OSS = 0
+end
+
+if _OPTIONS["with-sdlnondyn-only"] then
+	WITH_SDL = 0
+	WITH_SDL_NONDYN = 1
 	WITH_PORTAUDIO = 0
 	WITH_OPENAL = 0
 	WITH_XAUDIO2 = 0
@@ -392,6 +409,16 @@ if (WITH_SDL == 1) then
     }
 end
 
+if (WITH_SDL_NONDYN == 1) then
+		defines { "WITH_SDL_NONDYN" }
+    files {
+      "../src/backend/sdl_nondyn/**.c*"
+      }
+    includedirs {
+      "../include",
+      sdl_include
+    }
+end
     
 if (WITH_WASAPI == 1) then 
 		defines { "WITH_WASAPI" }

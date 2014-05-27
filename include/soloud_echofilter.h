@@ -35,6 +35,7 @@ namespace SoLoud
 		int mBufferLength;
 		EchoFilter *mParent;
 		int mOffset;
+
 	public:
 		virtual void filter(float *aBuffer, int aSamples, int aChannels, float aSamplerate, float aTime);
 		virtual ~EchoFilterInstance();
@@ -46,9 +47,10 @@ namespace SoLoud
 	public:
 		float mDelay;
 		float mDecay;
+		float mFilter;
 		virtual FilterInstance *createInstance();
 		EchoFilter();
-		int setParams(float aDelay, float aDecay);
+		int setParams(float aDelay, float aDecay = 0.7f, float aFilter = 0.0f);
 	};
 }
 

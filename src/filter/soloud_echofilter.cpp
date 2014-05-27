@@ -54,16 +54,22 @@ namespace SoLoud
 
 		float decay = mParent->mDecay;
 		int i, j;
+		int prevofs = (mOffset + mBufferLength - 1) % mBufferLength;
 		for (i = 0; i < aSamples; i++)
 		{
 			for (j = 0; j < aChannels; j++)
 			{
 				int chofs = j * mBufferLength;
 				int bchofs = j * aSamples;
+				
+				mBuffer[mOffset + chofs] = mParent->mFilter * mBuffer[prevofs + chofs] + (1 - mParent->mFilter) * mBuffer[mOffset + chofs];
+				
 				float n = aBuffer[i + bchofs] + mBuffer[mOffset + chofs] * decay;
 				mBuffer[mOffset + chofs] = n;
+
 				aBuffer[i + bchofs] += (n - aBuffer[i + bchofs]) * mParam[0];
 			}
+			prevofs = mOffset;
 			mOffset = (mOffset + 1) % mBufferLength;
 		}
 	}
@@ -75,17 +81,19 @@ namespace SoLoud
 
 	EchoFilter::EchoFilter()
 	{
-		mDelay = 1;
-		mDecay = 0.5f;
+		mDelay = 0.3f;
+		mDecay = 0.7f;
+		mFilter = 0f;
 	}
 
-	int EchoFilter::setParams(float aDelay, float aDecay)
+	int EchoFilter::setParams(float aDelay, float aDecay, float aFilter)
 	{
-		if (aDelay <= 0 || aDecay <= 0)
+		if (aDelay <= 0 || aDecay <= 0 || aFilter < 0 || aFilter >= 1.0f)
 			return INVALID_PARAMETER;
 
 		mDecay = aDecay;
 		mDelay = aDelay;
+		mFilter = aFilter;
 		
 		return 0;
 	}

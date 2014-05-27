@@ -83,7 +83,7 @@ namespace SoLoud
 	{
 		mDelay = 0.3f;
 		mDecay = 0.7f;
-		mFilter = 0f;
+		mFilter = 0.0f;
 	}
 
 	int EchoFilter::setParams(float aDelay, float aDecay, float aFilter)

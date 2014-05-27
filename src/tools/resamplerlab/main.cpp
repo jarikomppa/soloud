@@ -169,6 +169,61 @@ void drawstring(const char *aString, int aX, int aY, int *aBitmap, int aBitmapWi
 
 #define SAMPLE_GRANULARITY 512
 
+
+void resample_experiment(float *aSrc,
+                          float *aSrc1,
+                          float *aDst,
+                          int aSrcOffset,
+                          int aDstSampleCount,
+                          float aSrcSamplerate,
+                          float aDstSamplerate,
+                          int aStepFixed)
+{
+	int i;
+	int pos = aSrcOffset;
+	float freq = aSrcSamplerate / 2;
+	float omega = (float)((2.0f * M_PI * freq / aDstSamplerate));
+	float sin_omega = (float)sin(omega);
+	float cos_omega = (float)cos(omega);
+	float resonance = 2.0f;
+	float alpha = sin_omega / (2.0f * resonance);
+	float scalar = 1.0f / (1.0f + alpha);
+
+	float A0 = 0.5f * (1.0f - cos_omega) * scalar;
+	float A1 = (1.0f - cos_omega) * scalar;
+	float A2 = A0;
+	float B1 = -2.0f * cos_omega * scalar;
+	float B2 = (1.0f - alpha) * scalar;
+
+	 float X1 = 0, Y1 = 0, X2 = 0, Y2 = 0, x = 0;
+	 int iter = 0;
+
+	for (i = 0; i < aDstSampleCount; i++, pos += aStepFixed, iter++)
+	{
+		int p = pos >> 16;
+
+		if ((iter & 1) == 0)
+		{
+			// Generate outputs by filtering inputs.
+			x = aSrc[p];
+			Y2 = (A0 * x) + (A1 * X1) + (A2 * X2) - (B1 * Y1) - (B2 * Y2);
+			aDst[i] = Y2;
+		}
+		else
+		{
+			// Permute filter operations to reduce data movement.
+			// Just substitute variables instead of doing mX1=x, etc.
+			X2 = aSrc[p];
+			Y1 = (A0 * X2) + (A1 * x) + (A2 * X1) - (B1 * Y2) - (B2 * Y1);
+			aDst[i] = Y1;
+
+			// Only move a little data.
+			X1 = X2;
+			X2 = x;
+		}
+	}
+}
+
 float catmullrom(float t, float p0, float p1, float p2, float p3)
 {
 return 0.5f * (
@@ -179,7 +234,7 @@ return 0.5f * (
               );
 }
 
-void resample_experiment(float *aSrc,
+void resample_catmullrom(float *aSrc,
                           float *aSrc1,
                           float *aDst,
                           int aSrcOffset,
@@ -692,6 +747,10 @@ void upsampletest(int aResampler, int aFunction, float aMultiplier, FILE *aIndex
 			resample_linear(temp + curr, temp + prev, b + samples_out, mSrcOffset, writesamples, 44100 / aMultiplier, 44100, step_fixed);
 			break;
 		case 2:
+			samp = "catmull-rom";
+			resample_catmullrom(temp + curr, temp + prev, b + samples_out, mSrcOffset, writesamples, 44100 / aMultiplier, 44100, step_fixed);
+			break;
+		case 3:
 			samp = "experiment";
 			resample_experiment(temp + curr, temp + prev, b + samples_out, mSrcOffset, writesamples, 44100 / aMultiplier, 44100, step_fixed);
 			break;
@@ -736,7 +795,7 @@ int main(int parc, char ** pars)
 	{
 		for (k = 0; k < 5; k++)
 		{
-			for (samp = 0; samp < 3; samp++)
+			for (samp = 0; samp < 4; samp++)
 			{
 				upsampletest(samp, func, (float)(k * k * 3 + 2), indexf);
 			}
@@ -744,7 +803,7 @@ int main(int parc, char ** pars)
 		}
 		for (k = 0; k < 5; k++)
 		{
-			for (samp = 0; samp < 3; samp++)
+			for (samp = 0; samp < 4; samp++)
 			{
 				upsampletest(samp, func, (float)(1.0f / (k * k * 3 + 2)), indexf);
 			}

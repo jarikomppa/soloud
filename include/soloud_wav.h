@@ -41,25 +41,25 @@ namespace SoLoud
 	public:
 		WavInstance(Wav *aParent);
 		virtual void getAudio(float *aBuffer, int aSamples);
-		virtual int rewind();
-		virtual int hasEnded();
+		virtual result rewind();
+		virtual bool hasEnded();
 	};
 
 	class Wav : public AudioSource
 	{
-		int loadwav(DataReader *aReader);
-		int loadogg(stb_vorbis *aVorbis);
-		int testAndLoadFile(DataReader *aReader);
+		result loadwav(DataReader *aReader);
+		result loadogg(stb_vorbis *aVorbis);
+		result testAndLoadFile(DataReader *aReader);
 	public:
 		float *mData;
 		int mSampleCount;
 
 		Wav();
 		virtual ~Wav();
-		int load(const char *aFilename);
-		int loadMem(unsigned char *aMem, int aLength);
+		result load(const char *aFilename);
+		result loadMem(unsigned char *aMem, int aLength);
 		virtual AudioSourceInstance *createInstance();
-		double getLength();
+		time getLength();
 	};
 };
 

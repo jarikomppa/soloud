@@ -45,7 +45,7 @@ namespace SoLoud
 		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 	}
 
-	float Soloud::getFilterParameter(int aVoiceHandle, int aFilterId, int aAttributeId)
+	float Soloud::getFilterParameter(handle aVoiceHandle, int aFilterId, int aAttributeId)
 	{
 		float ret = 0;
 		if (aFilterId < 0 || aFilterId >= FILTERS_PER_STREAM)
@@ -78,7 +78,7 @@ namespace SoLoud
 		return ret;
 	}
 
-	void Soloud::setFilterParameter(int aVoiceHandle, int aFilterId, int aAttributeId, float aValue)
+	void Soloud::setFilterParameter(handle aVoiceHandle, int aFilterId, int aAttributeId, float aValue)
 	{
 		if (aFilterId < 0 || aFilterId >= FILTERS_PER_STREAM)
 			return;
@@ -108,7 +108,7 @@ namespace SoLoud
 		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 	}
 
-	void Soloud::fadeFilterParameter(int aVoiceHandle, int aFilterId, int aAttributeId, float aTo, double aTime)
+	void Soloud::fadeFilterParameter(handle aVoiceHandle, int aFilterId, int aAttributeId, float aTo, double aTime)
 	{
 		if (aFilterId < 0 || aFilterId >= FILTERS_PER_STREAM)
 			return;
@@ -138,7 +138,7 @@ namespace SoLoud
 		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 	}
 
-	void Soloud::oscillateFilterParameter(int aVoiceHandle, int aFilterId, int aAttributeId, float aFrom, float aTo, double aTime)
+	void Soloud::oscillateFilterParameter(handle aVoiceHandle, int aFilterId, int aAttributeId, float aFrom, float aTo, double aTime)
 	{
 		if (aFilterId < 0 || aFilterId >= FILTERS_PER_STREAM)
 			return;

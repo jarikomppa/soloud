@@ -25,6 +25,8 @@ freely, subject to the following restrictions:
 #ifndef SOLOUD_ECHOFILTER_H
 #define SOLOUD_ECHOFILTER_H
 
+#include "soloud.h"
+
 namespace SoLoud
 {
 	class EchoFilter;
@@ -37,7 +39,7 @@ namespace SoLoud
 		int mOffset;
 
 	public:
-		virtual void filter(float *aBuffer, int aSamples, int aChannels, float aSamplerate, double aTime);
+		virtual void filter(float *aBuffer, int aSamples, int aChannels, float aSamplerate, time aTime);
 		virtual ~EchoFilterInstance();
 		EchoFilterInstance(EchoFilter *aParent);
 	};

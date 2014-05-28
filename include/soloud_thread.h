@@ -25,6 +25,8 @@ freely, subject to the following restrictions:
 #ifndef SOLOUD_THREAD_H
 #define SOLOUD_THREAD_H
 
+#include "soloud.h"
+
 namespace SoLoud
 {
 	namespace Thread

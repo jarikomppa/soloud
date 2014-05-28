@@ -28,7 +28,7 @@ freely, subject to the following restrictions:
 
 namespace SoLoud
 {
-	void Soloud::schedulePause(int aVoiceHandle, double aTime)
+	void Soloud::schedulePause(handle aVoiceHandle, time aTime)
 	{
 		if (aTime <= 0)
 		{
@@ -46,7 +46,7 @@ namespace SoLoud
 		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 	}
 
-	void Soloud::scheduleStop(int aVoiceHandle, double aTime)
+	void Soloud::scheduleStop(handle aVoiceHandle, time aTime)
 	{
 		if (aTime <= 0)
 		{
@@ -64,7 +64,7 @@ namespace SoLoud
 		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 	}
 
-	void Soloud::fadeVolume(int aVoiceHandle, float aTo, double aTime)
+	void Soloud::fadeVolume(handle aVoiceHandle, float aTo, time aTime)
 	{
 		float from = getVolume(aVoiceHandle);
 		if (aTime <= 0 || aTo == from)
@@ -84,7 +84,7 @@ namespace SoLoud
 		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 	}
 
-	void Soloud::fadePan(int aVoiceHandle, float aTo, double aTime)
+	void Soloud::fadePan(handle aVoiceHandle, float aTo, time aTime)
 	{
 		float from = getPan(aVoiceHandle);
 		if (aTime <= 0 || aTo == from)
@@ -104,7 +104,7 @@ namespace SoLoud
 		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 	}
 
-	void Soloud::fadeRelativePlaySpeed(int aVoiceHandle, float aTo, double aTime)
+	void Soloud::fadeRelativePlaySpeed(handle aVoiceHandle, float aTo, time aTime)
 	{
 		float from = getRelativePlaySpeed(aVoiceHandle);
 		if (aTime <= 0 || aTo == from)
@@ -123,7 +123,7 @@ namespace SoLoud
 		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 	}
 
-	void Soloud::fadeGlobalVolume(float aTo, double aTime)
+	void Soloud::fadeGlobalVolume(float aTo, time aTime)
 	{
 		float from = getGlobalVolume();
 		if (aTime <= 0 || aTo == from)
@@ -136,7 +136,7 @@ namespace SoLoud
 	}
 
 
-	void Soloud::oscillateVolume(int aVoiceHandle, float aFrom, float aTo, double aTime)
+	void Soloud::oscillateVolume(handle aVoiceHandle, float aFrom, float aTo, time aTime)
 	{
 		if (aTime <= 0 || aTo == aFrom)
 		{
@@ -155,7 +155,7 @@ namespace SoLoud
 		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 	}
 
-	void Soloud::oscillatePan(int aVoiceHandle, float aFrom, float aTo, double aTime)
+	void Soloud::oscillatePan(handle aVoiceHandle, float aFrom, float aTo, time aTime)
 	{
 		if (aTime <= 0 || aTo == aFrom)
 		{
@@ -174,7 +174,7 @@ namespace SoLoud
 		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 	}
 
-	void Soloud::oscillateRelativePlaySpeed(int aVoiceHandle, float aFrom, float aTo, double aTime)
+	void Soloud::oscillateRelativePlaySpeed(handle aVoiceHandle, float aFrom, float aTo, time aTime)
 	{
 		if (aTime <= 0 || aTo == aFrom)
 		{
@@ -192,7 +192,7 @@ namespace SoLoud
 		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 	}
 
-	void Soloud::oscillateGlobalVolume(float aFrom, float aTo, double aTime)
+	void Soloud::oscillateGlobalVolume(float aFrom, float aTo, time aTime)
 	{
 		if (aTime <= 0 || aTo == aFrom)
 		{

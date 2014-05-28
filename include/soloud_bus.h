@@ -39,7 +39,7 @@ namespace SoLoud
 	public:
 		BusInstance(Bus *aParent);
 		virtual void getAudio(float *aBuffer, int aSamples);
-		virtual int hasEnded();
+		virtual bool hasEnded();
 		virtual ~BusInstance();
 	};
 

@@ -103,7 +103,7 @@ namespace SoLoud
 		return 1;
 	}
 
-	int SpeechInstance::hasEnded()
+	bool SpeechInstance::hasEnded()
 	{
 			
 		if (mSampleCount < 0)

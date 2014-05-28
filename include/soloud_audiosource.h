@@ -25,6 +25,7 @@ freely, subject to the following restrictions:
 #ifndef SOLOUD_AUDIOSOURCE_H
 #define SOLOUD_AUDIOSOURCE_H
 
+#include "soloud.h"
 #include "soloud_fader.h"
 #include "soloud_filter.h"
 
@@ -77,7 +78,7 @@ namespace SoLoud
 		// Relative play speed; samplerate = base samplerate * relative play speed
 		float mRelativePlaySpeed;
 		// How long this stream has played, in seconds.
-		double mStreamTime;
+		time mStreamTime;
 		// Fader for the audio panning
 		Fader mPanFader;
 		// Fader for the audio volume
@@ -109,11 +110,11 @@ namespace SoLoud
 		// Get N samples from the stream to the buffer
 		virtual void getAudio(float *aBuffer, int aSamples) = 0;
 		// Has the stream ended?
-		virtual int hasEnded() = 0;
+		virtual bool hasEnded() = 0;
 		// Seek to certain place in the stream. Base implementation is generic "tape" seek (and slow).
-		virtual void seek(double aSeconds, float *mScratch, int mScratchSize);
-		// Rewind stream. Base implementation returns 0, meaning it can't rewind.
-		virtual int rewind();
+		virtual void seek(time aSeconds, float *mScratch, int mScratchSize);
+		// Rewind stream. Base implementation returns "not implemented", meaning it can't rewind.
+		virtual result rewind();
 	};
 
 	class Soloud;
@@ -145,9 +146,9 @@ namespace SoLoud
 		// CTor
 		AudioSource();
 		// Set the looping of the instances created from this audio source
-		void setLooping(int aLoop);
+		void setLooping(bool aLoop);
 		// Set whether only one instance of this sound should ever be playing at the same time
-		void setSingleInstance(int aSingleInstance);
+		void setSingleInstance(bool aSingleInstance);
 		// Set filter. Set to NULL to clear the filter.
 		virtual void setFilter(int aFilterId, Filter *aFilter);
 		// DTor

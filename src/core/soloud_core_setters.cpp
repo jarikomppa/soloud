@@ -39,7 +39,7 @@ namespace SoLoud
 		mGlobalVolume = aVolume;
 	}		
 
-	void Soloud::setRelativePlaySpeed(int aVoiceHandle, float aSpeed)
+	void Soloud::setRelativePlaySpeed(handle aVoiceHandle, float aSpeed)
 	{
 		if (mLockMutexFunc) mLockMutexFunc(mMutex);
 		int ch = getVoiceFromHandle(aVoiceHandle);
@@ -53,7 +53,7 @@ namespace SoLoud
 		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 	}
 
-	void Soloud::setSamplerate(int aVoiceHandle, float aSamplerate)
+	void Soloud::setSamplerate(handle aVoiceHandle, float aSamplerate)
 	{
 		if (mLockMutexFunc) mLockMutexFunc(mMutex);
 		int ch = getVoiceFromHandle(aVoiceHandle);
@@ -67,7 +67,7 @@ namespace SoLoud
 		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 	}
 
-	void Soloud::setPause(int aVoiceHandle, int aPause)
+	void Soloud::setPause(handle aVoiceHandle, bool aPause)
 	{
 		if (mLockMutexFunc) mLockMutexFunc(mMutex);
 		int ch = getVoiceFromHandle(aVoiceHandle);
@@ -82,7 +82,7 @@ namespace SoLoud
 		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 	}
 
-	void Soloud::setPauseAll(int aPause)
+	void Soloud::setPauseAll(bool aPause)
 	{
 		if (mLockMutexFunc) mLockMutexFunc(mMutex);
 		int ch;
@@ -93,7 +93,7 @@ namespace SoLoud
 		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 	}
 
-	void Soloud::setProtectVoice(int aVoiceHandle, int aProtect)
+	void Soloud::setProtectVoice(handle aVoiceHandle, bool aProtect)
 	{
 		if (mLockMutexFunc) mLockMutexFunc(mMutex);
 		int ch = getVoiceFromHandle(aVoiceHandle);
@@ -113,7 +113,7 @@ namespace SoLoud
 		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 	}
 
-	void Soloud::setPan(int aVoiceHandle, float aPan)
+	void Soloud::setPan(handle aVoiceHandle, float aPan)
 	{		
 		if (mLockMutexFunc) mLockMutexFunc(mMutex);
 		int ch = getVoiceFromHandle(aVoiceHandle);
@@ -126,7 +126,7 @@ namespace SoLoud
 		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 	}
 
-	void Soloud::setPanAbsolute(int aVoiceHandle, float aLVolume, float aRVolume)
+	void Soloud::setPanAbsolute(handle aVoiceHandle, float aLVolume, float aRVolume)
 	{
 		if (mLockMutexFunc) mLockMutexFunc(mMutex);
 		int ch = getVoiceFromHandle(aVoiceHandle);
@@ -141,7 +141,7 @@ namespace SoLoud
 		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 	}
 
-	void Soloud::setVolume(int aVoiceHandle, float aVolume)
+	void Soloud::setVolume(handle aVoiceHandle, float aVolume)
 	{
 		if (mLockMutexFunc) mLockMutexFunc(mMutex);
 		int ch = getVoiceFromHandle(aVoiceHandle);

@@ -43,14 +43,14 @@ namespace SoLoud
 		return mGlobalVolume;
 	}
 
-	int Soloud::getHandleFromVoice(int aVoice) const
+	handle Soloud::getHandleFromVoice(int aVoice) const
 	{
 		if (mVoice[aVoice] == 0)
 			return 0;
 		return (aVoice + 1) | (mVoice[aVoice]->mPlayIndex << 12);
 	}
 
-	int Soloud::getVoiceFromHandle(int aVoiceHandle) const
+	int Soloud::getVoiceFromHandle(handle aVoiceHandle) const
 	{
 		if (aVoiceHandle <= 0) 
 		{
@@ -82,7 +82,7 @@ namespace SoLoud
 		return c;
 	}
 
-	int Soloud::isValidVoiceHandle(int aVoiceHandle) const
+	bool Soloud::isValidVoiceHandle(handle aVoiceHandle) const
 	{
 		if (mLockMutexFunc) mLockMutexFunc(mMutex);
 		if (getVoiceFromHandle(aVoiceHandle) != -1) 
@@ -95,7 +95,7 @@ namespace SoLoud
 	}
 
 
-	float Soloud::getVolume(int aVoiceHandle) const
+	float Soloud::getVolume(handle aVoiceHandle) const
 	{
 		if (mLockMutexFunc) mLockMutexFunc(mMutex);
 		int ch = getVoiceFromHandle(aVoiceHandle);
@@ -109,7 +109,7 @@ namespace SoLoud
 		return v;
 	}
 
-	float Soloud::getPan(int aVoiceHandle) const
+	float Soloud::getPan(handle aVoiceHandle) const
 	{
 		if (mLockMutexFunc) mLockMutexFunc(mMutex);
 		int ch = getVoiceFromHandle(aVoiceHandle);
@@ -123,7 +123,7 @@ namespace SoLoud
 		return v;
 	}
 
-	double Soloud::getStreamTime(int aVoiceHandle) const
+	time Soloud::getStreamTime(handle aVoiceHandle) const
 	{
 		if (mLockMutexFunc) mLockMutexFunc(mMutex);
 		int ch = getVoiceFromHandle(aVoiceHandle);
@@ -137,7 +137,7 @@ namespace SoLoud
 		return v;
 	}
 
-	float Soloud::getRelativePlaySpeed(int aVoiceHandle) const
+	float Soloud::getRelativePlaySpeed(handle aVoiceHandle) const
 	{
 		if (mLockMutexFunc) mLockMutexFunc(mMutex);
 		int ch = getVoiceFromHandle(aVoiceHandle);
@@ -151,7 +151,7 @@ namespace SoLoud
 		return v;
 	}
 
-	float Soloud::getSamplerate(int aVoiceHandle) const
+	float Soloud::getSamplerate(handle aVoiceHandle) const
 	{
 		if (mLockMutexFunc) mLockMutexFunc(mMutex);
 		int ch = getVoiceFromHandle(aVoiceHandle);
@@ -165,7 +165,7 @@ namespace SoLoud
 		return v;
 	}
 
-	int Soloud::getPause(int aVoiceHandle) const
+	bool Soloud::getPause(handle aVoiceHandle) const
 	{
 		if (mLockMutexFunc) mLockMutexFunc(mMutex);
 		int ch = getVoiceFromHandle(aVoiceHandle);
@@ -176,10 +176,10 @@ namespace SoLoud
 		}
 		int v = !!(mVoice[ch]->mFlags & AudioSourceInstance::PAUSED);
 		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
-		return v;
+		return v != 0;
 	}
 
-	int Soloud::getProtectVoice(int aVoiceHandle) const
+	bool Soloud::getProtectVoice(handle aVoiceHandle) const
 	{
 		if (mLockMutexFunc) mLockMutexFunc(mMutex);
 		int ch = getVoiceFromHandle(aVoiceHandle);
@@ -190,7 +190,7 @@ namespace SoLoud
 		}
 		int v = !!(mVoice[ch]->mFlags & AudioSourceInstance::PROTECTED);
 		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
-		return v;
+		return v != 0;
 	}
 
 	int Soloud::findFreeVoice()

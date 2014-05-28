@@ -58,6 +58,18 @@ freely, subject to the following restrictions:
 /////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////
 
+// Typedefs have to be made before the includes, as the 
+// includes depend on them.
+namespace SoLoud
+{
+	class Soloud;
+	typedef void (*mutexCallFunction)(void *aMutexPtr);
+	typedef void (*soloudCallFunction)(Soloud *aSoloud);
+	typedef int result;
+	typedef unsigned int handle;
+	typedef double time;
+};
+
 #include "soloud_filter.h"
 #include "soloud_fader.h"
 #include "soloud_audiosource.h"
@@ -66,11 +78,6 @@ freely, subject to the following restrictions:
 
 namespace SoLoud
 {
-	class Soloud;
-
-	typedef void (*mutexCallFunction)(void *aMutexPtr);
-	typedef void (*soloudCallFunction)(Soloud *aSoloud);
-
 	// Soloud core class.
 	class Soloud
 	{
@@ -113,7 +120,7 @@ namespace SoLoud
 		};
 
 		// Initialize SoLoud. Must be called before SoLoud can be used.
-		int init(int aFlags = Soloud::CLIP_ROUNDOFF, int aBackend = Soloud::AUTO, int aSamplerate = Soloud::AUTO, int aBufferSize = Soloud::AUTO);
+		result init(int aFlags = Soloud::CLIP_ROUNDOFF, int aBackend = Soloud::AUTO, int aSamplerate = Soloud::AUTO, int aBufferSize = Soloud::AUTO);
 
 		// Deinitialize SoLoud. Must be called before shutting down.
 		void deinit();
@@ -125,43 +132,43 @@ namespace SoLoud
 		const char * getErrorString(int aErrorCode) const;
 
 		// Start playing a sound. Returns voice handle, which can be ignored or used to alter the playing sound's parameters.
-		int play(AudioSource &aSound, float aVolume = 1.0f, float aPan = 0.0f, int aPaused = 0, int aBus = 0);
+		handle play(AudioSource &aSound, float aVolume = 1.0f, float aPan = 0.0f, int aPaused = 0, int aBus = 0);
 		// Seek the audio stream to certain point in time. Some streams can't seek backwards. Relative play speed affects time.
-		void seek(int aVoiceHandle, double aSeconds);
+		void seek(handle aVoiceHandle, time aSeconds);
 		// Stop the sound.
-		void stop(int aVoiceHandle);
+		void stop(handle aVoiceHandle);
 		// Stop all voices.
 		void stopAll();
 		// Stop all voices that play this sound source
 		void stopAudioSource(AudioSource &aSound);
 
 		// Set a live filter parameter. Use 0 for the global filters.
-		void setFilterParameter(int aVoiceHandle, int aFilterId, int aAttributeId, float aValue);
+		void setFilterParameter(handle aVoiceHandle, int aFilterId, int aAttributeId, float aValue);
 		// Get a live filter parameter. Use 0 for the global filters.
-		float getFilterParameter(int aVoiceHandle, int aFilterId, int aAttributeId);
+		float getFilterParameter(handle aVoiceHandle, int aFilterId, int aAttributeId);
 		// Fade a live filter parameter. Use 0 for the global filters.
-		void fadeFilterParameter(int aVoiceHandle, int aFilterId, int aAttributeId, float aTo, double aTime);
+		void fadeFilterParameter(handle aVoiceHandle, int aFilterId, int aAttributeId, float aTo, time aTime);
 		// Oscillate a live filter parameter. Use 0 for the global filters.
-		void oscillateFilterParameter(int aVoiceHandle, int aFilterId, int aAttributeId, float aFrom, float aTo, double aTime);
+		void oscillateFilterParameter(handle aVoiceHandle, int aFilterId, int aAttributeId, float aFrom, float aTo, time aTime);
 
 		// Get current play time, in seconds.
-		double getStreamTime(int aVoiceHandle) const;
+		time getStreamTime(handle aVoiceHandle) const;
 		// Get current pause state.
-		int getPause(int aVoiceHandle) const;
+		bool getPause(handle aVoiceHandle) const;
 		// Get current volume.
-		float getVolume(int aVoiceHandle) const;
+		float getVolume(handle aVoiceHandle) const;
 		// Get current pan.
-		float getPan(int aVoiceHandle) const;
+		float getPan(handle aVoiceHandle) const;
 		// Get current sample rate.
-		float getSamplerate(int aVoiceHandle) const;
+		float getSamplerate(handle aVoiceHandle) const;
 		// Get current voice protection state.
-		int getProtectVoice(int aVoiceHandle) const;
+		bool getProtectVoice(handle aVoiceHandle) const;
 		// Get the current number of busy voices.
 		int getActiveVoiceCount() const; 
 		// Check if the handle is still valid, or if the sound has stopped.
-		int isValidVoiceHandle(int aVoiceHandle) const;
+		bool isValidVoiceHandle(handle aVoiceHandle) const;
 		// Get current relative play speed.
-		float getRelativePlaySpeed(int aVoiceHandle) const;
+		float getRelativePlaySpeed(handle aVoiceHandle) const;
 		// Get current post-clip scaler value.
 		float getPostClipScaler() const;
 		// Get current global volume
@@ -172,43 +179,43 @@ namespace SoLoud
 		// Set the post clip scaler value
 		void setPostClipScaler(float aScaler);
 		// Set the pause state
-		void setPause(int aVoiceHandle, int aPause);
+		void setPause(handle aVoiceHandle, bool aPause);
 		// Pause all voices
-		void setPauseAll(int aPause);
+		void setPauseAll(bool aPause);
 		// Set the relative play speed
-		void setRelativePlaySpeed(int aVoiceHandle, float aSpeed);
+		void setRelativePlaySpeed(handle aVoiceHandle, float aSpeed);
 		// Set the voice protection state
-		void setProtectVoice(int aVoiceHandle, int aProtect);
+		void setProtectVoice(handle aVoiceHandle, bool aProtect);
 		// Set the sample rate
-		void setSamplerate(int aVoiceHandle, float aSamplerate);
+		void setSamplerate(handle aVoiceHandle, float aSamplerate);
 		// Set panning value; -1 is left, 0 is center, 1 is right
-		void setPan(int aVoiceHandle, float aPan);
+		void setPan(handle aVoiceHandle, float aPan);
 		// Set absolute left/right volumes
-		void setPanAbsolute(int aVoiceHandle, float aLVolume, float aRVolume);
+		void setPanAbsolute(handle aVoiceHandle, float aLVolume, float aRVolume);
 		// Set overall volume
-		void setVolume(int aVoiceHandle, float aVolume);
+		void setVolume(handle aVoiceHandle, float aVolume);
 
 		// Set up volume fader
-		void fadeVolume(int aVoiceHandle, float aTo, double aTime);
+		void fadeVolume(handle aVoiceHandle, float aTo, time aTime);
 		// Set up panning fader
-		void fadePan(int aVoiceHandle, float aTo, double aTime);
+		void fadePan(handle aVoiceHandle, float aTo, time aTime);
 		// Set up relative play speed fader
-		void fadeRelativePlaySpeed(int aVoiceHandle, float aTo, double aTime);
+		void fadeRelativePlaySpeed(handle aVoiceHandle, float aTo, time aTime);
 		// Set up global volume fader
-		void fadeGlobalVolume(float aTo, double aTime);
+		void fadeGlobalVolume(float aTo, time aTime);
 		// Schedule a stream to pause
-		void schedulePause(int aVoiceHandle, double aTime);
+		void schedulePause(handle aVoiceHandle, time aTime);
 		// Schedule a stream to stop
-		void scheduleStop(int aVoiceHandle, double aTime);
+		void scheduleStop(handle aVoiceHandle, time aTime);
 
 		// Set up volume oscillator
-		void oscillateVolume(int aVoiceHandle, float aFrom, float aTo, double aTime);
+		void oscillateVolume(handle aVoiceHandle, float aFrom, float aTo, time aTime);
 		// Set up panning oscillator
-		void oscillatePan(int aVoiceHandle, float aFrom, float aTo, double aTime);
+		void oscillatePan(handle aVoiceHandle, float aFrom, float aTo, time aTime);
 		// Set up relative play speed oscillator
-		void oscillateRelativePlaySpeed(int aVoiceHandle, float aFrom, float aTo, double aTime);
+		void oscillateRelativePlaySpeed(handle aVoiceHandle, float aFrom, float aTo, time aTime);
 		// Set up global volume oscillator
-		void oscillateGlobalVolume(float aFrom, float aTo, double aTime);
+		void oscillateGlobalVolume(float aFrom, float aTo, time aTime);
 
 		// Set global filters. Set to NULL to clear the filter.
 		void setGlobalFilter(int aFilterId, Filter *aFilter);
@@ -255,7 +262,7 @@ namespace SoLoud
 		// Fader for the global volume.
 		Fader mGlobalVolumeFader;
 		// Global stream time, for the global volume fader. 
-		double mStreamTime;
+		time mStreamTime;
 		// Global filter
 		Filter *mFilter[FILTERS_PER_STREAM];
 		// Global filter instance
@@ -263,9 +270,9 @@ namespace SoLoud
 		// Find a free voice, stopping the oldest if no free voice is found.
 		int findFreeVoice();
 		// Converts handle to voice, if the handle is valid.
-		int getVoiceFromHandle(int aVoiceHandle) const;
+		int getVoiceFromHandle(handle aVoiceHandle) const;
 		// Converts voice + playindex into handle
-		int getHandleFromVoice(int aVoice) const;
+		handle getHandleFromVoice(int aVoice) const;
 		// Stop voice (not handle).
 		void stopVoice(int aVoice);
 		// Set voice (not handle) pan.

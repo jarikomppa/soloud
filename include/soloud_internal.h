@@ -30,28 +30,28 @@ freely, subject to the following restrictions:
 namespace SoLoud
 {
 	// SDL back-end initialization call
-	int sdl_init(SoLoud::Soloud *aSoloud, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 2048);
+	result sdl_init(SoLoud::Soloud *aSoloud, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 2048);
 
 	// SDL "non-dynamic" back-end initialization call
-	int sdlnondyn_init(SoLoud::Soloud *aSoloud, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 2048);
+	result sdlnondyn_init(SoLoud::Soloud *aSoloud, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 2048);
 
 	// OpenAL back-end initialization call
-	int openal_init(SoLoud::Soloud *aSoloud, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 2048);
+	result openal_init(SoLoud::Soloud *aSoloud, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 2048);
 
 	// PortAudio back-end initialization call
-	int portaudio_init(SoLoud::Soloud *aSoloud, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 2048);
+	result portaudio_init(SoLoud::Soloud *aSoloud, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 2048);
 
 	// WinMM back-end initialization call
-	int winmm_init(SoLoud::Soloud *aSoloud, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 4096);
+	result winmm_init(SoLoud::Soloud *aSoloud, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 4096);
 
 	// XAudio2 back-end initialization call
-	int xaudio2_init(SoLoud::Soloud *aSoloud, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 2048);
+	result xaudio2_init(SoLoud::Soloud *aSoloud, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 2048);
 
 	// WASAPI back-end initialization call
-	int wasapi_init(SoLoud::Soloud *aSoloud, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 4096);
+	result wasapi_init(SoLoud::Soloud *aSoloud, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 4096);
 
 	// OSS back-end initialization call
-	int oss_init(SoLoud::Soloud *aSoloud, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 2048);
+	result oss_init(SoLoud::Soloud *aSoloud, int aFlags = Soloud::CLIP_ROUNDOFF, int aSamplerate = 44100, int aBuffer = 2048);
 
 	// Deinterlace samples in a buffer. From 12121212 to 11112222
 	void deinterlace_samples(const float *aSourceBuffer, float *aDestBuffer, int aSamples, int aChannels);

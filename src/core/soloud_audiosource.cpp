@@ -150,7 +150,7 @@ namespace SoLoud
 		}
 	}
 
-	void AudioSource::setLooping(int aLoop)
+	void AudioSource::setLooping(bool aLoop)
 	{
 		if (aLoop)
 		{
@@ -162,7 +162,7 @@ namespace SoLoud
 		}
 	}
 
-	void AudioSource::setSingleInstance(int aSingleInstance)
+	void AudioSource::setSingleInstance(bool aSingleInstance)
 	{
 		if (aSingleInstance)
 		{

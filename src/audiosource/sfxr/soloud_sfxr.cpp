@@ -218,7 +218,7 @@ namespace SoLoud
 
 	}
 
-	int SfxrInstance::hasEnded()
+	bool SfxrInstance::hasEnded()
 	{
 		return !playing_sample;
 	}

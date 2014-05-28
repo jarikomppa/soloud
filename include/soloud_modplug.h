@@ -41,7 +41,7 @@ namespace SoLoud
 		ModplugInstance(Modplug *aParent);
 		virtual ~ModplugInstance();
 		virtual void getAudio(float *aBuffer, int aSamples);
-		virtual int hasEnded();
+		virtual bool hasEnded();
 	};
 
 	class Modplug : public AudioSource
@@ -51,7 +51,7 @@ namespace SoLoud
 		int mDataLen;
 		Modplug();
 		virtual ~Modplug();
-		int load(const char* aFilename);
+		result load(const char* aFilename);
 		virtual AudioSourceInstance *createInstance();
 	};
 };

@@ -89,25 +89,25 @@ const char * Soloud_getErrorString(void * aClassPtr, int aErrorCode)
 	return cl->getErrorString(aErrorCode);
 }
 
-int Soloud_play(void * aClassPtr, AudioSource * aSound)
+unsigned int Soloud_play(void * aClassPtr, AudioSource * aSound)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
 	return cl->play(*aSound);
 }
 
-int Soloud_playEx(void * aClassPtr, AudioSource * aSound, float aVolume, float aPan, int aPaused, int aBus)
+unsigned int Soloud_playEx(void * aClassPtr, AudioSource * aSound, float aVolume, float aPan, int aPaused, int aBus)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
 	return cl->play(*aSound, aVolume, aPan, aPaused, aBus);
 }
 
-void Soloud_seek(void * aClassPtr, int aVoiceHandle, double aSeconds)
+void Soloud_seek(void * aClassPtr, unsigned int aVoiceHandle, double aSeconds)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
 	cl->seek(aVoiceHandle, aSeconds);
 }
 
-void Soloud_stop(void * aClassPtr, int aVoiceHandle)
+void Soloud_stop(void * aClassPtr, unsigned int aVoiceHandle)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
 	cl->stop(aVoiceHandle);
@@ -125,61 +125,61 @@ void Soloud_stopAudioSource(void * aClassPtr, AudioSource * aSound)
 	cl->stopAudioSource(*aSound);
 }
 
-void Soloud_setFilterParameter(void * aClassPtr, int aVoiceHandle, int aFilterId, int aAttributeId, float aValue)
+void Soloud_setFilterParameter(void * aClassPtr, unsigned int aVoiceHandle, int aFilterId, int aAttributeId, float aValue)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
 	cl->setFilterParameter(aVoiceHandle, aFilterId, aAttributeId, aValue);
 }
 
-float Soloud_getFilterParameter(void * aClassPtr, int aVoiceHandle, int aFilterId, int aAttributeId)
+float Soloud_getFilterParameter(void * aClassPtr, unsigned int aVoiceHandle, int aFilterId, int aAttributeId)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
 	return cl->getFilterParameter(aVoiceHandle, aFilterId, aAttributeId);
 }
 
-void Soloud_fadeFilterParameter(void * aClassPtr, int aVoiceHandle, int aFilterId, int aAttributeId, float aTo, double aTime)
+void Soloud_fadeFilterParameter(void * aClassPtr, unsigned int aVoiceHandle, int aFilterId, int aAttributeId, float aTo, double aTime)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
 	cl->fadeFilterParameter(aVoiceHandle, aFilterId, aAttributeId, aTo, aTime);
 }
 
-void Soloud_oscillateFilterParameter(void * aClassPtr, int aVoiceHandle, int aFilterId, int aAttributeId, float aFrom, float aTo, double aTime)
+void Soloud_oscillateFilterParameter(void * aClassPtr, unsigned int aVoiceHandle, int aFilterId, int aAttributeId, float aFrom, float aTo, double aTime)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
 	cl->oscillateFilterParameter(aVoiceHandle, aFilterId, aAttributeId, aFrom, aTo, aTime);
 }
 
-double Soloud_getStreamTime(void * aClassPtr, int aVoiceHandle)
+double Soloud_getStreamTime(void * aClassPtr, unsigned int aVoiceHandle)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
 	return cl->getStreamTime(aVoiceHandle);
 }
 
-int Soloud_getPause(void * aClassPtr, int aVoiceHandle)
+int Soloud_getPause(void * aClassPtr, unsigned int aVoiceHandle)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
 	return cl->getPause(aVoiceHandle);
 }
 
-float Soloud_getVolume(void * aClassPtr, int aVoiceHandle)
+float Soloud_getVolume(void * aClassPtr, unsigned int aVoiceHandle)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
 	return cl->getVolume(aVoiceHandle);
 }
 
-float Soloud_getPan(void * aClassPtr, int aVoiceHandle)
+float Soloud_getPan(void * aClassPtr, unsigned int aVoiceHandle)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
 	return cl->getPan(aVoiceHandle);
 }
 
-float Soloud_getSamplerate(void * aClassPtr, int aVoiceHandle)
+float Soloud_getSamplerate(void * aClassPtr, unsigned int aVoiceHandle)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
 	return cl->getSamplerate(aVoiceHandle);
 }
 
-int Soloud_getProtectVoice(void * aClassPtr, int aVoiceHandle)
+int Soloud_getProtectVoice(void * aClassPtr, unsigned int aVoiceHandle)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
 	return cl->getProtectVoice(aVoiceHandle);
@@ -191,13 +191,13 @@ int Soloud_getActiveVoiceCount(void * aClassPtr)
 	return cl->getActiveVoiceCount();
 }
 
-int Soloud_isValidVoiceHandle(void * aClassPtr, int aVoiceHandle)
+int Soloud_isValidVoiceHandle(void * aClassPtr, unsigned int aVoiceHandle)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
 	return cl->isValidVoiceHandle(aVoiceHandle);
 }
 
-float Soloud_getRelativePlaySpeed(void * aClassPtr, int aVoiceHandle)
+float Soloud_getRelativePlaySpeed(void * aClassPtr, unsigned int aVoiceHandle)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
 	return cl->getRelativePlaySpeed(aVoiceHandle);
@@ -227,7 +227,7 @@ void Soloud_setPostClipScaler(void * aClassPtr, float aScaler)
 	cl->setPostClipScaler(aScaler);
 }
 
-void Soloud_setPause(void * aClassPtr, int aVoiceHandle, int aPause)
+void Soloud_setPause(void * aClassPtr, unsigned int aVoiceHandle, int aPause)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
 	cl->setPause(aVoiceHandle, aPause);
@@ -239,55 +239,55 @@ void Soloud_setPauseAll(void * aClassPtr, int aPause)
 	cl->setPauseAll(aPause);
 }
 
-void Soloud_setRelativePlaySpeed(void * aClassPtr, int aVoiceHandle, float aSpeed)
+void Soloud_setRelativePlaySpeed(void * aClassPtr, unsigned int aVoiceHandle, float aSpeed)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
 	cl->setRelativePlaySpeed(aVoiceHandle, aSpeed);
 }
 
-void Soloud_setProtectVoice(void * aClassPtr, int aVoiceHandle, int aProtect)
+void Soloud_setProtectVoice(void * aClassPtr, unsigned int aVoiceHandle, int aProtect)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
 	cl->setProtectVoice(aVoiceHandle, aProtect);
 }
 
-void Soloud_setSamplerate(void * aClassPtr, int aVoiceHandle, float aSamplerate)
+void Soloud_setSamplerate(void * aClassPtr, unsigned int aVoiceHandle, float aSamplerate)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
 	cl->setSamplerate(aVoiceHandle, aSamplerate);
 }
 
-void Soloud_setPan(void * aClassPtr, int aVoiceHandle, float aPan)
+void Soloud_setPan(void * aClassPtr, unsigned int aVoiceHandle, float aPan)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
 	cl->setPan(aVoiceHandle, aPan);
 }
 
-void Soloud_setPanAbsolute(void * aClassPtr, int aVoiceHandle, float aLVolume, float aRVolume)
+void Soloud_setPanAbsolute(void * aClassPtr, unsigned int aVoiceHandle, float aLVolume, float aRVolume)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
 	cl->setPanAbsolute(aVoiceHandle, aLVolume, aRVolume);
 }
 
-void Soloud_setVolume(void * aClassPtr, int aVoiceHandle, float aVolume)
+void Soloud_setVolume(void * aClassPtr, unsigned int aVoiceHandle, float aVolume)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
 	cl->setVolume(aVoiceHandle, aVolume);
 }
 
-void Soloud_fadeVolume(void * aClassPtr, int aVoiceHandle, float aTo, double aTime)
+void Soloud_fadeVolume(void * aClassPtr, unsigned int aVoiceHandle, float aTo, double aTime)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
 	cl->fadeVolume(aVoiceHandle, aTo, aTime);
 }
 
-void Soloud_fadePan(void * aClassPtr, int aVoiceHandle, float aTo, double aTime)
+void Soloud_fadePan(void * aClassPtr, unsigned int aVoiceHandle, float aTo, double aTime)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
 	cl->fadePan(aVoiceHandle, aTo, aTime);
 }
 
-void Soloud_fadeRelativePlaySpeed(void * aClassPtr, int aVoiceHandle, float aTo, double aTime)
+void Soloud_fadeRelativePlaySpeed(void * aClassPtr, unsigned int aVoiceHandle, float aTo, double aTime)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
 	cl->fadeRelativePlaySpeed(aVoiceHandle, aTo, aTime);
@@ -299,31 +299,31 @@ void Soloud_fadeGlobalVolume(void * aClassPtr, float aTo, double aTime)
 	cl->fadeGlobalVolume(aTo, aTime);
 }
 
-void Soloud_schedulePause(void * aClassPtr, int aVoiceHandle, double aTime)
+void Soloud_schedulePause(void * aClassPtr, unsigned int aVoiceHandle, double aTime)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
 	cl->schedulePause(aVoiceHandle, aTime);
 }
 
-void Soloud_scheduleStop(void * aClassPtr, int aVoiceHandle, double aTime)
+void Soloud_scheduleStop(void * aClassPtr, unsigned int aVoiceHandle, double aTime)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
 	cl->scheduleStop(aVoiceHandle, aTime);
 }
 
-void Soloud_oscillateVolume(void * aClassPtr, int aVoiceHandle, float aFrom, float aTo, double aTime)
+void Soloud_oscillateVolume(void * aClassPtr, unsigned int aVoiceHandle, float aFrom, float aTo, double aTime)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
 	cl->oscillateVolume(aVoiceHandle, aFrom, aTo, aTime);
 }
 
-void Soloud_oscillatePan(void * aClassPtr, int aVoiceHandle, float aFrom, float aTo, double aTime)
+void Soloud_oscillatePan(void * aClassPtr, unsigned int aVoiceHandle, float aFrom, float aTo, double aTime)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
 	cl->oscillatePan(aVoiceHandle, aFrom, aTo, aTime);
 }
 
-void Soloud_oscillateRelativePlaySpeed(void * aClassPtr, int aVoiceHandle, float aFrom, float aTo, double aTime)
+void Soloud_oscillateRelativePlaySpeed(void * aClassPtr, unsigned int aVoiceHandle, float aFrom, float aTo, double aTime)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
 	cl->oscillateRelativePlaySpeed(aVoiceHandle, aFrom, aTo, aTime);

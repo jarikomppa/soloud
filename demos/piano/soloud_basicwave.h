@@ -38,7 +38,7 @@ namespace SoLoud
 	public:
 		BasicwaveInstance(Basicwave *aParent);
 		virtual void getAudio(float *aBuffer, int aSamples);
-		virtual int hasEnded();
+		virtual bool hasEnded();
 	};
 
 	class Basicwave : public AudioSource

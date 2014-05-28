@@ -54,8 +54,8 @@ namespace SoLoud
 	public:
 		SpeechInstance(Speech *aParent);
 		virtual void getAudio(float *aBuffer, int aSamples);
-		virtual int rewind();
-		virtual int hasEnded();
+		virtual result rewind();
+		virtual bool hasEnded();
 	};
 };
 

@@ -25,6 +25,8 @@ freely, subject to the following restrictions:
 #ifndef SOLOUD_LOFIFILTER_H
 #define SOLOUD_LOFIFILTER_H
 
+#include "soloud.h"
+
 namespace SoLoud
 {
 	class LofiFilter;
@@ -47,7 +49,7 @@ namespace SoLoud
 		
 		LofiFilter *mParent;
 	public:
-		virtual void filterChannel(float *aBuffer, int aSamples, float aSamplerate, double aTime, int aChannel, int aChannels);
+		virtual void filterChannel(float *aBuffer, int aSamples, float aSamplerate, time aTime, int aChannel, int aChannels);
 		virtual ~LofiFilterInstance();
 		LofiFilterInstance(LofiFilter *aParent);
 	};

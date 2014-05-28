@@ -132,7 +132,7 @@ namespace SoLoud
 	public:
 		SfxrInstance(Sfxr *aParent);
 		virtual void getAudio(float *aBuffer, int aSamples);
-		virtual int hasEnded();
+		virtual bool hasEnded();
 	};
 
 	class Sfxr : public AudioSource
@@ -155,8 +155,8 @@ namespace SoLoud
 		
 		Sfxr();
 		void resetParams();
-		int loadParams(const char* aFilename);		
-		int loadPreset(int aPresetNo, int aRandSeed);
+		result loadParams(const char* aFilename);		
+		result loadPreset(int aPresetNo, int aRandSeed);
 		virtual AudioSourceInstance *createInstance();
 	};
 };

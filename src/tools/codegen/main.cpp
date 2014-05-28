@@ -60,6 +60,20 @@ struct Class
 
 vector<Class *>gClass;
 
+string time_d("double");
+string handle_d("unsigned int");
+string bool_d("int");
+string result_d("int");
+
+string subs_str(string &aSrc)
+{
+	if (aSrc == "time") return string("double");
+	if (aSrc == "handle") return string("unsigned int");
+	if (aSrc == "bool") return string("int");
+	if (aSrc == "result") return string("int");
+	return aSrc;
+}
+
 char * loadfile(const char *aFilename)
 {
 	FILE * f;
@@ -205,7 +219,7 @@ void parse_params(Method *m, char *b, int &ofs)
 		if (s == ",") NEXTTOKEN;
 
 		m->mParmName.push_back(pn);
-		m->mParmType.push_back(pt);
+		m->mParmType.push_back(subs_str(pt));
 		m->mParmValue.push_back(pv);
 		m->mRef.push_back(ref);
 	}
@@ -248,10 +262,13 @@ void parse(const char *aFilename, int aPrintProgress = 0)
 		if (s == "}")
 		{
 			ALLOW(";");
-			if (c->mName == "Soloud")
-				omit = !omit;
-			else
-				omit = 0;					
+			if (c)
+			{
+				if (c->mName == "Soloud")
+					omit = !omit;
+				else
+					omit = 0;
+			}
 		}
 		else
 		if (s == "#" && newline)
@@ -390,7 +407,7 @@ void parse(const char *aFilename, int aPrintProgress = 0)
 					// CTor
 					Method *m = new Method;
 					m->mFuncName = c->mName;
-					m->mRetType = c->mName;					
+					m->mRetType = c->mName;
 					EXPECT("(");
 					parse_params(m, b, ofs);
 					c->mMethod.push_back(m);
@@ -459,7 +476,7 @@ void parse(const char *aFilename, int aPrintProgress = 0)
 						// function
 						Method *m = new Method;
 						m->mFuncName = vt2;
-						m->mRetType = vt1;
+						m->mRetType = subs_str(vt1);
 						parse_params(m, b, ofs);
 						if (!omit)
 						{

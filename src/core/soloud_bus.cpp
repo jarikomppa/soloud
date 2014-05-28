@@ -57,7 +57,7 @@ namespace SoLoud
 		s->mixBus(aBuffer, aSamples, mScratch, handle, mSamplerate);
 	}
 
-	int BusInstance::hasEnded()
+	bool BusInstance::hasEnded()
 	{
 		return 0;
 	}

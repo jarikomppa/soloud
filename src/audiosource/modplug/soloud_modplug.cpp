@@ -79,7 +79,7 @@ namespace SoLoud
 #endif		
 	}
 
-	int ModplugInstance::hasEnded()
+	bool ModplugInstance::hasEnded()
 	{
 #ifdef WITH_MODPLUG
 		return !mPlaying;

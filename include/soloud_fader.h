@@ -25,6 +25,8 @@ freely, subject to the following restrictions:
 #ifndef SOLOUD_FADER_H
 #define SOLOUD_FADER_H
 
+#include "soloud.h"
+
 namespace SoLoud
 {
 	// Helper class to process faders
@@ -38,11 +40,11 @@ namespace SoLoud
 		// Delta between from and to
 		float mDelta;
 		// Total time to fade
-		double mTime;
+		time mTime;
 		// Time fading started
-		double mStartTime;
+		time mStartTime;
 		// Time fading will end
-		double mEndTime;
+		time mEndTime;
 		// Current value. Used in case time rolls over.
 		float mCurrent;
 		// Active flag; 0 means disabled, 1 is active, 2 is LFO, -1 means was active, but stopped
@@ -50,11 +52,11 @@ namespace SoLoud
 		// Ctor
 		Fader();
 		// Set up LFO
-		void setLFO(float aFrom, float aTo, double aTime, double aStartTime);
+		void setLFO(float aFrom, float aTo, time aTime, time aStartTime);
 		// Set up fader
-		void set(float aFrom, float aTo, double aTime, double aStartTime);
+		void set(float aFrom, float aTo, time aTime, time aStartTime);
 		// Get the current fading value
-		float get(double aCurrentTime);
+		float get(time aCurrentTime);
 	}; 
 };
 

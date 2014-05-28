@@ -25,9 +25,12 @@ freely, subject to the following restrictions:
 #ifndef SOLOUD_FILTER_H
 #define SOLOUD_FILTER_H
 
+#include "soloud.h"
+
 namespace SoLoud
 {
 	class Fader;
+	typedef int result;
 
 	class FilterInstance
 	{
@@ -37,15 +40,16 @@ namespace SoLoud
 		float *mParam;
 		Fader *mParamFader;
 		
+
 		FilterInstance();
-		virtual int initParams(int aNumParams);
-		virtual void updateParams(double aTime);
-		virtual void filter(float *aBuffer, int aSamples, int aChannels, float aSamplerate, double aTime);
-		virtual void filterChannel(float *aBuffer, int aSamples, float aSamplerate, double aTime, int aChannel, int aChannels);
+		virtual result initParams(int aNumParams);
+		virtual void updateParams(time aTime);
+		virtual void filter(float *aBuffer, int aSamples, int aChannels, float aSamplerate, time aTime);
+		virtual void filterChannel(float *aBuffer, int aSamples, float aSamplerate, time aTime, int aChannel, int aChannels);
 		virtual float getFilterParameter(int aAttributeId);
 		virtual void setFilterParameter(int aAttributeId, float aValue);
-		virtual void fadeFilterParameter(int aAttributeId, float aTo, double aTime, double aStartTime);
-		virtual void oscillateFilterParameter(int aAttributeId, float aFrom, float aTo, double aTime, double aStartTime);
+		virtual void fadeFilterParameter(int aAttributeId, float aTo, time aTime, time aStartTime);
+		virtual void oscillateFilterParameter(int aAttributeId, float aFrom, float aTo, time aTime, time aStartTime);
 		virtual ~FilterInstance();
 	};
 

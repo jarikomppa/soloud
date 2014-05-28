@@ -25,6 +25,8 @@ freely, subject to the following restrictions:
 #ifndef SOLOUD_BQRFILTER_H
 #define SOLOUD_BQRFILTER_H
 
+#include "soloud.h"
+
 namespace SoLoud
 {
 	class BiquadResonantFilter;
@@ -53,7 +55,7 @@ namespace SoLoud
 		BiquadResonantFilter *mParent;
 		void calcBQRParams();
 	public:
-		virtual void filterChannel(float *aBuffer, int aSamples, float aSamplerate, double aTime, int aChannel, int aChannels);
+		virtual void filterChannel(float *aBuffer, int aSamples, float aSamplerate, time aTime, int aChannel, int aChannels);
 		virtual ~BiquadResonantFilterInstance();
 		BiquadResonantFilterInstance(BiquadResonantFilter *aParent);
 	};

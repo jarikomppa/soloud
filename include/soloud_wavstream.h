@@ -47,15 +47,15 @@ namespace SoLoud
 	public:
 		WavStreamInstance(WavStream *aParent);
 		virtual void getAudio(float *aBuffer, int aSamples);
-		virtual int rewind();
-		virtual int hasEnded();
+		virtual result rewind();
+		virtual bool hasEnded();
 		virtual ~WavStreamInstance();
 	};
 
 	class WavStream : public AudioSource
 	{
-		int loadwav(FILE * fp);
-		int loadogg(FILE * fp);
+		result loadwav(FILE * fp);
+		result loadogg(FILE * fp);
 	public:
 		int mOgg;
 		char *mFilename;
@@ -66,9 +66,9 @@ namespace SoLoud
 
 		WavStream();
 		virtual ~WavStream();
-		int load(const char *aFilename);
+		result load(const char *aFilename);
 		virtual AudioSourceInstance *createInstance();
-		double getLength();
+		time getLength();
 	};
 };
 

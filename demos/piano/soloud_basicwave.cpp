@@ -76,7 +76,7 @@ namespace SoLoud
 		}
 	}
 
-	int BasicwaveInstance::hasEnded()
+	bool BasicwaveInstance::hasEnded()
 	{
 		// This audio source never ends.
 		return 0;

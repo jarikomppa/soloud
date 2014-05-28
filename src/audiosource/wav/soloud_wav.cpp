@@ -97,7 +97,7 @@ namespace SoLoud
 		return 1;
 	}
 
-	int WavInstance::hasEnded()
+	bool WavInstance::hasEnded()
 	{
 		if (!(mFlags & AudioSourceInstance::LOOPING) && mOffset >= mParent->mSampleCount)
 		{

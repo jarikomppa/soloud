@@ -95,7 +95,7 @@ namespace SoLoud
 		return handle;
 	}	
 
-	void Soloud::seek(int aVoiceHandle, float aSeconds)
+	void Soloud::seek(int aVoiceHandle, double aSeconds)
 	{
 		if (mLockMutexFunc) mLockMutexFunc(mMutex);
 		int ch = getVoiceFromHandle(aVoiceHandle);

@@ -123,7 +123,7 @@ namespace SoLoud
 		return v;
 	}
 
-	float Soloud::getStreamTime(int aVoiceHandle) const
+	double Soloud::getStreamTime(int aVoiceHandle) const
 	{
 		if (mLockMutexFunc) mLockMutexFunc(mMutex);
 		int ch = getVoiceFromHandle(aVoiceHandle);
@@ -132,7 +132,7 @@ namespace SoLoud
 			if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 			return 0;
 		}
-		float v = mVoice[ch]->mStreamTime;
+		double v = mVoice[ch]->mStreamTime;
 		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 		return v;
 	}

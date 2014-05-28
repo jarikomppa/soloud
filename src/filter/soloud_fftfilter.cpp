@@ -121,7 +121,7 @@ namespace SoLoud
 		}
 	}
 
-	void FFTFilterInstance::filterChannel(float *aBuffer, int aSamples, float aSamplerate, float aTime, int aChannel, int aChannels)
+	void FFTFilterInstance::filterChannel(float *aBuffer, int aSamples, float aSamplerate, double aTime, int aChannel, int aChannels)
 	{
 		if (aChannel == 0)
 		{

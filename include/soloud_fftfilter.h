@@ -34,7 +34,7 @@ namespace SoLoud
 		float *mBuffer;
 		FFTFilter *mParent;
 	public:
-		virtual void filterChannel(float *aBuffer, int aSamples, float aSamplerate, float aTime, int aChannel, int aChannels);
+		virtual void filterChannel(float *aBuffer, int aSamples, float aSamplerate, double aTime, int aChannel, int aChannels);
 		virtual ~FFTFilterInstance();
 		FFTFilterInstance(FFTFilter *aParent);
 	};

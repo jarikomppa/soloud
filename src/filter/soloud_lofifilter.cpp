@@ -42,7 +42,7 @@ namespace SoLoud
 		mChannelData[1].mSamplesToSkip = 0;
 	}
 
-	void LofiFilterInstance::filterChannel(float *aBuffer, int aSamples, float aSamplerate, float aTime, int aChannel, int aChannels)
+	void LofiFilterInstance::filterChannel(float *aBuffer, int aSamples, float aSamplerate, double aTime, int aChannel, int aChannels)
 	{
 		updateParams(aTime);
 

@@ -66,6 +66,7 @@ EXPORTS
 	EchoFilter_destroy
 	EchoFilter_create
 	EchoFilter_setParams
+	EchoFilter_setParamsEx
 	FFTFilter_destroy
 	FFTFilter_create
 	FFTFilter_setParameters
@@ -103,9 +104,3 @@ EXPORTS
 	Sfxr_setLooping
 	Sfxr_setFilter
 	Sfxr_stop
-	Modplug_destroy
-	Modplug_create
-	Modplug_load
-	Modplug_setLooping
-	Modplug_setFilter
-	Modplug_stop

@@ -59,7 +59,7 @@ namespace SoLoud
 		int load(const char *aFilename);
 		int loadMem(unsigned char *aMem, int aLength);
 		virtual AudioSourceInstance *createInstance();
-		float getLength();
+		double getLength();
 	};
 };
 

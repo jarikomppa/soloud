@@ -43,7 +43,6 @@ freely, subject to the following restrictions:
 #include "../include/soloud_wav.h"
 #include "../include/soloud_wavstream.h"
 #include "../include/soloud_sfxr.h"
-#include "../include/soloud_modplug.h"
 
 using namespace SoLoud;
 
@@ -102,7 +101,7 @@ int Soloud_playEx(void * aClassPtr, AudioSource * aSound, float aVolume, float a
 	return cl->play(*aSound, aVolume, aPan, aPaused, aBus);
 }
 
-void Soloud_seek(void * aClassPtr, int aVoiceHandle, float aSeconds)
+void Soloud_seek(void * aClassPtr, int aVoiceHandle, double aSeconds)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
 	cl->seek(aVoiceHandle, aSeconds);
@@ -138,19 +137,19 @@ float Soloud_getFilterParameter(void * aClassPtr, int aVoiceHandle, int aFilterI
 	return cl->getFilterParameter(aVoiceHandle, aFilterId, aAttributeId);
 }
 
-void Soloud_fadeFilterParameter(void * aClassPtr, int aVoiceHandle, int aFilterId, int aAttributeId, float aTo, float aTime)
+void Soloud_fadeFilterParameter(void * aClassPtr, int aVoiceHandle, int aFilterId, int aAttributeId, float aTo, double aTime)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
 	cl->fadeFilterParameter(aVoiceHandle, aFilterId, aAttributeId, aTo, aTime);
 }
 
-void Soloud_oscillateFilterParameter(void * aClassPtr, int aVoiceHandle, int aFilterId, int aAttributeId, float aFrom, float aTo, float aTime)
+void Soloud_oscillateFilterParameter(void * aClassPtr, int aVoiceHandle, int aFilterId, int aAttributeId, float aFrom, float aTo, double aTime)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
 	cl->oscillateFilterParameter(aVoiceHandle, aFilterId, aAttributeId, aFrom, aTo, aTime);
 }
 
-float Soloud_getStreamTime(void * aClassPtr, int aVoiceHandle)
+double Soloud_getStreamTime(void * aClassPtr, int aVoiceHandle)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
 	return cl->getStreamTime(aVoiceHandle);
@@ -276,61 +275,61 @@ void Soloud_setVolume(void * aClassPtr, int aVoiceHandle, float aVolume)
 	cl->setVolume(aVoiceHandle, aVolume);
 }
 
-void Soloud_fadeVolume(void * aClassPtr, int aVoiceHandle, float aTo, float aTime)
+void Soloud_fadeVolume(void * aClassPtr, int aVoiceHandle, float aTo, double aTime)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
 	cl->fadeVolume(aVoiceHandle, aTo, aTime);
 }
 
-void Soloud_fadePan(void * aClassPtr, int aVoiceHandle, float aTo, float aTime)
+void Soloud_fadePan(void * aClassPtr, int aVoiceHandle, float aTo, double aTime)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
 	cl->fadePan(aVoiceHandle, aTo, aTime);
 }
 
-void Soloud_fadeRelativePlaySpeed(void * aClassPtr, int aVoiceHandle, float aTo, float aTime)
+void Soloud_fadeRelativePlaySpeed(void * aClassPtr, int aVoiceHandle, float aTo, double aTime)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
 	cl->fadeRelativePlaySpeed(aVoiceHandle, aTo, aTime);
 }
 
-void Soloud_fadeGlobalVolume(void * aClassPtr, float aTo, float aTime)
+void Soloud_fadeGlobalVolume(void * aClassPtr, float aTo, double aTime)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
 	cl->fadeGlobalVolume(aTo, aTime);
 }
 
-void Soloud_schedulePause(void * aClassPtr, int aVoiceHandle, float aTime)
+void Soloud_schedulePause(void * aClassPtr, int aVoiceHandle, double aTime)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
 	cl->schedulePause(aVoiceHandle, aTime);
 }
 
-void Soloud_scheduleStop(void * aClassPtr, int aVoiceHandle, float aTime)
+void Soloud_scheduleStop(void * aClassPtr, int aVoiceHandle, double aTime)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
 	cl->scheduleStop(aVoiceHandle, aTime);
 }
 
-void Soloud_oscillateVolume(void * aClassPtr, int aVoiceHandle, float aFrom, float aTo, float aTime)
+void Soloud_oscillateVolume(void * aClassPtr, int aVoiceHandle, float aFrom, float aTo, double aTime)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
 	cl->oscillateVolume(aVoiceHandle, aFrom, aTo, aTime);
 }
 
-void Soloud_oscillatePan(void * aClassPtr, int aVoiceHandle, float aFrom, float aTo, float aTime)
+void Soloud_oscillatePan(void * aClassPtr, int aVoiceHandle, float aFrom, float aTo, double aTime)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
 	cl->oscillatePan(aVoiceHandle, aFrom, aTo, aTime);
 }
 
-void Soloud_oscillateRelativePlaySpeed(void * aClassPtr, int aVoiceHandle, float aFrom, float aTo, float aTime)
+void Soloud_oscillateRelativePlaySpeed(void * aClassPtr, int aVoiceHandle, float aFrom, float aTo, double aTime)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
 	cl->oscillateRelativePlaySpeed(aVoiceHandle, aFrom, aTo, aTime);
 }
 
-void Soloud_oscillateGlobalVolume(void * aClassPtr, float aFrom, float aTo, float aTime)
+void Soloud_oscillateGlobalVolume(void * aClassPtr, float aFrom, float aTo, double aTime)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
 	cl->oscillateGlobalVolume(aFrom, aTo, aTime);
@@ -436,10 +435,16 @@ void * EchoFilter_create()
   return (void *)new EchoFilter;
 }
 
-int EchoFilter_setParams(void * aClassPtr, float aDelay, float aDecay)
+int EchoFilter_setParams(void * aClassPtr, float aDelay)
 {
 	EchoFilter * cl = (EchoFilter *)aClassPtr;
-	return cl->setParams(aDelay, aDecay);
+	return cl->setParams(aDelay);
+}
+
+int EchoFilter_setParamsEx(void * aClassPtr, float aDelay, float aDecay, float aFilter)
+{
+	EchoFilter * cl = (EchoFilter *)aClassPtr;
+	return cl->setParams(aDelay, aDecay, aFilter);
 }
 
 void FFTFilter_destroy(void * aClassPtr)
@@ -520,7 +525,7 @@ int Wav_loadMem(void * aClassPtr, unsigned char * aMem, int aLength)
 	return cl->loadMem(aMem, aLength);
 }
 
-float Wav_getLength(void * aClassPtr)
+double Wav_getLength(void * aClassPtr)
 {
 	Wav * cl = (Wav *)aClassPtr;
 	return cl->getLength();
@@ -560,7 +565,7 @@ int WavStream_load(void * aClassPtr, const char * aFilename)
 	return cl->load(aFilename);
 }
 
-float WavStream_getLength(void * aClassPtr)
+double WavStream_getLength(void * aClassPtr)
 {
 	WavStream * cl = (WavStream *)aClassPtr;
 	return cl->getLength();
@@ -649,40 +654,6 @@ void Sfxr_setFilter(void * aClassPtr, int aFilterId, Filter * aFilter)
 void Sfxr_stop(void * aClassPtr)
 {
 	Sfxr * cl = (Sfxr *)aClassPtr;
-	cl->stop();
-}
-
-void Modplug_destroy(void * aClassPtr)
-{
-  delete (Modplug *)aClassPtr;
-}
-
-void * Modplug_create()
-{
-  return (void *)new Modplug;
-}
-
-int Modplug_load(void * aClassPtr, const char * aFilename)
-{
-	Modplug * cl = (Modplug *)aClassPtr;
-	return cl->load(aFilename);
-}
-
-void Modplug_setLooping(void * aClassPtr, int aLoop)
-{
-	Modplug * cl = (Modplug *)aClassPtr;
-	cl->setLooping(aLoop);
-}
-
-void Modplug_setFilter(void * aClassPtr, int aFilterId, Filter * aFilter)
-{
-	Modplug * cl = (Modplug *)aClassPtr;
-	cl->setFilter(aFilterId, aFilter);
-}
-
-void Modplug_stop(void * aClassPtr)
-{
-	Modplug * cl = (Modplug *)aClassPtr;
 	cl->stop();
 }
 

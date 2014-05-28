@@ -28,11 +28,12 @@ namespace SoLoud
 {
 	Fader::Fader()
 	{
-		mCurrent = mFrom = mTo = mDelta = mTime = mStartTime = mEndTime = 0;
+		mCurrent = mFrom = mTo = mDelta = 0;
+		mTime = mStartTime = mEndTime = 0;
 		mActive = 0;
 	}
 
-	void Fader::set(float aFrom, float aTo, float aTime, float aStartTime)
+	void Fader::set(float aFrom, float aTo, double aTime, double aStartTime)
 	{
 		mCurrent = mFrom;
 		mFrom = aFrom;
@@ -44,7 +45,7 @@ namespace SoLoud
 		mActive = 1;
 	}
 
-	void Fader::setLFO(float aFrom, float aTo, float aTime, float aStartTime)
+	void Fader::setLFO(float aFrom, float aTo, double aTime, double aStartTime)
 	{
 		mActive = 2;
 		mCurrent = 0;
@@ -56,7 +57,7 @@ namespace SoLoud
 		mEndTime = (float)M_PI * 2 / mTime;
 	}
 
-	float Fader::get(float aCurrentTime)
+	float Fader::get(double aCurrentTime)
 	{
 		if (mActive == 2)
 		{
@@ -66,8 +67,8 @@ namespace SoLoud
 				// Time rolled over.
 				mStartTime = aCurrentTime;
 			}
-			float t = aCurrentTime - mStartTime;			
-			return sin(t * mEndTime) * mDelta + (mFrom + mDelta);
+			double t = aCurrentTime - mStartTime;
+			return (float)(sin(t * mEndTime) * mDelta + (mFrom + mDelta));
 			
 		}
 		if (mStartTime > aCurrentTime)
@@ -86,7 +87,7 @@ namespace SoLoud
 			mActive = -1;
 			return mTo;
 		}
-		mCurrent = mFrom + mDelta * ((aCurrentTime - mStartTime) / mTime);
+		mCurrent = (float)(mFrom + mDelta * ((aCurrentTime - mStartTime) / mTime));
 		return mCurrent;
 	}
 };

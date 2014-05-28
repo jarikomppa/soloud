@@ -39,13 +39,13 @@ namespace SoLoud
 		
 		FilterInstance();
 		virtual int initParams(int aNumParams);
-		virtual void updateParams(float aTime);
-		virtual void filter(float *aBuffer, int aSamples, int aChannels, float aSamplerate, float aTime);
-		virtual void filterChannel(float *aBuffer, int aSamples, float aSamplerate, float aTime, int aChannel, int aChannels);
+		virtual void updateParams(double aTime);
+		virtual void filter(float *aBuffer, int aSamples, int aChannels, float aSamplerate, double aTime);
+		virtual void filterChannel(float *aBuffer, int aSamples, float aSamplerate, double aTime, int aChannel, int aChannels);
 		virtual float getFilterParameter(int aAttributeId);
 		virtual void setFilterParameter(int aAttributeId, float aValue);
-		virtual void fadeFilterParameter(int aAttributeId, float aTo, float aTime, float aStartTime);
-		virtual void oscillateFilterParameter(int aAttributeId, float aFrom, float aTo, float aTime, float aStartTime);
+		virtual void fadeFilterParameter(int aAttributeId, float aTo, double aTime, double aStartTime);
+		virtual void oscillateFilterParameter(int aAttributeId, float aFrom, float aTo, double aTime, double aStartTime);
 		virtual ~FilterInstance();
 	};
 

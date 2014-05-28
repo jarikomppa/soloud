@@ -88,7 +88,6 @@ typedef void * Wav;
 typedef void * WavStream;
 typedef void * Prg;
 typedef void * Sfxr;
-typedef void * Modplug;
 
 /*
  * Soloud
@@ -102,15 +101,15 @@ int Soloud_getVersion(Soloud * aSoloud);
 const char * Soloud_getErrorString(Soloud * aSoloud, int aErrorCode);
 int Soloud_play(Soloud * aSoloud, AudioSource * aSound);
 int Soloud_playEx(Soloud * aSoloud, AudioSource * aSound, float aVolume /* = 1.0f */, float aPan /* = 0.0f */, int aPaused /* = 0 */, int aBus /* = 0 */);
-void Soloud_seek(Soloud * aSoloud, int aVoiceHandle, float aSeconds);
+void Soloud_seek(Soloud * aSoloud, int aVoiceHandle, double aSeconds);
 void Soloud_stop(Soloud * aSoloud, int aVoiceHandle);
 void Soloud_stopAll(Soloud * aSoloud);
 void Soloud_stopAudioSource(Soloud * aSoloud, AudioSource * aSound);
 void Soloud_setFilterParameter(Soloud * aSoloud, int aVoiceHandle, int aFilterId, int aAttributeId, float aValue);
 float Soloud_getFilterParameter(Soloud * aSoloud, int aVoiceHandle, int aFilterId, int aAttributeId);
-void Soloud_fadeFilterParameter(Soloud * aSoloud, int aVoiceHandle, int aFilterId, int aAttributeId, float aTo, float aTime);
-void Soloud_oscillateFilterParameter(Soloud * aSoloud, int aVoiceHandle, int aFilterId, int aAttributeId, float aFrom, float aTo, float aTime);
-float Soloud_getStreamTime(Soloud * aSoloud, int aVoiceHandle);
+void Soloud_fadeFilterParameter(Soloud * aSoloud, int aVoiceHandle, int aFilterId, int aAttributeId, float aTo, double aTime);
+void Soloud_oscillateFilterParameter(Soloud * aSoloud, int aVoiceHandle, int aFilterId, int aAttributeId, float aFrom, float aTo, double aTime);
+double Soloud_getStreamTime(Soloud * aSoloud, int aVoiceHandle);
 int Soloud_getPause(Soloud * aSoloud, int aVoiceHandle);
 float Soloud_getVolume(Soloud * aSoloud, int aVoiceHandle);
 float Soloud_getPan(Soloud * aSoloud, int aVoiceHandle);
@@ -131,16 +130,16 @@ void Soloud_setSamplerate(Soloud * aSoloud, int aVoiceHandle, float aSamplerate)
 void Soloud_setPan(Soloud * aSoloud, int aVoiceHandle, float aPan);
 void Soloud_setPanAbsolute(Soloud * aSoloud, int aVoiceHandle, float aLVolume, float aRVolume);
 void Soloud_setVolume(Soloud * aSoloud, int aVoiceHandle, float aVolume);
-void Soloud_fadeVolume(Soloud * aSoloud, int aVoiceHandle, float aTo, float aTime);
-void Soloud_fadePan(Soloud * aSoloud, int aVoiceHandle, float aTo, float aTime);
-void Soloud_fadeRelativePlaySpeed(Soloud * aSoloud, int aVoiceHandle, float aTo, float aTime);
-void Soloud_fadeGlobalVolume(Soloud * aSoloud, float aTo, float aTime);
-void Soloud_schedulePause(Soloud * aSoloud, int aVoiceHandle, float aTime);
-void Soloud_scheduleStop(Soloud * aSoloud, int aVoiceHandle, float aTime);
-void Soloud_oscillateVolume(Soloud * aSoloud, int aVoiceHandle, float aFrom, float aTo, float aTime);
-void Soloud_oscillatePan(Soloud * aSoloud, int aVoiceHandle, float aFrom, float aTo, float aTime);
-void Soloud_oscillateRelativePlaySpeed(Soloud * aSoloud, int aVoiceHandle, float aFrom, float aTo, float aTime);
-void Soloud_oscillateGlobalVolume(Soloud * aSoloud, float aFrom, float aTo, float aTime);
+void Soloud_fadeVolume(Soloud * aSoloud, int aVoiceHandle, float aTo, double aTime);
+void Soloud_fadePan(Soloud * aSoloud, int aVoiceHandle, float aTo, double aTime);
+void Soloud_fadeRelativePlaySpeed(Soloud * aSoloud, int aVoiceHandle, float aTo, double aTime);
+void Soloud_fadeGlobalVolume(Soloud * aSoloud, float aTo, double aTime);
+void Soloud_schedulePause(Soloud * aSoloud, int aVoiceHandle, double aTime);
+void Soloud_scheduleStop(Soloud * aSoloud, int aVoiceHandle, double aTime);
+void Soloud_oscillateVolume(Soloud * aSoloud, int aVoiceHandle, float aFrom, float aTo, double aTime);
+void Soloud_oscillatePan(Soloud * aSoloud, int aVoiceHandle, float aFrom, float aTo, double aTime);
+void Soloud_oscillateRelativePlaySpeed(Soloud * aSoloud, int aVoiceHandle, float aFrom, float aTo, double aTime);
+void Soloud_oscillateGlobalVolume(Soloud * aSoloud, float aFrom, float aTo, double aTime);
 void Soloud_setGlobalFilter(Soloud * aSoloud, int aFilterId, Filter * aFilter);
 float * Soloud_calcFFT(Soloud * aSoloud);
 float * Soloud_getWave(Soloud * aSoloud);
@@ -175,7 +174,8 @@ void Bus_stop(Bus * aBus);
  */
 void EchoFilter_destroy(EchoFilter * aEchoFilter);
 EchoFilter * EchoFilter_create();
-int EchoFilter_setParams(EchoFilter * aEchoFilter, float aDelay, float aDecay);
+int EchoFilter_setParams(EchoFilter * aEchoFilter, float aDelay);
+int EchoFilter_setParamsEx(EchoFilter * aEchoFilter, float aDelay, float aDecay /* = 0.7f */, float aFilter /* = 0.0f */);
 
 /*
  * FFTFilter
@@ -202,7 +202,7 @@ void Wav_destroy(Wav * aWav);
 Wav * Wav_create();
 int Wav_load(Wav * aWav, const char * aFilename);
 int Wav_loadMem(Wav * aWav, unsigned char * aMem, int aLength);
-float Wav_getLength(Wav * aWav);
+double Wav_getLength(Wav * aWav);
 void Wav_setLooping(Wav * aWav, int aLoop);
 void Wav_setFilter(Wav * aWav, int aFilterId, Filter * aFilter);
 void Wav_stop(Wav * aWav);
@@ -213,7 +213,7 @@ void Wav_stop(Wav * aWav);
 void WavStream_destroy(WavStream * aWavStream);
 WavStream * WavStream_create();
 int WavStream_load(WavStream * aWavStream, const char * aFilename);
-float WavStream_getLength(WavStream * aWavStream);
+double WavStream_getLength(WavStream * aWavStream);
 void WavStream_setLooping(WavStream * aWavStream, int aLoop);
 void WavStream_setFilter(WavStream * aWavStream, int aFilterId, Filter * aFilter);
 void WavStream_stop(WavStream * aWavStream);
@@ -237,16 +237,6 @@ int Sfxr_loadPreset(Sfxr * aSfxr, int aPresetNo, int aRandSeed);
 void Sfxr_setLooping(Sfxr * aSfxr, int aLoop);
 void Sfxr_setFilter(Sfxr * aSfxr, int aFilterId, Filter * aFilter);
 void Sfxr_stop(Sfxr * aSfxr);
-
-/*
- * Modplug
- */
-void Modplug_destroy(Modplug * aModplug);
-Modplug * Modplug_create();
-int Modplug_load(Modplug * aModplug, const char * aFilename);
-void Modplug_setLooping(Modplug * aModplug, int aLoop);
-void Modplug_setFilter(Modplug * aModplug, int aFilterId, Filter * aFilter);
-void Modplug_stop(Modplug * aModplug);
 #ifdef  __cplusplus
 } // extern "C"
 #endif

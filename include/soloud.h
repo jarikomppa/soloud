@@ -127,7 +127,7 @@ namespace SoLoud
 		// Start playing a sound. Returns voice handle, which can be ignored or used to alter the playing sound's parameters.
 		int play(AudioSource &aSound, float aVolume = 1.0f, float aPan = 0.0f, int aPaused = 0, int aBus = 0);
 		// Seek the audio stream to certain point in time. Some streams can't seek backwards. Relative play speed affects time.
-		void seek(int aVoiceHandle, float aSeconds);
+		void seek(int aVoiceHandle, double aSeconds);
 		// Stop the sound.
 		void stop(int aVoiceHandle);
 		// Stop all voices.
@@ -140,12 +140,12 @@ namespace SoLoud
 		// Get a live filter parameter. Use 0 for the global filters.
 		float getFilterParameter(int aVoiceHandle, int aFilterId, int aAttributeId);
 		// Fade a live filter parameter. Use 0 for the global filters.
-		void fadeFilterParameter(int aVoiceHandle, int aFilterId, int aAttributeId, float aTo, float aTime);
+		void fadeFilterParameter(int aVoiceHandle, int aFilterId, int aAttributeId, float aTo, double aTime);
 		// Oscillate a live filter parameter. Use 0 for the global filters.
-		void oscillateFilterParameter(int aVoiceHandle, int aFilterId, int aAttributeId, float aFrom, float aTo, float aTime);
+		void oscillateFilterParameter(int aVoiceHandle, int aFilterId, int aAttributeId, float aFrom, float aTo, double aTime);
 
 		// Get current play time, in seconds.
-		float getStreamTime(int aVoiceHandle) const;
+		double getStreamTime(int aVoiceHandle) const;
 		// Get current pause state.
 		int getPause(int aVoiceHandle) const;
 		// Get current volume.
@@ -189,26 +189,26 @@ namespace SoLoud
 		void setVolume(int aVoiceHandle, float aVolume);
 
 		// Set up volume fader
-		void fadeVolume(int aVoiceHandle, float aTo, float aTime);
+		void fadeVolume(int aVoiceHandle, float aTo, double aTime);
 		// Set up panning fader
-		void fadePan(int aVoiceHandle, float aTo, float aTime);
+		void fadePan(int aVoiceHandle, float aTo, double aTime);
 		// Set up relative play speed fader
-		void fadeRelativePlaySpeed(int aVoiceHandle, float aTo, float aTime);
+		void fadeRelativePlaySpeed(int aVoiceHandle, float aTo, double aTime);
 		// Set up global volume fader
-		void fadeGlobalVolume(float aTo, float aTime);
+		void fadeGlobalVolume(float aTo, double aTime);
 		// Schedule a stream to pause
-		void schedulePause(int aVoiceHandle, float aTime);
+		void schedulePause(int aVoiceHandle, double aTime);
 		// Schedule a stream to stop
-		void scheduleStop(int aVoiceHandle, float aTime);
+		void scheduleStop(int aVoiceHandle, double aTime);
 
 		// Set up volume oscillator
-		void oscillateVolume(int aVoiceHandle, float aFrom, float aTo, float aTime);
+		void oscillateVolume(int aVoiceHandle, float aFrom, float aTo, double aTime);
 		// Set up panning oscillator
-		void oscillatePan(int aVoiceHandle, float aFrom, float aTo, float aTime);
+		void oscillatePan(int aVoiceHandle, float aFrom, float aTo, double aTime);
 		// Set up relative play speed oscillator
-		void oscillateRelativePlaySpeed(int aVoiceHandle, float aFrom, float aTo, float aTime);
+		void oscillateRelativePlaySpeed(int aVoiceHandle, float aFrom, float aTo, double aTime);
 		// Set up global volume oscillator
-		void oscillateGlobalVolume(float aFrom, float aTo, float aTime);
+		void oscillateGlobalVolume(float aFrom, float aTo, double aTime);
 
 		// Set global filters. Set to NULL to clear the filter.
 		void setGlobalFilter(int aFilterId, Filter *aFilter);
@@ -254,8 +254,8 @@ namespace SoLoud
 		int mAudioSourceID;
 		// Fader for the global volume.
 		Fader mGlobalVolumeFader;
-		// Global stream time, for the global volume fader. Re-set when global volume fader is set.
-		float mStreamTime;
+		// Global stream time, for the global volume fader. 
+		double mStreamTime;
 		// Global filter
 		Filter *mFilter[FILTERS_PER_STREAM];
 		// Global filter instance

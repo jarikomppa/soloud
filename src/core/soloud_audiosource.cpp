@@ -101,9 +101,9 @@ namespace SoLoud
 		return 0;
 	}
 
-	void AudioSourceInstance::seek(float aSeconds, float *mScratch, int mScratchSize)
+	void AudioSourceInstance::seek(double aSeconds, float *mScratch, int mScratchSize)
 	{
-		float offset = aSeconds - mStreamTime;
+		double offset = aSeconds - mStreamTime;
 		if (offset < 0)
 		{
 			if (rewind() == 0)

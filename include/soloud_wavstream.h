@@ -68,7 +68,7 @@ namespace SoLoud
 		virtual ~WavStream();
 		int load(const char *aFilename);
 		virtual AudioSourceInstance *createInstance();
-		float getLength();
+		double getLength();
 	};
 };
 

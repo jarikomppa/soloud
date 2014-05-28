@@ -38,11 +38,11 @@ namespace SoLoud
 		// Delta between from and to
 		float mDelta;
 		// Total time to fade
-		float mTime;
+		double mTime;
 		// Time fading started
-		float mStartTime;
+		double mStartTime;
 		// Time fading will end
-		float mEndTime;
+		double mEndTime;
 		// Current value. Used in case time rolls over.
 		float mCurrent;
 		// Active flag; 0 means disabled, 1 is active, 2 is LFO, -1 means was active, but stopped
@@ -50,11 +50,11 @@ namespace SoLoud
 		// Ctor
 		Fader();
 		// Set up LFO
-		void setLFO(float aFrom, float aTo, float aTime, float aStartTime);
+		void setLFO(float aFrom, float aTo, double aTime, double aStartTime);
 		// Set up fader
-		void set(float aFrom, float aTo, float aTime, float aStartTime);
+		void set(float aFrom, float aTo, double aTime, double aStartTime);
 		// Get the current fading value
-		float get(float aCurrentTime);
+		float get(double aCurrentTime);
 	}; 
 };
 

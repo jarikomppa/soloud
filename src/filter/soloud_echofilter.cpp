@@ -37,7 +37,7 @@ namespace SoLoud
 
 	}
 
-	void EchoFilterInstance::filter(float *aBuffer, int aSamples, int aChannels, float aSamplerate, float aTime)
+	void EchoFilterInstance::filter(float *aBuffer, int aSamples, int aChannels, float aSamplerate, double aTime)
 	{
 		updateParams(aTime);
 

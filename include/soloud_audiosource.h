@@ -130,7 +130,9 @@ namespace SoLoud
 			// The instances from this audio source should loop
 			SHOULD_LOOP = 1,
 			// Only one instance of this audio source should play at the same time
-			SINGLE_INSTANCE = 2
+			SINGLE_INSTANCE = 2,
+			// Visualization data gathering enabled. Only for busses.
+			VISUALIZATION_DATA = 4
 		};
 		// Flags. See AudioSource::FLAGS
 		int mFlags;

@@ -37,6 +37,9 @@ namespace SoLoud
 		int mScratchSize;
 		float *mScratch;
 	public:
+		// Mono-mixed wave data for visualization and for visualization FFT input
+		float mVisualizationWaveData[256];
+
 		BusInstance(Bus *aParent);
 		virtual void getAudio(float *aBuffer, int aSamples);
 		virtual bool hasEnded();
@@ -48,6 +51,10 @@ namespace SoLoud
 	public:
 		BusInstance *mInstance;
 		int mChannelHandle;
+		// FFT output data
+		float mFFTData[256];
+		// Snapshot of wave data for visualization
+		float mWaveData[256];
 	public:
 		Bus();
 		virtual BusInstance *createInstance();
@@ -55,6 +62,16 @@ namespace SoLoud
 		virtual void setFilter(int aFilterId, Filter *aFilter);
 		// Play sound through the bus
 		int play(AudioSource &aSound, float aVolume = 1.0f, float aPan = 0.0f, int aPaused = 0);
+
+		// Enable or disable visualization data gathering
+		void setVisualizationEnable(bool aEnable);
+		
+		// Calculate and get 256 floats of FFT data for visualization. Visualization has to be enabled before use.
+		float *calcFFT();
+
+		// Get 256 floats of wave data for visualization. Visualization has to be enabled before use.
+		float *getWave();
+
 	};
 };
 

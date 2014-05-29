@@ -100,7 +100,7 @@ namespace SoLoud
 		mOffset = 10;
 		mSampleCount = 10;
 		mStreamTime = 0;
-		return 1;
+		return 0;
 	}
 
 	bool SpeechInstance::hasEnded()

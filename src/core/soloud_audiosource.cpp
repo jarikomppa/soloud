@@ -98,7 +98,7 @@ namespace SoLoud
 
 	int AudioSourceInstance::rewind()
 	{
-		return 0;
+		return NOT_IMPLEMENTED;
 	}
 
 	void AudioSourceInstance::seek(double aSeconds, float *mScratch, int mScratchSize)
@@ -106,7 +106,7 @@ namespace SoLoud
 		double offset = aSeconds - mStreamTime;
 		if (offset < 0)
 		{
-			if (rewind() == 0)
+			if (rewind() < 0)
 			{
 				// can't do generic seek backwards unless we can rewind.
 				return;

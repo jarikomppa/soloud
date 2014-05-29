@@ -113,7 +113,7 @@ namespace SoLoud
 		virtual bool hasEnded() = 0;
 		// Seek to certain place in the stream. Base implementation is generic "tape" seek (and slow).
 		virtual void seek(time aSeconds, float *mScratch, int mScratchSize);
-		// Rewind stream. Base implementation returns "not implemented", meaning it can't rewind.
+		// Rewind stream. Base implementation returns NOT_IMPLEMENTED, meaning it can't rewind.
 		virtual result rewind();
 	};
 

@@ -263,7 +263,7 @@ namespace SoLoud
 		}
 		mOffset = 0;
 		mStreamTime = 0;
-		return 1;
+		return 0;
 	}
 
 	bool WavStreamInstance::hasEnded()

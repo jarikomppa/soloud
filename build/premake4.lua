@@ -289,6 +289,9 @@ end
     }
 
 		links {"StaticLib", "sdlmain", "sdl"}
+if _OPTIONS["with-libmodplug"] then
+		links {"libmodplug"}
+end		
 		
 		configuration "Debug"
 			defines { "DEBUG" }

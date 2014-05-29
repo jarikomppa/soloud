@@ -39,9 +39,17 @@ SoLoud::Soloud gSoloud;			// SoLoud engine core
 SoLoud::Speech gSpeech;
 SoLoud::Modplug gMod;
 
+SoLoud::Bus gMusicBus;
+SoLoud::Bus gSpeechBus;
+
+int speechhandle = 0;
+
 SDL_Surface *screen;
 SDL_Surface *font;
 SDL_Surface *bg;
+
+int lastloop = 0;
+int tickofs = 0;
 
 void putpixel(int x, int y, int color)
 {
@@ -113,7 +121,7 @@ void render()
 		for (j = 0; j < 640; j++)
 			putpixel(j, i, ((int*)bg->pixels)[i*bg->pitch/4+j] | 0xff000000);
 	
-	float *w = gSoloud.getWave();
+	float *w = gSpeechBus.getWave();
 
 	drawrect(317,231,226,133,0xff003f00);
 	for (i = 0; i < 7; i++)
@@ -130,21 +138,31 @@ void render()
 		drawrect(317+i, 231 + 66-h, 1, h*2, 0xff009f00);
 	}
 
-	float *f = gSoloud.calcFFT();
+	float *f = gMusicBus.calcFFT();
 
 	drawrect(62,383,103,60,0xff003f00);
 	for (i = 0; i < 103; i++)
 	{
-		float v = f[i & ~7];
+		float v = f[(i & ~7) + 5] / 2;
 		float h = 60 * v;
 		if (h > 60) h = 60;
 		drawrect(62+i,383+60-h,1,h,0xff007f00);
 	}
 
+	int loop = gSoloud.getLoopCount(speechhandle);
+	if (loop != lastloop)
+	{
+		lastloop = loop;
+		tickofs = tick;
+	}
 
-	drawstring("The alien's speech might\n"
+	drawstring("What the alien has to say might\n"
 				"appear around here if this\n"
-				"wasn't just a dummy mockup..", 317,100,0xff00ff00, tick / 100);
+				"wasn't just a dummy mockup..\n"
+				"\n       \n"
+				"This is a demo of getting\n"
+				"visualization data from different\n"
+				"parts of the audio pipeline.", 317,50,0xff00ff00, (tick - tickofs) / 70);
 
 	// Unlock if needed
 	if (SDL_MUSTLOCK(screen)) 
@@ -165,17 +183,34 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
-	gSoloud.init(1+2);
-	gSoloud.setGlobalVolume(0.75);
+	gSoloud.init();
+	gSoloud.setVisualizationEnable(1);
+	gSoloud.setGlobalVolume(3);
 	gSoloud.setPostClipScaler(0.75);
 
-	gSpeech.setText("Flank pork loin tongue, swine rump porchetta jowl cow sirloin bresaola pork belly. Andouille ribeye t-bone turducken tail spare ribs, cow landjaeger. Venison pig meatball filet mignon, strip steak pancetta pork chop. Pork loin drumstick chuck, corned beef shoulder salami filet mignon short loin andouille tri-tip. Fatback salami doner, pancetta kevin ground round andouille shank.");
-	gSpeech.setLooping(1);
-	int sp = gSoloud.play(gSpeech, 4, -0.25);
-	gSoloud.setRelativePlaySpeed(sp, 1.2);
+	gSoloud.play(gSpeechBus);
+	gSoloud.play(gMusicBus);
+
+	gSpeech.setText("What the alien has to say might\n"
+				"appear around here if this\n"
+				"wasn't just a dummy mockup..\n"
+				"\n..........\n"
+				"This is a demo of getting\n"
+				"visualization data from different\n"
+				"parts of the audio pipeline."
+				"\n..........\n"
+				"\n..........\n"
+				"\n..........\n");
+	gSpeech.setLooping(1);	
+
+	speechhandle = gSpeechBus.play(gSpeech, 2, -0.25);
+	gSoloud.setRelativePlaySpeed(speechhandle, 1.2);
 
 	gMod.load("audio/BRUCE.S3M");
-	gSoloud.play(gMod);
+	gMusicBus.play(gMod);
+
+	gSpeechBus.setVisualizationEnable(1);
+	gMusicBus.setVisualizationEnable(1);
 
 	
 	// Register SDL_Quit to be called at exit; makes sure things are

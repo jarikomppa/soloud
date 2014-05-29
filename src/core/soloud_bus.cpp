@@ -63,7 +63,7 @@ namespace SoLoud
 			{
 				for (i = 0; i < 256; i++)
 				{
-					mVisualizationWaveData[i] = aBuffer[i*2+0] + aBuffer[i*2+1];
+					mVisualizationWaveData[i] = aBuffer[i] + aBuffer[i+aSamples];
 				}
 			}
 			else
@@ -71,7 +71,7 @@ namespace SoLoud
 				// Very unlikely failsafe branch
 				for (i = 0; i < 256; i++)
 				{
-					mVisualizationWaveData[i] = aBuffer[((i % aSamples) * 2) + 0] + aBuffer[((i % aSamples) * 2) + 1];
+					mVisualizationWaveData[i] = aBuffer[i % aSamples] + aBuffer[(i % aSamples) + aSamples];
 				}
 			}
 		}

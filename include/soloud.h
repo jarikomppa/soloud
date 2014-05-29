@@ -220,10 +220,13 @@ namespace SoLoud
 		// Set global filters. Set to NULL to clear the filter.
 		void setGlobalFilter(int aFilterId, Filter *aFilter);
 
-		// Calculate and get 256 floats of FFT data for visualization. Need ENABLE_VISUALIZATION at SoLoud init to use.
+		// Enable or disable visualization data gathering
+		void setVisualizationEnable(bool aEnable);
+		
+		// Calculate and get 256 floats of FFT data for visualization. Visualization has to be enabled before use.
 		float *calcFFT();
 
-		// Get 256 floats of wave data for visualization. Need ENABLE_VISUALIZATION at SoLoud init to use.
+		// Get 256 floats of wave data for visualization. Visualization has to be enabled before use.
 		float *getWave();
 
 		// Rest of the stuff is used internally.

@@ -155,4 +155,16 @@ namespace SoLoud
 		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 	}
 
+	void Soloud::setVisualizationEnable(bool aEnable)
+	{
+		if (aEnable)
+		{
+			mFlags |= ENABLE_VISUALIZATION;
+		}
+		else
+		{
+			mFlags &= ~ENABLE_VISUALIZATION;
+		}
+	}
+
 }

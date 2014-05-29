@@ -75,7 +75,10 @@ namespace SoLoud
 				if (mFlags & AudioSourceInstance::LOOPING)
 				{
 					if (mOffset == mParent->mSampleCount)
+					{
 						mOffset = 0;
+						mLoopCount++;
+					}
 				}
 				else
 				{

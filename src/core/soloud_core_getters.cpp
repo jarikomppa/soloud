@@ -215,4 +215,17 @@ namespace SoLoud
 		return lowest_play_index;
 	}
 
+	int Soloud::getLoopCount(handle aVoiceHandle)
+	{
+		if (mLockMutexFunc) mLockMutexFunc(mMutex);
+		int ch = getVoiceFromHandle(aVoiceHandle);
+		if (ch == -1) 
+		{
+			if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+			return 0;
+		}
+		int v = mVoice[ch]->mLoopCount;
+		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+		return v;
+	}
 }

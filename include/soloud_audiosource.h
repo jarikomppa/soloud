@@ -59,6 +59,8 @@ namespace SoLoud
 		virtual ~AudioSourceInstance();
 		// Play index; used to identify instances from handles
 		unsigned int mPlayIndex;
+		// Loop count
+		int mLoopCount;
 		// Flags; see AudioSourceInstance::FLAGS
 		int mFlags;
 		// Pan value, for getPan()

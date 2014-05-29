@@ -229,6 +229,9 @@ namespace SoLoud
 		// Get 256 floats of wave data for visualization. Visualization has to be enabled before use.
 		float *getWave();
 
+		// Get current loop count. Returns 0 if handle is not valid. (All audio sources may not update loop count)
+		int getLoopCount(handle aVoiceHandle);
+
 		// Rest of the stuff is used internally.
 	public:
 		// Mix and return N stereo samples in the buffer. Called by the back-end.

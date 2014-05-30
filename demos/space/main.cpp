@@ -33,7 +33,9 @@ freely, subject to the following restrictions:
 #include "soloud.h"
 #include "soloud_speech.h"
 #include "soloud_modplug.h"
-
+#include "soloud_flangerfilter.h"
+#include "soloud_lofifilter.h"
+#include "soloud_biquadresonantfilter.h"
 
 SoLoud::Soloud gSoloud;			// SoLoud engine core
 SoLoud::Speech gSpeech;
@@ -41,6 +43,10 @@ SoLoud::Modplug gMod;
 
 SoLoud::Bus gMusicBus;
 SoLoud::Bus gSpeechBus;
+
+SoLoud::FlangerFilter gFlanger;
+SoLoud::LofiFilter gLofi;
+SoLoud::BiquadResonantFilter gReso;
 
 int speechhandle = 0;
 
@@ -132,7 +138,7 @@ void render()
 
 	for (i = 0; i < 226; i+=2)
 	{
-		float v = fabs(w[i]);//(rand() % 1000)/1000.0f;
+		float v = fabs(w[i] + (rand() % 500)/10000.0f);
 		if (v > 1) v = 1;
 		float h = 132 * v / 2;
 		drawrect(317+i, 231 + 66-h, 1, h*2, 0xff009f00);
@@ -191,6 +197,14 @@ int main(int argc, char *argv[])
 	gSoloud.play(gSpeechBus);
 	gSoloud.play(gMusicBus);
 
+	gSpeech.setFilter(1, &gFlanger);
+	gSpeech.setFilter(0, &gLofi);
+	gSpeech.setFilter(2, &gReso);
+	gLofi.setParams(8000,4);
+	gFlanger.setParams(0.002,100);
+//	gReso.setParams(SoLoud::BiquadResonantFilter::LOWPASS, 8000, 500, 5);
+	gReso.setParams(SoLoud::BiquadResonantFilter::BANDPASS, 8000, 1000, 0.5);
+
 	gSpeech.setText("What the alien has to say might\n"
 				"appear around here if this\n"
 				"wasn't just a dummy mockup..\n"
@@ -203,8 +217,11 @@ int main(int argc, char *argv[])
 				"\n..........\n");
 	gSpeech.setLooping(1);	
 
-	speechhandle = gSpeechBus.play(gSpeech, 2, -0.25);
+	speechhandle = gSpeechBus.play(gSpeech, 3, -0.25);
 	gSoloud.setRelativePlaySpeed(speechhandle, 1.2);
+	
+	gSoloud.oscillateFilterParameter(speechhandle, 0, SoLoud::LofiFilter::SAMPLERATE, 2000, 8000, 4);
+
 
 	gMod.load("audio/BRUCE.S3M");
 	gMusicBus.play(gMod);

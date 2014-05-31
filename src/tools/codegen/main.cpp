@@ -31,6 +31,7 @@ freely, subject to the following restrictions:
 #define VERSION "SoLoud C-Api Code Generator (c)2013-2014 Jari Komppa http://iki.fi/sol/"
 
 #define OUTDIR "../src/c_api/"
+#define PYOUTDIR "../glue/"
 
 using namespace std;
 
@@ -790,10 +791,10 @@ void generate()
 	f = fopen("../include/soloud_c.h", "w");
 	cppf = fopen(OUTDIR "soloud_c.cpp", "w");
 	deff = fopen(OUTDIR "soloud.def", "w");
-	pyff = fopen("soloud_codegen.py", "w");
+	pyff = fopen(PYOUTDIR "soloud_codegen.py", "w");
 	fileheader(f);
 	fileheader(cppf);
-	fprintf(pyff, "# Data for SoLoud glue code generation\n\n");
+	fprintf(pyff, "# " VERSION "\n# Warning: This file is generated. Any manual changes will be overwritten.\n# Data for SoLoud glue code generation\n\n");
 
 	fprintf(deff,
 //		"LIBRARY soloud\n"

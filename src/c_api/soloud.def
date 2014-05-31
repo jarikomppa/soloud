@@ -48,8 +48,10 @@ EXPORTS
 	Soloud_oscillateRelativePlaySpeed
 	Soloud_oscillateGlobalVolume
 	Soloud_setGlobalFilter
+	Soloud_setVisualizationEnable
 	Soloud_calcFFT
 	Soloud_getWave
+	Soloud_getLoopCount
 	BiquadResonantFilter_destroy
 	BiquadResonantFilter_create
 	BiquadResonantFilter_setParams
@@ -61,6 +63,9 @@ EXPORTS
 	Bus_setFilter
 	Bus_play
 	Bus_playEx
+	Bus_setVisualizationEnable
+	Bus_calcFFT
+	Bus_getWave
 	Bus_setLooping
 	Bus_stop
 	EchoFilter_destroy
@@ -104,3 +109,9 @@ EXPORTS
 	Sfxr_setLooping
 	Sfxr_setFilter
 	Sfxr_stop
+	Modplug_destroy
+	Modplug_create
+	Modplug_load
+	Modplug_setLooping
+	Modplug_setFilter
+	Modplug_stop

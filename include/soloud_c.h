@@ -88,6 +88,7 @@ typedef void * Wav;
 typedef void * WavStream;
 typedef void * Prg;
 typedef void * Sfxr;
+typedef void * Modplug;
 
 /*
  * Soloud
@@ -141,8 +142,10 @@ void Soloud_oscillatePan(Soloud * aSoloud, unsigned int aVoiceHandle, float aFro
 void Soloud_oscillateRelativePlaySpeed(Soloud * aSoloud, unsigned int aVoiceHandle, float aFrom, float aTo, double aTime);
 void Soloud_oscillateGlobalVolume(Soloud * aSoloud, float aFrom, float aTo, double aTime);
 void Soloud_setGlobalFilter(Soloud * aSoloud, int aFilterId, Filter * aFilter);
+void Soloud_setVisualizationEnable(Soloud * aSoloud, int aEnable);
 float * Soloud_calcFFT(Soloud * aSoloud);
 float * Soloud_getWave(Soloud * aSoloud);
+int Soloud_getLoopCount(Soloud * aSoloud, unsigned int aVoiceHandle);
 
 /*
  * BiquadResonantFilter
@@ -166,6 +169,9 @@ Bus * Bus_create();
 void Bus_setFilter(Bus * aBus, int aFilterId, Filter * aFilter);
 int Bus_play(Bus * aBus, AudioSource * aSound);
 int Bus_playEx(Bus * aBus, AudioSource * aSound, float aVolume /* = 1.0f */, float aPan /* = 0.0f */, int aPaused /* = 0 */);
+void Bus_setVisualizationEnable(Bus * aBus, int aEnable);
+float * Bus_calcFFT(Bus * aBus);
+float * Bus_getWave(Bus * aBus);
 void Bus_setLooping(Bus * aBus, int aLoop);
 void Bus_stop(Bus * aBus);
 
@@ -237,6 +243,16 @@ int Sfxr_loadPreset(Sfxr * aSfxr, int aPresetNo, int aRandSeed);
 void Sfxr_setLooping(Sfxr * aSfxr, int aLoop);
 void Sfxr_setFilter(Sfxr * aSfxr, int aFilterId, Filter * aFilter);
 void Sfxr_stop(Sfxr * aSfxr);
+
+/*
+ * Modplug
+ */
+void Modplug_destroy(Modplug * aModplug);
+Modplug * Modplug_create();
+int Modplug_load(Modplug * aModplug, const char * aFilename);
+void Modplug_setLooping(Modplug * aModplug, int aLoop);
+void Modplug_setFilter(Modplug * aModplug, int aFilterId, Filter * aFilter);
+void Modplug_stop(Modplug * aModplug);
 #ifdef  __cplusplus
 } // extern "C"
 #endif

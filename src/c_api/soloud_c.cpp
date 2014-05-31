@@ -43,6 +43,7 @@ freely, subject to the following restrictions:
 #include "../include/soloud_wav.h"
 #include "../include/soloud_wavstream.h"
 #include "../include/soloud_sfxr.h"
+#include "../include/soloud_modplug.h"
 
 using namespace SoLoud;
 
@@ -341,6 +342,12 @@ void Soloud_setGlobalFilter(void * aClassPtr, int aFilterId, Filter * aFilter)
 	cl->setGlobalFilter(aFilterId, aFilter);
 }
 
+void Soloud_setVisualizationEnable(void * aClassPtr, int aEnable)
+{
+	Soloud * cl = (Soloud *)aClassPtr;
+	cl->setVisualizationEnable(aEnable);
+}
+
 float * Soloud_calcFFT(void * aClassPtr)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
@@ -351,6 +358,12 @@ float * Soloud_getWave(void * aClassPtr)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
 	return cl->getWave();
+}
+
+int Soloud_getLoopCount(void * aClassPtr, unsigned int aVoiceHandle)
+{
+	Soloud * cl = (Soloud *)aClassPtr;
+	return cl->getLoopCount(aVoiceHandle);
 }
 
 void BiquadResonantFilter_destroy(void * aClassPtr)
@@ -411,6 +424,24 @@ int Bus_playEx(void * aClassPtr, AudioSource * aSound, float aVolume, float aPan
 {
 	Bus * cl = (Bus *)aClassPtr;
 	return cl->play(*aSound, aVolume, aPan, aPaused);
+}
+
+void Bus_setVisualizationEnable(void * aClassPtr, int aEnable)
+{
+	Bus * cl = (Bus *)aClassPtr;
+	cl->setVisualizationEnable(aEnable);
+}
+
+float * Bus_calcFFT(void * aClassPtr)
+{
+	Bus * cl = (Bus *)aClassPtr;
+	return cl->calcFFT();
+}
+
+float * Bus_getWave(void * aClassPtr)
+{
+	Bus * cl = (Bus *)aClassPtr;
+	return cl->getWave();
 }
 
 void Bus_setLooping(void * aClassPtr, int aLoop)
@@ -654,6 +685,40 @@ void Sfxr_setFilter(void * aClassPtr, int aFilterId, Filter * aFilter)
 void Sfxr_stop(void * aClassPtr)
 {
 	Sfxr * cl = (Sfxr *)aClassPtr;
+	cl->stop();
+}
+
+void Modplug_destroy(void * aClassPtr)
+{
+  delete (Modplug *)aClassPtr;
+}
+
+void * Modplug_create()
+{
+  return (void *)new Modplug;
+}
+
+int Modplug_load(void * aClassPtr, const char * aFilename)
+{
+	Modplug * cl = (Modplug *)aClassPtr;
+	return cl->load(aFilename);
+}
+
+void Modplug_setLooping(void * aClassPtr, int aLoop)
+{
+	Modplug * cl = (Modplug *)aClassPtr;
+	cl->setLooping(aLoop);
+}
+
+void Modplug_setFilter(void * aClassPtr, int aFilterId, Filter * aFilter)
+{
+	Modplug * cl = (Modplug *)aClassPtr;
+	cl->setFilter(aFilterId, aFilter);
+}
+
+void Modplug_stop(void * aClassPtr)
+{
+	Modplug * cl = (Modplug *)aClassPtr;
 	cl->stop();
 }
 

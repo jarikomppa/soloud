@@ -786,12 +786,14 @@ void emit_func(FILE * f, int aClass, int aMethod)
 
 void generate()
 {
-	FILE * f, *cppf, *deff;
+	FILE * f, *cppf, *deff, *pyff;
 	f = fopen("../include/soloud_c.h", "w");
 	cppf = fopen(OUTDIR "soloud_c.cpp", "w");
 	deff = fopen(OUTDIR "soloud.def", "w");
+	pyff = fopen("soloud_codegen.py", "w");
 	fileheader(f);
 	fileheader(cppf);
+	fprintf(pyff, "# Data for SoLoud glue code generation\n\n");
 
 	fprintf(deff,
 //		"LIBRARY soloud\n"
@@ -814,6 +816,7 @@ void generate()
 		"// Collected enumerations\n"
 		"enum SOLOUD_ENUMS\n"
 		"{\n");
+	fprintf(pyff, "# Enumerations\nsoloud_enum = {\n");
 	for (i = 0; i < (signed)gClass.size(); i++)
 	{
 		if (gClass[i]->mName.find("Instance") == string::npos &&
@@ -831,13 +834,15 @@ void generate()
 			{
 				if (!first)
 				{
-					fprintf(f, ",\n");				
+					fprintf(f, ",\n");
+					fprintf(pyff, ",\n");
 				}
 				else
 				{
 					first = 0;
 				}
 				fprintf(f, "\t%s_%s = %s", cn.c_str(), gClass[i]->mEnum[j]->mName.c_str(), gClass[i]->mEnum[j]->mValue.c_str());
+				fprintf(pyff, "'%s_%s': %s", cn.c_str(), gClass[i]->mEnum[j]->mName.c_str(), gClass[i]->mEnum[j]->mValue.c_str());
 			}
 		}
 	}
@@ -845,6 +850,9 @@ void generate()
 		"\n"
 		"};\n"
 		"\n");
+	fprintf(pyff, "\n}\n\n");
+
+	fprintf(pyff, "# Handle types\nsoloud_type = [\n");
 
 	fprintf(f, "// Object handle typedefs\n");
 	for (i = 0; i < (signed)gClass.size(); i++)
@@ -854,8 +862,17 @@ void generate()
 			//gClass[i]->mName != "AudioSource")
 		{
 			fprintf(f, "typedef void * %s;\n", gClass[i]->mName.c_str());
+			fprintf(pyff, "%s'%s'", (i!=0)?",\n":"", gClass[i]->mName.c_str());
 		}
 	}
+
+	fprintf(pyff, "\n]\n\n");
+
+	fprintf(pyff, "# Functions\n"
+		          "# [return type, function name, [[param type, param name], ...], ...]\n"
+				  "soloud_func = [\n");
+
+	first = 1;
 
 	for (i = 0; i < (signed)gClass.size(); i++)
 	{
@@ -872,6 +889,8 @@ void generate()
 				gClass[i]->mName.c_str());
 			fprintf(f, "void %s_destroy(%s * a%s);\n", gClass[i]->mName.c_str(), gClass[i]->mName.c_str(), gClass[i]->mName.c_str());
 			fprintf(deff, "\t%s_destroy\n", gClass[i]->mName.c_str());
+			fprintf(pyff, "%s['void', '%s_destroy', [['%s *', 'a%s']]]", first?"":",\n", gClass[i]->mName.c_str(), gClass[i]->mName.c_str(), gClass[i]->mName.c_str());
+			first = 0;
 			emit_dtor(cppf, gClass[i]->mName.c_str());
 			
 			for (j = 0; j < (signed)gClass[i]->mMethod.size(); j++)
@@ -884,6 +903,7 @@ void generate()
 						// CTor
 						fprintf(f, "%s * %s_create();\n", gClass[i]->mName.c_str(), gClass[i]->mName.c_str());
 						fprintf(deff, "\t%s_create\n", gClass[i]->mName.c_str());
+						fprintf(pyff, ",\n['%s *', '%s_create', [[]]]", gClass[i]->mName.c_str(), gClass[i]->mName.c_str());
 						// TODO: ctors with params? none in soloud so far..
 						emit_ctor(cppf, gClass[i]->mName.c_str());
 					}
@@ -901,6 +921,12 @@ void generate()
 							gClass[i]->mName.c_str());
 						fprintf(deff, "\t%s_%s\n", gClass[i]->mName.c_str(), gClass[i]->mMethod[j]->mFuncName.c_str());
 
+						fprintf(pyff, ",\n['%s', '%s_%s', [['%s *', 'a%s']",
+							gClass[i]->mMethod[j]->mRetType.c_str(), 
+							gClass[i]->mName.c_str(),
+							gClass[i]->mMethod[j]->mFuncName.c_str(),
+							gClass[i]->mName.c_str(),
+							gClass[i]->mName.c_str());
 
 						for (k = 0; k < (signed)gClass[i]->mMethod[j]->mParmName.size(); k++)
 						{
@@ -911,6 +937,9 @@ void generate()
 									fprintf(f, ", %s %s", 
 										gClass[i]->mMethod[j]->mParmType[k].c_str(),
 										gClass[i]->mMethod[j]->mParmName[k].c_str());
+									fprintf(pyff, ", ['%s', '%s']", 
+										gClass[i]->mMethod[j]->mParmType[k].c_str(),
+										gClass[i]->mMethod[j]->mParmName[k].c_str());
 								}
 							}
 							else
@@ -919,10 +948,18 @@ void generate()
 							}
 						}
 						fprintf(f, ");\n");
+						fprintf(pyff, "]]");
 						if (has_defaults)
 						{
 							fprintf(f, 
 								"%s %s_%sEx(%s * a%s",
+								gClass[i]->mMethod[j]->mRetType.c_str(), 
+								gClass[i]->mName.c_str(),
+								gClass[i]->mMethod[j]->mFuncName.c_str(),
+								gClass[i]->mName.c_str(),
+								gClass[i]->mName.c_str());
+							fprintf(pyff, 
+								",\n['%s', '%s_%sEx', [['%s *', 'a%s']",
 								gClass[i]->mMethod[j]->mRetType.c_str(), 
 								gClass[i]->mName.c_str(),
 								gClass[i]->mMethod[j]->mFuncName.c_str(),
@@ -937,14 +974,20 @@ void generate()
 									fprintf(f, ", %s %s", 
 										gClass[i]->mMethod[j]->mParmType[k].c_str(),
 										gClass[i]->mMethod[j]->mParmName[k].c_str());
+									fprintf(pyff, ", ['%s', '%s'", 
+										gClass[i]->mMethod[j]->mParmType[k].c_str(),
+										gClass[i]->mMethod[j]->mParmName[k].c_str());
 									if (gClass[i]->mMethod[j]->mParmValue[k] != "")
 									{
 										fprintf(f, " /* = %s */", gClass[i]->mMethod[j]->mParmValue[k].c_str());
+										fprintf(pyff, ", '%s'", gClass[i]->mMethod[j]->mParmValue[k].c_str());
 										had_defaults = 1;
 									}
+									fprintf(pyff, "]");
 								}
 							}
 							fprintf(f, ");\n");
+							fprintf(pyff, "]]");
 						}
 					}
 				}
@@ -960,11 +1003,14 @@ void generate()
 		"#endif // SOLOUD_C_H_INCLUDED\n"
 		"\n");
 
+	fprintf(pyff, "\n]\n\n");
+
 	emit_cppend(cppf);
 
 	fclose(f);
 	fclose(cppf);
 	fclose(deff);
+	fclose(pyff);
 }
 
 void generate_cpp()

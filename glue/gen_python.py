@@ -21,7 +21,7 @@ c_to_py_types = {
 "unsigned int":"c_uint",
 "float":"c_float",
 "double":"c_double",
-"float *":"POINTER(c_float)",
+"float *":"POINTER(c_float * 256)",
 "unsigned char *":"POINTER(c_ubyte)"
 	}
 
@@ -68,5 +68,99 @@ for x in soloud_func:
 	fo.write(']\n')
 	fo.write('\n')
 
-fo.close()
+#################################################################
+#
+# oop
+#
+"""
+class cname(object):
+	def __init__(self):
+		self.objhandle = cname_create()
+	def __enter__(self):
+		return self
+	def __exit__(self, eType, eValue, eTrace):
+		cname_destroy(self.objhandle)
+		return False
+	def close(self)
+		cname_destroy(self.objhandle)	
+	
+"""
+
+fo.write('# OOP wrappers\n')
+
+def fix_default_param(x, classname):
+	if (classname + '::') == x[0:len(classname)+2:]:
+		return x[len(classname)+2::]
+	if x[len(x)-1] == "f":
+		return x[0:len(x)-1]
+	return x
+
+for x in soloud_type:
+	first = True
+	for y in soloud_func:
+		if (x + "_") == y[1][0:len(x)+1:]:
+			if first:
+				fo.write('\n')
+				fo.write('class %s(object):\n'%(x))
+				for z in soloud_enum:
+					if z[0:len(x)+1] == x.upper()+'_':
+						fo.write('\t%s = %s\n'%(z[len(x)+1::], str(soloud_enum[z])))
+				fo.write('\tdef __init__(self):\n')
+				fo.write('\t\tself.objhandle = %s_create()\n'%(x))
+				fo.write('\tdef __enter__(self):\n')
+				fo.write('\t\treturn self\n')
+				fo.write('\tdef __exit__(self, eType, eValue, eTrace):\n')
+				fo.write('\t\t%s_destroy(self.objhandle)\n'%(x))
+				fo.write('\t\tself.objhandle = c_void_p(0)\n')
+				fo.write('\t\treturn False\n')
+				fo.write('\tdef close(self):\n')
+				fo.write('\t\t%s_destroy(self.objhandle)\n'%(x))
+				fo.write('\t\tself.objhandle = c_void_p(0)\n')
+				fo.write('\tdef destroy(self):\n')
+				fo.write('\t\t%s_destroy(self.objhandle)\n'%(x))
+				fo.write('\t\tself.objhandle = c_void_p(0)\n')
+				first = False
+			funcname = y[1][len(x)+1::]
+			if funcname == "create" or funcname == "destroy": 
+				pass # omit create/destroy, handled by __exit__ / close
+			else:
+				fo.write('\tdef %s(self'%(funcname))
+				for z in y[2]:
+					if len(z) > 1:
+						if z[1] == 'a'+x:
+							pass # skip the 'self' pointer
+						else:
+							fo.write(', ' + z[1])
+							if len(z) > 2:
+								fo.write(' = ' + fix_default_param(z[2], x))
+				fo.write('):\n')
+				fo.write('\t\t')
+				floatbufreturn = False
+				if y[0] == 'void':
+					pass
+				elif y[0] == 'float *':
+					floatbufreturn = True
+					fo.write('floatbuf = ')	
+				else:
+					fo.write('return ')
+				fo.write(y[1] + '(self.objhandle')
+				for z in y[2]:
+					if len(z) > 1:
+						if z[1] == 'a'+x:
+							pass # skip the 'self' pointer
+						else:
+							fo.write(', ')
+							fudged_type = fudge_types(z[0])
+							if fudged_type == 'c_void_p':
+								fo.write(z[1] + '.objhandle')							
+							else:
+								fo.write(fudged_type + '(' +  z[1] + ')')
+				fo.write(')\n')
+				if floatbufreturn:
+					fo.write('\t\treturn [f for f in floatbuf().contents]\n')
+	
+	
+	
 print "soloud.py generated"
+
+fo.close()

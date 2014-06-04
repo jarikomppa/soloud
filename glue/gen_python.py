@@ -157,7 +157,7 @@ for x in soloud_type:
 								fo.write(fudged_type + '(' +  z[1] + ')')
 				fo.write(')\n')
 				if floatbufreturn:
-					fo.write('\t\treturn [f for f in floatbuf().contents]\n')
+					fo.write('\t\treturn [f for f in floatbuf.contents]\n')
 	
 	
 	

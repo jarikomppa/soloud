@@ -53,6 +53,7 @@ namespace SoLoud
 		int mOffset;
 	public:
 		SpeechInstance(Speech *aParent);
+        virtual ~SpeechInstance();
 		virtual void getAudio(float *aBuffer, int aSamples);
 		virtual result rewind();
 		virtual bool hasEnded();

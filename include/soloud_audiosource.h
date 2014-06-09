@@ -109,6 +109,8 @@ namespace SoLoud
 		int mSrcOffset;
 		// Samples left over from earlier pass
 		int mLeftoverSamples;
+		// Number of samples to delay streaming
+		int mDelaySamples;
 		// Get N samples from the stream to the buffer
 		virtual void getAudio(float *aBuffer, int aSamples) = 0;
 		// Has the stream ended?

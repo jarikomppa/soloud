@@ -67,6 +67,7 @@ namespace SoLoud
 		mResampleData[1] = new AudioSourceResampleData;
 		mSrcOffset = 0;
 		mLeftoverSamples = 0;
+		mDelaySamples = 0;
 	}
 
 	AudioSourceInstance::~AudioSourceInstance()

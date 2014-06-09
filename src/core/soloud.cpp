@@ -446,7 +446,21 @@ namespace SoLoud
 				int step_fixed = (int)floor(step * FIXPOINT_FRAC_MUL);
 				float samples_per_block = SAMPLE_GRANULARITY / step;
 				int outofs = 0;
-		
+				
+				if (mVoice[i]->mDelaySamples)
+				{
+					if (mVoice[i]->mDelaySamples > aSamples)
+					{
+						outofs = aSamples;
+						mVoice[i]->mDelaySamples -= aSamples;
+					}
+					else
+					{
+						outofs = mVoice[i]->mDelaySamples;
+						mVoice[i]->mDelaySamples = 0;
+					}
+				}
+
 				while (outofs < aSamples)
 				{
 					if (mVoice[i]->mLeftoverSamples == 0)

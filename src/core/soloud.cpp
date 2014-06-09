@@ -269,7 +269,7 @@ namespace SoLoud
 	{
 		switch (aErrorCode)
 		{
-		case NO_ERROR: return "No error";
+		case SO_NO_ERROR: return "No error";
 		case INVALID_PARAMETER: return "Some parameter is invalid";
 		case FILE_NOT_FOUND: return "File not found";
 		case FILE_LOAD_FAILED: return "File found, but could not be loaded";

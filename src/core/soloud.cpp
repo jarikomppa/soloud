@@ -375,6 +375,10 @@ namespace SoLoud
 		}
 	}
 
+#define FIXPOINT_FRAC_BITS 20
+#define FIXPOINT_FRAC_MUL (1 << FIXPOINT_FRAC_BITS)
+#define FIXPOINT_FRAC_MASK ((1 << FIXPOINT_FRAC_BITS) - 1)
+
 	void resample(float *aSrc,
 		          float *aSrc1, 
 				  float *aDst, 
@@ -392,8 +396,8 @@ namespace SoLoud
 
 		for (i = 0; i < aDstSampleCount; i++, pos += aStepFixed)
 		{
-			int p = pos >> 16;
-			int f = pos & 0xffff;
+			int p = pos >> FIXPOINT_FRAC_BITS;
+			int f = pos & FIXPOINT_FRAC_MASK;
 #ifdef _DEBUG
 			if (p >= SAMPLE_GRANULARITY || p < 0)
 			{
@@ -407,7 +411,7 @@ namespace SoLoud
 			{
 				s1 = aSrc[p-1];
 			}
-			aDst[i] = s1 + (s2 - s1) * f * (1 / 65536.0f);
+			aDst[i] = s1 + (s2 - s1) * f * (1 / (float)FIXPOINT_FRAC_MUL);
 		}
 #else // Point sample
 		int i;
@@ -415,7 +419,7 @@ namespace SoLoud
 
 		for (i = 0; i < aDstSampleCount; i++, pos += aStepFixed)
 		{
-			int p = pos >> 16;
+			int p = pos >> FIXPOINT_FRAC_BITS;
 			aDst[i] = aSrc[p];
 		}
 #endif
@@ -439,7 +443,7 @@ namespace SoLoud
 			{
 				int j;
 				float step = mVoice[i]->mSamplerate / aSamplerate;
-				int step_fixed = (int)floor(step * 65536);
+				int step_fixed = (int)floor(step * FIXPOINT_FRAC_MUL);
 				float samples_per_block = SAMPLE_GRANULARITY / step;
 				int outofs = 0;
 		
@@ -464,7 +468,7 @@ namespace SoLoud
 						}
 
 						// We have new block of data, move pointer backwards
-						mVoice[i]->mSrcOffset -= SAMPLE_GRANULARITY * 65536;
+						mVoice[i]->mSrcOffset -= SAMPLE_GRANULARITY * FIXPOINT_FRAC_MUL;
 
 						// If we go past zero, crop to zero (a bit of a kludge)
 						if (mVoice[i]->mSrcOffset < 0) mVoice[i]->mSrcOffset = 0;
@@ -494,12 +498,12 @@ namespace SoLoud
 
 					int writesamples = 0;
 
-					if (mVoice[i]->mSrcOffset < SAMPLE_GRANULARITY * 65536)
+					if (mVoice[i]->mSrcOffset < SAMPLE_GRANULARITY * FIXPOINT_FRAC_MUL)
 					{
-						writesamples = ((SAMPLE_GRANULARITY * 65536) - mVoice[i]->mSrcOffset) / step_fixed + 1;
+						writesamples = ((SAMPLE_GRANULARITY * FIXPOINT_FRAC_MUL) - mVoice[i]->mSrcOffset) / step_fixed + 1;
 
 						// avoid reading past the current buffer..
-						if (((writesamples * step_fixed + mVoice[i]->mSrcOffset) >> 16) >= SAMPLE_GRANULARITY + 1)
+						if (((writesamples * step_fixed + mVoice[i]->mSrcOffset) >> FIXPOINT_FRAC_BITS) >= SAMPLE_GRANULARITY + 1)
 							writesamples--;
 					}
 

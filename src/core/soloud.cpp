@@ -605,6 +605,19 @@ namespace SoLoud
 
 	void Soloud::mix(float *aBuffer, int aSamples)
 	{
+#ifdef FLOATING_POINT_DEBUG
+		// This needs to be done in the audio thread as well..
+		static int done = 0;
+		if (!done)
+		{
+			unsigned int u;
+			u = _controlfp(0, 0);
+			u = u & ~(_EM_INVALID | /*_EM_DENORMAL |*/ _EM_ZERODIVIDE | _EM_OVERFLOW /*| _EM_UNDERFLOW  | _EM_INEXACT*/);
+			_controlfp(u, _MCW_EM);
+			done = 1;
+		}
+#endif
+
 		float buffertime = aSamples / (float)mSamplerate;
 		float globalVolume[2];
 		mStreamTime += buffertime;

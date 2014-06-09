@@ -38,6 +38,11 @@ namespace SoLoud
 		mSampleCount = 10;
 	}
 
+    SpeechInstance::~SpeechInstance(){
+
+       delete mSample;
+    }
+
 	static void writesamples(short * aSrc, float * aDst, int aCount)
 	{
 		int i;

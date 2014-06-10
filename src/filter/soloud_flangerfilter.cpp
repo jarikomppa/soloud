@@ -58,7 +58,7 @@ namespace SoLoud
 		}
 
 		int i, j;
-		int maxsamples = mParam[FlangerFilter::DELAY] * aSamplerate;
+		int maxsamples = (int)ceil(mParam[FlangerFilter::DELAY] * aSamplerate);
 		double inc = mParam[FlangerFilter::FREQ] * M_PI * 2 / aSamplerate;
 		for (i = 0; i < aChannels; i++)
 		{
@@ -86,7 +86,7 @@ namespace SoLoud
 
 	FlangerFilter::FlangerFilter()
 	{
-		mDelay = 0.005;
+		mDelay = 0.005f;
 		mFreq = 10;
 	}
 

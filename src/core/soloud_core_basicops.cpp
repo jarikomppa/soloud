@@ -93,7 +93,26 @@ namespace SoLoud
 
 		int handle = getHandleFromVoice(ch);
 		return handle;
-	}	
+	}
+
+	handle Soloud::playClocked(time aSoundTime, AudioSource &aSound, float aVolume, float aPan, int aBus)
+	{
+		handle h = play(aSound, aVolume, aPan, 1, aBus);
+		if (mLockMutexFunc) mLockMutexFunc(mMutex);
+		time lasttime = mLastClockedTime;
+		if (lasttime == 0) 
+			mLastClockedTime = aSoundTime;
+		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+		int samples = 0;
+		if (lasttime != 0)
+		{
+			samples = (int)floor((aSoundTime - lasttime) * mSamplerate);
+		}
+		setDelaySamples(h, samples);
+		setPause(h, 0);
+		return h;
+	}
+
 
 	void Soloud::seek(handle aVoiceHandle, time aSeconds)
 	{

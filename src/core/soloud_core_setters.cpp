@@ -155,6 +155,19 @@ namespace SoLoud
 		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 	}
 
+	void Soloud::setDelaySamples(handle aVoiceHandle, int aSamples)
+	{
+		if (mLockMutexFunc) mLockMutexFunc(mMutex);
+		int ch = getVoiceFromHandle(aVoiceHandle);
+		if (ch == -1) 
+		{
+			if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+			return;
+		}
+		mVoice[ch]->mDelaySamples = aSamples;
+		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+	}
+
 	void Soloud::setVisualizationEnable(bool aEnable)
 	{
 		if (aEnable)

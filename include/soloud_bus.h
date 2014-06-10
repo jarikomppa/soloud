@@ -61,7 +61,9 @@ namespace SoLoud
 		// Set filter. Set to NULL to clear the filter.
 		virtual void setFilter(int aFilterId, Filter *aFilter);
 		// Play sound through the bus
-		int play(AudioSource &aSound, float aVolume = 1.0f, float aPan = 0.0f, int aPaused = 0);
+		handle play(AudioSource &aSound, float aVolume = 1.0f, float aPan = 0.0f, int aPaused = 0);
+		// Play sound through the bus, delayed in relation to other sounds called via this function.
+		handle playClocked(time aSoundTime, AudioSource &aSound, float aVolume = 1.0f, float aPan = 0.0f);
 
 		// Enable or disable visualization data gathering
 		void setVisualizationEnable(bool aEnable);
@@ -71,7 +73,9 @@ namespace SoLoud
 
 		// Get 256 floats of wave data for visualization. Visualization has to be enabled before use.
 		float *getWave();
-
+	public:
+		// Internal: find the bus' channel
+		void findBusHandle();
 	};
 };
 

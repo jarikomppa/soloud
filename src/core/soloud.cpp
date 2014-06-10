@@ -66,6 +66,7 @@ namespace SoLoud
 		mBackendCleanupFunc = NULL;
 		mChannels = 2;		
 		mStreamTime = 0;
+		mLastClockedTime = 0;
 		mAudioSourceID = 1;
 		int i;
 		for (i = 0; i < FILTERS_PER_STREAM; i++)
@@ -639,6 +640,7 @@ namespace SoLoud
 		float buffertime = aSamples / (float)mSamplerate;
 		float globalVolume[2];
 		mStreamTime += buffertime;
+		mLastClockedTime = 0;
 
 		globalVolume[0] = mGlobalVolume;
 		if (mGlobalVolumeFader.mActive)

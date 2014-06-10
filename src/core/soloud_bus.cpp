@@ -119,10 +119,8 @@ namespace SoLoud
 		return mInstance;
 	}
 
-	int Bus::play(AudioSource &aSound, float aVolume, float aPan, int aPaused)
+	void Bus::findBusHandle()
 	{
-		if (!mInstance || !mSoloud)
-			return 0;
 		if (mChannelHandle == 0)
 		{
 			// Find the channel the bus is playing on to calculate handle..
@@ -134,13 +132,43 @@ namespace SoLoud
 					mChannelHandle = mSoloud->getHandleFromVoice(i);
 				}
 			}
-			if (mChannelHandle == 0)
-			{
-				return 0;
-			}
+		}
+	}
+
+	handle Bus::play(AudioSource &aSound, float aVolume, float aPan, int aPaused)
+	{
+		if (!mInstance || !mSoloud)
+		{
+			return 0;
+		}
+
+		findBusHandle();
+
+		if (mChannelHandle == 0)
+		{
+			return 0;
 		}
 		return mSoloud->play(aSound, aVolume, aPan, aPaused, mChannelHandle);
 	}	
+
+
+	handle Bus::playClocked(time aSoundTime, AudioSource &aSound, float aVolume, float aPan)
+	{
+		if (!mInstance || !mSoloud)
+		{
+			return 0;
+		}
+
+		findBusHandle();
+
+		if (mChannelHandle == 0)
+		{
+			return 0;
+		}
+
+		return mSoloud->playClocked(aSoundTime, aSound, aVolume, aPan, mChannelHandle);
+	}	
+
 
 	void Bus::setFilter(int aFilterId, Filter *aFilter)
 	{

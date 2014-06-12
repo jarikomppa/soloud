@@ -62,6 +62,12 @@ namespace SoLoud
 
 		mPlayIndex++;
 
+		// 20 bits, skip the last one (top bits full = voice group)
+		if (mPlayIndex == 0xfffff) 
+		{
+			mPlayIndex = 0;
+		}
+
 		if (aPaused)
 		{
 			mVoice[ch]->mFlags |= AudioSourceInstance::PAUSED;

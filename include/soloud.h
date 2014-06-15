@@ -129,10 +129,14 @@ namespace SoLoud
 		int getVersion() const;
 
 		// Translate error number to an asciiz string
-		const char * getErrorString(int aErrorCode) const;
+		const char * getErrorString(result aErrorCode) const;
 
 		// Start playing a sound. Returns voice handle, which can be ignored or used to alter the playing sound's parameters.
 		handle play(AudioSource &aSound, float aVolume = 1.0f, float aPan = 0.0f, int aPaused = 0, int aBus = 0);
+
+		// Start playing a sound delayed in relation to other sounds called via this function.
+		handle playClocked(time aSoundTime, AudioSource &aSound, float aVolume = 1.0f, float aPan = 0.0f, int aBus = 0);
+
 		// Seek the audio stream to certain point in time. Some streams can't seek backwards. Relative play speed affects time.
 		void seek(handle aVoiceHandle, time aSeconds);
 		// Stop the sound.
@@ -194,6 +198,8 @@ namespace SoLoud
 		void setPanAbsolute(handle aVoiceHandle, float aLVolume, float aRVolume);
 		// Set overall volume
 		void setVolume(handle aVoiceHandle, float aVolume);
+		// Set delay, in samples, before starting to play samples. Calling this on a live sound will cause glitches.
+		void setDelaySamples(handle aVoiceHandle, int aSamples);
 
 		// Set up volume fader
 		void fadeVolume(handle aVoiceHandle, float aTo, time aTime);
@@ -232,6 +238,17 @@ namespace SoLoud
 		// Get current loop count. Returns 0 if handle is not valid. (All audio sources may not update loop count)
 		int getLoopCount(handle aVoiceHandle);
 
+		// Create a voice group. Returns 0 if unable (out of voice groups / out of memory)
+		handle createVoiceGroup();
+		// Destroy a voice group. 
+		result destroyVoiceGroup();
+		// Add a voice handle to a voice group
+		void addVoiceToGroup(handle aVoiceGroupHandle, handle aVoiceHandle);
+		// Is this handle a valid voice group?
+		bool isVoiceGroup(handle aVoiceGroupHandle);
+		// Is this voice group empty?
+		bool isVoiceGroupEmpty(handle aVoiceGroupHandle);
+
 		// Rest of the stuff is used internally.
 	public:
 		// Mix and return N stereo samples in the buffer. Called by the back-end.
@@ -269,6 +286,8 @@ namespace SoLoud
 		Fader mGlobalVolumeFader;
 		// Global stream time, for the global volume fader. 
 		time mStreamTime;
+		// Last time seen by the playClocked call
+		time mLastClockedTime;
 		// Global filter
 		Filter *mFilter[FILTERS_PER_STREAM];
 		// Global filter instance
@@ -297,6 +316,13 @@ namespace SoLoud
 		float mFFTData[256];
 		// Snapshot of wave data for visualization
 		float mWaveData[256];
+
+		// For each voice group, first int is number of ints alocated.
+		unsigned int **mVoiceGroup;
+		int mVoiceGroupCount;
+
+		// Remove all non-active voices from group
+		void trimVoiceGroup(handle aVoiceGroupHandle);
 	};
 };
 

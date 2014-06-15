@@ -84,6 +84,8 @@ namespace SoLoud
 		{
 			mVoice[i] = 0;
 		}
+		mVoiceGroup = 0;
+		mVoiceGroupCount = 0;
 	}
 
 	Soloud::~Soloud()
@@ -97,6 +99,9 @@ namespace SoLoud
 			delete mFilterInstance[i];
 		}
 		delete[] mScratch;
+		for (i = 0; i < mVoiceGroupCount; i++)
+			delete[] mVoiceGroup[i];
+		delete[] mVoiceGroup;
 	}
 
 	void Soloud::deinit()
@@ -266,7 +271,7 @@ namespace SoLoud
 		mPostClipScaler = 0.5f;
 	}
 
-	const char * Soloud::getErrorString(int aErrorCode) const
+	const char * Soloud::getErrorString(result aErrorCode) const
 	{
 		switch (aErrorCode)
 		{

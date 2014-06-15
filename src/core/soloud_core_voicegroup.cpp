@@ -96,7 +96,7 @@ namespace SoLoud
 		trimVoiceGroup(aVoiceGroupHandle);
 		
 		int c = aVoiceGroupHandle & 0xfff;
-		int i;
+		unsigned int i;
 		for (i = 1; i < mVoiceGroup[c][0]; i++)
 		{
 			if (mVoiceGroup[c][i] == aVoiceHandle)
@@ -131,7 +131,7 @@ namespace SoLoud
 	// Is this handle a valid voice group?
 	bool Soloud::isVoiceGroup(handle aVoiceGroupHandle)
 	{
-		if (aVoiceGroupHandle & 0xfffff000 != 0xfffff000)
+		if ((aVoiceGroupHandle & 0xfffff000) != 0xfffff000)
 			return 0;
 		int c = aVoiceGroupHandle & 0xfff;
 		if (c > mVoiceGroupCount)
@@ -164,14 +164,14 @@ namespace SoLoud
 		if (mVoiceGroup[c][1] == 0)
 			return;
 
-		int i;
+		unsigned int i;
 		for (i = 1; i < mVoiceGroup[c][0]; i++)
 		{
 			if (mVoiceGroup[c][i] == 0)
 				return;
 			while (!isValidVoiceHandle(mVoiceGroup[c][i]))
 			{
-				int j;
+				unsigned int j;
 				for (j = i; j < mVoiceGroup[c][0] - 1; j++)
 				{
 					mVoiceGroup[c][j] = mVoiceGroup[c][j + 1];

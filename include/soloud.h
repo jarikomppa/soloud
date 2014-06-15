@@ -241,9 +241,9 @@ namespace SoLoud
 		// Create a voice group. Returns 0 if unable (out of voice groups / out of memory)
 		handle createVoiceGroup();
 		// Destroy a voice group. 
-		result destroyVoiceGroup();
+		result destroyVoiceGroup(handle aVoiceGroupHandle);
 		// Add a voice handle to a voice group
-		void addVoiceToGroup(handle aVoiceGroupHandle, handle aVoiceHandle);
+		result addVoiceToGroup(handle aVoiceGroupHandle, handle aVoiceHandle);
 		// Is this handle a valid voice group?
 		bool isVoiceGroup(handle aVoiceGroupHandle);
 		// Is this voice group empty?

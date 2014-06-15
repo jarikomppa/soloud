@@ -85,7 +85,7 @@ namespace SoLoud
 	bool Soloud::isValidVoiceHandle(handle aVoiceHandle) const
 	{
 		// voice groups are not valid voice handles
-		if (aVoiceHandle & 0xfffff000 == 0xfffff000)
+		if ((aVoiceHandle & 0xfffff000) == 0xfffff000)
 			return 0;
 
 		if (mLockMutexFunc) mLockMutexFunc(mMutex);

@@ -135,11 +135,8 @@ namespace SoLoud
 
 			if (mVoiceGroup[c][i] == 0)
 			{
-				if (i != mVoiceGroup[c][0] - 1)
-				{
-					mVoiceGroup[c][i + 1] = 0;
-				}
 				mVoiceGroup[c][i] = aVoiceHandle;
+				mVoiceGroup[c][i + 1] = 0;
 				
 				if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 				return SO_NO_ERROR;
@@ -147,7 +144,7 @@ namespace SoLoud
 		}
 		
 		// Full group, allocate more memory
-		unsigned int * n = new unsigned int[mVoiceGroup[c][0] * 2];
+		unsigned int * n = new unsigned int[mVoiceGroup[c][0] * 2 + 1];
 		if (n == NULL)
 		{
 			if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
@@ -170,7 +167,7 @@ namespace SoLoud
 		if ((aVoiceGroupHandle & 0xfffff000) != 0xfffff000)
 			return 0;
 		int c = aVoiceGroupHandle & 0xfff;
-		if (c > mVoiceGroupCount)
+		if (c >= mVoiceGroupCount)
 			return 0;
 
 		if (mLockMutexFunc) mLockMutexFunc(mMutex);		
@@ -241,4 +238,17 @@ namespace SoLoud
 		}
 		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 	}
+
+	handle *Soloud::voiceGroupHandleToArray(handle aVoiceGroupHandle)
+	{
+		if ((aVoiceGroupHandle & 0xfffff000) != 0xfffff000)
+			return NULL;
+		int c = aVoiceGroupHandle & 0xfff;
+		if (c >= mVoiceGroupCount)
+			return NULL;
+		if (mVoiceGroup[c] == NULL)
+			return NULL;
+		return mVoiceGroup[c] + 1;
+	}
+
 }

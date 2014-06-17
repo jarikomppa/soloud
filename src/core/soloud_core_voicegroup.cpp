@@ -239,7 +239,7 @@ namespace SoLoud
 		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 	}
 
-	handle *Soloud::voiceGroupHandleToArray(handle aVoiceGroupHandle)
+	handle *Soloud::voiceGroupHandleToArray(handle aVoiceGroupHandle) const
 	{
 		if ((aVoiceGroupHandle & 0xfffff000) != 0xfffff000)
 			return NULL;

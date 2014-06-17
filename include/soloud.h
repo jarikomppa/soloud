@@ -324,7 +324,7 @@ namespace SoLoud
 		// Remove all non-active voices from group
 		void trimVoiceGroup(handle aVoiceGroupHandle);
 		// Get pointer to the zero-terminated array of voice handles in a voice group
-		handle * voiceGroupHandleToArray(handle aVoiceGroupHandle);
+		handle * voiceGroupHandleToArray(handle aVoiceGroupHandle) const;
 	};
 };
 

@@ -52,10 +52,15 @@ namespace SoLoud
 
 	int Soloud::getVoiceFromHandle(handle aVoiceHandle) const
 	{
-		if (aVoiceHandle <= 0) 
+		// If this is a voice group handle, pick the first handle from the group
+		handle *h = voiceGroupHandleToArray(aVoiceHandle);
+		if (h != NULL) aVoiceHandle = *h;
+
+		if (aVoiceHandle == 0) 
 		{
 			return -1;
 		}
+
 		int ch = (aVoiceHandle & 0xfff) - 1;
 		unsigned int idx = aVoiceHandle >> 12;
 		if (mVoice[ch] &&

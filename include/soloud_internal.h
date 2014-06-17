@@ -59,4 +59,23 @@ namespace SoLoud
 	// Interlace samples in a buffer. From 11112222 to 12121212
 	void interlace_samples(const float *aSourceBuffer, float *aDestBuffer, int aSamples, int aChannels);
 };
+
+#define FOR_ALL_VOICES_PRE \
+		handle *h = NULL; \
+		handle th[2] = { aVoiceHandle, 0 }; \
+		if (mLockMutexFunc) mLockMutexFunc(mMutex); \
+		h = voiceGroupHandleToArray(aVoiceHandle); \
+		if (h == NULL) h = th; \
+		while (*h) \
+		{ \
+			int ch = getVoiceFromHandle(*h); \
+			if (ch != -1)  \
+			{
+
+#define FOR_ALL_VOICES_POST \
+			} \
+			h++; \
+		} \
+		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+
 #endif

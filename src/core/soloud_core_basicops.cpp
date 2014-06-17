@@ -23,7 +23,7 @@ freely, subject to the following restrictions:
 */
 
 #include <string.h>
-#include "soloud.h"
+#include "soloud_internal.h"
 
 // Core "basic" operations - play, stop, etc
 
@@ -119,31 +119,19 @@ namespace SoLoud
 		return h;
 	}
 
-
 	void Soloud::seek(handle aVoiceHandle, time aSeconds)
 	{
-		if (mLockMutexFunc) mLockMutexFunc(mMutex);
-		int ch = getVoiceFromHandle(aVoiceHandle);
-		if (ch == -1) 
-		{
-			if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
-			return;
-		}
-		mVoice[ch]->seek(aSeconds, mScratch, mScratchSize);
-		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+		FOR_ALL_VOICES_PRE
+			mVoice[ch]->seek(aSeconds, mScratch, mScratchSize);
+		FOR_ALL_VOICES_POST
 	}
 
 
 	void Soloud::stop(handle aVoiceHandle)
 	{
-		int ch = getVoiceFromHandle(aVoiceHandle);
-		if (ch == -1) 
-		{
-			return;
-		}
-		if (mLockMutexFunc) mLockMutexFunc(mMutex);
-		stopVoice(ch);
-		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+		FOR_ALL_VOICES_PRE
+			stopVoice(ch);
+		FOR_ALL_VOICES_POST
 	}
 
 	void Soloud::stopAudioSource(AudioSource &aSound)

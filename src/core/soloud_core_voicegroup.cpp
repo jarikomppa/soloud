@@ -174,7 +174,7 @@ namespace SoLoud
 			return 0;
 
 		if (mLockMutexFunc) mLockMutexFunc(mMutex);		
-		int res = mVoiceGroup[c] == NULL;		
+		bool res = mVoiceGroup[c] == NULL;		
 		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 
 		return res;
@@ -190,7 +190,7 @@ namespace SoLoud
 		int c = aVoiceGroupHandle & 0xfff;
 
 		if (mLockMutexFunc) mLockMutexFunc(mMutex);
-		int res = mVoiceGroup[c][1] == 0;
+		bool res = mVoiceGroup[c][1] == 0;
 		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 
 		return res;
@@ -219,8 +219,11 @@ namespace SoLoud
 				if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 				return;
 			}
-			while (!isValidVoiceHandle(mVoiceGroup[c][i]))
+			
+			if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+			while (!isValidVoiceHandle(mVoiceGroup[c][i])) // function locks mutex, so we need to unlock it before the call
 			{
+				if (mLockMutexFunc) mLockMutexFunc(mMutex);
 				unsigned int j;
 				for (j = i; j < mVoiceGroup[c][0] - 1; j++)
 				{

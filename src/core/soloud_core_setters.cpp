@@ -22,7 +22,7 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#include "soloud.h"
+#include "soloud_internal.h"
 
 // Setters - set various bits of SoLoud state
 
@@ -41,45 +41,25 @@ namespace SoLoud
 
 	void Soloud::setRelativePlaySpeed(handle aVoiceHandle, float aSpeed)
 	{
-		if (mLockMutexFunc) mLockMutexFunc(mMutex);
-		int ch = getVoiceFromHandle(aVoiceHandle);
-		if (ch == -1) 
-		{
-			if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
-			return;
-		}
+		FOR_ALL_VOICES_PRE
 		mVoice[ch]->mRelativePlaySpeedFader.mActive = 0;
 		setVoiceRelativePlaySpeed(ch, aSpeed);
-		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+		FOR_ALL_VOICES_POST
 	}
 
 	void Soloud::setSamplerate(handle aVoiceHandle, float aSamplerate)
 	{
-		if (mLockMutexFunc) mLockMutexFunc(mMutex);
-		int ch = getVoiceFromHandle(aVoiceHandle);
-		if (ch == -1) 
-		{
-			if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
-			return;
-		}
+		FOR_ALL_VOICES_PRE
 		mVoice[ch]->mBaseSamplerate = aSamplerate;
 		mVoice[ch]->mSamplerate = mVoice[ch]->mBaseSamplerate * mVoice[ch]->mRelativePlaySpeed;
-		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+		FOR_ALL_VOICES_POST
 	}
 
 	void Soloud::setPause(handle aVoiceHandle, bool aPause)
 	{
-		if (mLockMutexFunc) mLockMutexFunc(mMutex);
-		int ch = getVoiceFromHandle(aVoiceHandle);
-		if (ch == -1) 
-		{
-			if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
-			return;
-		}
-
+		FOR_ALL_VOICES_PRE
 		setVoicePause(ch, aPause);
-
-		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+		FOR_ALL_VOICES_POST
 	}
 
 	void Soloud::setPauseAll(bool aPause)
@@ -95,13 +75,7 @@ namespace SoLoud
 
 	void Soloud::setProtectVoice(handle aVoiceHandle, bool aProtect)
 	{
-		if (mLockMutexFunc) mLockMutexFunc(mMutex);
-		int ch = getVoiceFromHandle(aVoiceHandle);
-		if (ch == -1) 
-		{
-			if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
-			return;
-		}
+		FOR_ALL_VOICES_PRE
 		if (aProtect)
 		{
 			mVoice[ch]->mFlags |= AudioSourceInstance::PROTECTED;
@@ -110,62 +84,38 @@ namespace SoLoud
 		{
 			mVoice[ch]->mFlags &= ~AudioSourceInstance::PROTECTED;
 		}
-		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+		FOR_ALL_VOICES_POST
 	}
 
 	void Soloud::setPan(handle aVoiceHandle, float aPan)
 	{		
-		if (mLockMutexFunc) mLockMutexFunc(mMutex);
-		int ch = getVoiceFromHandle(aVoiceHandle);
-		if (ch == -1) 
-		{
-			if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
-			return;
-		}
+		FOR_ALL_VOICES_PRE
 		setVoicePan(ch, aPan);
-		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+		FOR_ALL_VOICES_POST
 	}
 
 	void Soloud::setPanAbsolute(handle aVoiceHandle, float aLVolume, float aRVolume)
 	{
-		if (mLockMutexFunc) mLockMutexFunc(mMutex);
-		int ch = getVoiceFromHandle(aVoiceHandle);
-		if (ch == -1) 
-		{
-			if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
-			return;
-		}
+		FOR_ALL_VOICES_PRE
 		mVoice[ch]->mPanFader.mActive = 0;
 		mVoice[ch]->mLVolume = aLVolume;
 		mVoice[ch]->mRVolume = aRVolume;
-		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+		FOR_ALL_VOICES_POST
 	}
 
 	void Soloud::setVolume(handle aVoiceHandle, float aVolume)
 	{
-		if (mLockMutexFunc) mLockMutexFunc(mMutex);
-		int ch = getVoiceFromHandle(aVoiceHandle);
-		if (ch == -1) 
-		{
-			if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
-			return;
-		}
+		FOR_ALL_VOICES_PRE
 		mVoice[ch]->mVolumeFader.mActive = 0;
 		setVoiceVolume(ch, aVolume);
-		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+		FOR_ALL_VOICES_POST
 	}
 
 	void Soloud::setDelaySamples(handle aVoiceHandle, int aSamples)
 	{
-		if (mLockMutexFunc) mLockMutexFunc(mMutex);
-		int ch = getVoiceFromHandle(aVoiceHandle);
-		if (ch == -1) 
-		{
-			if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
-			return;
-		}
+		FOR_ALL_VOICES_PRE
 		mVoice[ch]->mDelaySamples = aSamples;
-		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+		FOR_ALL_VOICES_POST
 	}
 
 	void Soloud::setVisualizationEnable(bool aEnable)

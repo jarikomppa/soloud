@@ -61,20 +61,20 @@ namespace SoLoud
 };
 
 #define FOR_ALL_VOICES_PRE \
-		handle *h = NULL; \
-		handle th[2] = { aVoiceHandle, 0 }; \
+		handle *h_ = NULL; \
+		handle th_[2] = { aVoiceHandle, 0 }; \
 		if (mLockMutexFunc) mLockMutexFunc(mMutex); \
-		h = voiceGroupHandleToArray(aVoiceHandle); \
-		if (h == NULL) h = th; \
-		while (*h) \
+		h_ = voiceGroupHandleToArray(aVoiceHandle); \
+		if (h_ == NULL) h_ = th_; \
+		while (*h_) \
 		{ \
-			int ch = getVoiceFromHandle(*h); \
+			int ch = getVoiceFromHandle(*h_); \
 			if (ch != -1)  \
 			{
 
 #define FOR_ALL_VOICES_POST \
 			} \
-			h++; \
+			h_++; \
 		} \
 		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 

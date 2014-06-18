@@ -22,7 +22,7 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#include "soloud.h"
+#include "soloud_internal.h"
 
 // Core operations related to faders (not including filters)
 
@@ -35,15 +35,9 @@ namespace SoLoud
 			setPause(aVoiceHandle, 1);
 			return;
 		}
-		if (mLockMutexFunc) mLockMutexFunc(mMutex);
-		int ch = getVoiceFromHandle(aVoiceHandle);
-		if (ch == -1) 
-		{
-			if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
-			return;
-		}
+		FOR_ALL_VOICES_PRE
 		mVoice[ch]->mPauseScheduler.set(1, 0, aTime, mVoice[ch]->mStreamTime);
-		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+		FOR_ALL_VOICES_POST
 	}
 
 	void Soloud::scheduleStop(handle aVoiceHandle, time aTime)
@@ -53,15 +47,9 @@ namespace SoLoud
 			stop(aVoiceHandle);
 			return;
 		}
-		if (mLockMutexFunc) mLockMutexFunc(mMutex);
-		int ch = getVoiceFromHandle(aVoiceHandle);
-		if (ch == -1) 
-		{
-			if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
-			return;
-		}
+		FOR_ALL_VOICES_PRE
 		mVoice[ch]->mStopScheduler.set(1, 0, aTime, mVoice[ch]->mStreamTime);
-		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+		FOR_ALL_VOICES_POST
 	}
 
 	void Soloud::fadeVolume(handle aVoiceHandle, float aTo, time aTime)
@@ -73,15 +61,9 @@ namespace SoLoud
 			return;
 		}
 
-		if (mLockMutexFunc) mLockMutexFunc(mMutex);
-		int ch = getVoiceFromHandle(aVoiceHandle);
-		if (ch == -1) 
-		{
-			if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
-			return;
-		}
+		FOR_ALL_VOICES_PRE
 		mVoice[ch]->mVolumeFader.set(from, aTo, aTime, mVoice[ch]->mStreamTime);
-		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+		FOR_ALL_VOICES_POST
 	}
 
 	void Soloud::fadePan(handle aVoiceHandle, float aTo, time aTime)
@@ -93,15 +75,9 @@ namespace SoLoud
 			return;
 		}
 
-		if (mLockMutexFunc) mLockMutexFunc(mMutex);
-		int ch = getVoiceFromHandle(aVoiceHandle);
-		if (ch == -1) 
-		{
-			if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
-			return;
-		}
+		FOR_ALL_VOICES_PRE
 		mVoice[ch]->mPanFader.set(from, aTo, aTime, mVoice[ch]->mStreamTime);
-		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+		FOR_ALL_VOICES_POST
 	}
 
 	void Soloud::fadeRelativePlaySpeed(handle aVoiceHandle, float aTo, time aTime)
@@ -112,15 +88,9 @@ namespace SoLoud
 			setRelativePlaySpeed(aVoiceHandle, aTo);
 			return;
 		}
-		if (mLockMutexFunc) mLockMutexFunc(mMutex);
-		int ch = getVoiceFromHandle(aVoiceHandle);
-		if (ch == -1) 
-		{
-			if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
-			return;
-		}
+		FOR_ALL_VOICES_PRE
 		mVoice[ch]->mRelativePlaySpeedFader.set(from, aTo, aTime, mVoice[ch]->mStreamTime);
-		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+		FOR_ALL_VOICES_POST
 	}
 
 	void Soloud::fadeGlobalVolume(float aTo, time aTime)
@@ -144,15 +114,9 @@ namespace SoLoud
 			return;
 		}
 
-		if (mLockMutexFunc) mLockMutexFunc(mMutex);
-		int ch = getVoiceFromHandle(aVoiceHandle);
-		if (ch == -1) 
-		{
-			if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
-			return;
-		}
+		FOR_ALL_VOICES_PRE
 		mVoice[ch]->mVolumeFader.setLFO(aFrom, aTo, aTime, mVoice[ch]->mStreamTime);
-		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+		FOR_ALL_VOICES_POST
 	}
 
 	void Soloud::oscillatePan(handle aVoiceHandle, float aFrom, float aTo, time aTime)
@@ -163,15 +127,9 @@ namespace SoLoud
 			return;
 		}
 
-		if (mLockMutexFunc) mLockMutexFunc(mMutex);
-		int ch = getVoiceFromHandle(aVoiceHandle);
-		if (ch == -1) 
-		{
-			if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
-			return;
-		}
+		FOR_ALL_VOICES_PRE
 		mVoice[ch]->mPanFader.setLFO(aFrom, aTo, aTime, mVoice[ch]->mStreamTime);
-		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+		FOR_ALL_VOICES_POST
 	}
 
 	void Soloud::oscillateRelativePlaySpeed(handle aVoiceHandle, float aFrom, float aTo, time aTime)
@@ -181,15 +139,10 @@ namespace SoLoud
 			setRelativePlaySpeed(aVoiceHandle, aTo);
 			return;
 		}
-		if (mLockMutexFunc) mLockMutexFunc(mMutex);
-		int ch = getVoiceFromHandle(aVoiceHandle);
-		if (ch == -1) 
-		{
-			if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
-			return;
-		}
+		
+		FOR_ALL_VOICES_PRE
 		mVoice[ch]->mRelativePlaySpeedFader.setLFO(aFrom, aTo, aTime, mVoice[ch]->mStreamTime);
-		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+		FOR_ALL_VOICES_POST
 	}
 
 	void Soloud::oscillateGlobalVolume(float aFrom, float aTo, time aTime)

@@ -22,7 +22,7 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#include "soloud.h"
+#include "soloud_internal.h"
 
 // Core operations related to filters
 
@@ -94,18 +94,13 @@ namespace SoLoud
 			return;
 		}
 
-		int ch = getVoiceFromHandle(aVoiceHandle);
-		if (ch == -1) 
-		{
-			return;
-		}
-		if (mLockMutexFunc) mLockMutexFunc(mMutex);		
+		FOR_ALL_VOICES_PRE
 		if (mVoice[ch] &&
 			mVoice[ch]->mFilter[aFilterId])
 		{
 			mVoice[ch]->mFilter[aFilterId]->setFilterParameter(aAttributeId, aValue);
 		}
-		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+		FOR_ALL_VOICES_POST
 	}
 
 	void Soloud::fadeFilterParameter(handle aVoiceHandle, int aFilterId, int aAttributeId, float aTo, double aTime)
@@ -124,18 +119,13 @@ namespace SoLoud
 			return;
 		}
 
-		int ch = getVoiceFromHandle(aVoiceHandle);
-		if (ch == -1) 
-		{
-			return;
-		}
-		if (mLockMutexFunc) mLockMutexFunc(mMutex);		
+		FOR_ALL_VOICES_PRE
 		if (mVoice[ch] &&
 			mVoice[ch]->mFilter[aFilterId])
 		{
 			mVoice[ch]->mFilter[aFilterId]->fadeFilterParameter(aAttributeId, aTo, aTime, mStreamTime);
 		}
-		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+		FOR_ALL_VOICES_POST
 	}
 
 	void Soloud::oscillateFilterParameter(handle aVoiceHandle, int aFilterId, int aAttributeId, float aFrom, float aTo, double aTime)
@@ -154,18 +144,13 @@ namespace SoLoud
 			return;
 		}
 
-		int ch = getVoiceFromHandle(aVoiceHandle);
-		if (ch == -1) 
-		{
-			return;
-		}
-		if (mLockMutexFunc) mLockMutexFunc(mMutex);		
+		FOR_ALL_VOICES_PRE
 		if (mVoice[ch] &&
 			mVoice[ch]->mFilter[aFilterId])
 		{
 			mVoice[ch]->mFilter[aFilterId]->oscillateFilterParameter(aAttributeId, aFrom, aTo, aTime, mStreamTime);
 		}
-		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+		FOR_ALL_VOICES_POST
 	}
 
 }

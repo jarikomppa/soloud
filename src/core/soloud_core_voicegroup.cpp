@@ -82,7 +82,7 @@ namespace SoLoud
 		delete[] mVoiceGroup;
 		mVoiceGroup = vg;
 		i = oldcount;
-		mVoiceGroup[i] = new unsigned int[16];
+		mVoiceGroup[i] = new unsigned int[17];
 		if (mVoiceGroup[i] == NULL)
 		{
 			if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
@@ -171,7 +171,7 @@ namespace SoLoud
 			return 0;
 
 		if (mLockMutexFunc) mLockMutexFunc(mMutex);		
-		bool res = mVoiceGroup[c] == NULL;		
+		bool res = mVoiceGroup[c] != NULL;		
 		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 
 		return res;

@@ -36,13 +36,12 @@ def pythonize_camelcase(origstr):
     """ Turns camelCase into underscore_style """
     ret = ""
     for letter in origstr:
-        if letter in "ABCDEFGHIJKLMNOPQRSTUVWXYZ":
+        if letter.isupper():
             ret += '_' + letter.lower()
         else:
             ret += letter
     # kludge, because calc_f_f_t is silly.
     ret = ret.replace("_f_f_t", "_fft")
-    print ret
     return ret
 
 fo.write("# SoLoud wrapper for Python\n")

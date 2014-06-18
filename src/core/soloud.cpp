@@ -465,7 +465,13 @@ namespace SoLoud
 						outofs = mVoice[i]->mDelaySamples;
 						mVoice[i]->mDelaySamples = 0;
 					}
-				}
+					
+					// Clear scratch where we're skipping
+					for (j = 0; j < mVoice[i]->mChannels; j++)
+					{
+						memset(aScratch + j * aSamples, 0, sizeof(float) * outofs); 
+					}
+				}												
 
 				while (outofs < aSamples)
 				{
@@ -523,7 +529,7 @@ namespace SoLoud
 						writesamples = ((SAMPLE_GRANULARITY * FIXPOINT_FRAC_MUL) - mVoice[i]->mSrcOffset) / step_fixed + 1;
 
 						// avoid reading past the current buffer..
-						if (((writesamples * step_fixed + mVoice[i]->mSrcOffset) >> FIXPOINT_FRAC_BITS) >= SAMPLE_GRANULARITY + 1)
+						if (((writesamples * step_fixed + mVoice[i]->mSrcOffset) >> FIXPOINT_FRAC_BITS) >= SAMPLE_GRANULARITY)
 							writesamples--;
 					}
 

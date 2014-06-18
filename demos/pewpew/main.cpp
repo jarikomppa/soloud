@@ -71,20 +71,23 @@ void render()
 
 	while (lasttick < tick)
 	{
-		gSfx.loadPreset(SoLoud::Sfxr::LASER, 0);
+		gSfx.loadPreset(SoLoud::Sfxr::LASER, 3);
 		if (fire1)
 		{
-			gSoloud.playClocked(lasttick / 1000.0f, gSfx);
+			int h = gSoloud.playClocked(lasttick / 1000.0f, gSfx, 1,(rand()%100)/50.0f-1);
+			gSoloud.setRelativePlaySpeed(h, 1.0f - ((rand() % 200) / 1000.0f));
 		}
 
 		if (fire2)
 		{
-			gSoloud.play(gSfx);
+			int h = gSoloud.play(gSfx, 1, (rand()%100)/50.0f-1);
+			gSoloud.setRelativePlaySpeed(h, 1.0f - ((rand() % 200) / 1000.0f));
 		}
 
 		if (fire3)
 		{
-			gSoloud.playClocked(lasttick / 1000.0f, gSfx);
+			int h = gSoloud.playClocked(lasttick / 1000.0f, gSfx, 1, (rand()%100)/50.0f-1);
+			gSoloud.setRelativePlaySpeed(h, 1.0f - ((rand() % 200) / 1000.0f));
 		}
 
 		if (fire1 || fire2 || fire3)
@@ -124,6 +127,9 @@ void render()
 		if (bullet[i])
 			putpixel(bullet[i], 128, 0xffffffff);
 
+	for (i = 0; i < gSoloud.getActiveVoiceCount(); i++)
+		putpixel(i * 4, 8, 0xffffffff);
+
 	// Unlock if needed
 	if (SDL_MUSTLOCK(screen)) 
 		SDL_UnlockSurface(screen);
@@ -143,7 +149,8 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
-	gSoloud.init();
+	// Use a slightly larger audio buffer to exaggarate the effect
+	gSoloud.init(SoLoud::Soloud::CLIP_ROUNDOFF, 0, 0, 8192);
 
 	// Register SDL_Quit to be called at exit; makes sure things are
 	// cleaned up when we quit.
@@ -163,8 +170,7 @@ int main(int argc, char *argv[])
 	while (1)
 	{
 		// Render stuff
-		render();
-		int h;
+		render();		
 		// Poll for events, and handle the ones we care about.
 		SDL_Event event;
 		while (SDL_PollEvent(&event)) 

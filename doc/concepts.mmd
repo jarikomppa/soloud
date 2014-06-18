@@ -26,26 +26,38 @@ In module music (such as mod, s3m, xm, it), "channel" means one of the
 concurrent sounds played, regardless of speaker configuration. Confusing,
 yes.
 
-Stream
+Voice
 ------
 
 SoLoud can play audio from several sound sources at once (or, in fact,
 several times from the same sound source at the same time). Each of
-these sound instances is a "stream". The number of concurrent streams is
-limited, as having unlimited streams would cause performance issues, as
+these sound instances is a "voice". The number of concurrent voices is
+limited, as having unlimited voices would cause performance issues, as
 well as lead to unnecessary clipping.
 
-The default number of concurrent streams - maximum number of "voices" -
+The default number of concurrent voices - maximum number of "streams" -
 is 64, but this can be adjusted via a defined constant in the soloud.h
-file. The hard maximum number is 4096, but if more are required, SoLoud
+file. The hard maximum number is 4095, but if more are required, SoLoud
 can be modified to support more. But seriously, if you need more than
-4096 sounds at once, you're probably going to make some serious changes
+4095 sounds at once, you're probably going to make some serious changes
 in any case.
 
 If all channels are already playing and the application requests another
-sound to play, SoLoud finds the oldest sound and kills it. Since this
+sound to play, SoLoud finds the oldest voice and kills it. Since this
 may be your background music, you can protect channels from being killed
 by using the soloud.setProtect call.
+
+Voice Group
+-----------
+
+Sometimes it is important to be able to command several voices at the
+same time so that they are synchronized; for instance, when cross-fading
+between two versions of the same song.
+
+SoLoud's solution to this are voice groups. Voice groups can be commanded
+the same way as single voices, but instead of affecting just one voice,
+SoLoud performs the command on all of the voices in the group in one
+atomic operation.
 
 Clipping
 --------
@@ -128,9 +140,11 @@ SoLoud has to perform resampling when mixing. In an ideal case, all of
 the sources and the destination sample rate are the same, and no
 resampling is needed, but this is often not true. 
 
-Currently, SoLoud supports "point sample" resampling, which means it 
-simply skips or repeats samples as needed, as well as "linear 
-interpolation", which calculates linear interpolation of samples. 
+Currently, SoLoud supports "linear interpolation", which calculates linear 
+interpolation of samples, as well as "point sample" resampling, which 
+means it simply skips or repeats samples as needed.
+
+Picking the resampler is done by editing the soloud.h file.
 
 Higher quality resamplers are planned.
 
@@ -207,8 +221,6 @@ Mixing Bus
 In addition to mixing audio streams together at the "global" level,
 SoLoud includes mixing busses which let you mix together groups of audio
 streams. These serve several purposes.
-
-![Mix busses concept](images/mixbus)
 
 The most typical use would be to let the user change the volume of
 different kinds of audio sources - music, sound effects, speech. In this

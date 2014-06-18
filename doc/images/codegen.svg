@@ -1,0 +1,488 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="744.09448819"
+   height="1052.3622047"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.48.4 r9939"
+   sodipodi:docname="codegen.pdf">
+  <defs
+     id="defs4">
+    <marker
+       inkscape:stockid="Arrow1Lstart"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="Arrow1Lstart"
+       style="overflow:visible">
+      <path
+         id="path3833"
+         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1.0pt"
+         transform="scale(0.8) translate(12.5,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow1Lend"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="Arrow1Lend"
+       style="overflow:visible;">
+      <path
+         id="path3836"
+         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1.0pt;"
+         transform="scale(0.8) rotate(180) translate(12.5,0)" />
+    </marker>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.7"
+     inkscape:cx="29.141826"
+     inkscape:cy="685.4565"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1920"
+     inkscape:window-height="1018"
+     inkscape:window-x="-8"
+     inkscape:window-y="112"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <rect
+       style="fill:#7f97ec;fill-opacity:1;stroke:#000000;stroke-width:0.82109982;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect2985"
+       width="282.69293"
+       height="32.843994"
+       x="48.481979"
+       y="27.987017"
+       rx="10.438025"
+       ry="10.912769"
+       inkscape:export-filename="E:\vcproj\soloud\doc\images\codegen.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <rect
+       style="fill:#7f97ec;fill-opacity:1;stroke:#000000;stroke-width:0.82109982;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect2987"
+       width="97.358978"
+       height="30.497959"
+       x="141.14897"
+       y="87.810005"
+       rx="10.438025"
+       ry="0"
+       inkscape:export-filename="E:\vcproj\soloud\doc\images\codegen.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <rect
+       style="fill:#7f97ec;fill-opacity:1;stroke:#000000;stroke-width:0.82109982;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect2989"
+       width="76.24498"
+       height="28.151993"
+       x="53.173977"
+       y="147.633"
+       rx="10.438025"
+       inkscape:export-filename="E:\vcproj\soloud\doc\images\codegen.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <rect
+       rx="10.438025"
+       y="147.633"
+       x="134.11096"
+       height="28.151993"
+       width="76.24498"
+       id="rect2993"
+       style="fill:#7f97ec;fill-opacity:1;stroke:#000000;stroke-width:0.82109982;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       inkscape:export-filename="E:\vcproj\soloud\doc\images\codegen.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <rect
+       style="fill:#7f97ec;fill-opacity:1;stroke:#000000;stroke-width:0.82109982;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect2995"
+       width="76.24498"
+       height="28.151993"
+       x="216.22095"
+       y="147.633"
+       rx="10.438025"
+       inkscape:export-filename="E:\vcproj\soloud\doc\images\codegen.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <rect
+       rx="10.438025"
+       y="199.24498"
+       x="165.78195"
+       height="28.151993"
+       width="76.24498"
+       id="rect2997"
+       style="fill:#7f97ec;fill-opacity:1;stroke:#000000;stroke-width:0.82109982;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       inkscape:export-filename="E:\vcproj\soloud\doc\images\codegen.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <rect
+       style="fill:#7f97ec;fill-opacity:1;stroke:#000000;stroke-width:0.82109982;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect2999"
+       width="76.24498"
+       height="28.151993"
+       x="166.95496"
+       y="256.72195"
+       rx="10.438025"
+       inkscape:export-filename="E:\vcproj\soloud\doc\images\codegen.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <rect
+       style="fill:#7f97ec;fill-opacity:1;stroke:#000000;stroke-width:0.82109982;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect3001"
+       width="76.24498"
+       height="28.151993"
+       x="251.41093"
+       y="200.41798"
+       rx="10.438025"
+       inkscape:export-filename="E:\vcproj\soloud\doc\images\codegen.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <rect
+       rx="10.438025"
+       y="256.72195"
+       x="252.58394"
+       height="28.151993"
+       width="76.24498"
+       id="rect3003"
+       style="fill:#7f97ec;fill-opacity:1;stroke:#000000;stroke-width:0.82109982;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       inkscape:export-filename="E:\vcproj\soloud\doc\images\codegen.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <text
+       xml:space="preserve"
+       style="font-size:27.16875267px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="61.639919"
+       y="53.180279"
+       id="text3005"
+       sodipodi:linespacing="125%"
+       inkscape:export-filename="E:\vcproj\soloud\doc\images\codegen.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         sodipodi:role="line"
+         id="tspan3007"
+         x="61.639919"
+         y="53.180279">SoLoud c++ sources</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:21.44666481px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="147.45917"
+       y="107.80357"
+       id="text3009"
+       sodipodi:linespacing="125%"
+       inkscape:export-filename="E:\vcproj\soloud\doc\images\codegen.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         sodipodi:role="line"
+         id="tspan3011"
+         x="147.45917"
+         y="107.80357">codegen</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:24.02695656px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="56.320744"
+       y="168.19295"
+       id="text3013"
+       sodipodi:linespacing="125%"
+       inkscape:export-filename="E:\vcproj\soloud\doc\images\codegen.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         sodipodi:role="line"
+         id="tspan3015"
+         x="56.320744"
+         y="168.19295">.c / .h</tspan></text>
+    <text
+       sodipodi:linespacing="125%"
+       id="text3017"
+       y="170.53896"
+       x="147.81473"
+       style="font-size:24.02695656px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       xml:space="preserve"
+       inkscape:export-filename="E:\vcproj\soloud\doc\images\codegen.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         y="170.53896"
+         x="147.81473"
+         id="tspan3019"
+         sodipodi:role="line">.def</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:19.12012291px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="223.21016"
+       y="167.02654"
+       id="text3021"
+       sodipodi:linespacing="125%"
+       inkscape:export-filename="E:\vcproj\soloud\doc\images\codegen.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         sodipodi:role="line"
+         id="tspan3023"
+         x="223.21016"
+         y="167.02654">python</tspan></text>
+    <text
+       sodipodi:linespacing="125%"
+       id="text3025"
+       y="216.3114"
+       x="171.64325"
+       style="font-size:12.59177208px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       xml:space="preserve"
+       inkscape:export-filename="E:\vcproj\soloud\doc\images\codegen.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         y="216.3114"
+         x="171.64325"
+         id="tspan3027"
+         sodipodi:role="line">gen_python</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:14.02777386px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="263.09094"
+       y="219.56328"
+       id="text3029"
+       sodipodi:linespacing="125%"
+       inkscape:export-filename="E:\vcproj\soloud\doc\images\codegen.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         sodipodi:role="line"
+         id="tspan3031"
+         x="263.09094"
+         y="219.56328">gen_???</tspan></text>
+    <text
+       sodipodi:linespacing="125%"
+       id="text3033"
+       y="275.36197"
+       x="167.98946"
+       style="font-size:16.42873764px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       xml:space="preserve"
+       inkscape:export-filename="E:\vcproj\soloud\doc\images\codegen.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         y="275.36197"
+         x="167.98946"
+         id="tspan3035"
+         sodipodi:role="line">soloud.py</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:14.52590752px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="256.02298"
+       y="273.88388"
+       id="text3037"
+       sodipodi:linespacing="125%"
+       inkscape:export-filename="E:\vcproj\soloud\doc\images\codegen.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         sodipodi:role="line"
+         id="tspan3039"
+         x="256.02298"
+         y="273.88388">soloud.???</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.82109982px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Lend)"
+       d="m 189.82845,60.831011 1e-5,26.978994"
+       id="path3827"
+       inkscape:connector-type="polyline"
+       inkscape:connector-curvature="0"
+       inkscape:connection-start="#rect2985"
+       inkscape:connection-start-point="d4"
+       inkscape:connection-end="#rect2987"
+       inkscape:connection-end-point="d4"
+       inkscape:export-filename="E:\vcproj\soloud\doc\images\codegen.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.82109982px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Lend)"
+       d="M 164.21018,118.30796 114.94414,147.633"
+       id="path4273"
+       inkscape:connector-type="polyline"
+       inkscape:connector-curvature="0"
+       inkscape:connection-start="#rect2987"
+       inkscape:connection-start-point="d4"
+       inkscape:connection-end="#rect2989"
+       inkscape:connection-end-point="d4"
+       inkscape:export-filename="E:\vcproj\soloud\doc\images\codegen.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.82109982px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Lend)"
+       d="M 185.25377,118.30796 176.45625,147.633"
+       id="path4643"
+       inkscape:connector-type="polyline"
+       inkscape:connector-curvature="0"
+       inkscape:connection-start="#rect2987"
+       inkscape:connection-start-point="d4"
+       inkscape:connection-end="#rect2993"
+       inkscape:connection-end-point="d4"
+       inkscape:export-filename="E:\vcproj\soloud\doc\images\codegen.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.82109982px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Lend)"
+       d="M 206.60233,118.30796 238.85985,147.633"
+       id="path4827"
+       inkscape:connector-type="polyline"
+       inkscape:connector-curvature="0"
+       inkscape:connection-start="#rect2987"
+       inkscape:connection-start-point="d4"
+       inkscape:connection-end="#rect2995"
+       inkscape:connection-end-point="d4"
+       inkscape:export-filename="E:\vcproj\soloud\doc\images\codegen.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.82109982px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Lend)"
+       d="m 240.58735,175.78499 -22.92682,23.45999"
+       id="path5013"
+       inkscape:connector-type="polyline"
+       inkscape:connector-curvature="0"
+       inkscape:connection-start="#rect2995"
+       inkscape:connection-start-point="d4"
+       inkscape:connection-end="#rect2997"
+       inkscape:connection-end-point="d4"
+       inkscape:export-filename="E:\vcproj\soloud\doc\images\codegen.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.82109982px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Lend)"
+       d="m 263.72743,175.78499 16.422,24.63299"
+       id="path5197"
+       inkscape:connector-type="polyline"
+       inkscape:connector-curvature="0"
+       inkscape:connection-start="#rect2995"
+       inkscape:connection-start-point="d4"
+       inkscape:connection-end="#rect3001"
+       inkscape:connection-end-point="d4"
+       inkscape:export-filename="E:\vcproj\soloud\doc\images\codegen.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.82109982px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Lend)"
+       d="m 204.19171,227.39697 0.59847,29.32498"
+       id="path5381"
+       inkscape:connector-type="polyline"
+       inkscape:connector-curvature="0"
+       inkscape:connection-start="#rect2997"
+       inkscape:connection-start-point="d4"
+       inkscape:connection-end="#rect2999"
+       inkscape:connection-end-point="d4"
+       inkscape:export-filename="E:\vcproj\soloud\doc\images\codegen.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.82109982px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Lend)"
+       d="m 289.82668,228.56998 0.5865,28.15197"
+       id="path5565"
+       inkscape:connector-type="polyline"
+       inkscape:connector-curvature="0"
+       inkscape:connection-start="#rect3001"
+       inkscape:connection-start-point="d4"
+       inkscape:connection-end="#rect3003"
+       inkscape:connection-end-point="d4"
+       inkscape:export-filename="E:\vcproj\soloud\doc\images\codegen.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <rect
+       inkscape:export-ydpi="90"
+       inkscape:export-xdpi="90"
+       inkscape:export-filename="E:\vcproj\soloud\doc\images\codegen.png"
+       rx="10.438025"
+       y="259.06796"
+       x="68.422981"
+       height="28.151993"
+       width="76.24498"
+       id="rect5749"
+       style="fill:#7f97ec;fill-opacity:1;stroke:#000000;stroke-width:0.82109982;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+    <text
+       inkscape:export-ydpi="90"
+       inkscape:export-xdpi="90"
+       inkscape:export-filename="E:\vcproj\soloud\doc\images\codegen.png"
+       xml:space="preserve"
+       style="font-size:26.1024437px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="85.0009"
+       y="282.28662"
+       id="text5751"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan5753"
+         x="85.0009"
+         y="282.28662">.dll</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.82109982px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Lend)"
+       d="m 93.222657,175.78499 11.396623,83.28297"
+       id="path5755"
+       inkscape:connector-type="polyline"
+       inkscape:connector-curvature="0"
+       inkscape:connection-start="#rect2989"
+       inkscape:connection-start-point="d4"
+       inkscape:connection-end="#rect5749"
+       inkscape:connection-end-point="d4"
+       inkscape:export-filename="E:\vcproj\soloud\doc\images\codegen.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.82109982px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Lend)"
+       d="M 163.93602,175.78499 114.8429,259.06796"
+       id="path5939"
+       inkscape:connector-type="polyline"
+       inkscape:connector-curvature="0"
+       inkscape:connection-start="#rect2993"
+       inkscape:connection-start-point="d4"
+       inkscape:connection-end="#rect5749"
+       inkscape:connection-end-point="d4"
+       inkscape:export-filename="E:\vcproj\soloud\doc\images\codegen.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.82109982;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-start:url(#Arrow1Lstart);marker-end:none;stroke-miterlimit:4;stroke-dasharray:2.46329945,2.46329945;stroke-dashoffset:0"
+       d="m 204.49095,286.04696 c -51.61199,51.61199 -97.35898,3.51901 -97.35898,3.51901 l -1.173,1.17299"
+       id="path6123"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="E:\vcproj\soloud\doc\images\codegen.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.82109982;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-start:url(#Arrow1Lstart);marker-end:url(#Arrow1Lend);stroke-miterlimit:4;stroke-dasharray:2.46329945,2.46329945;stroke-dashoffset:0"
+       d="m 286.60093,286.04696 c -114.95398,64.51499 -180.64196,3.51901 -180.64196,3.51901"
+       id="path6125"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="E:\vcproj\soloud\doc\images\codegen.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Lend)"
+       d="M 74.285714,62.362182 C 18.571429,175.21933 68.571429,256.6479 68.571429,256.6479"
+       id="path7233"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="E:\vcproj\soloud\doc\images\codegen.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+  </g>
+</svg>

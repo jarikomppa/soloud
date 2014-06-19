@@ -98,12 +98,12 @@ namespace SoLoud
 		}
 	}
 
-	int AudioSourceInstance::rewind()
+	result AudioSourceInstance::rewind()
 	{
 		return NOT_IMPLEMENTED;
 	}
 
-	void AudioSourceInstance::seek(double aSeconds, float *mScratch, int mScratchSize)
+	void AudioSourceInstance::seek(double aSeconds, float *mScratch, unsigned int mScratchSize)
 	{
 		double offset = aSeconds - mStreamTime;
 		if (offset < 0)
@@ -176,7 +176,7 @@ namespace SoLoud
 		}
 	}
 
-	void AudioSource::setFilter(int aFilterId, Filter *aFilter)
+	void AudioSource::setFilter(unsigned int aFilterId, Filter *aFilter)
 	{
 		if (aFilterId < 0 || aFilterId >= FILTERS_PER_STREAM)
 			return;

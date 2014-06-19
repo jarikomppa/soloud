@@ -111,7 +111,7 @@ namespace SoLoud
 		FOR_ALL_VOICES_POST
 	}
 
-	void Soloud::setDelaySamples(handle aVoiceHandle, int aSamples)
+	void Soloud::setDelaySamples(handle aVoiceHandle, unsigned int aSamples)
 	{
 		FOR_ALL_VOICES_PRE
 		mVoice[ch]->mDelaySamples = aSamples;

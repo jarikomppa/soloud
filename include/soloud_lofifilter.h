@@ -49,7 +49,7 @@ namespace SoLoud
 		
 		LofiFilter *mParent;
 	public:
-		virtual void filterChannel(float *aBuffer, int aSamples, float aSamplerate, time aTime, int aChannel, int aChannels);
+		virtual void filterChannel(float *aBuffer, unsigned int aSamples, float aSamplerate, time aTime, unsigned int aChannel, unsigned int aChannels);
 		virtual ~LofiFilterInstance();
 		LofiFilterInstance(LofiFilter *aParent);
 	};
@@ -67,7 +67,7 @@ namespace SoLoud
 		float mBitdepth;
 		virtual LofiFilterInstance *createInstance();
 		LofiFilter();
-		int setParams(float aSampleRate, float aBitdepth);
+		result setParams(float aSampleRate, float aBitdepth);
 		virtual ~LofiFilter();
 	};
 }

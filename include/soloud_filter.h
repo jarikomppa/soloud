@@ -30,13 +30,12 @@ freely, subject to the following restrictions:
 namespace SoLoud
 {
 	class Fader;
-	typedef int result;
 
 	class FilterInstance
 	{
 	public:
-		int mNumParams;
-		int mParamChanged;
+		unsigned int mNumParams;
+		unsigned int mParamChanged;
 		float *mParam;
 		Fader *mParamFader;
 		
@@ -44,12 +43,12 @@ namespace SoLoud
 		FilterInstance();
 		virtual result initParams(int aNumParams);
 		virtual void updateParams(time aTime);
-		virtual void filter(float *aBuffer, int aSamples, int aChannels, float aSamplerate, time aTime);
-		virtual void filterChannel(float *aBuffer, int aSamples, float aSamplerate, time aTime, int aChannel, int aChannels);
-		virtual float getFilterParameter(int aAttributeId);
-		virtual void setFilterParameter(int aAttributeId, float aValue);
-		virtual void fadeFilterParameter(int aAttributeId, float aTo, time aTime, time aStartTime);
-		virtual void oscillateFilterParameter(int aAttributeId, float aFrom, float aTo, time aTime, time aStartTime);
+		virtual void filter(float *aBuffer, unsigned int aSamples, unsigned int aChannels, float aSamplerate, time aTime);
+		virtual void filterChannel(float *aBuffer, unsigned int aSamples, float aSamplerate, time aTime, unsigned int aChannel, unsigned int aChannels);
+		virtual float getFilterParameter(unsigned int aAttributeId);
+		virtual void setFilterParameter(unsigned int aAttributeId, float aValue);
+		virtual void fadeFilterParameter(unsigned int aAttributeId, float aTo, time aTime, time aStartTime);
+		virtual void oscillateFilterParameter(unsigned int aAttributeId, float aFrom, float aTo, time aTime, time aStartTime);
 		virtual ~FilterInstance();
 	};
 

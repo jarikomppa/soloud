@@ -60,9 +60,9 @@ namespace SoLoud
 		// Play index; used to identify instances from handles
 		unsigned int mPlayIndex;
 		// Loop count
-		int mLoopCount;
+		unsigned int mLoopCount;
 		// Flags; see AudioSourceInstance::FLAGS
-		int mFlags;
+		unsigned int mFlags;
 		// Pan value, for getPan()
 		float mPan;
 		// Left channel volume (panning)
@@ -76,7 +76,7 @@ namespace SoLoud
 		// Samplerate; samplerate = base samplerate * relative play speed
 		float mSamplerate;
 		// Number of channels this audio source produces
-		int mChannels;
+		unsigned int mChannels;
 		// Relative play speed; samplerate = base samplerate * relative play speed
 		float mRelativePlaySpeed;
 		// How long this stream has played, in seconds.
@@ -96,9 +96,9 @@ namespace SoLoud
 		// Fader-affected l/r volumes
 		float mFaderVolume[2 * 2];
 		// ID of the sound source that generated this instance
-		int mAudioSourceID;
+		unsigned int mAudioSourceID;
 		// Handle of the bus this audio instance is playing on. 0 for root.
-		int mBusHandle;
+		unsigned int mBusHandle;
 		// Filter pointer
 		FilterInstance *mFilter[FILTERS_PER_STREAM];
 		// Initialize instance. Mostly internal use.
@@ -106,17 +106,17 @@ namespace SoLoud
 		// Buffers for the resampler
 		AudioSourceResampleData *mResampleData[2];
 		// Sub-sample playhead; 16.16 fixed point
-		int mSrcOffset;
+		unsigned int mSrcOffset;
 		// Samples left over from earlier pass
-		int mLeftoverSamples;
+		unsigned int mLeftoverSamples;
 		// Number of samples to delay streaming
-		int mDelaySamples;
+		unsigned int mDelaySamples;
 		// Get N samples from the stream to the buffer
-		virtual void getAudio(float *aBuffer, int aSamples) = 0;
+		virtual void getAudio(float *aBuffer, unsigned int aSamples) = 0;
 		// Has the stream ended?
 		virtual bool hasEnded() = 0;
 		// Seek to certain place in the stream. Base implementation is generic "tape" seek (and slow).
-		virtual void seek(time aSeconds, float *mScratch, int mScratchSize);
+		virtual void seek(time aSeconds, float *mScratch, unsigned int mScratchSize);
 		// Rewind stream. Base implementation returns NOT_IMPLEMENTED, meaning it can't rewind.
 		virtual result rewind();
 	};
@@ -137,13 +137,13 @@ namespace SoLoud
 			VISUALIZATION_DATA = 4
 		};
 		// Flags. See AudioSource::FLAGS
-		int mFlags;
+		unsigned int mFlags;
 		// Base sample rate, used to initialize instances
 		float mBaseSamplerate;
 		// Number of channels this audio source produces
-		int mChannels;
+		unsigned int mChannels;
 		// Sound source ID. Assigned by SoLoud the first time it's played.
-		int mAudioSourceID;
+		unsigned int mAudioSourceID;
 		// Filter pointer
 		Filter *mFilter[FILTERS_PER_STREAM];
 		// Pointer to the Soloud object. Needed to stop all instances in dtor.
@@ -156,7 +156,7 @@ namespace SoLoud
 		// Set whether only one instance of this sound should ever be playing at the same time
 		void setSingleInstance(bool aSingleInstance);
 		// Set filter. Set to NULL to clear the filter.
-		virtual void setFilter(int aFilterId, Filter *aFilter);
+		virtual void setFilter(unsigned int aFilterId, Filter *aFilter);
 		// DTor
 		virtual ~AudioSource();
 		// Create instance from the audio source. Called from within Soloud class.

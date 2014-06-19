@@ -127,7 +127,7 @@ void render()
 		if (bullet[i])
 			putpixel(bullet[i], 128, 0xffffffff);
 
-	for (i = 0; i < gSoloud.getActiveVoiceCount(); i++)
+	for (i = 0; i < (signed)gSoloud.getActiveVoiceCount(); i++)
 		putpixel(i * 4, 8, 0xffffffff);
 
 	// Unlock if needed

@@ -29,7 +29,7 @@ freely, subject to the following restrictions:
 
 namespace SoLoud
 {
-	int xaudio2_init(Soloud *aSoloud, int aFlags, int aSamplerate, int aBuffer)
+	result xaudio2_init(Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer)
 	{
 		return NOT_IMPLEMENTED;
 	}
@@ -186,7 +186,7 @@ namespace SoLoud
         CoUninitialize();
     }
 
-    int xaudio2_init(Soloud *aSoloud, int aFlags, int aSamplerate, int aBuffer)
+    result xaudio2_init(Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer)
     {
         if (FAILED(CoInitializeEx(0, COINIT_MULTITHREADED)))
         {

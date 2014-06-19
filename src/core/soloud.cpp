@@ -93,7 +93,7 @@ namespace SoLoud
 		// let's stop all sounds before deinit, so we don't mess up our mutexes
 		stopAll();
 		deinit();
-		int i;
+		unsigned int i;
 		for (i = 0; i < FILTERS_PER_STREAM; i++)
 		{
 			delete mFilterInstance[i];
@@ -113,7 +113,7 @@ namespace SoLoud
 		mUnlockMutexFunc = 0;
 	}
 
-	int Soloud::init(int aFlags, int aBackend, int aSamplerate, int aBufferSize)
+	result Soloud::init(unsigned int aFlags, unsigned int aBackend, unsigned int aSamplerate, unsigned int aBufferSize)
 	{		
 		if (aBackend < 0 || aBackend >= BACKEND_MAX || aSamplerate < 0 || aBufferSize < 0)
 			return INVALID_PARAMETER;
@@ -257,7 +257,7 @@ namespace SoLoud
 		return 0;
 	}
 
-	void Soloud::postinit(int aSamplerate, int aBufferSize, int aFlags)
+	void Soloud::postinit(unsigned int aSamplerate, unsigned int aBufferSize, unsigned int aFlags)
 	{		
 		mGlobalVolume = 1;
 		mSamplerate = aSamplerate;
@@ -325,11 +325,11 @@ namespace SoLoud
 		return mFFTData;
 	}
 
-	void Soloud::clip(float *aBuffer, float *aDestBuffer, int aSamples, float aVolume0, float aVolume1)
+	void Soloud::clip(float *aBuffer, float *aDestBuffer, unsigned int aSamples, float aVolume0, float aVolume1)
 	{
 		float vd = (aVolume1 - aVolume0) / aSamples;
 		float v = aVolume0;
-		int i, j, c;
+		unsigned int i, j, c;
 		// Clip
 		if (mFlags & CLIP_ROUNDOFF)
 		{
@@ -431,9 +431,9 @@ namespace SoLoud
 #endif
 	}
 
-	void Soloud::mixBus(float *aBuffer, int aSamples, float *aScratch, int aBus, float aSamplerate)
+	void Soloud::mixBus(float *aBuffer, unsigned int aSamples, float *aScratch, unsigned int aBus, float aSamplerate)
 	{
-		int i;
+		unsigned int i;
 		// Clear accumulation buffer
 		for (i = 0; i < aSamples * 2; i++)
 		{
@@ -447,11 +447,11 @@ namespace SoLoud
 				mVoice[i]->mBusHandle == aBus && 
 				!(mVoice[i]->mFlags & AudioSourceInstance::PAUSED))
 			{
-				int j;
+				unsigned int j;
 				float step = mVoice[i]->mSamplerate / aSamplerate;
 				int step_fixed = (int)floor(step * FIXPOINT_FRAC_MUL);
 				float samples_per_block = SAMPLE_GRANULARITY / step;
-				int outofs = 0;
+				unsigned int outofs = 0;
 				
 				if (mVoice[i]->mDelaySamples)
 				{
@@ -493,11 +493,20 @@ namespace SoLoud
 							mVoice[i]->getAudio(mVoice[i]->mResampleData[0]->mBuffer, SAMPLE_GRANULARITY);
 						}
 
-						// We have new block of data, move pointer backwards
-						mVoice[i]->mSrcOffset -= SAMPLE_GRANULARITY * FIXPOINT_FRAC_MUL;
+						
+						
 
 						// If we go past zero, crop to zero (a bit of a kludge)
-						if (mVoice[i]->mSrcOffset < 0) mVoice[i]->mSrcOffset = 0;
+						if (mVoice[i]->mSrcOffset < SAMPLE_GRANULARITY * FIXPOINT_FRAC_MUL) 
+						{
+							mVoice[i]->mSrcOffset = 0;
+						}
+						else
+						{
+							// We have new block of data, move pointer backwards
+							mVoice[i]->mSrcOffset -= SAMPLE_GRANULARITY * FIXPOINT_FRAC_MUL;
+						}
+
 					
 						// Run the per-stream filters to get our source data
 
@@ -522,7 +531,7 @@ namespace SoLoud
 					// Figure out how many samples we can generate from this source data.
 					// The value may be zero.
 
-					int writesamples = 0;
+					unsigned int writesamples = 0;
 
 					if (mVoice[i]->mSrcOffset < SAMPLE_GRANULARITY * FIXPOINT_FRAC_MUL)
 					{
@@ -565,7 +574,7 @@ namespace SoLoud
 				}
 
 
-				int chofs[2];
+				unsigned int chofs[2];
 				chofs[0] = 0;
 				chofs[1] = aSamples;
 				
@@ -633,7 +642,7 @@ namespace SoLoud
 		}
 	}
 
-	void Soloud::mix(float *aBuffer, int aSamples)
+	void Soloud::mix(float *aBuffer, unsigned int aSamples)
 	{
 #ifdef FLOATING_POINT_DEBUG
 		// This needs to be done in the audio thread as well..
@@ -784,10 +793,10 @@ namespace SoLoud
 		}
 	}
 
-	void deinterlace_samples(const float *aSourceBuffer, float *aDestBuffer, int aSamples, int aChannels)
+	void deinterlace_samples(const float *aSourceBuffer, float *aDestBuffer, unsigned int aSamples, unsigned int aChannels)
 	{
 		// 121212 -> 111222
-		int i, j, c;
+		unsigned int i, j, c;
 		c = 0;
 		for (j = 0; j < aChannels; j++)
 		{
@@ -799,10 +808,10 @@ namespace SoLoud
 		}
 	}
 
-	void interlace_samples(const float *aSourceBuffer, float *aDestBuffer, int aSamples, int aChannels)
+	void interlace_samples(const float *aSourceBuffer, float *aDestBuffer, unsigned int aSamples, unsigned int aChannels)
 	{
 		// 111222 -> 121212
-		int i, j, c;
+		unsigned int i, j, c;
 		c = 0;
 		for (j = 0; j < aChannels; j++)
 		{

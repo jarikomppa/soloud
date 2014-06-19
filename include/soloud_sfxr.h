@@ -131,7 +131,7 @@ namespace SoLoud
 
 	public:
 		SfxrInstance(Sfxr *aParent);
-		virtual void getAudio(float *aBuffer, int aSamples);
+		virtual void getAudio(float *aBuffer, unsigned int aSamples);
 		virtual bool hasEnded();
 	};
 

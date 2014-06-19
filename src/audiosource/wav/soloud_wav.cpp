@@ -37,20 +37,20 @@ namespace SoLoud
 		mOffset = 0;
 	}
 
-	void WavInstance::getAudio(float *aBuffer, int aSamples)
+	void WavInstance::getAudio(float *aBuffer, unsigned int aSamples)
 	{		
 		if (mParent->mData == NULL)
 			return;
 
 		// Buffer size may be bigger than samples, and samples may loop..
 
-		int written = 0;
-		int maxwrite = (aSamples > mParent->mSampleCount) ?  mParent->mSampleCount : aSamples;
-		int channels = mChannels;
+		unsigned int written = 0;
+		unsigned int maxwrite = (aSamples > mParent->mSampleCount) ?  mParent->mSampleCount : aSamples;
+		unsigned int channels = mChannels;
 
 		while (written < aSamples)
 		{
-			int copysize = maxwrite;
+			unsigned int copysize = maxwrite;
 			if (copysize + mOffset > mParent->mSampleCount)
 			{
 				copysize = mParent->mSampleCount - mOffset;
@@ -61,7 +61,7 @@ namespace SoLoud
 				copysize = aSamples - written;
 			}
 
-			int i;
+			unsigned int i;
 			for (i = 0; i < channels; i++)
 			{
 				memcpy(aBuffer + i * aSamples + written, mParent->mData + mOffset + i * mParent->mSampleCount, sizeof(float) * copysize);
@@ -93,7 +93,7 @@ namespace SoLoud
 		}
 	}
 
-	int WavInstance::rewind()
+	result WavInstance::rewind()
 	{
 		mOffset = 0;
 		mStreamTime = 0;
@@ -217,7 +217,7 @@ namespace SoLoud
 
 #define MAKEDWORD(a,b,c,d) (((d) << 24) | ((c) << 16) | ((b) << 8) | (a))
 
-    int Wav::loadwav(DataReader *aReader)
+    result Wav::loadwav(DataReader *aReader)
 	{
 		/*int wavsize =*/ aReader->read32();
 		if (aReader->read32() != MAKEDWORD('W','A','V','E'))
@@ -329,7 +329,7 @@ namespace SoLoud
 		return 0;
 	}
 
-	int Wav::loadogg(stb_vorbis *aVorbis)
+	result Wav::loadogg(stb_vorbis *aVorbis)
 	{
         stb_vorbis_info info = stb_vorbis_get_info(aVorbis);
 		mBaseSamplerate = (float)info.sample_rate;
@@ -368,7 +368,7 @@ namespace SoLoud
 		return 0;
 	}
 
-    int Wav::testAndLoadFile(DataReader *aReader)
+    result Wav::testAndLoadFile(DataReader *aReader)
     {
 		delete[] mData;
 		mData = 0;
@@ -401,7 +401,7 @@ namespace SoLoud
 		return FILE_LOAD_FAILED;
     }
 
-	int Wav::load(const char *aFilename)
+	result Wav::load(const char *aFilename)
 	{
 		DataReader dr;
 		if (!dr.open(aFilename))
@@ -411,7 +411,7 @@ namespace SoLoud
 		return testAndLoadFile(&dr);
 	}
 
-	int Wav::loadMem(unsigned char *aMem, int aLength)
+	result Wav::loadMem(unsigned char *aMem, unsigned int aLength)
 	{
 		if (aMem == NULL || aLength <= 0)
 			return INVALID_PARAMETER;

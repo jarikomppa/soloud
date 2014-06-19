@@ -38,15 +38,15 @@ namespace SoLoud
 	class WavStreamInstance : public AudioSourceInstance
 	{
 		WavStream *mParent;
-		int mOffset;
+		unsigned int mOffset;
 		FILE *mFile;
 		stb_vorbis *mOgg;
-		int mOggFrameSize;
-		int mOggFrameOffset;
+		unsigned int mOggFrameSize;
+		unsigned int mOggFrameOffset;
 		float **mOggOutputs;
 	public:
 		WavStreamInstance(WavStream *aParent);
-		virtual void getAudio(float *aBuffer, int aSamples);
+		virtual void getAudio(float *aBuffer, unsigned int aSamples);
 		virtual result rewind();
 		virtual bool hasEnded();
 		virtual ~WavStreamInstance();
@@ -59,10 +59,10 @@ namespace SoLoud
 	public:
 		int mOgg;
 		char *mFilename;
-		int mDataOffset;
-		int mBits;
-		int mChannels;
-		int mSampleCount;
+		unsigned int mDataOffset;
+		unsigned int mBits;
+		unsigned int mChannels;
+		unsigned int mSampleCount;
 
 		WavStream();
 		virtual ~WavStream();

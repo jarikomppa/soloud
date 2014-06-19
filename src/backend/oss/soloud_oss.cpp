@@ -29,7 +29,7 @@ freely, subject to the following restrictions:
 
 namespace SoLoud
 {
-    int oss_init(Soloud *aSoloud, int aFlags, int aSamplerate, int aBuffer)
+    result oss_init(Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer)
 	{
 		return NOT_IMPLEMENTED;
 	}
@@ -109,7 +109,7 @@ namespace SoLoud
         aSoloud->mBackendData = 0;
     }
 
-    int oss_init(Soloud *aSoloud, int aFlags, int aSamplerate, int aBuffer)
+    result oss_init(Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer)
     {
         OSSData *data = new OSSData;
         memset(data, 0, sizeof(OSSData));

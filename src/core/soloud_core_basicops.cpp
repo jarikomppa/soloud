@@ -29,7 +29,7 @@ freely, subject to the following restrictions:
 
 namespace SoLoud
 {
-	handle Soloud::play(AudioSource &aSound, float aVolume, float aPan, int aPaused, int aBus)
+	handle Soloud::play(AudioSource &aSound, float aVolume, float aPan, bool aPaused, unsigned int aBus)
 	{
 		if (aSound.mFlags & AudioSource::SINGLE_INSTANCE)
 		{
@@ -101,7 +101,7 @@ namespace SoLoud
 		return handle;
 	}
 
-	handle Soloud::playClocked(time aSoundTime, AudioSource &aSound, float aVolume, float aPan, int aBus)
+	handle Soloud::playClocked(time aSoundTime, AudioSource &aSound, float aVolume, float aPan, unsigned int aBus)
 	{
 		handle h = play(aSound, aVolume, aPan, 1, aBus);
 		if (mLockMutexFunc) mLockMutexFunc(mMutex);

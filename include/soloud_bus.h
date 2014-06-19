@@ -34,14 +34,14 @@ namespace SoLoud
 	class BusInstance : public AudioSourceInstance
 	{
 		Bus *mParent;
-		int mScratchSize;
+		unsigned int mScratchSize;
 		float *mScratch;
 	public:
 		// Mono-mixed wave data for visualization and for visualization FFT input
 		float mVisualizationWaveData[256];
 
 		BusInstance(Bus *aParent);
-		virtual void getAudio(float *aBuffer, int aSamples);
+		virtual void getAudio(float *aBuffer, unsigned int aSamples);
 		virtual bool hasEnded();
 		virtual ~BusInstance();
 	};
@@ -50,7 +50,7 @@ namespace SoLoud
 	{
 	public:
 		BusInstance *mInstance;
-		int mChannelHandle;
+		unsigned int mChannelHandle;
 		// FFT output data
 		float mFFTData[256];
 		// Snapshot of wave data for visualization
@@ -59,9 +59,9 @@ namespace SoLoud
 		Bus();
 		virtual BusInstance *createInstance();
 		// Set filter. Set to NULL to clear the filter.
-		virtual void setFilter(int aFilterId, Filter *aFilter);
+		virtual void setFilter(unsigned int aFilterId, Filter *aFilter);
 		// Play sound through the bus
-		handle play(AudioSource &aSound, float aVolume = 1.0f, float aPan = 0.0f, int aPaused = 0);
+		handle play(AudioSource &aSound, float aVolume = 1.0f, float aPan = 0.0f, bool aPaused = 0);
 		// Play sound through the bus, delayed in relation to other sounds called via this function.
 		handle playClocked(time aSoundTime, AudioSource &aSound, float aVolume = 1.0f, float aPan = 0.0f);
 

@@ -28,7 +28,7 @@ namespace SoLoud
 {
 	enum SOLOUD_ERRORS
 	{
-		SO_NO_ERROR          = 0,  // No error
+		SO_NO_ERROR       =  0, // No error
 		INVALID_PARAMETER = -1, // Some parameter is invalid
 		FILE_NOT_FOUND    = -2, // File not found
 		FILE_LOAD_FAILED  = -3, // File found, but could not be loaded

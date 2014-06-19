@@ -43,7 +43,7 @@ namespace SoLoud
 		mParamFader = 0;
 	}
 
-	int FilterInstance::initParams(int aNumParams)
+	result FilterInstance::initParams(int aNumParams)
 	{		
 		mNumParams = aNumParams;
 		mParam = new float[mNumParams];
@@ -59,7 +59,7 @@ namespace SoLoud
 			return OUT_OF_MEMORY;
 		}
 
-		int i;
+		unsigned int i;
 		for (i = 0; i < mNumParams; i++)
 		{
 			mParam[i] = 0;
@@ -72,7 +72,7 @@ namespace SoLoud
 
 	void FilterInstance::updateParams(double aTime)
 	{
-		int i;
+		unsigned int i;
 		for (i = 0; i < mNumParams; i++)
 		{
 			if (mParamFader[i].mActive > 0)
@@ -89,7 +89,7 @@ namespace SoLoud
 		delete[] mParamFader;
 	}
 
-	void FilterInstance::setFilterParameter(int aAttributeId, float aValue)
+	void FilterInstance::setFilterParameter(unsigned int aAttributeId, float aValue)
 	{
 		if (aAttributeId < 0 || aAttributeId >= mNumParams)
 			return;
@@ -99,7 +99,7 @@ namespace SoLoud
 		mParamChanged |= 1 << aAttributeId;
 	}
 
-	void FilterInstance::fadeFilterParameter(int aAttributeId, float aTo, double aTime, double aStartTime)
+	void FilterInstance::fadeFilterParameter(unsigned int aAttributeId, float aTo, double aTime, double aStartTime)
 	{
 		if (aAttributeId < 0 || aAttributeId >= mNumParams || aTime <= 0 || aTo == mParam[aAttributeId])
 			return;
@@ -107,7 +107,7 @@ namespace SoLoud
 		mParamFader[aAttributeId].set(mParam[aAttributeId], aTo, aTime, aStartTime);
 	}
 
-	void FilterInstance::oscillateFilterParameter(int aAttributeId, float aFrom, float aTo, double aTime, double aStartTime)
+	void FilterInstance::oscillateFilterParameter(unsigned int aAttributeId, float aFrom, float aTo, double aTime, double aStartTime)
 	{
 		if (aAttributeId < 0 || aAttributeId >= mNumParams || aTime <= 0 || aFrom == aTo)
 			return;
@@ -115,7 +115,7 @@ namespace SoLoud
 		mParamFader[aAttributeId].setLFO(aFrom, aTo, aTime, aStartTime);
 	}
 
-	float FilterInstance::getFilterParameter(int aAttributeId)
+	float FilterInstance::getFilterParameter(unsigned int aAttributeId)
 	{
 		if (aAttributeId < 0 || aAttributeId >= mNumParams)
 			return 0;
@@ -123,16 +123,16 @@ namespace SoLoud
 		return mParam[aAttributeId];
 	}
 
-	void FilterInstance::filter(float *aBuffer, int aSamples, int aChannels, float aSamplerate, double aTime)
+	void FilterInstance::filter(float *aBuffer, unsigned int aSamples, unsigned int aChannels, float aSamplerate, double aTime)
 	{
-		int i;
+		unsigned int i;
 		for (i = 0; i < aChannels; i++)
 		{
 			filterChannel(aBuffer + i* aSamples, aSamples, aSamplerate, aTime, i, aChannels);
 		}
 	}
 
-	void FilterInstance::filterChannel(float *aBuffer, int aSamples, float aSamplerate, double aTime, int aChannel, int aChannels)
+	void FilterInstance::filterChannel(float *aBuffer, unsigned int aSamples, float aSamplerate, double aTime, unsigned int aChannel, unsigned int aChannels)
 	{
 	}
 

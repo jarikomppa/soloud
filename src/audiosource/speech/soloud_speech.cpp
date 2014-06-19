@@ -52,12 +52,12 @@ namespace SoLoud
 		}
 	}
 
-	void SpeechInstance::getAudio(float *aBuffer, int aSamples)
+	void SpeechInstance::getAudio(float *aBuffer, unsigned int aSamples)
 	{
-		int samples_out = 0;
+		unsigned int samples_out = 0;
 		if (mSampleCount > mOffset)
 		{
-			int copycount = mSampleCount - mOffset;
+			unsigned int copycount = mSampleCount - mOffset;
 			if (copycount > aSamples) 
 			{
 				copycount = aSamples;
@@ -73,7 +73,7 @@ namespace SoLoud
 			mSampleCount = mSynth.synth(mSynth.mNspFr, mSample);
 			if (mSampleCount > 0)
 			{
-				int copycount = mSampleCount;
+				unsigned int copycount = mSampleCount;
 				if (copycount > aSamples - samples_out)
 				{
 					copycount = aSamples - samples_out;
@@ -99,7 +99,7 @@ namespace SoLoud
 		}
 	}
 
-	int SpeechInstance::rewind()
+	result SpeechInstance::rewind()
 	{
 		mSynth.init();
 		mSynth.initsynth(mParent->mElement.getSize(), (unsigned char *)mParent->mElement.getData());
@@ -117,7 +117,7 @@ namespace SoLoud
 		return 0;
 	}	
 
-	int Speech::setText(const char *aText)
+	result Speech::setText(const char *aText)
 	{
 		if (aText == NULL)
 			return INVALID_PARAMETER;

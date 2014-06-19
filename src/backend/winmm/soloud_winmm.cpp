@@ -29,7 +29,7 @@ freely, subject to the following restrictions:
 
 namespace SoLoud
 {
-	int winmm_init(Soloud *aSoloud, int aFlags, int aSamplerate, int aBuffer)
+	result winmm_init(Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer)
 	{
 		return NOT_IMPLEMENTED;
 	}
@@ -124,7 +124,7 @@ namespace SoLoud
         aSoloud->mBackendData = 0;
     }
 
-    int winmm_init(Soloud *aSoloud, int aFlags, int aSamplerate, int aBuffer)
+    result winmm_init(Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer)
     {
         SoLoudWinMMData *data = new SoLoudWinMMData;
         ZeroMemory(data, sizeof(SoLoudWinMMData));

@@ -37,7 +37,7 @@ namespace SoLoud
 
 	}
 
-	void EchoFilterInstance::filter(float *aBuffer, int aSamples, int aChannels, float aSamplerate, double aTime)
+	void EchoFilterInstance::filter(float *aBuffer, unsigned int aSamples, unsigned int aChannels, float aSamplerate, double aTime)
 	{
 		updateParams(aTime);
 
@@ -45,7 +45,7 @@ namespace SoLoud
 		{
 			mBufferLength = (int)ceil(mParent->mDelay * aSamplerate);
 			mBuffer = new float[mBufferLength * aChannels];
-			int i;
+			unsigned int i;
 			for (i = 0; i < mBufferLength * aChannels; i++)
 			{
 				mBuffer[i] = 0;
@@ -53,7 +53,7 @@ namespace SoLoud
 		}
 
 		float decay = mParent->mDecay;
-		int i, j;
+		unsigned int i, j;
 		int prevofs = (mOffset + mBufferLength - 1) % mBufferLength;
 		for (i = 0; i < aSamples; i++)
 		{
@@ -86,7 +86,7 @@ namespace SoLoud
 		mFilter = 0.0f;
 	}
 
-	int EchoFilter::setParams(float aDelay, float aDecay, float aFilter)
+	result EchoFilter::setParams(float aDelay, float aDecay, float aFilter)
 	{
 		if (aDelay <= 0 || aDecay <= 0 || aFilter < 0 || aFilter >= 1.0f)
 			return INVALID_PARAMETER;

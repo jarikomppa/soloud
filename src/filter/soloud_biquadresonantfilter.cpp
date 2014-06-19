@@ -100,7 +100,7 @@ namespace SoLoud
 		calcBQRParams();
 	}
 
-	void BiquadResonantFilterInstance::filterChannel(float *aBuffer, int aSamples, float aSamplerate, double aTime, int aChannel, int aChannels)
+	void BiquadResonantFilterInstance::filterChannel(float *aBuffer, unsigned int aSamples, float aSamplerate, double aTime, unsigned int aChannel, unsigned int aChannels)
 	{
 		if (!mActive)
 			return;
@@ -117,7 +117,7 @@ namespace SoLoud
 		}
 
 		float x;
-		int i;
+		unsigned int i;
 		int c = 0;
 
 		BQRStateData &s = mState[aChannel];
@@ -157,7 +157,7 @@ namespace SoLoud
 		setParams(LOWPASS, 44100, 1000, 2);
 	}
 
-	int BiquadResonantFilter::setParams(int aType, float aSampleRate, float aFrequency, float aResonance)
+	result BiquadResonantFilter::setParams(int aType, float aSampleRate, float aFrequency, float aResonance)
 	{
 		if (aType < 0 || aType > 3 || aSampleRate <= 0 || aFrequency <= 0 || aResonance <= 0)
 			return INVALID_PARAMETER;

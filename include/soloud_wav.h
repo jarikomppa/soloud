@@ -37,10 +37,10 @@ namespace SoLoud
 	class WavInstance : public AudioSourceInstance
 	{
 		Wav *mParent;
-		int mOffset;
+		unsigned int mOffset;
 	public:
 		WavInstance(Wav *aParent);
-		virtual void getAudio(float *aBuffer, int aSamples);
+		virtual void getAudio(float *aBuffer, unsigned int aSamples);
 		virtual result rewind();
 		virtual bool hasEnded();
 	};
@@ -52,12 +52,12 @@ namespace SoLoud
 		result testAndLoadFile(DataReader *aReader);
 	public:
 		float *mData;
-		int mSampleCount;
+		unsigned int mSampleCount;
 
 		Wav();
 		virtual ~Wav();
 		result load(const char *aFilename);
-		result loadMem(unsigned char *aMem, int aLength);
+		result loadMem(unsigned char *aMem, unsigned int aLength);
 		virtual AudioSourceInstance *createInstance();
 		time getLength();
 	};

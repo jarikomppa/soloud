@@ -33,7 +33,7 @@ namespace SoLoud
 	{
 		if (mLockMutexFunc) mLockMutexFunc(mMutex);
 
-		int i;
+		unsigned int i;
 		// Check if there's any deleted voice groups and re-use if found
 		for (i = 0; i < mVoiceGroupCount; i++)
 		{
@@ -56,7 +56,7 @@ namespace SoLoud
 			if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 			return 0;
 		}
-		int oldcount = mVoiceGroupCount;
+		unsigned int oldcount = mVoiceGroupCount;
 		if (mVoiceGroupCount == 0)
 		{
 			mVoiceGroupCount = 4;
@@ -166,7 +166,7 @@ namespace SoLoud
 	{
 		if ((aVoiceGroupHandle & 0xfffff000) != 0xfffff000)
 			return 0;
-		int c = aVoiceGroupHandle & 0xfff;
+		unsigned int c = aVoiceGroupHandle & 0xfff;
 		if (c >= mVoiceGroupCount)
 			return 0;
 
@@ -243,7 +243,7 @@ namespace SoLoud
 	{
 		if ((aVoiceGroupHandle & 0xfffff000) != 0xfffff000)
 			return NULL;
-		int c = aVoiceGroupHandle & 0xfff;
+		unsigned int c = aVoiceGroupHandle & 0xfff;
 		if (c >= mVoiceGroupCount)
 			return NULL;
 		if (mVoiceGroup[c] == NULL)

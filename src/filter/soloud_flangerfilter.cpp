@@ -40,7 +40,7 @@ namespace SoLoud
 		mParam[FlangerFilter::DELAY] = mParent->mDelay;
 	}
 
-	void FlangerFilterInstance::filter(float *aBuffer, int aSamples, int aChannels, float aSamplerate, double aTime)
+	void FlangerFilterInstance::filter(float *aBuffer, unsigned int aSamples, unsigned int aChannels, float aSamplerate, double aTime)
 	{
 		updateParams(aTime);
 
@@ -57,7 +57,7 @@ namespace SoLoud
 			memset(mBuffer, 0, sizeof(float) * mBufferLength * aChannels);
 		}
 
-		int i, j;
+		unsigned int i, j;
 		int maxsamples = (int)ceil(mParam[FlangerFilter::DELAY] * aSamplerate);
 		double inc = mParam[FlangerFilter::FREQ] * M_PI * 2 / aSamplerate;
 		for (i = 0; i < aChannels; i++)
@@ -90,7 +90,7 @@ namespace SoLoud
 		mFreq = 10;
 	}
 
-	int FlangerFilter::setParams(float aDelay, float aFreq)
+	result FlangerFilter::setParams(float aDelay, float aFreq)
 	{
 		if (aDelay <= 0 || aFreq <= 0)
 			return INVALID_PARAMETER;

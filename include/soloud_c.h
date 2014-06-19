@@ -102,6 +102,8 @@ int Soloud_getVersion(Soloud * aSoloud);
 const char * Soloud_getErrorString(Soloud * aSoloud, int aErrorCode);
 unsigned int Soloud_play(Soloud * aSoloud, AudioSource * aSound);
 unsigned int Soloud_playEx(Soloud * aSoloud, AudioSource * aSound, float aVolume /* = 1.0f */, float aPan /* = 0.0f */, int aPaused /* = 0 */, int aBus /* = 0 */);
+unsigned int Soloud_playClocked(Soloud * aSoloud, double aSoundTime, AudioSource * aSound);
+unsigned int Soloud_playClockedEx(Soloud * aSoloud, double aSoundTime, AudioSource * aSound, float aVolume /* = 1.0f */, float aPan /* = 0.0f */, int aBus /* = 0 */);
 void Soloud_seek(Soloud * aSoloud, unsigned int aVoiceHandle, double aSeconds);
 void Soloud_stop(Soloud * aSoloud, unsigned int aVoiceHandle);
 void Soloud_stopAll(Soloud * aSoloud);
@@ -131,6 +133,7 @@ void Soloud_setSamplerate(Soloud * aSoloud, unsigned int aVoiceHandle, float aSa
 void Soloud_setPan(Soloud * aSoloud, unsigned int aVoiceHandle, float aPan);
 void Soloud_setPanAbsolute(Soloud * aSoloud, unsigned int aVoiceHandle, float aLVolume, float aRVolume);
 void Soloud_setVolume(Soloud * aSoloud, unsigned int aVoiceHandle, float aVolume);
+void Soloud_setDelaySamples(Soloud * aSoloud, unsigned int aVoiceHandle, int aSamples);
 void Soloud_fadeVolume(Soloud * aSoloud, unsigned int aVoiceHandle, float aTo, double aTime);
 void Soloud_fadePan(Soloud * aSoloud, unsigned int aVoiceHandle, float aTo, double aTime);
 void Soloud_fadeRelativePlaySpeed(Soloud * aSoloud, unsigned int aVoiceHandle, float aTo, double aTime);
@@ -146,6 +149,11 @@ void Soloud_setVisualizationEnable(Soloud * aSoloud, int aEnable);
 float * Soloud_calcFFT(Soloud * aSoloud);
 float * Soloud_getWave(Soloud * aSoloud);
 int Soloud_getLoopCount(Soloud * aSoloud, unsigned int aVoiceHandle);
+unsigned int Soloud_createVoiceGroup(Soloud * aSoloud);
+int Soloud_destroyVoiceGroup(Soloud * aSoloud, unsigned int aVoiceGroupHandle);
+int Soloud_addVoiceToGroup(Soloud * aSoloud, unsigned int aVoiceGroupHandle, unsigned int aVoiceHandle);
+int Soloud_isVoiceGroup(Soloud * aSoloud, unsigned int aVoiceGroupHandle);
+int Soloud_isVoiceGroupEmpty(Soloud * aSoloud, unsigned int aVoiceGroupHandle);
 
 /*
  * BiquadResonantFilter
@@ -167,11 +175,14 @@ int LofiFilter_setParams(LofiFilter * aLofiFilter, float aSampleRate, float aBit
 void Bus_destroy(Bus * aBus);
 Bus * Bus_create();
 void Bus_setFilter(Bus * aBus, int aFilterId, Filter * aFilter);
-int Bus_play(Bus * aBus, AudioSource * aSound);
-int Bus_playEx(Bus * aBus, AudioSource * aSound, float aVolume /* = 1.0f */, float aPan /* = 0.0f */, int aPaused /* = 0 */);
+unsigned int Bus_play(Bus * aBus, AudioSource * aSound);
+unsigned int Bus_playEx(Bus * aBus, AudioSource * aSound, float aVolume /* = 1.0f */, float aPan /* = 0.0f */, int aPaused /* = 0 */);
+unsigned int Bus_playClocked(Bus * aBus, double aSoundTime, AudioSource * aSound);
+unsigned int Bus_playClockedEx(Bus * aBus, double aSoundTime, AudioSource * aSound, float aVolume /* = 1.0f */, float aPan /* = 0.0f */);
 void Bus_setVisualizationEnable(Bus * aBus, int aEnable);
 float * Bus_calcFFT(Bus * aBus);
 float * Bus_getWave(Bus * aBus);
+void Bus_findBusHandle(Bus * aBus);
 void Bus_setLooping(Bus * aBus, int aLoop);
 void Bus_stop(Bus * aBus);
 

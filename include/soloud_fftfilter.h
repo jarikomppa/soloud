@@ -36,7 +36,7 @@ namespace SoLoud
 		float *mBuffer;
 		FFTFilter *mParent;
 	public:
-		virtual void filterChannel(float *aBuffer, int aSamples, float aSamplerate, time aTime, int aChannel, int aChannels);
+		virtual void filterChannel(float *aBuffer, unsigned int aSamples, float aSamplerate, time aTime, unsigned int aChannel, unsigned int aChannels);
 		virtual ~FFTFilterInstance();
 		FFTFilterInstance(FFTFilter *aParent);
 	};
@@ -52,7 +52,7 @@ namespace SoLoud
 		};
 		virtual FilterInstance *createInstance();
 		FFTFilter();
-		int setParameters(int aShift, int aCombine = 0, float aScale = 0.002);
+		result setParameters(int aShift, int aCombine = 0, float aScale = 0.002);
 	public:
 		float mScale;
 		int mCombine;

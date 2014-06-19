@@ -36,7 +36,7 @@ freely, subject to the following restrictions:
 #define WINDOWS_VERSION
 #endif
 
-#define SOLOUD_VERSION 100
+#define SOLOUD_VERSION 101
 
 /////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////
@@ -65,7 +65,7 @@ namespace SoLoud
 	class Soloud;
 	typedef void (*mutexCallFunction)(void *aMutexPtr);
 	typedef void (*soloudCallFunction)(Soloud *aSoloud);
-	typedef int result;
+	typedef unsigned int result;
 	typedef unsigned int handle;
 	typedef double time;
 };
@@ -120,22 +120,22 @@ namespace SoLoud
 		};
 
 		// Initialize SoLoud. Must be called before SoLoud can be used.
-		result init(int aFlags = Soloud::CLIP_ROUNDOFF, int aBackend = Soloud::AUTO, int aSamplerate = Soloud::AUTO, int aBufferSize = Soloud::AUTO);
+		result init(unsigned int aFlags = Soloud::CLIP_ROUNDOFF, unsigned int aBackend = Soloud::AUTO, unsigned int aSamplerate = Soloud::AUTO, unsigned int aBufferSize = Soloud::AUTO);
 
 		// Deinitialize SoLoud. Must be called before shutting down.
 		void deinit();
 
 		// Query SoLoud version number (should equal to SOLOUD_VERSION macro)
-		int getVersion() const;
+		unsigned int getVersion() const;
 
 		// Translate error number to an asciiz string
 		const char * getErrorString(result aErrorCode) const;
 
 		// Start playing a sound. Returns voice handle, which can be ignored or used to alter the playing sound's parameters.
-		handle play(AudioSource &aSound, float aVolume = 1.0f, float aPan = 0.0f, int aPaused = 0, int aBus = 0);
+		handle play(AudioSource &aSound, float aVolume = 1.0f, float aPan = 0.0f, bool aPaused = 0, unsigned int aBus = 0);
 
 		// Start playing a sound delayed in relation to other sounds called via this function.
-		handle playClocked(time aSoundTime, AudioSource &aSound, float aVolume = 1.0f, float aPan = 0.0f, int aBus = 0);
+		handle playClocked(time aSoundTime, AudioSource &aSound, float aVolume = 1.0f, float aPan = 0.0f, unsigned int aBus = 0);
 
 		// Seek the audio stream to certain point in time. Some streams can't seek backwards. Relative play speed affects time.
 		void seek(handle aVoiceHandle, time aSeconds);
@@ -147,13 +147,13 @@ namespace SoLoud
 		void stopAudioSource(AudioSource &aSound);
 
 		// Set a live filter parameter. Use 0 for the global filters.
-		void setFilterParameter(handle aVoiceHandle, int aFilterId, int aAttributeId, float aValue);
+		void setFilterParameter(handle aVoiceHandle, unsigned int aFilterId, unsigned int aAttributeId, float aValue);
 		// Get a live filter parameter. Use 0 for the global filters.
-		float getFilterParameter(handle aVoiceHandle, int aFilterId, int aAttributeId);
+		float getFilterParameter(handle aVoiceHandle, unsigned int aFilterId, unsigned int aAttributeId);
 		// Fade a live filter parameter. Use 0 for the global filters.
-		void fadeFilterParameter(handle aVoiceHandle, int aFilterId, int aAttributeId, float aTo, time aTime);
+		void fadeFilterParameter(handle aVoiceHandle, unsigned int aFilterId, unsigned int aAttributeId, float aTo, time aTime);
 		// Oscillate a live filter parameter. Use 0 for the global filters.
-		void oscillateFilterParameter(handle aVoiceHandle, int aFilterId, int aAttributeId, float aFrom, float aTo, time aTime);
+		void oscillateFilterParameter(handle aVoiceHandle, unsigned int aFilterId, unsigned int aAttributeId, float aFrom, float aTo, time aTime);
 
 		// Get current play time, in seconds.
 		time getStreamTime(handle aVoiceHandle) const;
@@ -168,7 +168,7 @@ namespace SoLoud
 		// Get current voice protection state.
 		bool getProtectVoice(handle aVoiceHandle) const;
 		// Get the current number of busy voices.
-		int getActiveVoiceCount() const; 
+		unsigned int getActiveVoiceCount() const; 
 		// Check if the handle is still valid, or if the sound has stopped.
 		bool isValidVoiceHandle(handle aVoiceHandle) const;
 		// Get current relative play speed.
@@ -199,7 +199,7 @@ namespace SoLoud
 		// Set overall volume
 		void setVolume(handle aVoiceHandle, float aVolume);
 		// Set delay, in samples, before starting to play samples. Calling this on a live sound will cause glitches.
-		void setDelaySamples(handle aVoiceHandle, int aSamples);
+		void setDelaySamples(handle aVoiceHandle, unsigned int aSamples);
 
 		// Set up volume fader
 		void fadeVolume(handle aVoiceHandle, float aTo, time aTime);
@@ -224,7 +224,7 @@ namespace SoLoud
 		void oscillateGlobalVolume(float aFrom, float aTo, time aTime);
 
 		// Set global filters. Set to NULL to clear the filter.
-		void setGlobalFilter(int aFilterId, Filter *aFilter);
+		void setGlobalFilter(unsigned int aFilterId, Filter *aFilter);
 
 		// Enable or disable visualization data gathering
 		void setVisualizationEnable(bool aEnable);
@@ -236,7 +236,7 @@ namespace SoLoud
 		float *getWave();
 
 		// Get current loop count. Returns 0 if handle is not valid. (All audio sources may not update loop count)
-		int getLoopCount(handle aVoiceHandle);
+		unsigned int getLoopCount(handle aVoiceHandle);
 
 		// Create a voice group. Returns 0 if unable (out of voice groups / out of memory)
 		handle createVoiceGroup();
@@ -252,28 +252,28 @@ namespace SoLoud
 		// Rest of the stuff is used internally.
 	public:
 		// Mix and return N stereo samples in the buffer. Called by the back-end.
-		void mix(float *aBuffer, int aSamples);
+		void mix(float *aBuffer, unsigned int aSamples);
 		// Handle rest of initialization (called from backend)
-		void postinit(int aSamplerate, int aBufferSize, int aFlags);
+		void postinit(unsigned int aSamplerate, unsigned int aBufferSize, unsigned int aFlags);
 
 		// Perform mixing for a specific bus
-		void mixBus(float *aBuffer, int aSamples, float *aScratch, int aBus, float aSamplerate);
+		void mixBus(float *aBuffer, unsigned int aSamples, float *aScratch, unsigned int aBus, float aSamplerate);
 		// Scratch buffer, used for resampling.
 		float *mScratch;
 		// Current size of the scratch, in samples.
-		int mScratchSize;
+		unsigned int mScratchSize;
 		// Amount of scratch needed.
-		int mScratchNeeded;
+		unsigned int mScratchNeeded;
 		// Audio voices.
 		AudioSourceInstance *mVoice[VOICE_COUNT];
-		// Output sample rate
-		int mSamplerate;
+		// Output sample rate (not float)
+		unsigned int mSamplerate;
 		// Output channel count
-		int mChannels;
+		unsigned int mChannels;
 		// Maximum size of output buffer; used to calculate needed scratch.
-		int mBufferSize;
+		unsigned int mBufferSize;
 		// Flags; see Soloud::FLAGS
-		int mFlags;
+		unsigned int mFlags;
 		// Global volume. Applied before clipping.
 		float mGlobalVolume;
 		// Post-clip scaler. Applied after clipping.
@@ -281,7 +281,7 @@ namespace SoLoud
 		// Current play index. Used to create audio handles.
 		unsigned int mPlayIndex;
 		// Current sound source index. Used to create sound source IDs.
-		int mAudioSourceID;
+		unsigned int mAudioSourceID;
 		// Fader for the global volume.
 		Fader mGlobalVolumeFader;
 		// Global stream time, for the global volume fader. 
@@ -293,23 +293,23 @@ namespace SoLoud
 		// Global filter instance
 		FilterInstance *mFilterInstance[FILTERS_PER_STREAM];
 		// Find a free voice, stopping the oldest if no free voice is found.
-		int findFreeVoice();
+		unsigned int findFreeVoice();
 		// Converts handle to voice, if the handle is valid.
-		int getVoiceFromHandle(handle aVoiceHandle) const;
+		unsigned int getVoiceFromHandle(handle aVoiceHandle) const;
 		// Converts voice + playindex into handle
-		handle getHandleFromVoice(int aVoice) const;
+		handle getHandleFromVoice(unsigned int aVoice) const;
 		// Stop voice (not handle).
-		void stopVoice(int aVoice);
+		void stopVoice(unsigned int aVoice);
 		// Set voice (not handle) pan.
-		void setVoicePan(int aVoice, float aPan);
+		void setVoicePan(unsigned int aVoice, float aPan);
 		// Set voice (not handle) relative play speed.
-		void setVoiceRelativePlaySpeed(int aVoice, float aSpeed);
+		void setVoiceRelativePlaySpeed(unsigned int aVoice, float aSpeed);
 		// Set voice (not handle) volume.
-		void setVoiceVolume(int aVoice, float aVolume);
+		void setVoiceVolume(unsigned int aVoice, float aVolume);
 		// Set voice (not handle) pause state.
-		void setVoicePause(int aVoice, int aPause);
+		void setVoicePause(unsigned int aVoice, int aPause);
 		// Clip the samples in the buffer
-		void clip(float *aBuffer, float *aDestBuffer, int aSamples, float aVolume0, float aVolume1);
+		void clip(float *aBuffer, float *aDestBuffer, unsigned int aSamples, float aVolume0, float aVolume1);
 		// Mono-mixed wave data for visualization and for visualization FFT input
 		float mVisualizationWaveData[256];
 		// FFT output data
@@ -319,7 +319,7 @@ namespace SoLoud
 
 		// For each voice group, first int is number of ints alocated.
 		unsigned int **mVoiceGroup;
-		int mVoiceGroupCount;
+		unsigned int mVoiceGroupCount;
 
 		// Remove all non-active voices from group
 		void trimVoiceGroup(handle aVoiceGroupHandle);

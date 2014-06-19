@@ -172,16 +172,16 @@ namespace SoLoud
 		return samples;
 	}
 
-	void WavStreamInstance::getAudio(float *aBuffer, int aSamples)
+	void WavStreamInstance::getAudio(float *aBuffer, unsigned int aSamples)
 	{			
-		int channels = mChannels;
+		unsigned int channels = mChannels;
 
 		if (mFile == NULL)
 			return;
 
 		if (mOgg)
 		{
-			int offset = 0;			
+			unsigned int offset = 0;			
 			if (mOggFrameOffset < mOggFrameSize)
 			{
 				int b = getOggData(mOggOutputs, aBuffer, aSamples, aSamples, mOggFrameSize, mOggFrameOffset, channels);
@@ -209,7 +209,7 @@ namespace SoLoud
 					}
 					else
 					{
-						int i;
+						unsigned int i;
 						for (i = 0; i < channels; i++)
 							memset(aBuffer + offset + i * aSamples, 0, sizeof(float) * (aSamples - offset));
 						mOffset += aSamples - offset;
@@ -220,7 +220,7 @@ namespace SoLoud
 		}
 		else
 		{
-			int copysize = aSamples;
+			unsigned int copysize = aSamples;
 			if (copysize + mOffset > mParent->mSampleCount)
 			{
 				copysize = mParent->mSampleCount - mOffset;
@@ -239,7 +239,7 @@ namespace SoLoud
 				}
 				else
 				{
-					int i;
+					unsigned int i;
 					for (i = 0; i < channels; i++)
 						memset(aBuffer + copysize + i * aSamples, 0, sizeof(float) * (aSamples - copysize));
 					mOffset += aSamples - copysize;
@@ -252,7 +252,7 @@ namespace SoLoud
 		}
 	}
 
-	int WavStreamInstance::rewind()
+	result WavStreamInstance::rewind()
 	{
 		if (mOgg)
 		{
@@ -294,7 +294,7 @@ namespace SoLoud
 	
 #define MAKEDWORD(a,b,c,d) (((d) << 24) | ((c) << 16) | ((b) << 8) | (a))
 
-	int WavStream::loadwav(FILE * fp)
+	result WavStream::loadwav(FILE * fp)
 	{
 		int wavsize = read32(fp);
 		if (read32(fp) != MAKEDWORD('W','A','V','E'))
@@ -358,7 +358,7 @@ namespace SoLoud
 		return 0;
 	}
 
-	int WavStream::loadogg(FILE * fp)
+	result WavStream::loadogg(FILE * fp)
 	{
 		fseek(fp,0,SEEK_SET);
 		int e;
@@ -379,7 +379,7 @@ namespace SoLoud
 		return 0;
 	}
 
-	int WavStream::load(const char *aFilename)
+	result WavStream::load(const char *aFilename)
 	{
 		delete[] mFilename;
 		mFilename = 0;

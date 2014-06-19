@@ -28,7 +28,7 @@ freely, subject to the following restrictions:
 
 namespace SoLoud
 {
-	int Soloud::getVersion() const
+	unsigned int Soloud::getVersion() const
 	{
 		return SOLOUD_VERSION;
 	}
@@ -43,14 +43,14 @@ namespace SoLoud
 		return mGlobalVolume;
 	}
 
-	handle Soloud::getHandleFromVoice(int aVoice) const
+	handle Soloud::getHandleFromVoice(unsigned int aVoice) const
 	{
 		if (mVoice[aVoice] == 0)
 			return 0;
 		return (aVoice + 1) | (mVoice[aVoice]->mPlayIndex << 12);
 	}
 
-	int Soloud::getVoiceFromHandle(handle aVoiceHandle) const
+	unsigned int Soloud::getVoiceFromHandle(handle aVoiceHandle) const
 	{
 		// If this is a voice group handle, pick the first handle from the group
 		handle *h = voiceGroupHandleToArray(aVoiceHandle);
@@ -71,7 +71,7 @@ namespace SoLoud
 		return -1;		
 	}
 
-	int Soloud::getActiveVoiceCount() const
+	unsigned int Soloud::getActiveVoiceCount() const
 	{
 		if (mLockMutexFunc) mLockMutexFunc(mMutex);
 		int i;
@@ -202,7 +202,7 @@ namespace SoLoud
 		return v != 0;
 	}
 
-	int Soloud::findFreeVoice()
+	unsigned int Soloud::findFreeVoice()
 	{
 		int i;
 		unsigned int lowest_play_index_value = 0xffffffff;
@@ -224,7 +224,7 @@ namespace SoLoud
 		return lowest_play_index;
 	}
 
-	int Soloud::getLoopCount(handle aVoiceHandle)
+	unsigned int Soloud::getLoopCount(handle aVoiceHandle)
 	{
 		if (mLockMutexFunc) mLockMutexFunc(mMutex);
 		int ch = getVoiceFromHandle(aVoiceHandle);

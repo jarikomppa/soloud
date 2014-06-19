@@ -33,9 +33,9 @@ namespace SoLoud
 		mOffset = 0;
 	}
 
-	void BasicwaveInstance::getAudio(float *aBuffer, int aSamples)
+	void BasicwaveInstance::getAudio(float *aBuffer, unsigned int aSamples)
 	{
-		int i;
+		unsigned int i;
 		switch (mParent->mWaveform)
 		{
 			case Basicwave::SINE:

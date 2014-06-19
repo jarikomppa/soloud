@@ -29,7 +29,7 @@ freely, subject to the following restrictions:
 
 namespace SoLoud
 {
-	int sdl_init(SoLoud::Soloud *aSoloud, int aFlags, int aSamplerate, int aBuffer)
+	result sdl_init(SoLoud::Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer)
 	{
 		return NOT_IMPLEMENTED;
 	}
@@ -79,7 +79,7 @@ namespace SoLoud
 		SDL_DestroyMutex((SDL_mutex*)aSoloud->mMutex);
 	}
 
-	int sdlnondyn_init(SoLoud::Soloud *aSoloud, int aFlags, int aSamplerate, int aBuffer)
+	result sdlnondyn_init(SoLoud::Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer)
 	{
 		aSoloud->mMutex = SDL_CreateMutex();
 		SDL_AudioSpec as;

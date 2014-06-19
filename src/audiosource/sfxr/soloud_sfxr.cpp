@@ -71,10 +71,11 @@ namespace SoLoud
 
 #define frnd(x) ((float)(mRand.rand()%10001)/10000*(x))
 
-	void SfxrInstance::getAudio(float *aBuffer, int aSamples)
+	void SfxrInstance::getAudio(float *aBuffer, unsigned int aSamples)
 	{
 		float *buffer = aBuffer;
-		for(int i=0;i<aSamples;i++)
+		unsigned int i;
+		for(i = 0; i < aSamples; i++)
 		{
 			if(!playing_sample)
 			{
@@ -291,7 +292,7 @@ namespace SoLoud
 #define frnd(x) ((float)(mRand.rand()%10001)/10000*(x))
 
 
-	int Sfxr::loadPreset(int aPresetNo, int aRandSeed)
+	result Sfxr::loadPreset(int aPresetNo, int aRandSeed)
 	{
 		if (aPresetNo < 0 || aPresetNo > 6)
 			return INVALID_PARAMETER;
@@ -491,7 +492,7 @@ namespace SoLoud
 		mParams.sound_vol=0.5f;
 	}
 
-	int Sfxr::loadParams(const char* aFilename)
+	result Sfxr::loadParams(const char* aFilename)
 	{
 		FILE* file=fopen(aFilename, "rb");
 		if(!file)

@@ -40,7 +40,7 @@ namespace SoLoud
 	public:
 		ModplugInstance(Modplug *aParent);
 		virtual ~ModplugInstance();
-		virtual void getAudio(float *aBuffer, int aSamples);
+		virtual void getAudio(float *aBuffer, unsigned int aSamples);
 		virtual bool hasEnded();
 	};
 
@@ -48,7 +48,7 @@ namespace SoLoud
 	{
 	public:
 		char *mData;
-		int mDataLen;
+		unsigned int mDataLen;
 		Modplug();
 		virtual ~Modplug();
 		result load(const char* aFilename);

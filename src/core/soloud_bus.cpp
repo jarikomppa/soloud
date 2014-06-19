@@ -35,13 +35,13 @@ namespace SoLoud
 		mFlags |= PROTECTED;
 	}
 	
-	void BusInstance::getAudio(float *aBuffer, int aSamples)
+	void BusInstance::getAudio(float *aBuffer, unsigned int aSamples)
 	{
 		int handle = mParent->mChannelHandle;
 		if (handle == 0) 
 		{
 			// Avoid reuse of scratch data if this bus hasn't played anything yet
-			int i;
+			unsigned int i;
 			for (i = 0; i < aSamples * mChannels; i++)
 				aBuffer[i] = 0;
 			return;
@@ -135,7 +135,7 @@ namespace SoLoud
 		}
 	}
 
-	handle Bus::play(AudioSource &aSound, float aVolume, float aPan, int aPaused)
+	handle Bus::play(AudioSource &aSound, float aVolume, float aPan, bool aPaused)
 	{
 		if (!mInstance || !mSoloud)
 		{
@@ -170,7 +170,7 @@ namespace SoLoud
 	}	
 
 
-	void Bus::setFilter(int aFilterId, Filter *aFilter)
+	void Bus::setFilter(unsigned int aFilterId, Filter *aFilter)
 	{
 		if (aFilterId < 0 || aFilterId >= FILTERS_PER_STREAM)
 			return;

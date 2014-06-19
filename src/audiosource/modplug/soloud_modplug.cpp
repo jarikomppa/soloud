@@ -42,14 +42,14 @@ namespace SoLoud
 #endif
 	}
 
-	void ModplugInstance::getAudio(float *aBuffer, int aSamples)
+	void ModplugInstance::getAudio(float *aBuffer, unsigned int aSamples)
 	{
 #ifdef WITH_MODPLUG
 		if (mModplugfile == NULL)
 			return;
 		int buf[1024];
 		int s = aSamples;
-		int outofs = 0;
+		unsigned int outofs = 0;
 		
 		while (s && mPlaying)
 		{
@@ -72,7 +72,7 @@ namespace SoLoud
 		if (outofs < aSamples)
 		{
 			// TODO: handle looping
-			int i;
+			unsigned int i;
 			for (i = outofs; i < aSamples; i++)
 				aBuffer[i] = aBuffer[i + aSamples] = 0;
 		}
@@ -99,7 +99,7 @@ namespace SoLoud
 #endif
 	}
 
-	int Modplug::load(const char* aFilename)
+	result Modplug::load(const char* aFilename)
 	{
 #ifdef WITH_MODPLUG
 		FILE * f = fopen(aFilename, "rb");

@@ -40,7 +40,7 @@ namespace SoLoud
 		double mIndex;
 
 	public:
-		virtual void filter(float *aBuffer, int aSamples, int aChannels, float aSamplerate, time aTime);
+		virtual void filter(float *aBuffer, unsigned int aSamples, unsigned int aChannels, float aSamplerate, time aTime);
 		virtual ~FlangerFilterInstance();
 		FlangerFilterInstance(FlangerFilter *aParent);
 	};
@@ -58,7 +58,7 @@ namespace SoLoud
 		float mFreq;
 		virtual FilterInstance *createInstance();
 		FlangerFilter();
-		int setParams(float aDelay, float aFreq);
+		result setParams(float aDelay, float aFreq);
 	};
 }
 

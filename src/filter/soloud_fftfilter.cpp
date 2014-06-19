@@ -121,7 +121,7 @@ namespace SoLoud
 		}
 	}
 
-	void FFTFilterInstance::filterChannel(float *aBuffer, int aSamples, float aSamplerate, double aTime, int aChannel, int aChannels)
+	void FFTFilterInstance::filterChannel(float *aBuffer, unsigned int aSamples, float aSamplerate, double aTime, unsigned int aChannel, unsigned int aChannels)
 	{
 		if (aChannel == 0)
 		{
@@ -204,7 +204,7 @@ namespace SoLoud
 		return new FFTFilterInstance(this);
 	}
 
-	int FFTFilter::setParameters(int aShift, int aCombine, float aScale)
+	result FFTFilter::setParameters(int aShift, int aCombine, float aScale)
 	{
 		if (aCombine < 0 || aCombine > 2)
 			return INVALID_PARAMETER;

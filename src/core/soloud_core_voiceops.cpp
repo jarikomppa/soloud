@@ -28,7 +28,7 @@ freely, subject to the following restrictions:
 
 namespace SoLoud
 {
-	void Soloud::setVoiceRelativePlaySpeed(int aVoice, float aSpeed)
+	void Soloud::setVoiceRelativePlaySpeed(unsigned int aVoice, float aSpeed)
 	{
 		if (mVoice[aVoice])
 		{
@@ -37,7 +37,7 @@ namespace SoLoud
 		}
 	}
 
-	void Soloud::setVoicePause(int aVoice, int aPause)
+	void Soloud::setVoicePause(unsigned int aVoice, int aPause)
 	{
 		if (mVoice[aVoice])
 		{
@@ -54,7 +54,7 @@ namespace SoLoud
 		}
 	}
 
-	void Soloud::setVoicePan(int aVoice, float aPan)
+	void Soloud::setVoicePan(unsigned int aVoice, float aPan)
 	{
 		if (mVoice[aVoice])
 		{
@@ -64,7 +64,7 @@ namespace SoLoud
 		}
 	}
 
-	void Soloud::setVoiceVolume(int aVoice, float aVolume)
+	void Soloud::setVoiceVolume(unsigned int aVoice, float aVolume)
 	{
 		if (mVoice[aVoice])
 		{
@@ -72,7 +72,7 @@ namespace SoLoud
 		}
 	}
 
-	void Soloud::stopVoice(int aVoice)
+	void Soloud::stopVoice(unsigned int aVoice)
 	{
 		if (mVoice[aVoice])
 		{

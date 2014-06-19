@@ -42,11 +42,11 @@ namespace SoLoud
 		mChannelData[1].mSamplesToSkip = 0;
 	}
 
-	void LofiFilterInstance::filterChannel(float *aBuffer, int aSamples, float aSamplerate, double aTime, int aChannel, int aChannels)
+	void LofiFilterInstance::filterChannel(float *aBuffer, unsigned int aSamples, float aSamplerate, double aTime, unsigned int aChannel, unsigned int aChannels)
 	{
 		updateParams(aTime);
 
-		int i;
+		unsigned int i;
 		for (i = 0; i < aSamples; i++)
 		{
 			if (mChannelData[aChannel].mSamplesToSkip <= 0)
@@ -73,7 +73,7 @@ namespace SoLoud
 		setParams(4000, 3);
 	}
 
-	int LofiFilter::setParams(float aSampleRate, float aBitdepth)
+	result LofiFilter::setParams(float aSampleRate, float aBitdepth)
 	{
 		if (aSampleRate <= 0 || aBitdepth <= 0)
 			return INVALID_PARAMETER;

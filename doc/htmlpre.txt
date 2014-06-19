@@ -35,6 +35,7 @@
 <a href="basics.html">Core: Basics</a><br>
 <a href="attributes.html">Core: Attributes</a><br>
 <a href="faders.html">Core: Faders</a><br>
+<a href="voicegroups.html">Core: Voice Groups</a><br>
 <a href="coremisc.html">Core: Misc</a><br>
 <br>
 <a href="audiosource.html">SoLoud::AudioSource</a><br>

@@ -54,6 +54,8 @@ Sometimes it is important to be able to command several voices at the
 same time so that they are synchronized; for instance, when cross-fading
 between two versions of the same song.
 
+![Problem unpausing two voices. Delay may vary, 40ms used as an example.](images/voicegroups)
+
 SoLoud's solution to this are voice groups. Voice groups can be commanded
 the same way as single voices, but instead of affecting just one voice,
 SoLoud performs the command on all of the voices in the group in one
@@ -67,7 +69,7 @@ signed 16-bit variable, for instance, you can only store values from
 -32k to +32k in it; if you try to put values outside this range in,
 things tend to break. Same goes for audio.
 
-![Results of different clippers](images/clipping)
+![Results of different clippers.](images/clipping)
 
 SoLoud handles all audio as floats, but performs clipping before passing
 the samples out, so all values are in the -1..1 range. There's two ways

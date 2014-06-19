@@ -1,0 +1,71 @@
+Core: Voice Groups
+==========
+
+Sometimes you may want to command several voices at the exact same time. 
+Unpausing two sounds on subsequent lines in code may work most of the time,
+but it not guaranteed, and in the worst case one of them will not make it
+to the same sound buffer as the other.
+
+![Problem unpausing two voices. Delay may vary, 40ms used as an example.](images/voicegroups)
+
+SoLoud's solution to this problem are voice groups. You create a voice
+group handle, add voice handles to it, and then use the voice group handle
+just like you'd use a voice handle. The voice group handles are not, however,
+"fire and forget" like the normal voice handles, and you have to destroy 
+them manually. You don't have to destroy them if you keep reusing them.
+
+Destroying voice group does not destroy the voices attached to it.
+
+You may allocate up to 4095 voice group handles.
+
+
+Soloud.createVoiceGroup()
+-------------------------
+
+Used to create a new voice group. Returns 0 if not successful (either out of
+memory or out of voice groups).
+
+    grouphandle = soloud.createVoiceGroup();
+    if (grouphandle == 0) panic();
+
+Soloud.destroyVoiceGroup()
+--------------------------
+
+Deallocates the voice group. Does not stop the voices attached to the voice group.
+    
+    soloud.destroyVoiceGroup(grouphandle);    
+
+Soloud.addVoiceToGroup()
+------------------------
+
+Adds voice handle to the voice group. The voice handles can still be used separate
+from the group.
+
+    soloud.addVoiceToGroup(grouphandle, music1);
+    soloud.addVoiceToGroup(grouphandle, music2);
+    soloud.setPause(grouphandle, 0); // play both musics
+    soloud.fadeVolume(music1, 1, 5); // fade music 1 up
+    soloud.fadeVolume(music2, 0, 5); // fade music 2 down
+    
+
+Soloud.isVoiceGroup()
+---------------------
+
+Can be checked if the handle is a valid voice group. Does not care if the voice
+group is empty.
+		
+		if (soloud.isVoiceGroup(grouphandle))
+		    probably_some_debug_thing();
+		
+Soloud.isVoiceGroupEmpty()
+--------------------------
+
+Checks whether a voice group is empty. SoLoud automatically trims the voice groups 
+of voices that have ended, so the group may be empty even though you've added valid
+voice handles to it.
+
+    while (!soloud.isVoiceGroupEmpty(voicegroup))
+    {
+        party_on();
+    }
+

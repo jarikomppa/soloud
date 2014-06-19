@@ -56,3 +56,25 @@ env
 ---
 
 The env demo is a non-interactive demo of how SoLoud could be used to play environmental audio.
+
+pewpew
+------
+
+The pewpew demo demonstrates the use of the playClocked commands.
+
+Key  Effect
+---- ------
+1    Play sound repeatedly with playClocked()
+2    Play sound repeatedly with play()
+3    Play sound once with playClocked()
+
+To exaggarate the effect a bit, the demo initializes SoLoud with a very large audio buffer. The difference between the play and playClocked
+effects is that with play(), all sounds triggered between audio buffers begin playing from the start of the next audio buffer, while 
+playClocked spreads the sounds across the audio buffer, making the sounds more separate.
+
+space
+-----
+
+The space demo is a non-interactive demo showing visualization data captured from different parts of the audio pipeline. The
+scope displays the data only from the speech synth while the FFT data only uses the music as input.
+

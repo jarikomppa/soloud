@@ -18,6 +18,21 @@ Destroying voice group does not destroy the voices attached to it.
 
 You may allocate up to 4095 voice group handles.
 
+Example of use:
+
+    // Create group
+    SoLoud::handle gh = soloud.createVoiceGroup();
+    
+    // Add voices to group
+    soloud.addVoiceToGroup(gh, music1);
+    soloud.addVoiceToGroup(gh, music2);
+    
+    // unpause both musics in one atomic op    
+    soloud.setPause(gh, 0); 
+
+    // Clean up, destroy grup. Leaves actual voices alone.
+    soloud.destroyVoiceGroup(gh);
+
 
 Soloud.createVoiceGroup()
 -------------------------
@@ -51,11 +66,11 @@ from the group.
 Soloud.isVoiceGroup()
 ---------------------
 
-Can be checked if the handle is a valid voice group. Does not care if the voice
+Checks if the handle is a valid voice group. Does not care if the voice
 group is empty.
 		
-		if (soloud.isVoiceGroup(grouphandle))
-		    probably_some_debug_thing();
+    if (soloud.isVoiceGroup(grouphandle))
+        probably_some_debug_thing();
 		
 Soloud.isVoiceGroupEmpty()
 --------------------------

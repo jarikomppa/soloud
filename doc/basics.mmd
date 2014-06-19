@@ -49,10 +49,27 @@ parameters can be set with the play function parameters, but for more
 complex processing you may want to start the sound paused, adjust the
 parameters, and then un-pause it.
 
-
     int h = soloud.play(sound, 1, 0, 1);  // start paused
     soloud.setRelativePlaySpeed(h, 0.8f); // change a parameter
     soloud.setPause(h, 0);                // unpause
+
+Soloud.playClocked()
+--------------------
+
+This is a variant of the play function that takes additional parameter,
+the time offset for the sound. While the vanilla play() tries to play
+sounds as soon as possible, the playClocked will delay the start of 
+sounds so that rapidly launched sounds don't all get clumped to the
+start of the next outgoing sound buffer. See the "pew pew" example for
+an intuitive way of understanding how this function is used, and what
+problem it solves.
+
+    t = time_from_game_engine();        // Game physics time
+    int h = soloud.playClocked(t, pew); // Shoot!
+
+Apart from the delayed start, the playClocked() works exactly like
+the play() function, except that there's no way to start them in a
+paused state.
 
 Soloud.seek()
 -------------
@@ -80,13 +97,14 @@ also stop the protected sounds.
 
     soloud.stopAll(); // Total silence!
 
-Soloud.stopSound()
+Soloud.stopAudioSource()
 ------------------
 
 The stop function can be used to stop all sounds that were started
 through a certain sound source. Will also stop protected sounds.
 
-    soloud.stopSound(duck); // silence all the ducks
+    soloud.stopAudioSource(duck); // silence all the ducks
+
 
 Soloud.setGlobalVolume() / Soloud.getGlobalVolume()
 ---------------------------------------------------

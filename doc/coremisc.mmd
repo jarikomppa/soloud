@@ -7,13 +7,12 @@ Soloud.getStreamTime()
 The getStreamTime function can be used to get the current play position,
 in seconds.
 
-    float t = soloud.getStreamTime(h); // get time
+    double t = soloud.getStreamTime(h); // get time
     if (t == hammertime) hammer();
 
-Note that due to being a floating point value, playing a long stream may
-cause precision problems, and eventually cause the "time" to stop. This
-will happen in about 6 days. The precision problems will start somewhat
-earlier.
+Note that time is a double instead of float because float will 
+cause precision problems within 24 hours of playing, and eventually,
+in about 6 days, will cause the "time" to stop. 
 
 Also note that the granularity is likely to be rather high (possibly
 around 45ms), so using this as the sole clock source for animation will
@@ -28,15 +27,15 @@ While not perfect, that's way better than using the stream time directly.
 ![Low-pass filtered time values](images/time)
 
 
-Soloud.isValidChannelHandle()
+Soloud.isValidVoiceHandle()
 -----------------------------
 
-The isValidChannelHandle function can be used to check if a handle is
+The isValidVoiceHandle function can be used to check if a handle is
 still valid.
 
-    if (!soloud.isValidChannelHandle(h)) delete foobar;
+    if (!soloud.isValidVoiceHandle(h)) delete foobar;
 
-If the handle is invalid, the isValidChannelHandle will return 0.
+If the handle is invalid, the isValidVoiceHandle will return 0.
 
 Soloud.getActiveVoiceCount()
 ----------------------------
@@ -79,7 +78,8 @@ The returned pointer points at a buffer that's always around, but the
 data is only updated when calcFFT() is called.
 
 For the FFT to work, you also need to initialize SoLoud with the
-Soloud::ENABLE\_VISUALIZATION flag. Otherwise the source data for the
+Soloud::ENABLE\_VISUALIZATION flag, or by enabling visualization with
+the Soloud.setVisualizationEnable() call. Otherwise the source data for the
 FFT calculation will not be gathered.
 
 Soloud.getWave()
@@ -98,7 +98,8 @@ data is only updated when getWave() is called. The data is the same that
 is used to generate visualization FFT data.
 
 For this function to work properly, you also need to initialize SoLoud
-with the Soloud::ENABLE\_VISUALIZATION flag. Otherwise the source data
+with the Soloud::ENABLE\_VISUALIZATION flag or by enabling visualization with
+the Soloud.setVisualizationEnable() call. Otherwise the source data
 will not be gathered, and the result is undefined (probably zero).
 
 Soloud.getVersion()
@@ -106,3 +107,44 @@ Soloud.getVersion()
 
 Returns the version of the SoLoud library. Same as SOLOUD_VERSION macro.
 Mostly useful when using the DLL, to check the DLL's library version.
+
+    if (soloud.getVersion() != SOLOUD_VERSION)
+        panic();
+
+Soloud.getErrorString()
+-----------------------
+
+Converts SoLoud's error values to printable zero-terminated ascii strings.
+
+    int err = mod.load("foo.mod")
+    printf("Mod load:%s", soloud.getErrorString(err));
+    
+Soloud.setDelaySamples()
+------------------------
+
+Sets number of samples to delay before starting to play a sound. This is
+used internally by the playClocked() function. In the unlikely event that
+you may want to use it manually, it's available in the public API.
+
+    h = soloud.play(snd, 1, 0, 1); // start paused
+    soloud.setDelaySamples(h, 44100); // delay for a second
+    soloud.setPause(h, 0); // go
+    
+Calling this on a "live" voice will cause silence to be inserted at the
+start of the next audio buffer. Since this is rather unpredictable (as
+audio buffer sizes may vary), it's not recommended, even if it may be a
+rather funky effect..
+
+Soloud.getLoopCount
+-------------------
+
+Some sound sources that support looping also keep count of the loop count.
+This can be useful at least to detect when some sound loops.
+
+    int c = soloud.getLoopCount(h);
+    if (c != old_c)
+        printf("Looped!);
+    old_c = c;
+    
+Invalid handles and unsupported sound sources will cause the function to
+return 0.

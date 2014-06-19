@@ -81,20 +81,20 @@ cheaper.
 
 If an invalid handle is given to getRelativePlaySpeed, it will return 1.
 
-Soloud.getProtectChannel() / Soloud.setProtectChannel()
+Soloud.getProtectVoice() / Soloud.setProtectVoice()
 -------------------------------------------------------
 
 These functions can be used to get and set a sound's protection state.
 
-    int v = soloud.getProtectChannel(h);   // Get the protection state
-    if (v) soloud.setProtectChannel(h, 0); // Disable if protected
+    int v = soloud.getProtectVoice(h);   // Get the protection state
+    if (v) soloud.setProtectVoice(h, 0); // Disable if protected
 
-Normally, if you try to play more sounds than there are channels, SoLoud
+Normally, if you try to play more sounds than there are voices, SoLoud
 will kill off the oldest playing sound to make room. This will most
 likely be your background music. This can be worked around by protecting
 the sound.
 
-If all sounds are protected, the result will be undefined.
+If all voices are protected, the result will be undefined.
 
 If an invalid handle is given to getProtectChannel, it will return 0.
 

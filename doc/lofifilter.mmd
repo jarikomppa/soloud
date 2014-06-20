@@ -26,3 +26,13 @@ Parameter   Description
 WET         Filter's wet signal; 1.0f for fully filtered, 0.0f for original, 0.5f for half and half.
 SAMPLERATE  Filter's samplerate parameter
 BITDEPTH    Filter's bit-depth parameter
+
+LofiFilter.setParams()
+----------------------
+
+Set the parameters of the filter.
+
+    gLofiFilter.setParams(8000, 5);
+    
+Changing the parameters does not affect "live" sounds. If invalid pameters are
+given, the function will return error.

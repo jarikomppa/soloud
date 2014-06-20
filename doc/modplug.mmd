@@ -16,14 +16,37 @@ the patches are loaded from pat/ directory.
 
 
 Modplug.load()
------------------
+--------------
 
 You tell modplug to load a file with the load function:
 
-    int load(const char *aFilename); // File to load
+    result load(const char *aFilename); // File to load
 
-If loading fails, the return is non-zero.
+If loading fails, the function returns an error code.
 
     SoLoud::Modplug spacedeb;
     spacedeb.load("spacedeb.mod");
 
+Modplug.setLooping()
+--------------------
+
+Adjusting the looping of a modplug sound does not currently
+have any effect. All music is set to loop by default. 
+
+Modplug.setFilter()
+-------------------
+
+As with any other audio source, you can attach filters to 
+Modplug audio sources.
+
+    gMusic.setFilter(0, &gLofi);
+
+Modplug.stop()
+--------------
+
+You can stop all instances of a modplug sound source with
+stop(). This is equivalent of calling soloud.stopAudioSource()
+with the sound source.
+
+    gMusic.stop();
+    

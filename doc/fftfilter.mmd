@@ -2,7 +2,8 @@ SoLoud::FFTFilter
 =================
 
 The FFT filter is a simple voice-breaking filter that uses FFT and
-inverse FFT.
+inverse FFT. It's pretty much a broken filter and will most likely
+get replaced in a future version of SoLoud.
 
 The filter exists mainly to adjust the speech synthesizer's voice in
 strange ways. It can also be used as basis for other FFT-based filters.
@@ -23,3 +24,16 @@ place.
     gFFTFilter.setParams(-15, FFTFilter::SUBTRACT, 0.002f);  
     // Set the filter as the first filter of the speech
     gSpeech.setFilter(0, &gFFTFilter); 
+
+The first attribute (0) of the filter is the "wet" value, which can be
+changed while the sound is playing.
+
+FFTFilter.setParameters()
+-------------------------
+
+Set the parameters of the filter.
+
+    gFFTFilter.setParams(-15, FFTFilter::SUBTRACT, 0.002f);
+    
+Changing the parameters does not affect "live" sounds. If invalid pameters are
+given, the function will return error.

@@ -17,12 +17,47 @@ WavStream.load()
 
 The wav loader takes just one parameter, the file name:
 
-    void load(const char *aFilename); // File to load
+    result load(const char *aFilename); // File to load
 
-If loading fails, the sample will be silent.
+If loading fails, the function will return an error code.
 
     SoLoud::WavStream muzak;
     muzak.load("elevator.ogg");
 
 If the loading function is called while there are instances playing, the
 result is undefined (most likely a crash).
+
+WavStream.setLooping()
+----------------------
+
+This function can be used to set the wav stream to loop.
+
+    soundtrack.setLooping(1);
+    
+Calling this function will not affect "live" sound sources.
+
+
+WavStream.setFilter()
+---------------------
+
+As with any other audio source, you can attach filters to 
+wav stream audio sources.
+
+    gHipster.setFilter(0, &gLofi);
+
+WavStream.stop()
+----------------
+
+You can stop all instances of a wav stream sound source with
+stop(). This is equivalent of calling soloud.stopAudioSource()
+with the sound source.
+
+    gHammertime.stop();
+
+WavStream.getLength()
+---------------------
+
+The length, in seconds, of this wav stream can be queried with this
+function.
+
+    double t = gRecord.getLength();

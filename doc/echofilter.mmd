@@ -16,3 +16,13 @@ is outside the [0..1[ range, the results are unpredictable.
     gEchoFilter.setParams(0.5f, 0.5f);  
     // Set the filter as the first filter of the bus
     gBus.setFilter(0, &gEchoFilter); 
+
+EchoFilter.setParams()
+----------------------
+
+Set the parameters of the filter.
+
+    gEchoFilter.setParams(0.5f, 0.5f);
+    
+Changing the parameters does not affect "live" sounds. If invalid pameters are
+given, the function will return error.

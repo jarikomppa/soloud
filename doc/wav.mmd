@@ -42,3 +42,38 @@ If loading fails, the sample will be silent.
 
 If the loading function is called while there are instances playing, the
 result is undefined (most likely a crash).
+
+Wav.setLooping()
+----------------
+
+This function can be used to set the wave to loop.
+
+    gDrumloop.setLooping(1);
+    
+Calling this function will not affect "live" sound sources.
+
+
+Wav.setFilter()
+---------------
+
+As with any other audio source, you can attach filters to 
+wave audio sources.
+
+    gHipster.setFilter(0, &gLofi);
+
+Wav.stop()
+----------
+
+You can stop all instances of a wave sound source with
+stop(). This is equivalent of calling soloud.stopAudioSource()
+with the sound source.
+
+    gHammertime.stop();
+
+Wav.getLength()
+---------------
+
+The length, in seconds, of this wave can be queried with this
+function.
+
+    double t = gRecord.getLength();

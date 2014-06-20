@@ -37,3 +37,14 @@ WET         Filter's wet signal; 1.0f for fully filtered, 0.0f for original, 0.5
 SAMPLERATE  Filter's samplerate parameter
 FREQUENCY   Filter's cutoff frequency
 RESONANCE   Filter's resonance - higher means sharper cutoff
+
+
+BiquadResonantFilter.setParams()
+--------------------------------
+
+Set the parameters of the filter.
+
+    gBQRFilter.setParams(SoLoud::BiquadResonantFilter::LOWPASS, 44100, 500, 2);  
+    
+Changing the parameters does not affect "live" sounds. If invalid pameters are
+given, the function will return error.

@@ -11,6 +11,10 @@ effects for Ludum Dare 48h games. SoLoud includes the same
 engine built in, so you can (should you wish) make every
 coin, explosion etc. sound different.
 
+The Sfxr sound sources also include a pseudo-random number
+generator which should probably be moved to more general use
+at some point.
+
 Sfxr.loadPreset()
 -----------------
 
@@ -21,7 +25,7 @@ unlimited variations of each. (Not all variants sound good, though).
 
     void loadPreset(int aPresetNo, int aRandSeed); // Preset to load
 
-If loading fails, the effect will be silent.
+If loading fails, the function returns an error code.
 
     SoLoud::Sfxr coin;
     coin.loadPreset(Sfxr::COIN, 3247);
@@ -32,10 +36,57 @@ Sfxr.loadParams()
 Effect parameters can also be loaded from a configuration file
 saved from the sfxr tool.
 
-    int loadParams(const char *aFilename); // File to load
+    result loadParams(const char *aFilename); // File to load
 
-If loading fails, the return is non-zero.
+If loading fails, the function returns an error code.
 
     SoLoud::Sfxr boom;
     boom.loadParams("boom.sfx");
 
+Sfxr.resetParams()
+------------------
+
+This function resets all of the Sfxr parameters to a "sensible" default.
+Used by loadPreset(), which then only adjusts a few parameters over the
+defaults.
+
+Sfxr.setLooping()
+-----------------
+
+Adjusting the looping of a sfxr sound does not currently
+have any effect. The sounds do not loop.
+
+Sfxr.setFilter()
+----------------
+
+As with any other audio source, you can attach filters to 
+Sfxr audio sources.
+
+    gMusic.setFilter(0, &gLofi);
+
+Sfxr.stop()
+-----------
+
+You can stop all instances of a Sfxr sound source with
+stop(). This is equivalent of calling soloud.stopAudioSource()
+with the sound source.
+
+    gBoom.stop();
+
+Prg.srand()
+-----------
+
+Initializes the pseudo-random number generator to a seed number.
+
+   rnd.srand(7);
+   
+Prg.rand()
+----------
+
+Returns the next 32bit pseudo-random number.
+
+   if (rnd.rand() & 1)
+      printf("Heads");
+   else
+      printf("Tails");
+      

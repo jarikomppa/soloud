@@ -24,3 +24,82 @@ To play a stream through the mixing bus, use the bus play() command.
 
     int fxhandle = gBus.play(gSoundEffect); // Play sound effect through bus
     gSoloud.setVolume(fxhandle, 0.5f); // set sound effect volume
+
+Bus.play()
+----------
+
+Equivalent of soloud.play(), but plays the sound sounce through the bus
+instead of at "global" scope.
+
+Bus.playClocked()
+-----------------
+
+Equivalent of soloud.playClocked(), but plays the sound sounce through the bus
+instead of at "global" scope.
+
+Bus.setVisualizationEnable()
+----------------------------
+
+Enable (or disable) gathering of visualization wave data from this bus.
+
+Bus.calcFFT()
+-------------
+
+Calculates FFT of the sound currently playing through this bus, and
+returns a pointer to the result.
+
+    float * fft = fxbus.calcFFT();
+    int i;
+    for (i = 0; i < 256; i++)
+      drawline(0, i, fft[i] * 32, i);
+
+The FFT data has 256 floats, from low to high frequencies.
+
+SoLoud performs a mono mix of the audio, passes it to FFT, and then
+calculates the magnitude of the complex numbers for application to use.
+For more advanced FFT use, SoLoud code changes are needed.
+
+The returned pointer points at a buffer that's around as long as the
+bus object exists, but the data is only updated when calcFFT() is called.
+
+For the FFT to work, you also need to enable visualization with
+the Bus.setVisualizationEnable() call. Otherwise the source data for the
+FFT calculation will not be gathered.
+
+Bus.getWave()
+-------------
+
+Gets 256 samples of the sound currently playing through this bus, and
+returns a pointer to the result.
+
+    float * wav = speechbus.getWave();
+    int i;
+    for (i = 0; i < 256; i++)
+      drawline(0, i, wav[i] * 32, i);
+
+The returned pointer points at a buffer that's around as long as the
+bus object exists, but the data is only updated when getWave() is 
+called. The data is the same that is used to generate visualization FFT data.
+
+For this function to work properly, you also need enable visualization with
+the Bus.setVisualizationEnable() call. Otherwise the source data
+will not be gathered, and the result is undefined (probably zero).
+
+Bus.setLooping()
+----------------
+
+Trying to change the looping state of a bus has no effect.
+
+Bus.stop()
+----------
+This is equivalent of calling soloud.stopAudioSource()
+with the sound source.
+
+
+Bus.setFilter()
+---------------
+
+As with any other audio source, you can attach filters to 
+busses.
+
+    gSfxBus.setFilter(0, &gEnvironment);

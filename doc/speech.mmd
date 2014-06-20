@@ -25,3 +25,33 @@ The setText function can be used to set the text to be spoken.
 
 If the setText function is called while speech is playing, SoLoud stops
 any playing instances to avoid crashing.
+
+Trying to set the text to NULL will return an error code.
+
+Speech.setLooping()
+-------------------
+
+This function can be used to set the speech to loop.
+
+    gHeyListen.setLooping(1);
+    
+Calling this function will not affect "live" sound sources.
+
+
+Speech.setFilter()
+------------------
+
+As with any other audio source, you can attach filters to 
+speech audio sources.
+
+    gRobot.setFilter(0, &gRobotize);
+
+Speech.stop()
+-------------
+
+You can stop all instances of a speech sound source with
+stop(). This is equivalent of calling soloud.stopAudioSource()
+with the sound source.
+
+    gHeyListen.stop(); // shut up already!
+

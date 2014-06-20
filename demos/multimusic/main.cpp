@@ -131,6 +131,16 @@ void render()
 	drawstring("7-8: switch music",0,16);
 	drawstring("9-0: slow down/speed up",0,32);
 
+	char temp[256];
+	sprintf(temp, "Music1 volume: %d%%", (int)floor(gSoloud.getVolume(gMusichandle1) * 100));
+	drawstring(temp,0,48);
+	sprintf(temp, "Music2 volume: %d%%", (int)floor(gSoloud.getVolume(gMusichandle2) * 100));
+	drawstring(temp,0,64);
+	sprintf(temp, "Music rel. speed: %d%%", (int)floor(gSoloud.getRelativePlaySpeed(gMusichandle2) * 100));
+	drawstring(temp,0,80);
+	sprintf(temp, "Active voices: %d", gSoloud.getActiveVoiceCount());
+	drawstring(temp,0,96);
+
 	// Unlock if needed
 	if (SDL_MUSTLOCK(screen)) 
 		SDL_UnlockSurface(screen);
@@ -143,8 +153,8 @@ void render()
 // Entry point
 int main(int argc, char *argv[])
 {
-	gMusic1.load("audio/algebra_loop.ogg");
-	gMusic2.load("audio/delphi_loop.ogg");
+	gMusic1.load("audio/plonk_wet.ogg");
+	gMusic2.load("audio/plonk_dry.ogg");
 
 	gMusic1.setLooping(1);
 	gMusic2.setLooping(1);
@@ -174,9 +184,16 @@ int main(int argc, char *argv[])
 	}
 
 	gMusichandle1 = gSoloud.play(gMusic1,0,0,1);
-	gMusichandle2 = gSoloud.play(gMusic2);
-	gSoloud.setProtectVoice(gMusichandle1, 1);
-	gSoloud.setProtectVoice(gMusichandle2, 1);
+	gMusichandle2 = gSoloud.play(gMusic2,1,0,1);
+
+	SoLoud::handle grouphandle = gSoloud.createVoiceGroup();
+	gSoloud.addVoiceToGroup(grouphandle, gMusichandle1);
+	gSoloud.addVoiceToGroup(grouphandle, gMusichandle2);
+	
+	gSoloud.setProtectVoice(grouphandle, 1); // protect all voices in group 
+	gSoloud.setPause(grouphandle, 0);        // unpause all voices in group 
+	
+	gSoloud.destroyVoiceGroup(grouphandle); // remove group, leaves voices alone
 
 	int cycle = 0;
 
@@ -221,16 +238,12 @@ int main(int argc, char *argv[])
 					gSoloud.play(gSfx, 1, ((rand()%512)-256)/256.0f);
 					break;
 				case SDLK_7:
-					gSoloud.setPause(gMusichandle1, 0);
 					gSoloud.fadeVolume(gMusichandle1, 1, 2);
 					gSoloud.fadeVolume(gMusichandle2, 0, 2);
-					gSoloud.schedulePause(gMusichandle2, 2);
 					break;
 				case SDLK_8:
-					gSoloud.setPause(gMusichandle2, 0);
 					gSoloud.fadeVolume(gMusichandle2, 1, 2);
 					gSoloud.fadeVolume(gMusichandle1, 0, 2);
-					gSoloud.schedulePause(gMusichandle1, 2);
 					break;
 				case SDLK_9:
 					gSoloud.fadeRelativePlaySpeed(gMusichandle1, 0.2f, 5);

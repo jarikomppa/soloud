@@ -580,6 +580,7 @@ void emit_cppstart(FILE * f)
 		"#include \"../include/soloud_wav.h\"\n"
 		"#include \"../include/soloud_wavstream.h\"\n"
 		"#include \"../include/soloud_sfxr.h\"\n"
+		"#include \"../include/soloud_flangerfilter.h\"\n"
 #if defined(WITH_MODPLUG)
 		"#include \"../include/soloud_modplug.h\"\n"
 #endif
@@ -1080,20 +1081,21 @@ int main(int parc, char ** pars)
 	parse("../include/soloud.h");
 	parse("../include/soloud_audiosource.h");
 	parse("../include/soloud_biquadresonantfilter.h");
-	parse("../include/soloud_lofifilter.h");
 	parse("../include/soloud_bus.h");
 	parse("../include/soloud_echofilter.h");
 	parse("../include/soloud_fader.h");
 	parse("../include/soloud_fftfilter.h");
 	parse("../include/soloud_filter.h");
+	parse("../include/soloud_flangerfilter.h");
+	parse("../include/soloud_lofifilter.h");
+#if defined(WITH_MODPLUG)
+	parse("../include/soloud_modplug.h");
+#endif
+	parse("../include/soloud_sfxr.h");
 	parse("../include/soloud_speech.h");
 	parse("../include/soloud_thread.h");
 	parse("../include/soloud_wav.h");
 	parse("../include/soloud_wavstream.h");
-	parse("../include/soloud_sfxr.h");
-#if defined(WITH_MODPLUG)
-	parse("../include/soloud_modplug.h");
-#endif
 	printf("Handling inheritance..\n");
 	inherit_stuff();
 

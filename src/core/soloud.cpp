@@ -268,7 +268,7 @@ namespace SoLoud
 		mScratchNeeded = mScratchSize;
 		mScratch = new float[mScratchSize * 2];
 		mFlags = aFlags;
-		mPostClipScaler = 0.5f;
+		mPostClipScaler = 0.95f;
 	}
 
 	const char * Soloud::getErrorString(result aErrorCode) const

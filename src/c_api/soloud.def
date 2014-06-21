@@ -8,6 +8,8 @@ EXPORTS
 	Soloud_getErrorString
 	Soloud_play
 	Soloud_playEx
+	Soloud_playClocked
+	Soloud_playClockedEx
 	Soloud_seek
 	Soloud_stop
 	Soloud_stopAll
@@ -37,6 +39,7 @@ EXPORTS
 	Soloud_setPan
 	Soloud_setPanAbsolute
 	Soloud_setVolume
+	Soloud_setDelaySamples
 	Soloud_fadeVolume
 	Soloud_fadePan
 	Soloud_fadeRelativePlaySpeed
@@ -52,17 +55,21 @@ EXPORTS
 	Soloud_calcFFT
 	Soloud_getWave
 	Soloud_getLoopCount
+	Soloud_createVoiceGroup
+	Soloud_destroyVoiceGroup
+	Soloud_addVoiceToGroup
+	Soloud_isVoiceGroup
+	Soloud_isVoiceGroupEmpty
 	BiquadResonantFilter_destroy
 	BiquadResonantFilter_create
 	BiquadResonantFilter_setParams
-	LofiFilter_destroy
-	LofiFilter_create
-	LofiFilter_setParams
 	Bus_destroy
 	Bus_create
 	Bus_setFilter
 	Bus_play
 	Bus_playEx
+	Bus_playClocked
+	Bus_playClockedEx
 	Bus_setVisualizationEnable
 	Bus_calcFFT
 	Bus_getWave
@@ -76,6 +83,30 @@ EXPORTS
 	FFTFilter_create
 	FFTFilter_setParameters
 	FFTFilter_setParametersEx
+	FlangerFilter_destroy
+	FlangerFilter_create
+	FlangerFilter_setParams
+	LofiFilter_destroy
+	LofiFilter_create
+	LofiFilter_setParams
+	Modplug_destroy
+	Modplug_create
+	Modplug_load
+	Modplug_setLooping
+	Modplug_setFilter
+	Modplug_stop
+	Prg_destroy
+	Prg_create
+	Prg_rand
+	Prg_srand
+	Sfxr_destroy
+	Sfxr_create
+	Sfxr_resetParams
+	Sfxr_loadParams
+	Sfxr_loadPreset
+	Sfxr_setLooping
+	Sfxr_setFilter
+	Sfxr_stop
 	Speech_destroy
 	Speech_create
 	Speech_setText
@@ -97,21 +128,3 @@ EXPORTS
 	WavStream_setLooping
 	WavStream_setFilter
 	WavStream_stop
-	Prg_destroy
-	Prg_create
-	Prg_rand
-	Prg_srand
-	Sfxr_destroy
-	Sfxr_create
-	Sfxr_resetParams
-	Sfxr_loadParams
-	Sfxr_loadPreset
-	Sfxr_setLooping
-	Sfxr_setFilter
-	Sfxr_stop
-	Modplug_destroy
-	Modplug_create
-	Modplug_load
-	Modplug_setLooping
-	Modplug_setFilter
-	Modplug_stop

@@ -43,6 +43,7 @@ freely, subject to the following restrictions:
 #include "../include/soloud_wav.h"
 #include "../include/soloud_wavstream.h"
 #include "../include/soloud_sfxr.h"
+#include "../include/soloud_flangerfilter.h"
 #include "../include/soloud_modplug.h"
 
 using namespace SoLoud;
@@ -66,7 +67,7 @@ int Soloud_init(void * aClassPtr)
 	return cl->init();
 }
 
-int Soloud_initEx(void * aClassPtr, int aFlags, int aBackend, int aSamplerate, int aBufferSize)
+int Soloud_initEx(void * aClassPtr, unsigned int aFlags, unsigned int aBackend, unsigned int aSamplerate, unsigned int aBufferSize)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
 	return cl->init(aFlags, aBackend, aSamplerate, aBufferSize);
@@ -78,7 +79,7 @@ void Soloud_deinit(void * aClassPtr)
 	cl->deinit();
 }
 
-int Soloud_getVersion(void * aClassPtr)
+unsigned int Soloud_getVersion(void * aClassPtr)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
 	return cl->getVersion();
@@ -96,10 +97,22 @@ unsigned int Soloud_play(void * aClassPtr, AudioSource * aSound)
 	return cl->play(*aSound);
 }
 
-unsigned int Soloud_playEx(void * aClassPtr, AudioSource * aSound, float aVolume, float aPan, int aPaused, int aBus)
+unsigned int Soloud_playEx(void * aClassPtr, AudioSource * aSound, float aVolume, float aPan, int aPaused, unsigned int aBus)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
 	return cl->play(*aSound, aVolume, aPan, aPaused, aBus);
+}
+
+unsigned int Soloud_playClocked(void * aClassPtr, double aSoundTime, AudioSource * aSound)
+{
+	Soloud * cl = (Soloud *)aClassPtr;
+	return cl->playClocked(aSoundTime, *aSound);
+}
+
+unsigned int Soloud_playClockedEx(void * aClassPtr, double aSoundTime, AudioSource * aSound, float aVolume, float aPan, unsigned int aBus)
+{
+	Soloud * cl = (Soloud *)aClassPtr;
+	return cl->playClocked(aSoundTime, *aSound, aVolume, aPan, aBus);
 }
 
 void Soloud_seek(void * aClassPtr, unsigned int aVoiceHandle, double aSeconds)
@@ -126,25 +139,25 @@ void Soloud_stopAudioSource(void * aClassPtr, AudioSource * aSound)
 	cl->stopAudioSource(*aSound);
 }
 
-void Soloud_setFilterParameter(void * aClassPtr, unsigned int aVoiceHandle, int aFilterId, int aAttributeId, float aValue)
+void Soloud_setFilterParameter(void * aClassPtr, unsigned int aVoiceHandle, unsigned int aFilterId, unsigned int aAttributeId, float aValue)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
 	cl->setFilterParameter(aVoiceHandle, aFilterId, aAttributeId, aValue);
 }
 
-float Soloud_getFilterParameter(void * aClassPtr, unsigned int aVoiceHandle, int aFilterId, int aAttributeId)
+float Soloud_getFilterParameter(void * aClassPtr, unsigned int aVoiceHandle, unsigned int aFilterId, unsigned int aAttributeId)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
 	return cl->getFilterParameter(aVoiceHandle, aFilterId, aAttributeId);
 }
 
-void Soloud_fadeFilterParameter(void * aClassPtr, unsigned int aVoiceHandle, int aFilterId, int aAttributeId, float aTo, double aTime)
+void Soloud_fadeFilterParameter(void * aClassPtr, unsigned int aVoiceHandle, unsigned int aFilterId, unsigned int aAttributeId, float aTo, double aTime)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
 	cl->fadeFilterParameter(aVoiceHandle, aFilterId, aAttributeId, aTo, aTime);
 }
 
-void Soloud_oscillateFilterParameter(void * aClassPtr, unsigned int aVoiceHandle, int aFilterId, int aAttributeId, float aFrom, float aTo, double aTime)
+void Soloud_oscillateFilterParameter(void * aClassPtr, unsigned int aVoiceHandle, unsigned int aFilterId, unsigned int aAttributeId, float aFrom, float aTo, double aTime)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
 	cl->oscillateFilterParameter(aVoiceHandle, aFilterId, aAttributeId, aFrom, aTo, aTime);
@@ -186,7 +199,7 @@ int Soloud_getProtectVoice(void * aClassPtr, unsigned int aVoiceHandle)
 	return cl->getProtectVoice(aVoiceHandle);
 }
 
-int Soloud_getActiveVoiceCount(void * aClassPtr)
+unsigned int Soloud_getActiveVoiceCount(void * aClassPtr)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
 	return cl->getActiveVoiceCount();
@@ -276,6 +289,12 @@ void Soloud_setVolume(void * aClassPtr, unsigned int aVoiceHandle, float aVolume
 	cl->setVolume(aVoiceHandle, aVolume);
 }
 
+void Soloud_setDelaySamples(void * aClassPtr, unsigned int aVoiceHandle, unsigned int aSamples)
+{
+	Soloud * cl = (Soloud *)aClassPtr;
+	cl->setDelaySamples(aVoiceHandle, aSamples);
+}
+
 void Soloud_fadeVolume(void * aClassPtr, unsigned int aVoiceHandle, float aTo, double aTime)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
@@ -336,7 +355,7 @@ void Soloud_oscillateGlobalVolume(void * aClassPtr, float aFrom, float aTo, doub
 	cl->oscillateGlobalVolume(aFrom, aTo, aTime);
 }
 
-void Soloud_setGlobalFilter(void * aClassPtr, int aFilterId, Filter * aFilter)
+void Soloud_setGlobalFilter(void * aClassPtr, unsigned int aFilterId, Filter * aFilter)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
 	cl->setGlobalFilter(aFilterId, aFilter);
@@ -360,10 +379,40 @@ float * Soloud_getWave(void * aClassPtr)
 	return cl->getWave();
 }
 
-int Soloud_getLoopCount(void * aClassPtr, unsigned int aVoiceHandle)
+unsigned int Soloud_getLoopCount(void * aClassPtr, unsigned int aVoiceHandle)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
 	return cl->getLoopCount(aVoiceHandle);
+}
+
+unsigned int Soloud_createVoiceGroup(void * aClassPtr)
+{
+	Soloud * cl = (Soloud *)aClassPtr;
+	return cl->createVoiceGroup();
+}
+
+int Soloud_destroyVoiceGroup(void * aClassPtr, unsigned int aVoiceGroupHandle)
+{
+	Soloud * cl = (Soloud *)aClassPtr;
+	return cl->destroyVoiceGroup(aVoiceGroupHandle);
+}
+
+int Soloud_addVoiceToGroup(void * aClassPtr, unsigned int aVoiceGroupHandle, unsigned int aVoiceHandle)
+{
+	Soloud * cl = (Soloud *)aClassPtr;
+	return cl->addVoiceToGroup(aVoiceGroupHandle, aVoiceHandle);
+}
+
+int Soloud_isVoiceGroup(void * aClassPtr, unsigned int aVoiceGroupHandle)
+{
+	Soloud * cl = (Soloud *)aClassPtr;
+	return cl->isVoiceGroup(aVoiceGroupHandle);
+}
+
+int Soloud_isVoiceGroupEmpty(void * aClassPtr, unsigned int aVoiceGroupHandle)
+{
+	Soloud * cl = (Soloud *)aClassPtr;
+	return cl->isVoiceGroupEmpty(aVoiceGroupHandle);
 }
 
 void BiquadResonantFilter_destroy(void * aClassPtr)
@@ -382,22 +431,6 @@ int BiquadResonantFilter_setParams(void * aClassPtr, int aType, float aSampleRat
 	return cl->setParams(aType, aSampleRate, aFrequency, aResonance);
 }
 
-void LofiFilter_destroy(void * aClassPtr)
-{
-  delete (LofiFilter *)aClassPtr;
-}
-
-void * LofiFilter_create()
-{
-  return (void *)new LofiFilter;
-}
-
-int LofiFilter_setParams(void * aClassPtr, float aSampleRate, float aBitdepth)
-{
-	LofiFilter * cl = (LofiFilter *)aClassPtr;
-	return cl->setParams(aSampleRate, aBitdepth);
-}
-
 void Bus_destroy(void * aClassPtr)
 {
   delete (Bus *)aClassPtr;
@@ -408,22 +441,34 @@ void * Bus_create()
   return (void *)new Bus;
 }
 
-void Bus_setFilter(void * aClassPtr, int aFilterId, Filter * aFilter)
+void Bus_setFilter(void * aClassPtr, unsigned int aFilterId, Filter * aFilter)
 {
 	Bus * cl = (Bus *)aClassPtr;
 	cl->setFilter(aFilterId, aFilter);
 }
 
-int Bus_play(void * aClassPtr, AudioSource * aSound)
+unsigned int Bus_play(void * aClassPtr, AudioSource * aSound)
 {
 	Bus * cl = (Bus *)aClassPtr;
 	return cl->play(*aSound);
 }
 
-int Bus_playEx(void * aClassPtr, AudioSource * aSound, float aVolume, float aPan, int aPaused)
+unsigned int Bus_playEx(void * aClassPtr, AudioSource * aSound, float aVolume, float aPan, int aPaused)
 {
 	Bus * cl = (Bus *)aClassPtr;
 	return cl->play(*aSound, aVolume, aPan, aPaused);
+}
+
+unsigned int Bus_playClocked(void * aClassPtr, double aSoundTime, AudioSource * aSound)
+{
+	Bus * cl = (Bus *)aClassPtr;
+	return cl->playClocked(aSoundTime, *aSound);
+}
+
+unsigned int Bus_playClockedEx(void * aClassPtr, double aSoundTime, AudioSource * aSound, float aVolume, float aPan)
+{
+	Bus * cl = (Bus *)aClassPtr;
+	return cl->playClocked(aSoundTime, *aSound, aVolume, aPan);
 }
 
 void Bus_setVisualizationEnable(void * aClassPtr, int aEnable)
@@ -500,123 +545,69 @@ int FFTFilter_setParametersEx(void * aClassPtr, int aShift, int aCombine, float 
 	return cl->setParameters(aShift, aCombine, aScale);
 }
 
-void Speech_destroy(void * aClassPtr)
+void FlangerFilter_destroy(void * aClassPtr)
 {
-  delete (Speech *)aClassPtr;
+  delete (FlangerFilter *)aClassPtr;
 }
 
-void * Speech_create()
+void * FlangerFilter_create()
 {
-  return (void *)new Speech;
+  return (void *)new FlangerFilter;
 }
 
-int Speech_setText(void * aClassPtr, const char * aText)
+int FlangerFilter_setParams(void * aClassPtr, float aDelay, float aFreq)
 {
-	Speech * cl = (Speech *)aClassPtr;
-	return cl->setText(aText);
+	FlangerFilter * cl = (FlangerFilter *)aClassPtr;
+	return cl->setParams(aDelay, aFreq);
 }
 
-void Speech_setLooping(void * aClassPtr, int aLoop)
+void LofiFilter_destroy(void * aClassPtr)
 {
-	Speech * cl = (Speech *)aClassPtr;
-	cl->setLooping(aLoop);
+  delete (LofiFilter *)aClassPtr;
 }
 
-void Speech_setFilter(void * aClassPtr, int aFilterId, Filter * aFilter)
+void * LofiFilter_create()
 {
-	Speech * cl = (Speech *)aClassPtr;
-	cl->setFilter(aFilterId, aFilter);
+  return (void *)new LofiFilter;
 }
 
-void Speech_stop(void * aClassPtr)
+int LofiFilter_setParams(void * aClassPtr, float aSampleRate, float aBitdepth)
 {
-	Speech * cl = (Speech *)aClassPtr;
-	cl->stop();
+	LofiFilter * cl = (LofiFilter *)aClassPtr;
+	return cl->setParams(aSampleRate, aBitdepth);
 }
 
-void Wav_destroy(void * aClassPtr)
+void Modplug_destroy(void * aClassPtr)
 {
-  delete (Wav *)aClassPtr;
+  delete (Modplug *)aClassPtr;
 }
 
-void * Wav_create()
+void * Modplug_create()
 {
-  return (void *)new Wav;
+  return (void *)new Modplug;
 }
 
-int Wav_load(void * aClassPtr, const char * aFilename)
+int Modplug_load(void * aClassPtr, const char * aFilename)
 {
-	Wav * cl = (Wav *)aClassPtr;
+	Modplug * cl = (Modplug *)aClassPtr;
 	return cl->load(aFilename);
 }
 
-int Wav_loadMem(void * aClassPtr, unsigned char * aMem, int aLength)
+void Modplug_setLooping(void * aClassPtr, int aLoop)
 {
-	Wav * cl = (Wav *)aClassPtr;
-	return cl->loadMem(aMem, aLength);
-}
-
-double Wav_getLength(void * aClassPtr)
-{
-	Wav * cl = (Wav *)aClassPtr;
-	return cl->getLength();
-}
-
-void Wav_setLooping(void * aClassPtr, int aLoop)
-{
-	Wav * cl = (Wav *)aClassPtr;
+	Modplug * cl = (Modplug *)aClassPtr;
 	cl->setLooping(aLoop);
 }
 
-void Wav_setFilter(void * aClassPtr, int aFilterId, Filter * aFilter)
+void Modplug_setFilter(void * aClassPtr, unsigned int aFilterId, Filter * aFilter)
 {
-	Wav * cl = (Wav *)aClassPtr;
+	Modplug * cl = (Modplug *)aClassPtr;
 	cl->setFilter(aFilterId, aFilter);
 }
 
-void Wav_stop(void * aClassPtr)
+void Modplug_stop(void * aClassPtr)
 {
-	Wav * cl = (Wav *)aClassPtr;
-	cl->stop();
-}
-
-void WavStream_destroy(void * aClassPtr)
-{
-  delete (WavStream *)aClassPtr;
-}
-
-void * WavStream_create()
-{
-  return (void *)new WavStream;
-}
-
-int WavStream_load(void * aClassPtr, const char * aFilename)
-{
-	WavStream * cl = (WavStream *)aClassPtr;
-	return cl->load(aFilename);
-}
-
-double WavStream_getLength(void * aClassPtr)
-{
-	WavStream * cl = (WavStream *)aClassPtr;
-	return cl->getLength();
-}
-
-void WavStream_setLooping(void * aClassPtr, int aLoop)
-{
-	WavStream * cl = (WavStream *)aClassPtr;
-	cl->setLooping(aLoop);
-}
-
-void WavStream_setFilter(void * aClassPtr, int aFilterId, Filter * aFilter)
-{
-	WavStream * cl = (WavStream *)aClassPtr;
-	cl->setFilter(aFilterId, aFilter);
-}
-
-void WavStream_stop(void * aClassPtr)
-{
-	WavStream * cl = (WavStream *)aClassPtr;
+	Modplug * cl = (Modplug *)aClassPtr;
 	cl->stop();
 }
 
@@ -676,7 +667,7 @@ void Sfxr_setLooping(void * aClassPtr, int aLoop)
 	cl->setLooping(aLoop);
 }
 
-void Sfxr_setFilter(void * aClassPtr, int aFilterId, Filter * aFilter)
+void Sfxr_setFilter(void * aClassPtr, unsigned int aFilterId, Filter * aFilter)
 {
 	Sfxr * cl = (Sfxr *)aClassPtr;
 	cl->setFilter(aFilterId, aFilter);
@@ -688,37 +679,123 @@ void Sfxr_stop(void * aClassPtr)
 	cl->stop();
 }
 
-void Modplug_destroy(void * aClassPtr)
+void Speech_destroy(void * aClassPtr)
 {
-  delete (Modplug *)aClassPtr;
+  delete (Speech *)aClassPtr;
 }
 
-void * Modplug_create()
+void * Speech_create()
 {
-  return (void *)new Modplug;
+  return (void *)new Speech;
 }
 
-int Modplug_load(void * aClassPtr, const char * aFilename)
+int Speech_setText(void * aClassPtr, const char * aText)
 {
-	Modplug * cl = (Modplug *)aClassPtr;
-	return cl->load(aFilename);
+	Speech * cl = (Speech *)aClassPtr;
+	return cl->setText(aText);
 }
 
-void Modplug_setLooping(void * aClassPtr, int aLoop)
+void Speech_setLooping(void * aClassPtr, int aLoop)
 {
-	Modplug * cl = (Modplug *)aClassPtr;
+	Speech * cl = (Speech *)aClassPtr;
 	cl->setLooping(aLoop);
 }
 
-void Modplug_setFilter(void * aClassPtr, int aFilterId, Filter * aFilter)
+void Speech_setFilter(void * aClassPtr, unsigned int aFilterId, Filter * aFilter)
 {
-	Modplug * cl = (Modplug *)aClassPtr;
+	Speech * cl = (Speech *)aClassPtr;
 	cl->setFilter(aFilterId, aFilter);
 }
 
-void Modplug_stop(void * aClassPtr)
+void Speech_stop(void * aClassPtr)
 {
-	Modplug * cl = (Modplug *)aClassPtr;
+	Speech * cl = (Speech *)aClassPtr;
+	cl->stop();
+}
+
+void Wav_destroy(void * aClassPtr)
+{
+  delete (Wav *)aClassPtr;
+}
+
+void * Wav_create()
+{
+  return (void *)new Wav;
+}
+
+int Wav_load(void * aClassPtr, const char * aFilename)
+{
+	Wav * cl = (Wav *)aClassPtr;
+	return cl->load(aFilename);
+}
+
+int Wav_loadMem(void * aClassPtr, unsigned char * aMem, unsigned int aLength)
+{
+	Wav * cl = (Wav *)aClassPtr;
+	return cl->loadMem(aMem, aLength);
+}
+
+double Wav_getLength(void * aClassPtr)
+{
+	Wav * cl = (Wav *)aClassPtr;
+	return cl->getLength();
+}
+
+void Wav_setLooping(void * aClassPtr, int aLoop)
+{
+	Wav * cl = (Wav *)aClassPtr;
+	cl->setLooping(aLoop);
+}
+
+void Wav_setFilter(void * aClassPtr, unsigned int aFilterId, Filter * aFilter)
+{
+	Wav * cl = (Wav *)aClassPtr;
+	cl->setFilter(aFilterId, aFilter);
+}
+
+void Wav_stop(void * aClassPtr)
+{
+	Wav * cl = (Wav *)aClassPtr;
+	cl->stop();
+}
+
+void WavStream_destroy(void * aClassPtr)
+{
+  delete (WavStream *)aClassPtr;
+}
+
+void * WavStream_create()
+{
+  return (void *)new WavStream;
+}
+
+int WavStream_load(void * aClassPtr, const char * aFilename)
+{
+	WavStream * cl = (WavStream *)aClassPtr;
+	return cl->load(aFilename);
+}
+
+double WavStream_getLength(void * aClassPtr)
+{
+	WavStream * cl = (WavStream *)aClassPtr;
+	return cl->getLength();
+}
+
+void WavStream_setLooping(void * aClassPtr, int aLoop)
+{
+	WavStream * cl = (WavStream *)aClassPtr;
+	cl->setLooping(aLoop);
+}
+
+void WavStream_setFilter(void * aClassPtr, unsigned int aFilterId, Filter * aFilter)
+{
+	WavStream * cl = (WavStream *)aClassPtr;
+	cl->setFilter(aFilterId, aFilter);
+}
+
+void WavStream_stop(void * aClassPtr)
+{
+	WavStream * cl = (WavStream *)aClassPtr;
 	cl->stop();
 }
 

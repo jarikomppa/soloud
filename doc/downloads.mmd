@@ -27,7 +27,44 @@ Additional files
 Stable Releases 
 --------------- 
 
-[soloud_20140521.zip](soloud_20140521.zip) <<- Download here
+[soloud_20140622.zip](soloud_20140622.zip) <<- Download here
+
+Documentation: [PDF](soloud_20140622.pdf) | [EPUB](soloud_20140622.epub) | [MOBI](soloud_20140622.mobi) | [HTML](soloud_20140622.html) 
+
+- SoLoud "SLF" release
+- Hilights:
+    - New demo: "space", demonstrating visualization data from different parts of the pipeline
+    - New demo: "pew pew", demonstrating difference between play() and playClocked()
+    - New filter: flanger
+    - New way to play sounds: playClocked() for rapidly-launched sounds, to make it so all sounds don't start from the beginning of a sound buffer
+    - Loop count query added    
+    - Voice groups to command several voices in one atomic operation
+- A lot of variable type changes:
+    - Defined error codes, and several functions return error codes now.
+    - Time variable type changed from float to double
+    - Typedefs for handles, time, result codes
+    - Plenty of "int" -> "unsigned int" changes, some ints changed to bools
+- A lot of work on code generation and wrappers:
+    - Codegen now also outputs soloud_codegen.py with all data needed to generate wrappers
+    - Python wrapper generator
+    - Python API
+- Other changes that affect your code:
+    - stopSound() renamed to stopAudioSource(). Audio sources also got a new stop() function that stops all instances.
+    - Echo filter now has an optional low pass filter to make more "natural" echoes
+    - Default post-clip scaler upped from 0.5 to 0.95
+    - New songs for multimusic, changed multimusic to use voice groups
+- Regarding builds:
+    - Redesigned the mechanism by which different backends are included in the build, controlled mainly through premake
+    - Many new premake options    
+    - "nondyn" SDL build added which links to SDL directly, for special needs such as emscripten
+    - sdl2 dll may work now (mutex functions were renamed from SDL to SDL2, audio API should be almost the same)
+- And, under the hood:
+    - Side project - resamplerlab - to make writing new resamplers easier, with some experimental resamplers
+    - Some work towards osx, linux compatibility
+    - FFT code moved to its own source so it can be more easily replaced in the future
+    - Changed mixer fixed point from 16.16 to 12.20
+
+[soloud_20140521.zip](soloud_20140521.zip) 
 
 Documentation: [PDF](soloud_20140521.pdf) | [EPUB](soloud_20140521.epub) | [MOBI](soloud_20140521.mobi) | [HTML](soloud_20140521.html) 
 

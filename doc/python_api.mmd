@@ -11,11 +11,8 @@ API
 
 The Python API mirrors the c++ API.
 
-If the c++ API functions have default parameters, two functions
-are generated: one without the default parameters, and one with.
-
-The one where you can change the default parameters is post-fixed ex,
-such as init and init_ex.
+If the c++ API functions have default parameters, the same function
+in the python API will also have default parameters.
 
 As an example, here's a simple example in the C++ api:
 
@@ -43,7 +40,9 @@ Converted to the "C" API, this becomes:
     
     speech.set_text("Hello Python api")
 
-    audiolib.init_ex(audiolib.CLIP_ROUNDOFF | audiolib.ENABLE_VISUALIZATION)
+    audiolib.init(audiolib.CLIP_ROUNDOFF | 
+                  audiolib.ENABLE_VISUALIZATION)
+
     audiolib.set_global_volume(4)
     audiolib.play(speech)
 
@@ -60,3 +59,30 @@ Alternatively, you can use the SoLoud objects with the "with" syntax, which also
         audiolib.init()
         # ...
         
+Here's a slightly longer example:
+
+    from soloud import *
+
+    with Soloud() as audiolib:
+        audiolib.init()
+        audiolib.set_global_volume(10)
+
+        speech = Speech()
+
+        flanger = FlangerFilter()
+        speech.set_filter(0, flanger)
+
+        t = "Hello Python (OOP) World!"
+        speech.set_text(t)
+        print(t)
+        audiolib.play(speech)
+
+        print "Enter text to speak (empty string quits)"
+        while t != "":
+                t = raw_input(": ")
+                speech.set_text(t);
+                audiolib.play(speech);
+
+        speech.close()
+
+    print "Bye"

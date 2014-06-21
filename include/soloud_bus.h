@@ -49,13 +49,6 @@ namespace SoLoud
 	class Bus : public AudioSource
 	{
 	public:
-		BusInstance *mInstance;
-		unsigned int mChannelHandle;
-		// FFT output data
-		float mFFTData[256];
-		// Snapshot of wave data for visualization
-		float mWaveData[256];
-	public:
 		Bus();
 		virtual BusInstance *createInstance();
 		// Set filter. Set to NULL to clear the filter.
@@ -74,6 +67,12 @@ namespace SoLoud
 		// Get 256 floats of wave data for visualization. Visualization has to be enabled before use.
 		float *getWave();
 	public:
+		BusInstance *mInstance;
+		unsigned int mChannelHandle;
+		// FFT output data
+		float mFFTData[256];
+		// Snapshot of wave data for visualization
+		float mWaveData[256];
 		// Internal: find the bus' channel
 		void findBusHandle();
 	};

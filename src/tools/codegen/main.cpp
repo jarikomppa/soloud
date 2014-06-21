@@ -419,10 +419,8 @@ void parse(const char *aFilename, int aPrintProgress = 0)
 				if (s == "public")
 				{
 					EXPECT(":");
-					if (c->mName == "Soloud")
-						omit = !omit;
-					else
-						omit = 0;					
+					omit = !omit;
+//					printf("\n%s going omit %d", c->mName.c_str(), omit);
 				}
 				else
 				{

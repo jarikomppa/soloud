@@ -24,22 +24,21 @@ print "Checking for undocumented APIs.."
 print
 
 found = 0
+total = 0
 
 for func in soloud_codegen.soloud_func:
     apifunc = func[1].replace("_",".")
     if ((apifunc[-2::] != "Ex") and 
-    	  (apifunc[-7::] != "destroy") and 
-    	  (apifunc[-6::] != "create")):
-        if not checkfiles(apifunc):
+        (apifunc[-7::] != "destroy") and 
+        (apifunc[-6::] != "create")):
+        total += 1
+        if not checkfiles(apifunc + "()"):
             print apifunc
             found += 1
 
 if found == 0:
-    print "All good!"
+    print "All good! (" + str(total) + ", not counting ctor/dtor/ex)"
 else:
     print
-    print str(found) + " APIs undocumented. Get to work!"
-
-  
-
-        
+    print str(found) + " / " + str(total) + " APIs undocumented. Get to work!"
+    print "(not counting ctor/dtor/ex variants)"

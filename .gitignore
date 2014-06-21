@@ -21,3 +21,8 @@ doc/*.mobi
 doc/*.epub
 bin/audio/
 bin/
+out/
+*.pyc
+*.exp
+doc/xelatex_output.txt
+doc/kindlegen_output.txt

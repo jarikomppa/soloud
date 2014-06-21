@@ -79,8 +79,9 @@ for x in src:
 		callp.append(x)
 subprocess.call(callp)
 
-print "- -- --- -- - Converting epub -> mobi"
-subprocess.call(["kindlegen", "SoLoud.epub", "-c2"])
+print "- -- --- -- - Converting epub -> mobi (kindlegen_output.txt)"
+with open('kindlegen_output.txt', 'w') as outfile:
+    subprocess.call(["kindlegen", "SoLoud.epub", "-c2"], stdout=outfile)
 
 print "- -- --- -- - Generating LaTex"
 
@@ -88,10 +89,11 @@ for x in src:
 	if x not in website_only:
 		subprocess.call(["pandoc", "--listings", "--default-image-extension=pdf", "--chapters", x, "-o", x[:len(x)-3]+"tex"])
 
-print "- -- --- -- - Generating pdf"
+print "- -- --- -- - Generating pdf (xelatex_output.txt)"
 
-subprocess.call(["xelatex", "SoLoud.tex"])
-subprocess.call(["xelatex", "SoLoud.tex"])
+with open('xelatex_output.txt', 'w') as outfile:
+    subprocess.call(["xelatex", "SoLoud.tex"], stdout=outfile)
+    subprocess.call(["xelatex", "SoLoud.tex"], stdout=outfile)
 
 print "- -- --- -- - Cleanup.."
 tempsuffix = ["aux", "toc", "out", "log", "lg", "4ct", "4tc", "idv", "tmp", "xdv", "xref", "bak"]

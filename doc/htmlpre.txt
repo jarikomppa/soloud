@@ -53,6 +53,7 @@
 <a href="echofilter.html">SoLoud::EchoFilter</a><br>
 <a href="fftfilter.html">SoLoud::FFTFilter</a><br>
 <a href="lofifilter.html">SoLoud::LofiFilter</a><br>
+<a href="flangerfilter.html">SoLoud::FlangerFilter</a><br>
 <br>
 <a href="backends.html">Back-ends</a><br>
 <hr>

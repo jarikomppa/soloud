@@ -1,0 +1,37 @@
+SoLoud::FlangerFilter
+=====================
+
+The flanger filter can be used to create a "flanger" effect on the
+signal. Applying this on a human voice may sound more "robotic", for instance.
+
+    // Set up flanger filter
+    gFlangerFilter.setParams(0.005f, 10);  
+    // Set the filter as the first filter of the bus
+    gBus.setFilter(0, &gFlangerFilter); 
+
+It's also possible to set, fade or oscillate the parameters of a "live" filter
+
+    gSoloud.fadeFilterParameter(
+      gMusicHandle, // Sound handle
+      0,            // First filter
+      SoLoud::LofiFilter::WET, // What to adjust
+      0,            // Target value
+      3);           // Time in seconds
+      
+Currently, four parameters can be adjusted:
+
+Parameter   Description
+----------- -------------
+WET         Filter's wet signal; 1.0f for fully filtered, 0.0f for original, 0.5f for half and half.
+FREQ        Filter's frequency
+DELAY       Filter's delay
+
+FlangerFilter.setParams()
+----------------------
+
+Set the parameters of the filter.
+
+    gFlangerFilter.setParams(0.005f, 10);  
+    
+Changing the parameters does not affect "live" sounds. If invalid pameters are
+given, the function will return error.

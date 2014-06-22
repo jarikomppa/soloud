@@ -68,7 +68,7 @@ Key  Effect
 2    Play sound repeatedly with play()
 3    Play sound once with playClocked()
 
-To exaggarate the effect a bit, the demo initializes SoLoud with a very large audio buffer. The difference between the play and playClocked
+To exaggarate the effect a bit, the demo requests a very large audio buffer from SoLoud. The difference between the play and playClocked
 effects is that with play(), all sounds triggered between audio buffers begin playing from the start of the next audio buffer, while 
 playClocked spreads the sounds across the audio buffer, making the sounds more separate.
 

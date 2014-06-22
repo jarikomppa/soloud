@@ -7,7 +7,7 @@ Back end
 SoLoud itself "only" performs audio mixing and some resource handling.
 For it to be useful, it needs one or more sound source and a back end.
 Some other audio systems use the term 'sink' for the back-ends. 
-Examples of back-ends would be winmm, portaudio, wasapi and SDL audio. 
+Examples of back-ends would be winmm, oss, portaudio, wasapi and SDL audio. 
 SoLoud comes with several back-ends, and is designed to make back-ends 
 relatively easy to implement.
 
@@ -45,7 +45,7 @@ in any case.
 If all channels are already playing and the application requests another
 sound to play, SoLoud finds the oldest voice and kills it. Since this
 may be your background music, you can protect channels from being killed
-by using the soloud.setProtect call.
+by using the soloud.setProtect() call.
 
 Voice Group
 -----------
@@ -55,6 +55,11 @@ same time so that they are synchronized; for instance, when cross-fading
 between two versions of the same song.
 
 ![Problem unpausing two voices. Delay may vary, 40ms used as an example.](images/voicegroups)
+
+Even if you try to unpause the two voices at the same time, it's possible,
+due to the multithreaded nature of audio, that the audio engine interrupts
+you between these two calls and your sounds get unpaused to different audio
+buffers.
 
 SoLoud's solution to this are voice groups. Voice groups can be commanded
 the same way as single voices, but instead of affecting just one voice,
@@ -82,7 +87,7 @@ gets less precision. The roundoff clipper is used by default.
 The roundoff clipper does, however, alter the signal and thus "damages"
 the sound. A more proper way of doing things would be to use the basic
 clipper and adjust the global volume to avoid clipping. The roundoff
-clipper, however, is easier to use.
+clipper is, however, easier to use.
 
 Sample
 ------
@@ -96,7 +101,8 @@ towards floating point samples.
 
 SoLoud also uses floating point samples internally. First and foremost,
 it makes everything much simpler, and second, modern computing devices
-have become fast enough that this is not really a performance issue anymore.
+(even mobile!) have become fast enough that this is not really a 
+performance issue anymore.
 
 Floating point samples also take more space than, for instance, 16 bit
 samples, but memory and storage sizes have also grown enough to make
@@ -112,11 +118,16 @@ Typical sample rates are 8000Hz, 22050Hz, 44100Hz and 48000Hz. Higher
 the sample rates mean clearer sound, but also bigger files, more memory
 and higher processing power requirements.
 
+Due to limitations in human hearing, 44100Hz is generally considered 
+sufficient. Some audiophiles disagree, but then again, some audiophiles
+buy gold-plated USB cables.
+
 Hz
 --
 
-Hertz, SI unit of frequency. 1Hz means "once per second", 10Hz means 
-"10 times per second", and 192kHz means "192000 times per second".
+Hertz, SI unit of frequency. 0.1Hz means "once per 10 seconds", 1Hz means 
+"once per second", 10Hz means "10 times per second", and 192kHz means 
+"192000 times per second".
 
 Play Speed
 ----------
@@ -132,8 +143,8 @@ Relative Play Speed
 -------------------
 
 SoLoud lets you change the relative play speed of samples. Please note
-that asking for a higher relative play speed is more expensive than a
-lower one.
+that asking for a higher relative play speed is always more expensive 
+than a lower one.
 
 Resampling
 ----------
@@ -141,6 +152,8 @@ Resampling
 SoLoud has to perform resampling when mixing. In an ideal case, all of
 the sources and the destination sample rate are the same, and no
 resampling is needed, but this is often not true. 
+
+![Different resamples (Point / linear / catmull-rom). Red is the ideal signal.](images/resampler)
 
 Currently, SoLoud supports "linear interpolation", which calculates linear 
 interpolation of samples, as well as "point sample" resampling, which 
@@ -215,7 +228,9 @@ are processor power, imagination, and developer's skill in digital
 signal processing.
 
 SoLoud lets you hook several filters to a single audio stream, as well
-as to the global audio output.
+as to the global audio output. By default, you can use up to four filters,
+but this can be easily changed by editing SoLoud.h file and rebuilding
+the library.
 
 Mixing Bus
 ----------
@@ -240,3 +255,7 @@ It's also possible that you have some very complex audio sources, such
 as racing cars. In this case it makes sense to place all the audio
 streams that play from one car into a mixing bus, and then adjust the
 panning (or, eventually, 3d position) of the mixing bus.
+
+Additional feature of the mixing busses in SoLoud is that you can
+request visualization data from a bus, instead of just from the global
+scope.

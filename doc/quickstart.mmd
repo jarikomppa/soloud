@@ -1,6 +1,9 @@
 Quick Start
 ===========
 
+This quick start is for c++ developers. If you're using SoLoud with
+some other environment SoLoud supports, you may want to skip this and
+look at the chapter that covers your environment (such as Python).
 
 Download SoLoud
 ---------------
@@ -8,19 +11,35 @@ Download SoLoud
 First, you need to download SoLoud sources. You can find the downloads
 on the <http://soloud-audio.com/download.html> page.
 
-Add files to your project
--------------------------
+Add SoLoud to your project
+--------------------------
+
+There's a few ways to include SoLoud to your project. Probably the
+easiest is to use premake4 to create the build files, and build a 
+static library for your compiler / environment.
+
+There may also be a pre-built static library in the SoLoud distribution,
+which you may be able to use. Note that the Windows DLL only exports the 
+"C" API, which may not be what you want.
 
 You can go the lazy way and just add all of the sources to your project,
 or you can copy the things you need to a single directory and include
 those. You'll need the core files, and quite likely the wav files. If
-you need the speech synth, include those, too.
+you need the speech synth, include those, too. If you go this route,
+you'll need to enable one or more of the back-ends via preprocessor
+defines. The current list is:
 
-There may be a pre-built static library that you can use. You can use 
-that, too. Note that the Windows DLL only exports the "C" API, which may 
-not be what you want.
+Preprocessor macro  Description
+------------------  -----------
+WITH_SDL            SDL or SDL2 via runtime dyndll linking
+WITH_SDL_NONDYN     SDL via normal linking
+WITH_PORTAUDIO      Portaudio via runtime dyndll linking
+WITH_OPENAL         OpenAL via runtime dyndll linking (high latency)
+WITH_XAUDIO2        XAudio2 via normal linking
+WITH_WINMM          Windows multimedia
+WITH_WASAPI         WASAPI (experimental)
+WITH_OSS            Linux OSS
 
-There's also a premake4 script if you want to go that way.
 
 Include files
 -------------
@@ -99,3 +118,7 @@ Enjoy
 -----
 
 And you're done!
+
+Note that most calls above also return some kind of return code which may
+help you diagnose potential problems. When loading wave files, for instance,
+you may want to check if the file is actually found.

@@ -17,19 +17,22 @@ You will most likely want to edit at least the sdl_root variable. After your edi
 
     premake4 vs2010
     
-The current version (4.3) supports codeblocks, codelite, vs2002, vs2003, vs2005, vs2008, vs2010, xcode3 and gnu makefiles (gmake). New version with at least vs2012 support is coming soon (as of this writing).
+The current version (4.3) supports codeblocks, codelite, vs2002, vs2003, vs2005, vs2008, vs2010, xcode3 and gnu makefiles 
+(gmake). New version with at least vs2012 support is coming soon (I hope).
 
-If you wish to use portmidi with the piano example, run premake with an additional parameter:
+You can also use one or more of the optional parameters to change the build behavior. 
 
-    premake4 --with-portmidi vs2010
+Option                Description
+-------------------   -----------
+with-libmodplug       Include libmodplug in build
+with-native-only      Only native backends (winmm/oss) in build
+with-portmidi         Use portmidi to drive midi keyboard in the piano demo
+with-sdl-only         Only include sdl in build
+with-sdlnondyn-only   Only include sdl that doesn't use dyndll in build
+with-tools            Include (optional) tools in build
+with-xaudio2          Include xaudio2 in build
 
-If you wish to include the xaudio2 back-end, use the parameter:
+So for example, in order to build SoLoud with libmodplug and tools on vs2010, use:
 
-    premake4 --with-xaudio2 vs2010
-
-The back-end is not included by default due to the requirement of xaudio2.lib.
-
-To include libmodplug, yet another parameter is needed:
-
-    premake4 --with-libmodplug vs2010
+    premake4 --with-libmodplug --with-tools vs2010 
     

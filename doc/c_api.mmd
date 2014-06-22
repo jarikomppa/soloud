@@ -1,4 +1,4 @@
-"C"-api / DLL
+"C" API / DLL
 =============
 
 In order to support non-c++ environments, SoLoud also has a "C" API.
@@ -6,8 +6,17 @@ In order to support non-c++ environments, SoLoud also has a "C" API.
 All of the existing interfaces can be used via the "C" API, but 
 features that require extending SoLoud are not available.
 
-API
----
+Using the "C" API
+-----------------
+
+You can either link to the generated DLL, which exposes the "C" API,
+or you can include SoLoud C++ sources (or static library) to your
+project along with the soloud_c.cpp file.
+
+In your C sources, include soloud_c.h header file.
+
+"C" API
+-------
 
 The "C" API mirrors the c++ API.
 
@@ -53,4 +62,4 @@ Converted to the "C" API, this becomes:
     Speech_destroy(speech);
     Soloud_destroy(soloud);
 
-
+For a slightly longer example, check out the "c_test" demo.

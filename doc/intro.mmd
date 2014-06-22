@@ -38,7 +38,7 @@ so many sounds at once it's channel has been taken over by some other
 sound), the handle is still safe to use - it just doesn't do anything.
 
 There's also a pure "C" version of the whole API which can even be used 
-from non-c languages by using SoLoud as an DLL.
+from non-c languages by using SoLoud as an DLL, such as Python.
 
 How Free?
 ---------
@@ -53,9 +53,9 @@ other things, that:
 - You don't need to add a splash screen. (But you can).
 - You don't need to mention it in your printed manual. (But you can).
 
-Basically the only things the license forbids are suing me, or claiming
-that you made SoLoud. If you redistribute the source code, the license
-needs to be there. But not with the binaries.
+Basically the only things the license forbids are suing the authors, or 
+claiming that you made SoLoud. If you redistribute the source code, the 
+license needs to be there. But not with the binaries.
 
 Parts of the SoLoud package were not made by me, and those either have a
 similar license, or more permissive (such as Unlicense, CC0, WTFPL or
@@ -75,6 +75,8 @@ with powerful functionality. Some of the features include:
 - Mixing busses for grouping of audio into different uses and adjusting their attributes in one go.
 - Gapless looping.
 - Playing several ogg streams at once.
+- Atomic operations for several sounds.
+- "Clocked" playing for rapid sound effects.
 - Sound effects synthesizer.
 - Modplug library capable of playing various multi-channel music formats (including mod, s3m, it, xm, mid, abc).
 - Easy cleanup.

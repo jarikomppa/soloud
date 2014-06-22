@@ -1,6 +1,9 @@
 Codegen
 =======
 
+For most cases, you won't need to care about the codegen. Here's
+some information, however, if should you be curious.
+
 In order for SoLoud to be usable from other languages than C++,
 glue code needs to be written. Most environments are able to
 use "C" DLL:s, and this is one of the things SoLoud has.
@@ -17,4 +20,9 @@ won't need to use the codegen yourself.
 The codegen tool parses the SoLoud headers and generates the needed
 headers and wrapper cpp code, as well as the DLL .def file, and a
 Python file which can be used to generate glue libraries for other
-environments, such as Python.
+environments (such as Python itself).
+
+The generated Python file also turned out to be useful in writing
+of this documentation, as it was pretty easy to write a script that
+checks whether a function has been documented or not.
+

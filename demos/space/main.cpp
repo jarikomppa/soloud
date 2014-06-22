@@ -141,7 +141,7 @@ void render()
 		float v = fabs(w[i] + (rand() % 500)/10000.0f);
 		if (v > 1) v = 1;
 		float h = 132 * v / 2;
-		drawrect(317+i, 231 + 66-h, 1, h*2, 0xff009f00);
+		drawrect(317+i, 231 + 66-(int)floor(h), 1, (int)floor(h*2), 0xff009f00);
 	}
 
 	float *f = gMusicBus.calcFFT();
@@ -152,7 +152,7 @@ void render()
 		float v = f[(i & ~7) + 5] / 2;
 		float h = 60 * v;
 		if (h > 60) h = 60;
-		drawrect(62+i,383+60-h,1,h,0xff007f00);
+		drawrect(62+i,383+60-(int)floor(h),1,(int)floor(h),0xff007f00);
 	}
 
 	int loop = gSoloud.getLoopCount(speechhandle);
@@ -201,7 +201,7 @@ int main(int argc, char *argv[])
 	gSpeech.setFilter(0, &gLofi);
 	gSpeech.setFilter(2, &gReso);
 	gLofi.setParams(8000,4);
-	gFlanger.setParams(0.002,100);
+	gFlanger.setParams(0.002f,100);
 //	gReso.setParams(SoLoud::BiquadResonantFilter::LOWPASS, 8000, 500, 5);
 	gReso.setParams(SoLoud::BiquadResonantFilter::BANDPASS, 8000, 1000, 0.5);
 
@@ -218,7 +218,7 @@ int main(int argc, char *argv[])
 	gSpeech.setLooping(1);	
 
 	speechhandle = gSpeechBus.play(gSpeech, 3, -0.25);
-	gSoloud.setRelativePlaySpeed(speechhandle, 1.2);
+	gSoloud.setRelativePlaySpeed(speechhandle, 1.2f);
 	
 	gSoloud.oscillateFilterParameter(speechhandle, 0, SoLoud::LofiFilter::SAMPLERATE, 2000, 8000, 4);
 

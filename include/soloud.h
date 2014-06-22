@@ -293,9 +293,9 @@ namespace SoLoud
 		// Global filter instance
 		FilterInstance *mFilterInstance[FILTERS_PER_STREAM];
 		// Find a free voice, stopping the oldest if no free voice is found.
-		unsigned int findFreeVoice();
-		// Converts handle to voice, if the handle is valid.
-		unsigned int getVoiceFromHandle(handle aVoiceHandle) const;
+		int findFreeVoice();
+		// Converts handle to voice, if the handle is valid. Returns -1 if not.
+		int getVoiceFromHandle(handle aVoiceHandle) const;
 		// Converts voice + playindex into handle
 		handle getHandleFromVoice(unsigned int aVoice) const;
 		// Stop voice (not handle).

@@ -628,7 +628,7 @@ void klatt::parwave(klatt_frame *frame, short int *jwave)
 		float sourc;                   /* Sound source if all-parallel config used  */
 		float glotout;                 /* Output of glottal sound source  */
 		float par_glotout;             /* Output of parallelglottal sound sourc  */
-		float voice;                   /* Current sample of voicing waveform  */
+		float voice = 0;               /* Current sample of voicing waveform  */
 		float frics;                   /* Frication sound source  */
 		float aspiration;              /* Aspiration sound source  */
 		int nrand;                    /* Varible used by random number generator  */

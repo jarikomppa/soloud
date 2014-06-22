@@ -253,7 +253,7 @@ namespace SoLoud
 		}
 #endif
 		if (!inited)
-			return -10;
+			return UNKNOWN_ERROR;
 		return 0;
 	}
 
@@ -450,7 +450,6 @@ namespace SoLoud
 				unsigned int j;
 				float step = mVoice[i]->mSamplerate / aSamplerate;
 				int step_fixed = (int)floor(step * FIXPOINT_FRAC_MUL);
-				float samples_per_block = SAMPLE_GRANULARITY / step;
 				unsigned int outofs = 0;
 				
 				if (mVoice[i]->mDelaySamples)

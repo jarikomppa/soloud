@@ -50,7 +50,7 @@ namespace SoLoud
 		return (aVoice + 1) | (mVoice[aVoice]->mPlayIndex << 12);
 	}
 
-	unsigned int Soloud::getVoiceFromHandle(handle aVoiceHandle) const
+	int Soloud::getVoiceFromHandle(handle aVoiceHandle) const
 	{
 		// If this is a voice group handle, pick the first handle from the group
 		handle *h = voiceGroupHandleToArray(aVoiceHandle);
@@ -202,7 +202,7 @@ namespace SoLoud
 		return v != 0;
 	}
 
-	unsigned int Soloud::findFreeVoice()
+	int Soloud::findFreeVoice()
 	{
 		int i;
 		unsigned int lowest_play_index_value = 0xffffffff;

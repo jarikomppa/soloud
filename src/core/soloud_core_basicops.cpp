@@ -48,7 +48,7 @@ namespace SoLoud
 		{
 			if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 			delete instance;
-			return -1;
+			return UNKNOWN_ERROR;
 		}
 		if (!aSound.mAudioSourceID)
 		{

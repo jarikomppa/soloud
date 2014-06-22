@@ -203,7 +203,6 @@ int main(int argc, char *argv[])
 		cycle++;
 		// Render stuff
 		render();
-		int h;
 		// Poll for events, and handle the ones we care about.
 		SDL_Event event;
 		while (SDL_PollEvent(&event)) 

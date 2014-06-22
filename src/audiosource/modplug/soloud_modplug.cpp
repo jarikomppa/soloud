@@ -105,7 +105,7 @@ namespace SoLoud
 		FILE * f = fopen(aFilename, "rb");
 		if (!f)
 		{
-			return -1;
+			return FILE_NOT_FOUND;
 		}
 
 		if (mData)

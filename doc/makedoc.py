@@ -65,8 +65,11 @@ subprocess.call(callp)
 
 print "- -- --- -- - Generating web site"
 for x in src:
-	subprocess.call(["pandoc", "--template=html.pandoc", "-B", "htmlpre.txt", "-A", "htmlpost.txt", "--default-image-extension=png", x, "-o", x[:len(x)-3]+"html"])
-	subprocess.call(["perl", "-p", "-i.bak", "-e", '"s/code>/code>\n/g"', x[:len(x)-3]+"html"])
+	subprocess.call(["pandoc", "--template=html.pandoc", "-B", "htmlpre.txt", "-A", "htmlpost.txt", "--default-image-extension=png", x, "-o", x[:len(x)-3]+"html.bak"])
+	with open(x[:len(x)-3]+"html", "w") as file_out:
+		with open(x[:len(x)-3]+"html.bak", "r") as file_in:
+			for line in file_in:
+				file_out.write(line.replace('code>', 'code>\n'))
 	if x == "intro.mmd":
 		os.remove("index.html")
 		os.rename("intro.html", "index.html")

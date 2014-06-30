@@ -1,0 +1,65 @@
+BlitzMax API
+=============
+
+Using the BlitzMax wrapper, SoLoud DLL can be used from BlitzMax.
+
+All of the existing interfaces can be used via the BlitzMax API, but 
+features that require extending SoLoud are not available.
+
+Using the BlitzMax API
+----------------------
+
+To use SoLoud with BlitzMax, you can use the soloud.bmx from the glue 
+directory. Be sure to have soloud_x86.dll in your project directory.
+
+
+BlitzMax API
+------------
+
+The BlitzMax API mirrors the c++ API.
+
+If the c++ API functions have default parameters, two functions
+are generated: one without the default parameters, and one with. 
+The one where you can change the default parameters is post-fixed Ex, 
+such as Soloud_init and Soloud_initEx.
+
+As an example, here's a simple example in the C++ api:
+
+    SoLoud::Soloud soloud;
+    SoLoud::Speech speech;
+
+    speech.setText("Hello c++ api");
+
+    soloud.init(SoLoud::Soloud::CLIP_ROUNDOFF | 
+                SoLoud::Soloud::ENABLE_VISUALIZATION)
+
+    soloud.setGlobalVolume(4);
+    soloud.play(speech);
+
+    // ...
+
+    soloud.deinit();
+        
+Converted to the BlitzMax API, this becomes:
+
+    SuperStrict
+
+    Import "soloud.bmx"
+
+    Local soloud:Byte Ptr = Soloud_create ()
+    Local speech:Byte Ptr = Speech_create ()
+
+    Speech_setText speech, "hello from blits max".ToCString ()
+
+    Soloud_initEx soloud, SOLOUD_CLIP_ROUNDOFF | SOLOUD_ENABLE_VISUALIZATION, 
+                  SOLOUD_AUTO, SOLOUD_AUTO, SOLOUD_AUTO
+
+    Soloud_setGlobalVolume soloud, 4
+    Soloud_play soloud, speech
+
+    ' ...
+
+    Soloud_deinit soloud
+    
+    Speech_destroy speech
+    Soloud_destroy soloud

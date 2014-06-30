@@ -1,4 +1,5 @@
 # BlitzMax wrapper generator
+# Thanks to James Boyd for help with this!
 
 import soloud_codegen 
 
@@ -22,7 +23,7 @@ C_TO_BMX_TYPES = {
     "unsigned int":"Int",
     "float":"Float",
     "double":"Double",
-    "float *":"Byte Ptr",
+    "float *":"Float Ptr",
     "unsigned char *":"Byte Ptr"
 }
 

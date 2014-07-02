@@ -17,6 +17,11 @@ fo = open("soloud.rb", "w")
 #   end
 #
 
+SOLOUD_TYPES = []
+
+for x in soloud_codegen.soloud_type:
+    SOLOUD_TYPES.append(x + " *")
+
 
 def fudge_types(origtype):
     """ Map ctypes to parameter types """
@@ -113,6 +118,7 @@ for x in soloud_codegen.soloud_type:
                 fo.write('\n')
                 fo.write('class %s\n'%(x))
                 fo.write('\t@objhandle=nil\n')
+                fo.write('\tattr_accessor :objhandle\n')
                 for z in soloud_codegen.soloud_enum:
                     if z[0:len(x)+1] == x.upper()+'_':
                         s = str(soloud_codegen.soloud_enum[z])
@@ -148,7 +154,7 @@ for x in soloud_codegen.soloud_type:
                                 fo.write(', ')
                             fo.write(z[1])
                             if len(z) > 2:
-                                fo.write("='" + fix_default_param(z[2], x)+"'")
+                                fo.write("=" + fix_default_param(z[2], x)+"")
                 fo.write(')\n')
                 fo.write('\t\t')
                 fo.write('SoLoudImporter.' + y[1] + '(@objhandle')
@@ -158,8 +164,8 @@ for x in soloud_codegen.soloud_type:
                             pass # skip the 'self' pointer
                         else:
                             fo.write(', ')
-                            if '*' in z[0]:
-                                fo.write(z[1] + '.@objhandle')
+                            if z[0] in SOLOUD_TYPES:
+                                fo.write(z[1] + '.objhandle')
                             else:
                                 fo.write(z[1])
                 fo.write(')\n')            

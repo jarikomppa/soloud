@@ -27,6 +27,9 @@ freely, subject to the following restrictions:
 #include <math.h>
 #include "stb_image_write.h"
 
+#define MAX_FUNC 3
+#define MAX_RESAMPLER 6
+
 #ifndef TAU
 #define TAU 6.283185307179586476925286766559f
 #endif
@@ -168,6 +171,9 @@ void drawstring(const char *aString, int aX, int aY, int *aBitmap, int aBitmapWi
 }
 
 #define SAMPLE_GRANULARITY 512
+#define FIXPOINT_FRAC_BITS 20
+#define FIXPOINT_FRAC_MUL (1 << FIXPOINT_FRAC_BITS)
+#define FIXPOINT_FRAC_MASK ((1 << FIXPOINT_FRAC_BITS) - 1)
 
 
 void resample_experiment(float *aSrc,
@@ -200,7 +206,7 @@ void resample_experiment(float *aSrc,
 
 	for (i = 0; i < aDstSampleCount; i++, pos += aStepFixed, iter++)
 	{
-		int p = pos >> 16;
+		int p = pos >> FIXPOINT_FRAC_BITS;
 
 		if ((iter & 1) == 0)
 		{
@@ -248,8 +254,8 @@ void resample_catmullrom(float *aSrc,
 
   for (i = 0; i < aDstSampleCount; i++, pos += aStepFixed)
   {
-    int p = pos >> 16;
-    int f = pos & 0xffff;
+    int p = pos >> FIXPOINT_FRAC_BITS;
+    int f = pos & FIXPOINT_FRAC_MASK;
 
 	float s0, s1, s2, s3;
 
@@ -282,7 +288,162 @@ void resample_catmullrom(float *aSrc,
 
 	s0 = aSrc[p];
 
-    aDst[i] = catmullrom(f/65536.0f,s3,s2,s1,s0);
+	aDst[i] = catmullrom(f/(float)FIXPOINT_FRAC_MUL,s3,s2,s1,s0);
+  }
+}
+
+float sincpi(float x)
+{
+	if (x == 0)
+		return 1;
+	return (float)(sin(M_PI * x) / (M_PI * x));
+}
+
+void resample_sinc6(float *aSrc,
+                     float *aSrc1,
+                     float *aDst,
+                     int aSrcOffset,
+                     int aDstSampleCount,
+                     float aSrcSamplerate,
+                     float aDstSamplerate,
+                     int aStepFixed)
+{
+  int i;
+  int pos = aSrcOffset;
+
+  for (i = 0; i < aDstSampleCount; i++, pos += aStepFixed)
+  {
+    int p = pos >> FIXPOINT_FRAC_BITS;
+    int f = pos & FIXPOINT_FRAC_MASK;
+
+	float s0, s1, s2, s3, s4, s5;
+
+	if (p < 5)
+	{
+		s5 = aSrc1[512+p-5];
+	}
+	else
+	{
+		s3 = aSrc[p-5];
+	}
+
+	if (p < 4)
+	{
+		s4 = aSrc1[512+p-4];
+	}
+	else
+	{
+		s4 = aSrc[p-4];
+	}
+
+	if (p < 3)
+	{
+		s3 = aSrc1[512+p-3];
+	}
+	else
+	{
+		s3 = aSrc[p-3];
+	}
+
+	if (p < 2)
+	{
+		s2 = aSrc1[512+p-2];
+	}
+	else
+	{
+		s2 = aSrc[p-2];
+	}
+
+	if (p < 1)
+	{
+		s1 = aSrc1[512+p-1];
+	}
+	else
+	{
+		s1 = aSrc[p-1];
+	}
+
+	s0 = aSrc[p];
+
+	float a = 1 - (f / (float)FIXPOINT_FRAC_MUL);
+
+	aDst[i] = 
+		 (
+			s0 * sincpi(2 + a) +
+			s1 * sincpi(1 + a) +
+			s2 * sincpi(a) +
+			s3 * sincpi(1 - a) +
+			s4 * sincpi(2 - a) + 
+			s5 * sincpi(3 - a)
+			);
+  }
+}
+
+void resample_gauss5(float *aSrc,
+                     float *aSrc1,
+                     float *aDst,
+                     int aSrcOffset,
+                     int aDstSampleCount,
+                     float aSrcSamplerate,
+                     float aDstSamplerate,
+                     int aStepFixed)
+{
+  int i;
+  int pos = aSrcOffset;
+
+  for (i = 0; i < aDstSampleCount; i++, pos += aStepFixed)
+  {
+    int p = pos >> FIXPOINT_FRAC_BITS;
+    int f = pos & FIXPOINT_FRAC_MASK;
+
+	float s0, s1, s2, s3, s4;
+
+	if (p < 4)
+	{
+		s4 = aSrc1[512+p-4];
+	}
+	else
+	{
+		s4 = aSrc[p-4];
+	}
+
+	if (p < 3)
+	{
+		s3 = aSrc1[512+p-3];
+	}
+	else
+	{
+		s3 = aSrc[p-3];
+	}
+
+	if (p < 2)
+	{
+		s2 = aSrc1[512+p-2];
+	}
+	else
+	{
+		s2 = aSrc[p-2];
+	}
+
+	if (p < 1)
+	{
+		s1 = aSrc1[512+p-1];
+	}
+	else
+	{
+		s1 = aSrc[p-1];
+	}
+
+	s0 = aSrc[p];
+
+	aDst[i] = 
+		 (
+			s0 * 0.05 +
+			s1 * 0.25 +
+			s2 * 0.4 +
+			s3 * 0.25 +
+			s4 * 0.05
+			);
   }
 }
 
@@ -300,7 +461,7 @@ void resample_pointsample(float *aSrc,
 
   for (i = 0; i < aDstSampleCount; i++, pos += aStepFixed)
   {
-    int p = pos >> 16;
+    int p = pos >> FIXPOINT_FRAC_BITS;
     aDst[i] = aSrc[p];
   }
 }
@@ -319,8 +480,8 @@ void resample_linear(float *aSrc,
 
   for (i = 0; i < aDstSampleCount; i++, pos += aStepFixed)
   {
-    int p = pos >> 16;
-    int f = pos & 0xffff;
+    int p = pos >> FIXPOINT_FRAC_BITS;
+    int f = pos & FIXPOINT_FRAC_MASK;
 #ifdef _DEBUG
 
     if (p >= SAMPLE_GRANULARITY || p < 0)
@@ -339,7 +500,7 @@ void resample_linear(float *aSrc,
       s1 = aSrc[p-1];
     }
 
-    aDst[i] = s1 + (s2 - s1) * f * (1 / 65536.0f);
+    aDst[i] = s1 + (s2 - s1) * f * (1 / (float)FIXPOINT_FRAC_MUL);
   }
 }
 
@@ -716,7 +877,7 @@ void upsampletest(int aResampler, int aFunction, float aMultiplier, FILE *aIndex
 		break;
 	}
 
-	int step_fixed = (int)floor(65536 / aMultiplier);
+	int step_fixed = (int)floor(FIXPOINT_FRAC_MUL / aMultiplier);
 
 	int curr = 0;
 	int prev = 0;
@@ -727,10 +888,10 @@ void upsampletest(int aResampler, int aFunction, float aMultiplier, FILE *aIndex
 	{
 		int writesamples;
 
-		writesamples = ((512 * 65536) - mSrcOffset) / step_fixed + 1;
+		writesamples = ((512 * FIXPOINT_FRAC_MUL) - mSrcOffset) / step_fixed + 1;
 
 		// avoid reading past the current buffer..
-		if (((writesamples * step_fixed + mSrcOffset) >> 16) >= SAMPLE_GRANULARITY + 1)
+		if (((writesamples * step_fixed + mSrcOffset) >> FIXPOINT_FRAC_BITS) >= SAMPLE_GRANULARITY + 1)
 			writesamples--;
 
 		if (writesamples > (512 - samples_out)) writesamples = 512 - samples_out;
@@ -751,6 +912,14 @@ void upsampletest(int aResampler, int aFunction, float aMultiplier, FILE *aIndex
 			resample_catmullrom(temp + curr, temp + prev, b + samples_out, mSrcOffset, writesamples, 44100 / aMultiplier, 44100, step_fixed);
 			break;
 		case 3:
+			samp = "sinc6";
+			resample_sinc6(temp + curr, temp + prev, b + samples_out, mSrcOffset, writesamples, 44100 / aMultiplier, 44100, step_fixed);
+			break;
+		case 4:
+			samp = "gauss5";
+			resample_gauss5(temp + curr, temp + prev, b + samples_out, mSrcOffset, writesamples, 44100 / aMultiplier, 44100, step_fixed);
+			break;
+		case 5:
 			samp = "experiment";
 			resample_experiment(temp + curr, temp + prev, b + samples_out, mSrcOffset, writesamples, 44100 / aMultiplier, 44100, step_fixed);
 			break;
@@ -759,7 +928,7 @@ void upsampletest(int aResampler, int aFunction, float aMultiplier, FILE *aIndex
 		mSrcOffset += writesamples * step_fixed;
 		prev = curr;
 		curr += 512;
-		mSrcOffset = mSrcOffset & 65535;
+		mSrcOffset = mSrcOffset & FIXPOINT_FRAC_MASK;
 		//if (mSrcOffset < 0) mSrcOffset = 0;
 		//while (mSrcOffset < 0) mSrcOffset += step_fixed;
 	}
@@ -784,6 +953,7 @@ void upsampletest(int aResampler, int aFunction, float aMultiplier, FILE *aIndex
 	printf(".");
 }
 
+
 int main(int parc, char ** pars)
 {
 	setbuf(stdout, NULL);
@@ -791,11 +961,11 @@ int main(int parc, char ** pars)
 	fprintf(indexf,
 		"<html>\n<body>\n");
 	int func, samp, k;
-	for (func = 0; func < 3; func++)
+	for (func = 0; func < MAX_FUNC; func++)
 	{
 		for (k = 0; k < 5; k++)
 		{
-			for (samp = 0; samp < 4; samp++)
+			for (samp = 0; samp < MAX_RESAMPLER; samp++)
 			{
 				upsampletest(samp, func, (float)(k * k * 3 + 2), indexf);
 			}
@@ -803,7 +973,7 @@ int main(int parc, char ** pars)
 		}
 		for (k = 0; k < 5; k++)
 		{
-			for (samp = 0; samp < 4; samp++)
+			for (samp = 0; samp < MAX_RESAMPLER; samp++)
 			{
 				upsampletest(samp, func, (float)(1.0f / (k * k * 3 + 2)), indexf);
 			}

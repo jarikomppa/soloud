@@ -1,0 +1,63 @@
+Ruby API
+========
+
+One of the generated glue interfaces for SoLoud is the Ruby API.
+
+All of the existing interfaces can be used via the Ruby API, but
+features that require extending SoLoud are not available.
+
+Using the Ruby API
+-----------------
+
+Include the SoLoud DLL and soloud.rb in the same directory as your
+python files, and use
+
+    load 'soloud.rb'
+
+to include SoLoud to your project.
+
+Ruby API
+--------
+
+The Ruby API mirrors the c++ API.
+
+If the c++ API functions have default parameters, the same function
+in the ruby API will also have default parameters.
+
+As an example, here's a simple example in the C++ api:
+
+    SoLoud::Soloud soloud;
+    SoLoud::Speech speech;
+
+    speech.setText("Hello c++ api");
+
+    soloud.init(SoLoud::Soloud::CLIP_ROUNDOFF |
+                SoLoud::Soloud::ENABLE_VISUALIZATION)
+
+    soloud.setGlobalVolume(4);
+    soloud.play(speech);
+
+    // ...
+
+    soloud.deinit();
+
+Converted to the Ruby API, this becomes:
+
+    load 'soloud.rb'
+
+    soloud=Soloud.new("")
+    speech=Speech.new("")
+    
+    speech.set_text("Hello Ruby api")
+
+    soloud.init(soloud.CLIP_ROUNDOFF | 
+                soloud.ENABLE_VISUALIZATION)
+
+    soloud.set_global_volume(4)
+    soloud.play(speech)
+
+    # ...
+
+    soloud.deinit()
+    speech.destroy()
+    soloud.destroy()

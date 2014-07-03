@@ -28,9 +28,10 @@
 <a href="faq.html">FAQ</a><br>
 <a href="examples.html">Examples</a><br>
 <br>
-<a href="codegen.html">codegen</a><br>
+<a href="codegen.html">Codegen</a><br>
 <a href="c_api.html">"C"-api / DLL</a><br>
-<a href="python_api.html">python-api</a><br>
+<a href="python_api.html">Python-api</a><br>
+<a href="ruby_api.html">Ruby-api</a><br>
 <a href="bmx_api.html">BlitzMax-api</a><br>
 <br>
 <a href="basics.html">Core: Basics</a><br>
@@ -60,5 +61,4 @@
 <hr>
 <a href="http://iki.fi/sol/">Author's site</a>
 </div>		  
-
-		<div class="content">
+<div class="content">

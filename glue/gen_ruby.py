@@ -1,7 +1,4 @@
-""" SoLoud Ruby wrapper generator 
-
-(written blindly, probably doesn't work yet)
-"""
+""" SoLoud Ruby wrapper generator """
 
 import soloud_codegen
 
@@ -22,10 +19,6 @@ SOLOUD_TYPES = []
 for x in soloud_codegen.soloud_type:
     SOLOUD_TYPES.append(x + " *")
 
-
-def fudge_types(origtype):
-    """ Map ctypes to parameter types """
-    return C_TO_PY_TYPES[origtype]
 
 def pythonize_camelcase(origstr):
     """ Turns camelCase into underscore_style """

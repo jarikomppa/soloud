@@ -16,6 +16,7 @@ src = [
     "concepts.mmd",
     "faq.mmd",
     "examples.mmd",
+    "foreign_interface.mmd",
     "codegen.mmd",
     "c_api.mmd",
     "python_api.mmd",

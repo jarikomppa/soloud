@@ -1,20 +1,18 @@
-Ruby API
-========
+RPG MAKER API
+=============
 
-One of the generated glue interfaces for SoLoud is the Ruby API.
+One of the generated glue interfaces for SoLoud is the RPG Maker API.
+Since RPG Maker uses Ruby, this API is equal to the Ruby API.
 
 All of the existing interfaces can be used via the Ruby API, but
 features that require extending SoLoud are not available.
 
-Using the Ruby API
------------------
+Using the RPG Maker API
+-----------------------
 
-Include the SoLoud DLL and soloud.rb in the same directory as your
-ruby files, and use
-
-    load 'soloud.rb'
-
-to include SoLoud to your project.
+Copy the contents of rpgmaker_soloud.rb into one RPG Maker script
+tab, drop the "soloud_x86.dll" in your project's System folder and 
+just use it.
 
 Ruby API
 --------
@@ -41,17 +39,15 @@ As an example, here's a simple example in the C++ api:
 
     soloud.deinit();
 
-Converted to the Ruby API, this becomes:
+Converted to the RPG Maker API, this becomes:
 
-    load 'soloud.rb'
-
-    soloud=Soloud.new("")
-    speech=Speech.new("")
+    soloud=SoLoud::Soloud.new
+    speech=SoLoud::Speech.new
     
-    speech.set_text("Hello Ruby api")
+    speech.setText("Hello Ruby api")
 
-    soloud.init(soloud::CLIP_ROUNDOFF | 
-                soloud::ENABLE_VISUALIZATION)
+    soloud.init(SoLoud::Soloud::CLIP_ROUNDOFF | 
+                SoLoud::Soloud::ENABLE_VISUALIZATION)
 
     soloud.set_global_volume(4)
     soloud.play(speech)

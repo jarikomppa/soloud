@@ -1,10 +1,10 @@
-gSoloud  = Soloud.new
-gSpeech  = Speech.new
-gLofi    = LofiFilter.new
-gFlanger = FlangerFilter.new
-gReso    = BiquadResonantFilter.new
-gSpeechBus = Bus.new
-gMusicBus  = Bus.new
+gSoloud  = SoLoud::Soloud.new
+gSpeech  = SoLoud::Speech.new 
+gLofi    = SoLoud::LofiFilter.new
+gFlanger = SoLoud::FlangerFilter.new
+gReso    = SoLoud::BiquadResonantFilter.new
+gSpeechBus = SoLoud::Bus.new
+gMusicBus  = SoLoud::Bus.new
 
 gSoloud.init();
 gSoloud.setVisualizationEnable(1);
@@ -19,7 +19,7 @@ gSpeech.setFilter(0, gLofi);
 gSpeech.setFilter(2, gReso);
 gLofi.setParams(8000,4);
 gFlanger.setParams(0.002,100);
-gReso.setParams(BiquadResonantFilter::BANDPASS, 8000, 1000, 0.5);
+gReso.setParams(SoLoud::BiquadResonantFilter::BANDPASS, 8000, 1000, 0.5);
 
 gSpeech.setText(<<-EOS)
 What the alien has to say might
@@ -43,7 +43,7 @@ gSpeech.setLooping(1);
 speechhandle = gSpeechBus.play(gSpeech, 3, -0.25);
 gSoloud.setRelativePlaySpeed(speechhandle, 1.2);
 
-gSoloud.oscillateFilterParameter(speechhandle, 0, LofiFilter::SAMPLERATE, 2000, 8000, 4);
+gSoloud.oscillateFilterParameter(speechhandle, 0, SoLoud::LofiFilter::SAMPLERATE, 2000, 8000, 4);
 
 gSpeechBus.setVisualizationEnable(1);
 gMusicBus.setVisualizationEnable(1);

@@ -20,6 +20,7 @@ src = [
     "c_api.mmd",
     "python_api.mmd",
     "ruby_api.mmd",
+    "rpgmaker_api.mmd",
     "bmx_api.mmd",
     "basics.mmd",
     "attributes.mmd",

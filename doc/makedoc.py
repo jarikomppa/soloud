@@ -23,6 +23,7 @@ src = [
     "ruby_api.mmd",
     "rpgmaker_api.mmd",
     "bmx_api.mmd",
+    "cs_api.mmd",
     "basics.mmd",
     "attributes.mmd",
     "faders.mmd",

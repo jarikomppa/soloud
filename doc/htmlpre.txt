@@ -35,6 +35,7 @@
 <a href="ruby_api.html">Ruby-api</a><br>
 <a href="rpgmaker_api.html">RPGMaker-api</a><br>
 <a href="bmx_api.html">BlitzMax-api</a><br>
+<a href="cs_api.html">C#-api</a><br>
 <br>
 <a href="basics.html">Core: Basics</a><br>
 <a href="attributes.html">Core: Attributes</a><br>

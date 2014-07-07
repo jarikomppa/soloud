@@ -1,0 +1,53 @@
+## C sharp (C#) API
+
+One of the generated glue interfaces for SoLoud is the C sharp API (C#).
+
+All of the existing interfaces can be used via the C sharp API, but
+features that require extending SoLoud are not available.
+
+### Using the C sharp API
+
+Include the soloud.cs from the glue directory in your project, and
+make sure the SoLoud DLL is in the same directory as your
+executable files.
+
+### C sharp API Example
+
+The C sharp API mirrors the c++ API.
+
+If the c++ API functions have default parameters, the same function
+in the C sharp API will also have default parameters.
+
+As an example, here's a simple example in the C++ api:
+
+    SoLoud::Soloud soloud;
+    SoLoud::Speech speech;
+
+    speech.setText("Hello c++ api");
+
+    soloud.init(SoLoud::Soloud::CLIP_ROUNDOFF |
+                SoLoud::Soloud::ENABLE_VISUALIZATION);
+
+    soloud.setGlobalVolume(4);
+    soloud.play(speech);
+
+    // ...
+
+    soloud.deinit();
+
+Converted to the C sharp API, this becomes:
+
+    SoLoud.Soloud soloud = new SoLoud.Soloud();
+    SoLoud.Speech speech = new SoLoud.Speech();
+
+    speech.setText("Hello c sharp api");
+
+    soloud.init(SoLoud.Soloud.CLIP_ROUNDOFF |
+                SoLoud.Soloud.ENABLE_VISUALIZATION);
+
+    soloud.setGlobalVolume(4);
+    soloud.play(speech);
+
+    // ...
+
+    soloud.deinit();

@@ -52,7 +52,7 @@ namespace SoLoud
 		};
 		virtual FilterInstance *createInstance();
 		FFTFilter();
-		result setParameters(int aShift, int aCombine = 0, float aScale = 0.002);
+		result setParameters(int aShift, int aCombine = 0, float aScale = 0.002f);
 	public:
 		float mScale;
 		int mCombine;

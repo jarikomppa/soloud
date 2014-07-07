@@ -39,6 +39,9 @@ using System;
 using System.Runtime.InteropServices;
 using System.Text;
 
+namespace SoLoud
+{
+
 public class SoloudObject
 {
     public IntPtr objhandle;
@@ -187,6 +190,8 @@ for x in soloud_codegen.soloud_type:
                 fo.write(');\n\t}\n')
     if not first:
         fo.write('}\n')
+
+fo.write('}\n')
 
 print "soloud.cs generated"
 

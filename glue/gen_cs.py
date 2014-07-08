@@ -13,7 +13,7 @@ C_TO_CS_TYPES = {
     "unsigned int":"uint",
     "float":"float",
     "double":"double",
-    "float *":"IntPtr",
+    "float *":"float[]",
     "unsigned char *":"IntPtr"
 }
 
@@ -142,10 +142,16 @@ for x in soloud_codegen.soloud_type:
             if funcname == "create" or funcname == "destroy" or has_ex_variant(y[1]):
                 pass # omit create/destroy, handled by __exit__ / close
             else:
-                # TODO: dump the whole function call with parameters
-                if y[0] == 'const char *':
-                    y[0] = 'string'
-                fo.write('\n\t[DllImport("soloud_x86.dll", CallingConvention = CallingConvention.Cdecl)]\n\tinternal static extern %s %s(IntPtr aObjHandle'%(C_TO_CS_TYPES[y[0]], y[1]))
+                charptr = False
+                floatptr = False
+                ret = C_TO_CS_TYPES[y[0]]
+                if y[0] == 'const char *':                    
+                    charptr = True
+                    ret = 'IntPtr'
+                if y[0] == 'float *':
+                    floatptr = True
+                    ret = 'IntPtr'
+                fo.write('\n\t[DllImport("soloud_x86.dll", CallingConvention = CallingConvention.Cdecl)]\n\tinternal static extern %s %s(IntPtr aObjHandle'%(ret, y[1]))
                 for z in y[2]:
                     if len(z) > 1:
                         if z[1] == 'a'+x:
@@ -170,9 +176,13 @@ for x in soloud_codegen.soloud_type:
                             if len(z) > 2:
                                 fo.write(' = ' + fix_default_param(z[2], x))
                 fo.write(')\n\t{\n')
+                if floatptr:
+                    fo.write('\t\tfloat[] ret = new float[256];\n')
                 fo.write('\t\t')
                 if y[0] == 'void':
                     pass
+                elif charptr or floatptr:
+                    fo.write('IntPtr p = ')
                 else:
                     fo.write('return ')
                 fo.write(y[1] + '(objhandle')
@@ -187,7 +197,24 @@ for x in soloud_codegen.soloud_type:
                                 fo.write(z[1] + '.objhandle')
                             else:
                                 fo.write(z[1])
-                fo.write(');\n\t}\n')
+                fo.write(');\n')
+                if charptr:
+                    fo.write('\t\treturn Marshal.PtrToStringAnsi(p);\n')
+                if floatptr:
+                    fo.write("""
+\t\tbyte[] buffer = new byte[4];
+\t\tfor (int i = 0; i < ret.Length; ++i)
+\t\t{
+\t\t\tint f_bits = Marshal.ReadInt32(p, i * 4);
+\t\t\tbuffer[0] = (byte)((f_bits >> 0) & 0xff);
+\t\t\tbuffer[1] = (byte)((f_bits >> 8) & 0xff);
+\t\t\tbuffer[2] = (byte)((f_bits >> 16) & 0xff);
+\t\t\tbuffer[3] = (byte)((f_bits >> 24) & 0xff);
+\t\t\tret[i] = BitConverter.ToSingle(buffer, 0);
+\t\t}
+\t\treturn ret;
+""")
+                fo.write('\t}\n')
     if not first:
         fo.write('}\n')
 

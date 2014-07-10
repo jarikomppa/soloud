@@ -116,6 +116,8 @@ namespace SoLoud
 	float doppler(vec3 aDeltaPos, vec3 aSrcVel, vec3 aDstVel, float aFactor, float aSoundSpeed)
 	{
 		float deltamag = aDeltaPos.mag();
+		if (deltamag == 0)
+			return 1.0f;
 		float vls = aDeltaPos.dot(aDstVel) / deltamag;
 		float vss = aDeltaPos.dot(aSrcVel) / deltamag;
 		float maxspeed = aSoundSpeed / aFactor;
@@ -149,13 +151,13 @@ namespace SoLoud
 	{
 		vec3 left_speaker, right_speaker;
 
-		left_speaker.mX = -2;
+		left_speaker.mX = 2;
 		left_speaker.mY = 0;
-		left_speaker.mZ = -1;
+		left_speaker.mZ = 1;
 		left_speaker.normalize();
-		right_speaker.mX = 2;
+		right_speaker.mX = -2;
 		right_speaker.mY = 0;
-		right_speaker.mZ = -1;
+		right_speaker.mZ = 1;
 		right_speaker.normalize();
 
 		vec3 lpos, lvel, at, up;

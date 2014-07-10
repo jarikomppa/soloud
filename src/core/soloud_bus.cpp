@@ -169,6 +169,38 @@ namespace SoLoud
 		return mSoloud->playClocked(aSoundTime, aSound, aVolume, aPan, mChannelHandle);
 	}	
 
+	handle Bus::play3d(AudioSource &aSound, float aPosX, float aPosY, float aPosZ, float aVelX, float aVelY, float aVelZ, float aVolume, bool aPaused)
+	{
+		if (!mInstance || !mSoloud)
+		{
+			return 0;
+		}
+
+		findBusHandle();
+
+		if (mChannelHandle == 0)
+		{
+			return 0;
+		}
+		return mSoloud->play3d(aSound, aPosX, aPosY, aPosZ, aVelX, aVelY, aVelZ, aVolume, aPaused, mChannelHandle);
+	}
+
+	handle Bus::play3dClocked(time aSoundTime, AudioSource &aSound, float aPosX, float aPosY, float aPosZ, float aVelX, float aVelY, float aVelZ, float aVolume)
+	{
+		if (!mInstance || !mSoloud)
+		{
+			return 0;
+		}
+
+		findBusHandle();
+
+		if (mChannelHandle == 0)
+		{
+			return 0;
+		}
+		return mSoloud->play3dClocked(aSoundTime, aSound, aPosX, aPosY, aPosZ, aVelX, aVelY, aVelZ, aVolume, mChannelHandle);
+	}
+
 
 	void Bus::setFilter(unsigned int aFilterId, Filter *aFilter)
 	{

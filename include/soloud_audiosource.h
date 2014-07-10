@@ -51,7 +51,11 @@ namespace SoLoud
 			// This audio instance is protected - won't get stopped if we run out of voices
 			PROTECTED = 2,
 			// This audio instance is paused
-			PAUSED = 4
+			PAUSED = 4,
+			// This audio instance is affected by 3d processing
+			PROCESS_3D = 8,
+			// This audio instance has listener-relative 3d coordinates
+			LISTENER_RELATIVE = 16
 		};
 		// Ctor
 		AudioSourceInstance();
@@ -102,7 +106,7 @@ namespace SoLoud
 		// Filter pointer
 		FilterInstance *mFilter[FILTERS_PER_STREAM];
 		// Initialize instance. Mostly internal use.
-		void init(int aPlayIndex, float aBaseSamplerate, int aChannels, int aSourceFlags);
+		void init(AudioSource &aSource, int aPlayIndex);
 		// Buffers for the resampler
 		AudioSourceResampleData *mResampleData[2];
 		// Sub-sample playhead; 16.16 fixed point
@@ -111,6 +115,30 @@ namespace SoLoud
 		unsigned int mLeftoverSamples;
 		// Number of samples to delay streaming
 		unsigned int mDelaySamples;
+		// 3d position
+		float m3dPosition[3];
+		// 3d velocity
+		float m3dVelocity[3];
+		// 3d cone direction
+		/*
+		float m3dConeDirection[3];
+		// 3d cone inner angle
+		float m3dConeInnerAngle;
+		// 3d cone outer angle
+		float m3dConeOuterAngle;
+		// 3d cone outer volume multiplier
+		float m3dConeOuterVolume;
+		*/
+		// 3d min distance
+		float m3dMinDistance;
+		// 3d max distance
+		float m3dMaxDistance;
+		// 3d attenuation rolloff factor
+		float m3dAttenuationRolloff;
+		// 3d attenuation model
+		unsigned int m3dAttenuationModel;
+		// 3d doppler factor
+		float m3dDopplerFactor;
 		// Get N samples from the stream to the buffer
 		virtual void getAudio(float *aBuffer, unsigned int aSamples) = 0;
 		// Has the stream ended?
@@ -134,8 +162,26 @@ namespace SoLoud
 			// Only one instance of this audio source should play at the same time
 			SINGLE_INSTANCE = 2,
 			// Visualization data gathering enabled. Only for busses.
-			VISUALIZATION_DATA = 4
+			VISUALIZATION_DATA = 4,
+			// Audio instances created from this source are affected by 3d processing
+			PROCESS_3D = 8,
+			// Audio instances created from this source have listener-relative 3d coordinates
+			LISTENER_RELATIVE = 16,
+			// Delay start of sound by the distance from listener
+			DISTANCE_DELAY = 32
 		};
+		enum ATTENUATION_MODELS
+		{
+			// No attenuation
+			NO_ATTENUATION = 0,
+			// Inverse distance attenuation model
+			INVERSE_DISTANCE = 1,
+			// Linear distance attenuation model
+			LINEAR_DISTANCE = 2,
+			// Exponential distance attenuation model
+			EXPONENTIAL_DISTANCE = 3
+		};
+
 		// Flags. See AudioSource::FLAGS
 		unsigned int mFlags;
 		// Base sample rate, used to initialize instances
@@ -144,6 +190,16 @@ namespace SoLoud
 		unsigned int mChannels;
 		// Sound source ID. Assigned by SoLoud the first time it's played.
 		unsigned int mAudioSourceID;
+		// 3d min distance
+		float m3dMinDistance;
+		// 3d max distance
+		float m3dMaxDistance;
+		// 3d attenuation rolloff factor
+		float m3dAttenuationRolloff;
+		// 3d attenuation model
+		unsigned int m3dAttenuationModel;
+		// 3d doppler factor
+		float m3dDopplerFactor;
 		// Filter pointer
 		Filter *mFilter[FILTERS_PER_STREAM];
 		// Pointer to the Soloud object. Needed to stop all instances in dtor.
@@ -155,6 +211,20 @@ namespace SoLoud
 		void setLooping(bool aLoop);
 		// Set whether only one instance of this sound should ever be playing at the same time
 		void setSingleInstance(bool aSingleInstance);
+		
+		// Set the minimum and maximum distances for 3d audio source (closer to min distance = max vol)
+		void set3dMinMaxDistance(float aMinDistance, float aMaxDistance);
+		// Set attenuation model and rolloff factor for 3d audio source
+		void set3dAttenuation(unsigned int aAttenuationModel, float aAttenuationRolloffFactor);
+		// Set doppler factor to reduce or enhance doppler effect, default = 1.0
+		void set3dDopplerFactor(float aDopplerFactor);
+		// Enable 3d processing. Implicitly set by play3d calls.
+		void set3dProcessing(bool aDo3dProcessing);
+		// Set the coordinates for this audio source to be relative to listener's coordinates.
+		void set3dListenerRelative(bool aListenerRelative);
+		// Enable delaying the start of the sound based on the distance.
+		void set3dDistanceDelay(bool aDistanceDelay);
+
 		// Set filter. Set to NULL to clear the filter.
 		virtual void setFilter(unsigned int aFilterId, Filter *aFilter);
 		// DTor

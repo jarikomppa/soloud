@@ -58,7 +58,7 @@ namespace SoLoud
 		mVoice[ch] = instance;
 		mVoice[ch]->mAudioSourceID = aSound.mAudioSourceID;
 		mVoice[ch]->mBusHandle = aBus;
-		mVoice[ch]->init(mPlayIndex, aSound.mBaseSamplerate, aSound.mChannels, aSound.mFlags);
+		mVoice[ch]->init(aSound, mPlayIndex);
 
 		mPlayIndex++;
 

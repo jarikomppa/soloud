@@ -133,9 +133,12 @@ namespace SoLoud
 
 		// Start playing a sound. Returns voice handle, which can be ignored or used to alter the playing sound's parameters.
 		handle play(AudioSource &aSound, float aVolume = 1.0f, float aPan = 0.0f, bool aPaused = 0, unsigned int aBus = 0);
-
 		// Start playing a sound delayed in relation to other sounds called via this function.
 		handle playClocked(time aSoundTime, AudioSource &aSound, float aVolume = 1.0f, float aPan = 0.0f, unsigned int aBus = 0);
+		// Start playing a 3d audio source
+		handle play3d(AudioSource &aSound, float aPosX, float aPosY, float aPosZ, float aVelX = 0.0f, float aVelY = 0.0f, float aVelZ = 0.0f, float aVolume = 1.0f, bool aPaused = 0, unsigned int aBus = 0);
+		// Start playing a 3d audio source, delayed in relation to other sounds called via this function.
+		handle play3dClocked(time aSoundTime, AudioSource &aSound, float aPosX, float aPosY, float aPosZ, float aVelX = 0.0f, float aVelY = 0.0f, float aVelZ = 0.0f, float aVolume = 1.0f, unsigned int aBus = 0);
 
 		// Seek the audio stream to certain point in time. Some streams can't seek backwards. Relative play speed affects time.
 		void seek(handle aVoiceHandle, time aSeconds);
@@ -249,6 +252,37 @@ namespace SoLoud
 		// Is this voice group empty?
 		bool isVoiceGroupEmpty(handle aVoiceGroupHandle);
 
+		// Perform 3d audio parameter update
+		void update3dAudio();
+		
+		// Set the speed of sound constant for doppler
+		result set3dSoundSpeed(float aSpeed);
+		// Get the current speed of sound constant for doppler
+		float get3dSoundSpeed();
+		// Set 3d listener parameters
+		void set3dListenerParameters(float aPosX, float aPosY, float aPosZ, float aAtX, float aAtY, float aAtZ, float aUpX, float aUpY, float aUpZ, float aVelocityX = 0.0f, float aVelocityY = 0.0f, float aVelocityZ = 0.0f);
+		// Set 3d listener position
+		void set3dListenerPos(float aPosX, float aPosY, float aPosZ);
+		// Set 3d listener "at" vector
+		void set3dListenerAt(float aAtX, float aAtY, float aAtZ);
+		// set 3d listener "up" vector
+		void set3dListenerUp(float aUpX, float aUpY, float aUpZ);
+		// Set 3d listener velocity
+		void set3dListenerVelocity(float aVelocityX, float aVelocityY, float aVelocityZ);
+
+		// Set 3d audio source parameters
+		void set3dSourceParameters(handle aVoiceHandle, float aPosX, float aPosY, float aPosZ, float aVelocityX = 0.0f, float aVelocityY = 0.0f, float aVelocityZ = 0.0f);
+		// Set 3d audio source position
+		void set3dSourcePosition(handle aVoiceHandle, float aPosX, float aPosY, float aPosZ);
+		// Set 3d audio source velocity
+		void set3dSourceVelocity(handle aVoiceHandle, float aVelocityX, float aVelocityY, float aVelocityZ);
+		// Set 3d audio source min/max distance (distance < min means max volume)
+		void set3dSourceMinMaxDistance(handle aVoiceHandle, float aMinDistance, float aMaxDistance);
+		// Set 3d audio source attenuation parameters
+		void set3dSourceAttenuation(handle aVoiceHandle, unsigned int aAttenuationModel, float aAttenuationRolloffFactor);
+		// Set 3d audio source doppler factor to reduce or enhance doppler effect. Default = 1.0
+		void set3dSourceDopplerFactor(handle aVoiceHandle, float aDopplerFactor);
+
 		// Rest of the stuff is used internally.
 	public:
 		// Mix and return N stereo samples in the buffer. Called by the back-end.
@@ -308,6 +342,8 @@ namespace SoLoud
 		void setVoiceVolume(unsigned int aVoice, float aVolume);
 		// Set voice (not handle) pause state.
 		void setVoicePause(unsigned int aVoice, int aPause);
+		// Update 3d parameters for a single voice (not handle)
+		void update3dVoice(int aVoice);
 		// Clip the samples in the buffer
 		void clip(float *aBuffer, float *aDestBuffer, unsigned int aSamples, float aVolume0, float aVolume1);
 		// Mono-mixed wave data for visualization and for visualization FFT input
@@ -317,6 +353,17 @@ namespace SoLoud
 		// Snapshot of wave data for visualization
 		float mWaveData[256];
 
+		// 3d listener position
+		float m3dPosition[3];
+		// 3d listener look-at
+		float m3dAt[3];
+		// 3d listener up
+		float m3dUp[3];
+		// 3d listener velocity
+		float m3dVelocity[3];
+		// 3d speed of sound (for doppler)
+		float m3dSoundSpeed;
+		
 		// For each voice group, first int is number of ints alocated.
 		unsigned int **mVoiceGroup;
 		unsigned int mVoiceGroupCount;

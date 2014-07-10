@@ -68,6 +68,17 @@ namespace SoLoud
 		mSrcOffset = 0;
 		mLeftoverSamples = 0;
 		mDelaySamples = 0;
+		m3dAttenuationModel = 0;
+		m3dAttenuationRolloff = 1;
+		m3dDopplerFactor = 1.0;
+		m3dMaxDistance = 1000000.0f;
+		m3dMinDistance = 0.0f;
+		m3dPosition[0] = 0;
+		m3dPosition[1] = 0;
+		m3dPosition[2] = 0;
+		m3dVelocity[0] = 0;
+		m3dVelocity[1] = 0;
+		m3dVelocity[2] = 0;		
 	}
 
 	AudioSourceInstance::~AudioSourceInstance()
@@ -84,17 +95,30 @@ namespace SoLoud
 		delete mResampleData[1];
 	}
 
-	void AudioSourceInstance::init(int aPlayIndex, float aBaseSamplerate, int aChannels, int aSourceFlags)
+	void AudioSourceInstance::init(AudioSource &aSource, int aPlayIndex)
 	{
 		mPlayIndex = aPlayIndex;
-		mBaseSamplerate = aBaseSamplerate;
+		mBaseSamplerate = aSource.mBaseSamplerate;
 		mSamplerate = mBaseSamplerate;
-		mChannels = aChannels;
+		mChannels = aSource.mChannels;
 		mStreamTime = 0.0f;
+		m3dAttenuationModel = aSource.m3dAttenuationModel;
+		m3dAttenuationRolloff = aSource.m3dAttenuationRolloff;
+		m3dDopplerFactor = aSource.m3dDopplerFactor;
+		m3dMaxDistance = aSource.m3dMaxDistance;
+		m3dMinDistance = aSource.m3dMinDistance;		
 
-		if (aSourceFlags & AudioSource::SHOULD_LOOP)
+		if (aSource.mFlags & AudioSource::SHOULD_LOOP)
 		{
 			mFlags |= AudioSourceInstance::LOOPING;
+		}
+		if (aSource.mFlags & AudioSource::PROCESS_3D)
+		{
+			mFlags |= AudioSourceInstance::PROCESS_3D;
+		}
+		if (aSource.mFlags & AudioSource::LISTENER_RELATIVE)
+		{
+			mFlags |= AudioSourceInstance::LISTENER_RELATIVE;
 		}
 	}
 
@@ -142,6 +166,11 @@ namespace SoLoud
 		mAudioSourceID = 0;
 		mSoloud = 0;
 		mChannels = 1;
+		m3dMinDistance = 0;
+		m3dMaxDistance = 1000000.0f;
+		m3dAttenuationRolloff = 1.0f;
+		m3dAttenuationModel = NO_ATTENUATION;
+		m3dDopplerFactor = 1.0f;
 	}
 
 	AudioSource::~AudioSource() 
@@ -188,6 +217,60 @@ namespace SoLoud
 		if (mSoloud)
 		{
 			mSoloud->stopAudioSource(*this);
+		}
+	}
+
+	void AudioSource::set3dMinMaxDistance(float aMinDistance, float aMaxDistance)
+	{
+		m3dMinDistance = aMinDistance;
+		m3dMaxDistance = aMaxDistance;
+	}
+
+	void AudioSource::set3dAttenuation(unsigned int aAttenuationModel, float aAttenuationRolloffFactor)
+	{
+		m3dAttenuationModel = aAttenuationModel;
+		m3dAttenuationRolloff = aAttenuationRolloffFactor;
+	}
+
+	void AudioSource::set3dDopplerFactor(float aDopplerFactor)
+	{
+		m3dDopplerFactor = aDopplerFactor;
+	}
+
+	void AudioSource::set3dProcessing(bool aDo3dProcessing)
+	{
+		if (aDo3dProcessing)
+		{
+			mFlags |= PROCESS_3D;
+		}
+		else
+		{
+			mFlags &= ~PROCESS_3D;
+		}
+	}
+
+	void AudioSource::set3dListenerRelative(bool aListenerRelative)
+	{
+		if (aListenerRelative)
+		{
+			mFlags |= LISTENER_RELATIVE;
+		}
+		else
+		{
+			mFlags &= ~LISTENER_RELATIVE;
+		}
+	}
+
+
+	void AudioSource::set3dDistanceDelay(bool aDistanceDelay)
+	{
+		if (aDistanceDelay)
+		{
+			mFlags |= DISTANCE_DELAY;
+		}
+		else
+		{
+			mFlags &= ~DISTANCE_DELAY;
 		}
 	}
 };

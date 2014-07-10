@@ -86,6 +86,21 @@ namespace SoLoud
 		}
 		mVoiceGroup = 0;
 		mVoiceGroupCount = 0;
+
+		m3dPosition[0] = 0;
+		m3dPosition[1] = 0;
+		m3dPosition[2] = 0;
+		m3dAt[0] = 0;
+		m3dAt[1] = 0;
+		m3dAt[2] = -1;
+		m3dUp[0] = 0;
+		m3dUp[1] = 1;
+		m3dUp[2] = 0;		
+		m3dVelocity[0] = 0;
+		m3dVelocity[1] = 0;
+		m3dVelocity[2] = 0;		
+		m3dSoundSpeed = 343.3f;
+
 	}
 
 	Soloud::~Soloud()

@@ -241,6 +241,39 @@ end
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 
+  project "test3d"
+    kind "WindowedApp"
+    language "C++"
+    files {
+      "../demos/test3d/**.c*"
+      }
+    includedirs {
+      "../include",
+      sdl_include   
+    }
+    libdirs {
+      sdl_lib
+    }
+
+		links {"StaticLib", "sdlmain", "sdl"}
+		
+		configuration "Debug"
+			defines { "DEBUG" }
+			flags {"Symbols" }
+			objdir (buildroot .. "/debug")
+			targetname "test3d_d"
+			flags { "Symbols" }
+			
+
+		configuration "Release"
+			defines { "NDEBUG" }
+			flags {"Optimize"}
+			objdir (buildroot .. "/release")
+			targetname "test3d"
+			flags { "EnableSSE2", "NoMinimalRebuild", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
+
+-- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
+
   project "env"
     kind "WindowedApp"
     language "C++"

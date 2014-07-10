@@ -19,6 +19,20 @@ SOLOUD_TYPES = []
 for x in soloud_codegen.soloud_type:
     SOLOUD_TYPES.append(x + " *")
 
+def pythonize_camelcase(origstr):
+    """ Turns camelCase into underscore_style """
+    ret = ""
+    for letter in origstr:
+        if letter.isupper():
+            ret += '_' + letter.lower()
+        else:
+            ret += letter
+    # kludge, because calc_f_f_t is silly.
+    ret = ret.replace("_f_f_t", "_fft")
+    # kludge for 3d calls
+    ret = ret.replace("3d", "_3d")
+    return ret
+
 
 def has_ex_variant(funcname):
     """ Checks if this function has an "Ex" variant """    
@@ -1228,7 +1242,7 @@ for x in soloud_codegen.soloud_type:
             if funcname == "create" or funcname == "destroy" or has_ex_variant(y[1]):
                 pass # omit create/destroy, handled by initialize/destroy
             else:
-                fo.write('\tdef %s('%(funcname))
+                fo.write('\tdef %s('%pythonize_camelcase(funcname))
                 firstparam = True
                 for z in y[2]:
                     if len(z) > 1:

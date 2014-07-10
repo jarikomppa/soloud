@@ -42,6 +42,8 @@ def pythonize_camelcase(origstr):
             ret += letter
     # kludge, because calc_f_f_t is silly.
     ret = ret.replace("_f_f_t", "_fft")
+    # kludge for 3d calls
+    ret = ret.replace("3d", "_3d")
     return ret
 
 def has_ex_variant(funcname):

@@ -104,7 +104,16 @@ namespace SoLoud
 			{
 				fperiod=fmaxperiod;
 				if(mParams.p_freq_limit>0.0f)
-					playing_sample=false;
+				{
+					if (mFlags & LOOPING)
+					{
+						resetSample(false);
+					}
+					else
+					{
+						playing_sample=false;
+					}
+				}
 			}
 			float rfperiod=(float)fperiod;
 			if(vib_amp>0.0f)
@@ -124,7 +133,16 @@ namespace SoLoud
 				env_time=0;
 				env_stage++;
 				if(env_stage==3)
-					playing_sample=false;
+				{
+					if (mFlags & LOOPING)
+					{
+						resetSample(false);
+					}
+					else
+					{
+						playing_sample=false;
+					}
+				}
 			}
 			if(env_stage==0)
 				env_vol=(float)env_time/env_length[0];

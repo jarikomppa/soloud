@@ -592,60 +592,35 @@ namespace SoLoud
 				chofs[0] = 0;
 				chofs[1] = aSamples;
 				
-				if (mVoice[i]->mActiveFader)
-				{
-					float lpan = mVoice[i]->mFaderVolume[0];
-					float rpan = mVoice[i]->mFaderVolume[2];
-					float lpani = mVoice[i]->mFaderVolume[1];
-					float rpani = mVoice[i]->mFaderVolume[3];
+				float lpan = mVoice[i]->mCurrentChannelVolume[0];
+				float rpan = mVoice[i]->mCurrentChannelVolume[1];
+				float lpand = mVoice[i]->mChannelVolume[0] * mVoice[i]->mVolume;
+				float rpand = mVoice[i]->mChannelVolume[1] * mVoice[i]->mVolume;
+				float lpani = (lpand - lpan) / aSamples;
+				float rpani = (rpand - rpan) / aSamples;
 
-					if (mVoice[i]->mChannels == 2)
+				if (mVoice[i]->mChannels == 2)
+				{
+					for (j = 0; j < aSamples; j++, lpan += lpani, rpan += rpani)
 					{
-						for (j = 0; j < aSamples; j++, lpan += lpani, rpan += rpani)
-						{
-							float s1 = aScratch[chofs[0] + j];
-							float s2 = aScratch[chofs[1] + j];
-							aBuffer[j + 0] += s1 * lpan;
-							aBuffer[j + aSamples] += s2 * rpan;
-						}
+						float s1 = aScratch[chofs[0] + j];
+						float s2 = aScratch[chofs[1] + j];
+						aBuffer[j + 0] += s1 * lpan;
+						aBuffer[j + aSamples] += s2 * rpan;
 					}
-					else
-					{
-						for (j = 0; j < aSamples; j++, lpan += lpani, rpan += rpani)
-						{
-							float s = aScratch[chofs[0] + j];
-							aBuffer[j + 0] += s * lpan;
-							aBuffer[j + aSamples] += s * rpan;
-						}
-					}
-					
-					mVoice[i]->mFaderVolume[0] = lpan;
-					mVoice[i]->mFaderVolume[2] = rpan;
 				}
 				else
 				{
-					float lpan = mVoice[i]->mLVolume * mVoice[i]->mVolume;
-					float rpan = mVoice[i]->mRVolume * mVoice[i]->mVolume;
-					if (mVoice[i]->mChannels == 2)
+					for (j = 0; j < aSamples; j++, lpan += lpani, rpan += rpani)
 					{
-						for (j = 0; j < aSamples; j++)
-						{
-							float s1 = aScratch[chofs[0] + j];
-							float s2 = aScratch[chofs[1] + j];
-							aBuffer[j + 0] += s1 * lpan;
-							aBuffer[j + aSamples] += s2 * rpan;
-						}
-					}
-					else
-					{
-						for (j = 0; j < aSamples; j++)
-						{
-							float s = aScratch[chofs[0] + j];
-							aBuffer[j + 0] += s * lpan;
-							aBuffer[j + aSamples] += s * rpan;
-						}
+						float s = aScratch[chofs[0] + j];
+						aBuffer[j + 0] += s * lpan;
+						aBuffer[j + aSamples] += s * rpan;
 					}
 				}
+					
+				mVoice[i]->mCurrentChannelVolume[0] = lpand;
+				mVoice[i]->mCurrentChannelVolume[1] = rpand;
 
 				// clear voice if the sound is over
 				if (!(mVoice[i]->mFlags & AudioSourceInstance::LOOPING) && mVoice[i]->hasEnded())
@@ -692,8 +667,6 @@ namespace SoLoud
 			if (mVoice[i] && !(mVoice[i]->mFlags & AudioSourceInstance::PAUSED))
 			{
 				float volume[2];
-				float panl[2];
-				float panr[2];
 
 				mVoice[i]->mActiveFader = 0;
 
@@ -718,17 +691,12 @@ namespace SoLoud
 				}
 				volume[1] = mVoice[i]->mVolume;
 
-
-				panl[0] = mVoice[i]->mLVolume;
-				panr[0] = mVoice[i]->mRVolume;
 				if (mVoice[i]->mPanFader.mActive > 0)
 				{
 					float pan = mVoice[i]->mPanFader.get(mVoice[i]->mStreamTime);
 					setVoicePan(i, pan);
 					mVoice[i]->mActiveFader = 1;
 				}
-				panl[1] = mVoice[i]->mLVolume;
-				panr[1] = mVoice[i]->mRVolume;
 
 				if (mVoice[i]->mPauseScheduler.mActive)
 				{
@@ -738,18 +706,6 @@ namespace SoLoud
 						mVoice[i]->mPauseScheduler.mActive = 0;
 						setVoicePause(i, 1);
 					}
-				}
-
-				if (mVoice[i]->mActiveFader)
-				{
-					mVoice[i]->mFaderVolume[0*2+0] = panl[0] * volume[0];
-					mVoice[i]->mFaderVolume[0*2+1] = panl[1] * volume[1];
-					mVoice[i]->mFaderVolume[1*2+0] = panr[0] * volume[0];
-					mVoice[i]->mFaderVolume[1*2+1] = panr[1] * volume[1];
-
-					mVoice[i]->mFaderVolume[0*2+1] = (mVoice[i]->mFaderVolume[1] - mVoice[i]->mFaderVolume[0]) / aSamples;
-					mVoice[i]->mFaderVolume[1*2+1] = (mVoice[i]->mFaderVolume[3] - mVoice[i]->mFaderVolume[2]) / aSamples;
-
 				}
 
 				if (mVoice[i]->mStopScheduler.mActive)

@@ -98,8 +98,8 @@ namespace SoLoud
 	{
 		FOR_ALL_VOICES_PRE
 		mVoice[ch]->mPanFader.mActive = 0;
-		mVoice[ch]->mLVolume = aLVolume;
-		mVoice[ch]->mRVolume = aRVolume;
+		mVoice[ch]->mChannelVolume[0] = aLVolume;
+		mVoice[ch]->mChannelVolume[1] = aRVolume;
 		FOR_ALL_VOICES_POST
 	}
 

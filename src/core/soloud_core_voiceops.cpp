@@ -59,8 +59,8 @@ namespace SoLoud
 		if (mVoice[aVoice])
 		{
 			mVoice[aVoice]->mPan = aPan;
-			mVoice[aVoice]->mLVolume = (float)cos((aPan + 1) * M_PI / 4);
-			mVoice[aVoice]->mRVolume = (float)sin((aPan + 1) * M_PI / 4);
+			mVoice[aVoice]->mChannelVolume[0] = (float)cos((aPan + 1) * M_PI / 4);
+			mVoice[aVoice]->mChannelVolume[1] = (float)sin((aPan + 1) * M_PI / 4);
 		}
 	}
 

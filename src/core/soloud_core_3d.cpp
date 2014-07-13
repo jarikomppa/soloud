@@ -224,8 +224,8 @@ namespace SoLoud
 		// panning
 		pos = m.mul(pos);
 		pos.normalize();
-		mVoice[aVoice]->mLVolume = v * (left_speaker.dot(pos) + 1) / 2;
-		mVoice[aVoice]->mRVolume = v * (right_speaker.dot(pos) + 1) / 2;
+		mVoice[aVoice]->mChannelVolume[0] = v * (left_speaker.dot(pos) + 1) / 2;
+		mVoice[aVoice]->mChannelVolume[1] = v * (right_speaker.dot(pos) + 1) / 2;
 	}
 
 	void Soloud::update3dAudio()

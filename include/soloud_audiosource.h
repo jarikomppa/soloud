@@ -69,10 +69,8 @@ namespace SoLoud
 		unsigned int mFlags;
 		// Pan value, for getPan()
 		float mPan;
-		// Left channel volume (panning)
-		float mLVolume;
-		// Right channel volume (panning)
-		float mRVolume;
+		// Volume for each channel (panning)
+		float mChannelVolume[MAX_CHANNELS];
 		// Overall volume
 		float mVolume;
 		// Base samplerate; samplerate = base samplerate * relative play speed
@@ -97,8 +95,8 @@ namespace SoLoud
 		Fader mStopScheduler;
 		// Affected by some fader
 		int mActiveFader;
-		// Fader-affected l/r volumes
-		float mFaderVolume[2 * 2];
+		// Current channel volumes, used to ramp the volume changes to avoid clicks
+		float mCurrentChannelVolume[MAX_CHANNELS];
 		// ID of the sound source that generated this instance
 		unsigned int mAudioSourceID;
 		// Handle of the bus this audio instance is playing on. 0 for root.

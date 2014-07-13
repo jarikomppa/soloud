@@ -42,8 +42,8 @@ namespace SoLoud
 		mPlayIndex = 0;
 		mFlags = 0;
 		mPan = 0;
-		mLVolume = 1.0f / (float)sqrt(2.0);
-		mRVolume = 1.0f / (float)sqrt(2.0);
+		mChannelVolume[0] = 1.0f / (float)sqrt(2.0);
+		mChannelVolume[1] = 1.0f / (float)sqrt(2.0);
 		mVolume = 1.0f;
 		mBaseSamplerate = 44100.0f;
 		mSamplerate = 44100.0f;
@@ -59,9 +59,9 @@ namespace SoLoud
 		{
 			mFilter[i] = NULL;
 		}
-		for (i = 0; i < 4; i++)
+		for (i = 0; i < MAX_CHANNELS; i++)
 		{
-			mFaderVolume[i] = 0;
+			mCurrentChannelVolume[i] = 0;
 		}
 		mResampleData[0] = new AudioSourceResampleData;
 		mResampleData[1] = new AudioSourceResampleData;

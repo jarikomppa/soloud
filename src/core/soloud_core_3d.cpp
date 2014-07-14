@@ -130,7 +130,7 @@ namespace SoLoud
 	{
 		float distance = MAX(aDistance, aMinDistance);
 		distance = MIN(distance, aMaxDistance);
-		return aMinDistance / (aMaxDistance + aRolloffFactor * (distance - aMinDistance));
+		return aMinDistance / (aMinDistance + aRolloffFactor * (distance - aMinDistance));
 	}
 
 	float attenuateLinearDistance(float aDistance, float aMinDistance, float aMaxDistance, float aRolloffFactor)

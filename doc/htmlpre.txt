@@ -37,6 +37,8 @@
 <a href="bmx_api.html">BlitzMax-api</a><br>
 <a href="cs_api.html">C#-api</a><br>
 <br>
+<a href="concepts3d.html">3D Audio Concepts</a><br>
+<br>
 <a href="basics.html">Core: Basics</a><br>
 <a href="attributes.html">Core: Attributes</a><br>
 <a href="faders.html">Core: Faders</a><br>

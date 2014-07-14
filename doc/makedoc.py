@@ -24,6 +24,7 @@ src = [
     "rpgmaker_api.mmd",
     "bmx_api.mmd",
     "cs_api.mmd",
+    "concepts3d.mmd",
     "basics.mmd",
     "attributes.mmd",
     "faders.mmd",

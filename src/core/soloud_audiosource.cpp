@@ -79,6 +79,8 @@ namespace SoLoud
 		m3dVelocity[0] = 0;
 		m3dVelocity[1] = 0;
 		m3dVelocity[2] = 0;		
+		mCollider = 0;
+		mColliderData = 0;
 	}
 
 	AudioSourceInstance::~AudioSourceInstance()
@@ -120,6 +122,9 @@ namespace SoLoud
 		{
 			mFlags |= AudioSourceInstance::LISTENER_RELATIVE;
 		}
+
+		mCollider = aSource.mCollider;
+		mColliderData = aSource.mColliderData;
 	}
 
 	result AudioSourceInstance::rewind()
@@ -171,6 +176,8 @@ namespace SoLoud
 		m3dAttenuationRolloff = 1.0f;
 		m3dAttenuationModel = NO_ATTENUATION;
 		m3dDopplerFactor = 1.0f;
+		mCollider = 0;
+		mColliderData = 0;
 	}
 
 	AudioSource::~AudioSource() 

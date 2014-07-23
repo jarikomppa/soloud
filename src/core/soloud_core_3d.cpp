@@ -149,16 +149,19 @@ namespace SoLoud
 
 	void Soloud::update3dVoice(int aVoice)
 	{
-		vec3 left_speaker, right_speaker;
+		AudioSourceInstance * v = mVoice[aVoice];
+		if (!v) return;
 
-		left_speaker.mX = 2;
-		left_speaker.mY = 0;
-		left_speaker.mZ = 1;
-		left_speaker.normalize();
-		right_speaker.mX = -2;
-		right_speaker.mY = 0;
-		right_speaker.mZ = 1;
-		right_speaker.normalize();
+		vec3 speaker[MAX_CHANNELS];
+
+		speaker[0].mX = 2;
+		speaker[0].mY = 0;
+		speaker[0].mZ = 1;
+		speaker[0].normalize();
+		speaker[1].mX = -2;
+		speaker[1].mY = 0;
+		speaker[1].mZ = 1;
+		speaker[1].normalize();
 
 		vec3 lpos, lvel, at, up;
 		at.mX = m3dAt[0];
@@ -178,17 +181,24 @@ namespace SoLoud
 
 		// Optimization: everything above this can be done once per listener update
 
-		float v = 1;
+		float vol = 1;
+
+		// custom collider
+		if (v->mCollider)
+		{
+			vol *= v->mCollider->collide(this, v, v->mColliderData);
+		}
+
 		vec3 pos, vel;
-		pos.mX = mVoice[aVoice]->m3dPosition[0];
-		pos.mY = mVoice[aVoice]->m3dPosition[1];
-		pos.mZ = mVoice[aVoice]->m3dPosition[2];
+		pos.mX = v->m3dPosition[0];
+		pos.mY = v->m3dPosition[1];
+		pos.mZ = v->m3dPosition[2];
 
-		vel.mX = mVoice[aVoice]->m3dVelocity[0];
-		vel.mY = mVoice[aVoice]->m3dVelocity[1];
-		vel.mZ = mVoice[aVoice]->m3dVelocity[2];
+		vel.mX = v->m3dVelocity[0];
+		vel.mY = v->m3dVelocity[1];
+		vel.mZ = v->m3dVelocity[2];
 
-		if (!(mVoice[aVoice]->mFlags & AudioSourceInstance::LISTENER_RELATIVE))
+		if (!(v->mFlags & AudioSourceInstance::LISTENER_RELATIVE))
 		{
 			pos = pos.sub(lpos);
 		}
@@ -199,13 +209,13 @@ namespace SoLoud
 		switch (mVoice[aVoice]->m3dAttenuationModel)
 		{
 		case AudioSource::INVERSE_DISTANCE:
-			v = attenuateInvDistance(dist, mVoice[aVoice]->m3dMinDistance, mVoice[aVoice]->m3dMaxDistance, mVoice[aVoice]->m3dAttenuationRolloff);
+			vol = attenuateInvDistance(dist, v->m3dMinDistance, v->m3dMaxDistance, v->m3dAttenuationRolloff);
 			break;
 		case AudioSource::LINEAR_DISTANCE:
-			v = attenuateLinearDistance(dist, mVoice[aVoice]->m3dMinDistance, mVoice[aVoice]->m3dMaxDistance, mVoice[aVoice]->m3dAttenuationRolloff);
+			vol = attenuateLinearDistance(dist, v->m3dMinDistance, v->m3dMaxDistance, v->m3dAttenuationRolloff);
 			break;
 		case AudioSource::EXPONENTIAL_DISTANCE:
-			v = attenuateExponentialDistance(dist, mVoice[aVoice]->m3dMinDistance, mVoice[aVoice]->m3dMaxDistance, mVoice[aVoice]->m3dAttenuationRolloff);
+			vol = attenuateExponentialDistance(dist, v->m3dMinDistance, v->m3dMaxDistance, v->m3dAttenuationRolloff);
 			break;
 		default:
 		//case AudioSource::NO_ATTENUATION:
@@ -214,18 +224,27 @@ namespace SoLoud
 
 		// cone
 
-		// (todo) v *= conev;
+		// (todo) vol *= conev;
 								
 		// doppler
 
-		mVoice[aVoice]->mRelativePlaySpeed = doppler(pos, vel, lvel, mVoice[aVoice]->m3dDopplerFactor, m3dSoundSpeed);
-		mVoice[aVoice]->mSamplerate = mVoice[aVoice]->mBaseSamplerate * mVoice[aVoice]->mRelativePlaySpeed;
+		v->mRelativePlaySpeed = doppler(pos, vel, lvel, v->m3dDopplerFactor, m3dSoundSpeed);
+		v->mSamplerate = v->mBaseSamplerate * v->mRelativePlaySpeed;
 
 		// panning
 		pos = m.mul(pos);
 		pos.normalize();
-		mVoice[aVoice]->mChannelVolume[0] = v * (left_speaker.dot(pos) + 1) / 2;
-		mVoice[aVoice]->mChannelVolume[1] = v * (right_speaker.dot(pos) + 1) / 2;
+		
+		// Apply volume to channels based on speaker vectors
+		int i;
+		for (i = 0; i < MAX_CHANNELS; i++)
+		{
+			float speakervol = (speaker[i].dot(pos) + 1) / 2;
+			// Different speaker "focus" calculations to try, if the default "bleeds" too much..
+			//speakervol = (speakervol * speakervol + speakervol) / 2;
+			//speakervol = speakervol * speakervol;
+			v->mChannelVolume[i] = vol * speakervol;
+		}
 	}
 
 	void Soloud::update3dAudio()
@@ -459,4 +478,9 @@ namespace SoLoud
 		FOR_ALL_VOICES_POST
 	}
 
+	void AudioSource::set3dCollider(AudioCollider *aCollider, int aUserData)
+	{
+		mCollider = aCollider;
+		mColliderData = aUserData;
+	}
 };

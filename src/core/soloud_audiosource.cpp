@@ -171,7 +171,7 @@ namespace SoLoud
 		mAudioSourceID = 0;
 		mSoloud = 0;
 		mChannels = 1;
-		m3dMinDistance = 0;
+		m3dMinDistance = 1;
 		m3dMaxDistance = 1000000.0f;
 		m3dAttenuationRolloff = 1.0f;
 		m3dAttenuationModel = NO_ATTENUATION;

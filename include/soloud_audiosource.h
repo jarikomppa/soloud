@@ -31,13 +31,21 @@ freely, subject to the following restrictions:
 
 namespace SoLoud
 {
-	class AudioSource;
+	class AudioSource;	
+	class AudioSourceInstance;
 
 	struct AudioSourceResampleData
 	{
 		AudioSourceResampleData();
 		~AudioSourceResampleData();
 		float *mBuffer;
+	};
+
+	class AudioCollider
+	{
+	public:
+		// Calculate volume multiplier. Assumed to return value between 0 and 1.
+		virtual float collide(Soloud *aSoloud, AudioSourceInstance *aAudioInstance,	int aUserData) = 0;
 	};
 
 	// Base class for audio instances
@@ -137,6 +145,10 @@ namespace SoLoud
 		unsigned int m3dAttenuationModel;
 		// 3d doppler factor
 		float m3dDopplerFactor;
+		// Pointer to a custom audio collider object
+		AudioCollider *mCollider;
+		// User data related to audio collider
+		int mColliderData;
 		// Get N samples from the stream to the buffer
 		virtual void getAudio(float *aBuffer, unsigned int aSamples) = 0;
 		// Has the stream ended?
@@ -202,6 +214,10 @@ namespace SoLoud
 		Filter *mFilter[FILTERS_PER_STREAM];
 		// Pointer to the Soloud object. Needed to stop all instances in dtor.
 		Soloud *mSoloud;
+		// Pointer to a custom audio collider object
+		AudioCollider *mCollider;
+		// User data related to audio collider
+		int mColliderData;
 
 		// CTor
 		AudioSource();
@@ -222,6 +238,9 @@ namespace SoLoud
 		void set3dListenerRelative(bool aListenerRelative);
 		// Enable delaying the start of the sound based on the distance.
 		void set3dDistanceDelay(bool aDistanceDelay);
+
+		// Set a custom 3d audio collider. Set to NULL to disable.
+		void set3dCollider(AudioCollider *aCollider, int aUserData = 0);
 
 		// Set filter. Set to NULL to clear the filter.
 		virtual void setFilter(unsigned int aFilterId, Filter *aFilter);

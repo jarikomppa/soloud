@@ -340,7 +340,7 @@ void parse(const char *aFilename, int aPrintProgress = 0)
 
 				if (s == "{") 
 				{
-					if (c) 	gClass.push_back(c);
+					if (c) gClass.push_back(c);
 					c = new Class;
 					c->mName = classname;
 					c->mParent = parentname;
@@ -876,7 +876,8 @@ void generate()
 
 	for (i = 0; i < (signed)gClass.size(); i++)
 	{
-		if (gClass[i]->mName.find("Instance") == string::npos &&
+		if (gClass[i]->mName != "AudioCollider" &&
+			gClass[i]->mName.find("Instance") == string::npos &&
 			gClass[i]->mName != "Filter" &&
 			gClass[i]->mName != "AudioSource" &&
 			gClass[i]->mName != "Fader")

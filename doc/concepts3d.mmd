@@ -18,6 +18,18 @@ In order to use the 3d audio, use the 3d versions of the play commands, adjust t
     // ...    
     gSoloud.update3dAudio();
 
+## Custom Colliders
+
+Sound sources may have a custom collider applied to them. This can be useful in many cases. For instance, if you have a river and want a water flow ambience to play when the player is near the water, you can either have a bunch of audio sources along the river (wasting a lot of voices) or you could have one audio source with a custom collider that checks if the player is near the river and adjusts volume accordingly.
+
+Custom colliders are created by extending the AudioCollider class, which only has one function - collide. The function returns the calculated volume level. Once the custom collider class is made, you can set the collider to an audio source via set3dCollider() call. The call also takes an optional aUserData integer, which can be used to differentiate between the sounds. The same value is provided to the collide() call.
+
+    MyCustomCollider cc;
+    gSound.set3dCollider(&cc);
+    gSoloud.play(gSound);
+
+The collide() call is made from update3dAudio() before directional panning is calculated, so it is possible to update the positions from inside your collide() function. That way you could figure out the general direction the sound should be coming from (thinking again of the river example), instead of just having a general volume fade.
+
 ## Attenuation
 
 Attenuation, or how audio volume decreases on distance, can be calculated in several ways. SoLoud supports three different modes (in addition to "no attenuation"): inverse distance, linear distance and exponential distance. These are calculated using the "clamped" models of OpenAL formulas.
@@ -66,7 +78,10 @@ Increasing the minimum distance pushes the start of the attenuation further. It 
 The maximum distance simply cuts the attenuation at the volume level it has reached at that point.
 
 ## Doppler
-"Doppler effect" is the physical phenomenon that causes sound sources (like an ambulance) to sound higher-pitched when they're coming towards you and lower-pitched when going away.
+"Doppler effect" is the physical phenomenon that causes sound sources (like an ambulance) to sound higher-pitched when they're coming towards you and lower-pitched when going away. 
+
+![Doppler effect](images/doppler)
+A stationary sound (with a stationary listener) receives sound waves as you'd expect. When the sound source (or listener) are moving, the sound waves get "squashed" (for higher-pitch sould) or "stretched" (for lower-pitch sound) depending on whether the sound is approaching or receding from the listener.
 
 SoLoud uses the OpenAL 1.1 formula for doppler calculation. The calculation depends on the listeners' and sound sources' velocities being properly calculated on the application's side. If you do not wish to use the doppler, simply leave all velocities at zero.
 

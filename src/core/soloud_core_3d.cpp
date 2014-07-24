@@ -368,7 +368,7 @@ namespace SoLoud
 	}
 
 	
-	void Soloud::set3dListenerPos(float aPosX, float aPosY, float aPosZ)
+	void Soloud::set3dListenerPosition(float aPosX, float aPosY, float aPosZ)
 	{
 		if (mLockMutexFunc) mUnlockMutexFunc(mMutex);
 		m3dPosition[0] = aPosX;
@@ -464,11 +464,5 @@ namespace SoLoud
 		FOR_ALL_VOICES_PRE
 		mVoice[ch]->m3dDopplerFactor = aDopplerFactor;
 		FOR_ALL_VOICES_POST
-	}
-
-	void AudioSource::set3dCollider(AudioCollider *aCollider, int aUserData)
-	{
-		mCollider = aCollider;
-		mColliderData = aUserData;
 	}
 };

@@ -280,5 +280,12 @@ namespace SoLoud
 			mFlags &= ~DISTANCE_DELAY;
 		}
 	}
+
+	void AudioSource::set3dCollider(AudioCollider *aCollider, int aUserData)
+	{
+		mCollider = aCollider;
+		mColliderData = aUserData;
+	}
+
 };
 

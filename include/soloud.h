@@ -265,7 +265,7 @@ namespace SoLoud
 		// Set 3d listener parameters
 		void set3dListenerParameters(float aPosX, float aPosY, float aPosZ, float aAtX, float aAtY, float aAtZ, float aUpX, float aUpY, float aUpZ, float aVelocityX = 0.0f, float aVelocityY = 0.0f, float aVelocityZ = 0.0f);
 		// Set 3d listener position
-		void set3dListenerPos(float aPosX, float aPosY, float aPosZ);
+		void set3dListenerPosition(float aPosX, float aPosY, float aPosZ);
 		// Set 3d listener "at" vector
 		void set3dListenerAt(float aAtX, float aAtY, float aAtZ);
 		// set 3d listener "up" vector

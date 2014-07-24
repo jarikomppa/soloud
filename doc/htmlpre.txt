@@ -25,6 +25,7 @@
 <a href="quickstart.html">Quick Start</a><br>
 <a href="premake.html">Premake</a><br>
 <a href="concepts.html">Concepts</a><br>
+<a href="concepts3d.html">3D Audio Concepts</a><br>
 <a href="faq.html">FAQ</a><br>
 <a href="examples.html">Examples</a><br>
 <br>
@@ -37,13 +38,12 @@
 <a href="bmx_api.html">BlitzMax-api</a><br>
 <a href="cs_api.html">C#-api</a><br>
 <br>
-<a href="concepts3d.html">3D Audio Concepts</a><br>
-<br>
 <a href="basics.html">Core: Basics</a><br>
 <a href="attributes.html">Core: Attributes</a><br>
 <a href="faders.html">Core: Faders</a><br>
 <a href="voicegroups.html">Core: Voice Groups</a><br>
 <a href="coremisc.html">Core: Misc</a><br>
+<a href="coremisc.html">Core: 3d Audio</a><br>
 <br>
 <a href="mixbus.html">SoLoud::Bus</a><br>
 <br>
@@ -61,6 +61,8 @@
 <a href="fftfilter.html">SoLoud::FFTFilter</a><br>
 <a href="lofifilter.html">SoLoud::LofiFilter</a><br>
 <a href="flangerfilter.html">SoLoud::FlangerFilter</a><br>
+<br>
+<a href="collider.html">SoLoud::AudioCollider</a><br>
 <br>
 <a href="backends.html">Back-ends</a><br>
 <hr>

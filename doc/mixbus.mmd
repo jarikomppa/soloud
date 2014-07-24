@@ -37,6 +37,18 @@ Bus.playClocked()
 Equivalent of soloud.playClocked(), but plays the sound sounce through the bus
 instead of at "global" scope.
 
+Bus.play3d()
+----------
+
+Equivalent of soloud.play3d(), but plays the sound source through the bus
+instead of at "global" scope.
+
+Bus.play3dClocked()
+-----------------
+
+Equivalent of soloud.play3dClocked(), but plays the sound sounce through the bus
+instead of at "global" scope.
+
 Bus.setVisualizationEnable()
 ----------------------------
 
@@ -103,3 +115,15 @@ As with any other audio source, you can attach filters to
 busses.
 
     gSfxBus.setFilter(0, &gEnvironment);
+
+Inherited 3d audio interfaces
+-----------------------------
+Like all other audio sources, the bus inherits the 3d audio interfaces. Please refer to the 3d audio chapter for details on:
+
+- Bus.set3dMinMaxDistance()
+- Bus.set3dAttenuation()
+- Bus.set3dDopplerFactor()
+- Bus.set3dProcessing()
+- Bus.set3dListenerRelative()
+- Bus.set3dDistanceDelay()
+- Bus.set3dCollider()

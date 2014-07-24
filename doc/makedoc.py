@@ -14,6 +14,7 @@ src = [
     "quickstart.mmd",
     "premake.mmd",
     "concepts.mmd",
+    "concepts3d.mmd",
     "faq.mmd",
     "examples.mmd",
     "foreign_interface.mmd",
@@ -24,12 +25,12 @@ src = [
     "rpgmaker_api.mmd",
     "bmx_api.mmd",
     "cs_api.mmd",
-    "concepts3d.mmd",
     "basics.mmd",
     "attributes.mmd",
     "faders.mmd",
     "voicegroups.mmd", 
     "coremisc.mmd",
+    "core3d.mmd",
     "mixbus.mmd",
     "audiosource.mmd",
     "wav.mmd",
@@ -44,6 +45,7 @@ src = [
     "fftfilter.mmd",
     "lofifilter.mmd",
     "flangerfilter.mmd",
+    "collider.mmd",
     "backends.mmd"
     ]
 

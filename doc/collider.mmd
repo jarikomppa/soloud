@@ -1,0 +1,31 @@
+SoLoud::AudioCollider
+=====================
+
+3d sound sources may have custom audio colliders attached to them. By default, audio sources are only defined by their position and maximum range, which makes the sound sources "point sources" and omnidirectional.
+
+With custom colliders, audio sources may be made to be bound to some area, as well as be directional.
+
+Custom colliders are used by creating the object and passing it to an audio source via set3dCollider call:
+
+    MyCustomCollider cc;
+    gSound.set3dCollider(&cc);
+    gSoloud.play(gSound);
+
+The set3dCollider call also takes an optional aUserData parameter. The user data as well as the collider pointer are copied to audio instances, so if you wish to launch several instances of a sound source with different collider (or just different user data), simply call the set3dCollider() before any play() calls. Disabling the collider can be done by giving the call a NULL pointer.
+
+AudioCollider.collide()
+-----------------------
+
+To create a custom collider, extend the AudioCollider class. The class defines only one function:
+
+    virtual float collide(Soloud *aSoloud, 
+                          AudioSourceInstance *aAudioInstance,	
+                          int aUserData)
+                          
+The return value is expected to be in the 0..1 range, and gives the general volume level. Soloud object and current audio instance pointers are given for convenience. Additionally, when setting the collider, the application may also set a user data integer value which is also provided to the custom collider through this call.
+
+The custom colliders are called while processing the 3d audio in the update3dAudio() call, before any panning or attenuation is calculated. Thus, if the collide() function adjusts the audio instance's 3d position, the changes will take effect.
+
+For example, if a "river" collider was to be created, the collider would check the player's distance to the river, and adjust the sound source's 3d position to the point closest to the player so that if the player runs along the river, the sound would be heard from the direction of the river (instead of, for instance, from just the middle of the river).
+
+Note that calling any SoLoud functions (even to set the position of a 3d audio source) from the collide function will most likely cause the application - or at least the audio thread - to freeze due to mutex locks.

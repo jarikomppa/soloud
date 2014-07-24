@@ -281,12 +281,6 @@ namespace SoLoud
 		pos.mX = aPosX;
 		pos.mY = aPosY;
 		pos.mZ = aPosZ;
-		if (aSound.mFlags & AudioSource::LISTENER_RELATIVE)
-		{
-			pos.mX -= m3dPosition[0];
-			pos.mX -= m3dPosition[1];
-			pos.mX -= m3dPosition[2];
-		}
 		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 
 		int samples = 0;
@@ -320,12 +314,6 @@ namespace SoLoud
 		pos.mX = aPosX;
 		pos.mY = aPosY;
 		pos.mZ = aPosZ;
-		if (aSound.mFlags & AudioSource::LISTENER_RELATIVE)
-		{
-			pos.mX -= m3dPosition[0];
-			pos.mX -= m3dPosition[1];
-			pos.mX -= m3dPosition[2];
-		}
 		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 		int samples = 0;
 		if (lasttime != 0)

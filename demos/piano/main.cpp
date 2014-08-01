@@ -224,6 +224,24 @@ void unplonk(float rel)
 	gPlonked[i].mHandle = 0;
 }
 
+void replonk(float vol = 0x50)
+{
+	int i = 0;
+	while (gPlonked[i].mHandle != 0 && i < 128) i++;
+	if (i == 128) return;
+	
+	vol = (vol + 10) / (float)(0x7f + 10);
+	vol *= vol;
+	for (i = 0; i < 128; i++)
+	{
+		if (gPlonked[i].mHandle != 0)
+		{	
+			gSoloud.fadeVolume(gPlonked[i].mHandle, vol, 0.1);
+		}
+	}
+}
+
+
 void say(char *text)
 {
 	gInfo = text;
@@ -313,9 +331,27 @@ int main(int argc, char *argv[])
 					sprintf(temp, "\n%x %x %x", Pm_MessageStatus(buffer[0].message), Pm_MessageData1(buffer[0].message), Pm_MessageData2(buffer[0].message));
 					OutputDebugStringA(temp);
 					if (Pm_MessageStatus(buffer[0].message) == 0x90)
-						plonk(pow(0.943875f, 0x3c - Pm_MessageData1(buffer[0].message)),(float)Pm_MessageData2(buffer[0].message));
+					{
+						// some keyboards send volume 0 play instead of note off..
+						if (Pm_MessageData2(buffer[0].message) != 0)
+						{
+							plonk(pow(0.943875f, 0x3c - Pm_MessageData1(buffer[0].message)),(float)Pm_MessageData2(buffer[0].message));
+						}
+						else
+						{
+							unplonk(pow(0.943875f, 0x3c - Pm_MessageData1(buffer[0].message)));
+						}
+					}
+					// note off
 					if (Pm_MessageStatus(buffer[0].message) == 0x80)
+					{
 						unplonk(pow(0.943875f, 0x3c - Pm_MessageData1(buffer[0].message)));
+					}
+					// aftertouch
+					if (Pm_MessageStatus(buffer[0].message) == 0xd0)
+					{
+						replonk((float)Pm_MessageData1(buffer[0].message));
+					}
 				}
 			}
 		}

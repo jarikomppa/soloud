@@ -316,7 +316,7 @@ void resample_sinc6(float *aSrc,
     int p = pos >> FIXPOINT_FRAC_BITS;
     int f = pos & FIXPOINT_FRAC_MASK;
 
-	float s0, s1, s2, s3, s4, s5;
+	float s0 = 0, s1 = 0, s2 = 0, s3 = 0, s4 = 0, s5 = 0;
 
 	if (p < 5)
 	{
@@ -324,7 +324,7 @@ void resample_sinc6(float *aSrc,
 	}
 	else
 	{
-		s3 = aSrc[p-5];
+		s5 = aSrc[p-5];
 	}
 
 	if (p < 4)

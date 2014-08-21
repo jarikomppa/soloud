@@ -57,6 +57,10 @@ module SoLoudImporter
 	extern "unsigned int Soloud_playEx(Soloud *, AudioSource *, float, float, int, unsigned int)"
 	extern "unsigned int Soloud_playClocked(Soloud *, double, AudioSource *)"
 	extern "unsigned int Soloud_playClockedEx(Soloud *, double, AudioSource *, float, float, unsigned int)"
+	extern "unsigned int Soloud_play3d(Soloud *, AudioSource *, float, float, float)"
+	extern "unsigned int Soloud_play3dEx(Soloud *, AudioSource *, float, float, float, float, float, float, float, int, unsigned int)"
+	extern "unsigned int Soloud_play3dClocked(Soloud *, double, AudioSource *, float, float, float)"
+	extern "unsigned int Soloud_play3dClockedEx(Soloud *, double, AudioSource *, float, float, float, float, float, float, float, unsigned int)"
 	extern "void Soloud_seek(Soloud *, unsigned int, double)"
 	extern "void Soloud_stop(Soloud *, unsigned int)"
 	extern "void Soloud_stopAll(Soloud *)"
@@ -107,6 +111,22 @@ module SoLoudImporter
 	extern "int Soloud_addVoiceToGroup(Soloud *, unsigned int, unsigned int)"
 	extern "int Soloud_isVoiceGroup(Soloud *, unsigned int)"
 	extern "int Soloud_isVoiceGroupEmpty(Soloud *, unsigned int)"
+	extern "void Soloud_update3dAudio(Soloud *)"
+	extern "int Soloud_set3dSoundSpeed(Soloud *, float)"
+	extern "float Soloud_get3dSoundSpeed(Soloud *)"
+	extern "void Soloud_set3dListenerParameters(Soloud *, float, float, float, float, float, float, float, float, float)"
+	extern "void Soloud_set3dListenerParametersEx(Soloud *, float, float, float, float, float, float, float, float, float, float, float, float)"
+	extern "void Soloud_set3dListenerPosition(Soloud *, float, float, float)"
+	extern "void Soloud_set3dListenerAt(Soloud *, float, float, float)"
+	extern "void Soloud_set3dListenerUp(Soloud *, float, float, float)"
+	extern "void Soloud_set3dListenerVelocity(Soloud *, float, float, float)"
+	extern "void Soloud_set3dSourceParameters(Soloud *, unsigned int, float, float, float)"
+	extern "void Soloud_set3dSourceParametersEx(Soloud *, unsigned int, float, float, float, float, float, float)"
+	extern "void Soloud_set3dSourcePosition(Soloud *, unsigned int, float, float, float)"
+	extern "void Soloud_set3dSourceVelocity(Soloud *, unsigned int, float, float, float)"
+	extern "void Soloud_set3dSourceMinMaxDistance(Soloud *, unsigned int, float, float)"
+	extern "void Soloud_set3dSourceAttenuation(Soloud *, unsigned int, unsigned int, float)"
+	extern "void Soloud_set3dSourceDopplerFactor(Soloud *, unsigned int, float)"
 	extern "void BiquadResonantFilter_destroy(BiquadResonantFilter *)"
 	extern "BiquadResonantFilter * BiquadResonantFilter_create()"
 	extern "int BiquadResonantFilter_setParams(BiquadResonantFilter *, int, float, float, float)"
@@ -117,10 +137,22 @@ module SoLoudImporter
 	extern "unsigned int Bus_playEx(Bus *, AudioSource *, float, float, int)"
 	extern "unsigned int Bus_playClocked(Bus *, double, AudioSource *)"
 	extern "unsigned int Bus_playClockedEx(Bus *, double, AudioSource *, float, float)"
+	extern "unsigned int Bus_play3d(Bus *, AudioSource *, float, float, float)"
+	extern "unsigned int Bus_play3dEx(Bus *, AudioSource *, float, float, float, float, float, float, float, int)"
+	extern "unsigned int Bus_play3dClocked(Bus *, double, AudioSource *, float, float, float)"
+	extern "unsigned int Bus_play3dClockedEx(Bus *, double, AudioSource *, float, float, float, float, float, float, float)"
 	extern "void Bus_setVisualizationEnable(Bus *, int)"
 	extern "float * Bus_calcFFT(Bus *)"
 	extern "float * Bus_getWave(Bus *)"
 	extern "void Bus_setLooping(Bus *, int)"
+	extern "void Bus_set3dMinMaxDistance(Bus *, float, float)"
+	extern "void Bus_set3dAttenuation(Bus *, unsigned int, float)"
+	extern "void Bus_set3dDopplerFactor(Bus *, float)"
+	extern "void Bus_set3dProcessing(Bus *, int)"
+	extern "void Bus_set3dListenerRelative(Bus *, int)"
+	extern "void Bus_set3dDistanceDelay(Bus *, int)"
+	extern "void Bus_set3dCollider(Bus *, AudioCollider *)"
+	extern "void Bus_set3dColliderEx(Bus *, AudioCollider *, int)"
 	extern "void Bus_stop(Bus *)"
 	extern "void EchoFilter_destroy(EchoFilter *)"
 	extern "EchoFilter * EchoFilter_create()"
@@ -140,6 +172,14 @@ module SoLoudImporter
 	extern "Modplug * Modplug_create()"
 	extern "int Modplug_load(Modplug *, const char *)"
 	extern "void Modplug_setLooping(Modplug *, int)"
+	extern "void Modplug_set3dMinMaxDistance(Modplug *, float, float)"
+	extern "void Modplug_set3dAttenuation(Modplug *, unsigned int, float)"
+	extern "void Modplug_set3dDopplerFactor(Modplug *, float)"
+	extern "void Modplug_set3dProcessing(Modplug *, int)"
+	extern "void Modplug_set3dListenerRelative(Modplug *, int)"
+	extern "void Modplug_set3dDistanceDelay(Modplug *, int)"
+	extern "void Modplug_set3dCollider(Modplug *, AudioCollider *)"
+	extern "void Modplug_set3dColliderEx(Modplug *, AudioCollider *, int)"
 	extern "void Modplug_setFilter(Modplug *, unsigned int, Filter *)"
 	extern "void Modplug_stop(Modplug *)"
 	extern "void Prg_destroy(Prg *)"
@@ -152,12 +192,28 @@ module SoLoudImporter
 	extern "int Sfxr_loadParams(Sfxr *, const char *)"
 	extern "int Sfxr_loadPreset(Sfxr *, int, int)"
 	extern "void Sfxr_setLooping(Sfxr *, int)"
+	extern "void Sfxr_set3dMinMaxDistance(Sfxr *, float, float)"
+	extern "void Sfxr_set3dAttenuation(Sfxr *, unsigned int, float)"
+	extern "void Sfxr_set3dDopplerFactor(Sfxr *, float)"
+	extern "void Sfxr_set3dProcessing(Sfxr *, int)"
+	extern "void Sfxr_set3dListenerRelative(Sfxr *, int)"
+	extern "void Sfxr_set3dDistanceDelay(Sfxr *, int)"
+	extern "void Sfxr_set3dCollider(Sfxr *, AudioCollider *)"
+	extern "void Sfxr_set3dColliderEx(Sfxr *, AudioCollider *, int)"
 	extern "void Sfxr_setFilter(Sfxr *, unsigned int, Filter *)"
 	extern "void Sfxr_stop(Sfxr *)"
 	extern "void Speech_destroy(Speech *)"
 	extern "Speech * Speech_create()"
 	extern "int Speech_setText(Speech *, const char *)"
 	extern "void Speech_setLooping(Speech *, int)"
+	extern "void Speech_set3dMinMaxDistance(Speech *, float, float)"
+	extern "void Speech_set3dAttenuation(Speech *, unsigned int, float)"
+	extern "void Speech_set3dDopplerFactor(Speech *, float)"
+	extern "void Speech_set3dProcessing(Speech *, int)"
+	extern "void Speech_set3dListenerRelative(Speech *, int)"
+	extern "void Speech_set3dDistanceDelay(Speech *, int)"
+	extern "void Speech_set3dCollider(Speech *, AudioCollider *)"
+	extern "void Speech_set3dColliderEx(Speech *, AudioCollider *, int)"
 	extern "void Speech_setFilter(Speech *, unsigned int, Filter *)"
 	extern "void Speech_stop(Speech *)"
 	extern "void Wav_destroy(Wav *)"
@@ -166,6 +222,14 @@ module SoLoudImporter
 	extern "int Wav_loadMem(Wav *, unsigned char *, unsigned int)"
 	extern "double Wav_getLength(Wav *)"
 	extern "void Wav_setLooping(Wav *, int)"
+	extern "void Wav_set3dMinMaxDistance(Wav *, float, float)"
+	extern "void Wav_set3dAttenuation(Wav *, unsigned int, float)"
+	extern "void Wav_set3dDopplerFactor(Wav *, float)"
+	extern "void Wav_set3dProcessing(Wav *, int)"
+	extern "void Wav_set3dListenerRelative(Wav *, int)"
+	extern "void Wav_set3dDistanceDelay(Wav *, int)"
+	extern "void Wav_set3dCollider(Wav *, AudioCollider *)"
+	extern "void Wav_set3dColliderEx(Wav *, AudioCollider *, int)"
 	extern "void Wav_setFilter(Wav *, unsigned int, Filter *)"
 	extern "void Wav_stop(Wav *)"
 	extern "void WavStream_destroy(WavStream *)"
@@ -173,6 +237,14 @@ module SoLoudImporter
 	extern "int WavStream_load(WavStream *, const char *)"
 	extern "double WavStream_getLength(WavStream *)"
 	extern "void WavStream_setLooping(WavStream *, int)"
+	extern "void WavStream_set3dMinMaxDistance(WavStream *, float, float)"
+	extern "void WavStream_set3dAttenuation(WavStream *, unsigned int, float)"
+	extern "void WavStream_set3dDopplerFactor(WavStream *, float)"
+	extern "void WavStream_set3dProcessing(WavStream *, int)"
+	extern "void WavStream_set3dListenerRelative(WavStream *, int)"
+	extern "void WavStream_set3dDistanceDelay(WavStream *, int)"
+	extern "void WavStream_set3dCollider(WavStream *, AudioCollider *)"
+	extern "void WavStream_set3dColliderEx(WavStream *, AudioCollider *, int)"
 	extern "void WavStream_setFilter(WavStream *, unsigned int, Filter *)"
 	extern "void WavStream_stop(WavStream *)"
 end
@@ -218,6 +290,12 @@ class Soloud
 	end
 	def play_clocked(aSoundTime, aSound, aVolume=1.0, aPan=0.0, aBus=0)
 		SoLoudImporter.Soloud_playClockedEx(@objhandle, aSoundTime, aSound.objhandle, aVolume, aPan, aBus)
+	end
+	def play_3d(aSound, aPosX, aPosY, aPosZ, aVelX=0.0, aVelY=0.0, aVelZ=0.0, aVolume=1.0, aPaused=0, aBus=0)
+		SoLoudImporter.Soloud_play3dEx(@objhandle, aSound.objhandle, aPosX, aPosY, aPosZ, aVelX, aVelY, aVelZ, aVolume, aPaused, aBus)
+	end
+	def play_3d_clocked(aSoundTime, aSound, aPosX, aPosY, aPosZ, aVelX=0.0, aVelY=0.0, aVelZ=0.0, aVolume=1.0, aBus=0)
+		SoLoudImporter.Soloud_play3dClockedEx(@objhandle, aSoundTime, aSound.objhandle, aPosX, aPosY, aPosZ, aVelX, aVelY, aVelZ, aVolume, aBus)
 	end
 	def seek(aVoiceHandle, aSeconds)
 		SoLoudImporter.Soloud_seek(@objhandle, aVoiceHandle, aSeconds)
@@ -369,6 +447,48 @@ class Soloud
 	def is_voice_group_empty(aVoiceGroupHandle)
 		SoLoudImporter.Soloud_isVoiceGroupEmpty(@objhandle, aVoiceGroupHandle)
 	end
+	def update_3d_audio()
+		SoLoudImporter.Soloud_update3dAudio(@objhandle)
+	end
+	def set_3d_sound_speed(aSpeed)
+		SoLoudImporter.Soloud_set3dSoundSpeed(@objhandle, aSpeed)
+	end
+	def get_3d_sound_speed()
+		SoLoudImporter.Soloud_get3dSoundSpeed(@objhandle)
+	end
+	def set_3d_listener_parameters(aPosX, aPosY, aPosZ, aAtX, aAtY, aAtZ, aUpX, aUpY, aUpZ, aVelocityX=0.0, aVelocityY=0.0, aVelocityZ=0.0)
+		SoLoudImporter.Soloud_set3dListenerParametersEx(@objhandle, aPosX, aPosY, aPosZ, aAtX, aAtY, aAtZ, aUpX, aUpY, aUpZ, aVelocityX, aVelocityY, aVelocityZ)
+	end
+	def set_3d_listener_position(aPosX, aPosY, aPosZ)
+		SoLoudImporter.Soloud_set3dListenerPosition(@objhandle, aPosX, aPosY, aPosZ)
+	end
+	def set_3d_listener_at(aAtX, aAtY, aAtZ)
+		SoLoudImporter.Soloud_set3dListenerAt(@objhandle, aAtX, aAtY, aAtZ)
+	end
+	def set_3d_listener_up(aUpX, aUpY, aUpZ)
+		SoLoudImporter.Soloud_set3dListenerUp(@objhandle, aUpX, aUpY, aUpZ)
+	end
+	def set_3d_listener_velocity(aVelocityX, aVelocityY, aVelocityZ)
+		SoLoudImporter.Soloud_set3dListenerVelocity(@objhandle, aVelocityX, aVelocityY, aVelocityZ)
+	end
+	def set_3d_source_parameters(aVoiceHandle, aPosX, aPosY, aPosZ, aVelocityX=0.0, aVelocityY=0.0, aVelocityZ=0.0)
+		SoLoudImporter.Soloud_set3dSourceParametersEx(@objhandle, aVoiceHandle, aPosX, aPosY, aPosZ, aVelocityX, aVelocityY, aVelocityZ)
+	end
+	def set_3d_source_position(aVoiceHandle, aPosX, aPosY, aPosZ)
+		SoLoudImporter.Soloud_set3dSourcePosition(@objhandle, aVoiceHandle, aPosX, aPosY, aPosZ)
+	end
+	def set_3d_source_velocity(aVoiceHandle, aVelocityX, aVelocityY, aVelocityZ)
+		SoLoudImporter.Soloud_set3dSourceVelocity(@objhandle, aVoiceHandle, aVelocityX, aVelocityY, aVelocityZ)
+	end
+	def set_3d_source_min_max_distance(aVoiceHandle, aMinDistance, aMaxDistance)
+		SoLoudImporter.Soloud_set3dSourceMinMaxDistance(@objhandle, aVoiceHandle, aMinDistance, aMaxDistance)
+	end
+	def set_3d_source_attenuation(aVoiceHandle, aAttenuationModel, aAttenuationRolloffFactor)
+		SoLoudImporter.Soloud_set3dSourceAttenuation(@objhandle, aVoiceHandle, aAttenuationModel, aAttenuationRolloffFactor)
+	end
+	def set_3d_source_doppler_factor(aVoiceHandle, aDopplerFactor)
+		SoLoudImporter.Soloud_set3dSourceDopplerFactor(@objhandle, aVoiceHandle, aDopplerFactor)
+	end
 end
 
 class BiquadResonantFilter
@@ -411,6 +531,12 @@ class Bus
 	def play_clocked(aSoundTime, aSound, aVolume=1.0, aPan=0.0)
 		SoLoudImporter.Bus_playClockedEx(@objhandle, aSoundTime, aSound.objhandle, aVolume, aPan)
 	end
+	def play_3d(aSound, aPosX, aPosY, aPosZ, aVelX=0.0, aVelY=0.0, aVelZ=0.0, aVolume=1.0, aPaused=0)
+		SoLoudImporter.Bus_play3dEx(@objhandle, aSound.objhandle, aPosX, aPosY, aPosZ, aVelX, aVelY, aVelZ, aVolume, aPaused)
+	end
+	def play_3d_clocked(aSoundTime, aSound, aPosX, aPosY, aPosZ, aVelX=0.0, aVelY=0.0, aVelZ=0.0, aVolume=1.0)
+		SoLoudImporter.Bus_play3dClockedEx(@objhandle, aSoundTime, aSound.objhandle, aPosX, aPosY, aPosZ, aVelX, aVelY, aVelZ, aVolume)
+	end
 	def set_visualization_enable(aEnable)
 		SoLoudImporter.Bus_setVisualizationEnable(@objhandle, aEnable)
 	end
@@ -422,6 +548,27 @@ class Bus
 	end
 	def set_looping(aLoop)
 		SoLoudImporter.Bus_setLooping(@objhandle, aLoop)
+	end
+	def set_3d_min_max_distance(aMinDistance, aMaxDistance)
+		SoLoudImporter.Bus_set3dMinMaxDistance(@objhandle, aMinDistance, aMaxDistance)
+	end
+	def set_3d_attenuation(aAttenuationModel, aAttenuationRolloffFactor)
+		SoLoudImporter.Bus_set3dAttenuation(@objhandle, aAttenuationModel, aAttenuationRolloffFactor)
+	end
+	def set_3d_doppler_factor(aDopplerFactor)
+		SoLoudImporter.Bus_set3dDopplerFactor(@objhandle, aDopplerFactor)
+	end
+	def set_3d_processing(aDo3dProcessing)
+		SoLoudImporter.Bus_set3dProcessing(@objhandle, aDo3dProcessing)
+	end
+	def set_3d_listener_relative(aListenerRelative)
+		SoLoudImporter.Bus_set3dListenerRelative(@objhandle, aListenerRelative)
+	end
+	def set_3d_distance_delay(aDistanceDelay)
+		SoLoudImporter.Bus_set3dDistanceDelay(@objhandle, aDistanceDelay)
+	end
+	def set_3d_collider(aCollider, aUserData=0)
+		SoLoudImporter.Bus_set3dColliderEx(@objhandle, aCollider.objhandle, aUserData)
 	end
 	def stop()
 		SoLoudImporter.Bus_stop(@objhandle)
@@ -508,6 +655,27 @@ class Modplug
 	def set_looping(aLoop)
 		SoLoudImporter.Modplug_setLooping(@objhandle, aLoop)
 	end
+	def set_3d_min_max_distance(aMinDistance, aMaxDistance)
+		SoLoudImporter.Modplug_set3dMinMaxDistance(@objhandle, aMinDistance, aMaxDistance)
+	end
+	def set_3d_attenuation(aAttenuationModel, aAttenuationRolloffFactor)
+		SoLoudImporter.Modplug_set3dAttenuation(@objhandle, aAttenuationModel, aAttenuationRolloffFactor)
+	end
+	def set_3d_doppler_factor(aDopplerFactor)
+		SoLoudImporter.Modplug_set3dDopplerFactor(@objhandle, aDopplerFactor)
+	end
+	def set_3d_processing(aDo3dProcessing)
+		SoLoudImporter.Modplug_set3dProcessing(@objhandle, aDo3dProcessing)
+	end
+	def set_3d_listener_relative(aListenerRelative)
+		SoLoudImporter.Modplug_set3dListenerRelative(@objhandle, aListenerRelative)
+	end
+	def set_3d_distance_delay(aDistanceDelay)
+		SoLoudImporter.Modplug_set3dDistanceDelay(@objhandle, aDistanceDelay)
+	end
+	def set_3d_collider(aCollider, aUserData=0)
+		SoLoudImporter.Modplug_set3dColliderEx(@objhandle, aCollider.objhandle, aUserData)
+	end
 	def set_filter(aFilterId, aFilter)
 		SoLoudImporter.Modplug_setFilter(@objhandle, aFilterId, aFilter.objhandle)
 	end
@@ -561,6 +729,27 @@ class Sfxr
 	def set_looping(aLoop)
 		SoLoudImporter.Sfxr_setLooping(@objhandle, aLoop)
 	end
+	def set_3d_min_max_distance(aMinDistance, aMaxDistance)
+		SoLoudImporter.Sfxr_set3dMinMaxDistance(@objhandle, aMinDistance, aMaxDistance)
+	end
+	def set_3d_attenuation(aAttenuationModel, aAttenuationRolloffFactor)
+		SoLoudImporter.Sfxr_set3dAttenuation(@objhandle, aAttenuationModel, aAttenuationRolloffFactor)
+	end
+	def set_3d_doppler_factor(aDopplerFactor)
+		SoLoudImporter.Sfxr_set3dDopplerFactor(@objhandle, aDopplerFactor)
+	end
+	def set_3d_processing(aDo3dProcessing)
+		SoLoudImporter.Sfxr_set3dProcessing(@objhandle, aDo3dProcessing)
+	end
+	def set_3d_listener_relative(aListenerRelative)
+		SoLoudImporter.Sfxr_set3dListenerRelative(@objhandle, aListenerRelative)
+	end
+	def set_3d_distance_delay(aDistanceDelay)
+		SoLoudImporter.Sfxr_set3dDistanceDelay(@objhandle, aDistanceDelay)
+	end
+	def set_3d_collider(aCollider, aUserData=0)
+		SoLoudImporter.Sfxr_set3dColliderEx(@objhandle, aCollider.objhandle, aUserData)
+	end
 	def set_filter(aFilterId, aFilter)
 		SoLoudImporter.Sfxr_setFilter(@objhandle, aFilterId, aFilter.objhandle)
 	end
@@ -583,6 +772,27 @@ class Speech
 	end
 	def set_looping(aLoop)
 		SoLoudImporter.Speech_setLooping(@objhandle, aLoop)
+	end
+	def set_3d_min_max_distance(aMinDistance, aMaxDistance)
+		SoLoudImporter.Speech_set3dMinMaxDistance(@objhandle, aMinDistance, aMaxDistance)
+	end
+	def set_3d_attenuation(aAttenuationModel, aAttenuationRolloffFactor)
+		SoLoudImporter.Speech_set3dAttenuation(@objhandle, aAttenuationModel, aAttenuationRolloffFactor)
+	end
+	def set_3d_doppler_factor(aDopplerFactor)
+		SoLoudImporter.Speech_set3dDopplerFactor(@objhandle, aDopplerFactor)
+	end
+	def set_3d_processing(aDo3dProcessing)
+		SoLoudImporter.Speech_set3dProcessing(@objhandle, aDo3dProcessing)
+	end
+	def set_3d_listener_relative(aListenerRelative)
+		SoLoudImporter.Speech_set3dListenerRelative(@objhandle, aListenerRelative)
+	end
+	def set_3d_distance_delay(aDistanceDelay)
+		SoLoudImporter.Speech_set3dDistanceDelay(@objhandle, aDistanceDelay)
+	end
+	def set_3d_collider(aCollider, aUserData=0)
+		SoLoudImporter.Speech_set3dColliderEx(@objhandle, aCollider.objhandle, aUserData)
 	end
 	def set_filter(aFilterId, aFilter)
 		SoLoudImporter.Speech_setFilter(@objhandle, aFilterId, aFilter.objhandle)
@@ -613,6 +823,27 @@ class Wav
 	def set_looping(aLoop)
 		SoLoudImporter.Wav_setLooping(@objhandle, aLoop)
 	end
+	def set_3d_min_max_distance(aMinDistance, aMaxDistance)
+		SoLoudImporter.Wav_set3dMinMaxDistance(@objhandle, aMinDistance, aMaxDistance)
+	end
+	def set_3d_attenuation(aAttenuationModel, aAttenuationRolloffFactor)
+		SoLoudImporter.Wav_set3dAttenuation(@objhandle, aAttenuationModel, aAttenuationRolloffFactor)
+	end
+	def set_3d_doppler_factor(aDopplerFactor)
+		SoLoudImporter.Wav_set3dDopplerFactor(@objhandle, aDopplerFactor)
+	end
+	def set_3d_processing(aDo3dProcessing)
+		SoLoudImporter.Wav_set3dProcessing(@objhandle, aDo3dProcessing)
+	end
+	def set_3d_listener_relative(aListenerRelative)
+		SoLoudImporter.Wav_set3dListenerRelative(@objhandle, aListenerRelative)
+	end
+	def set_3d_distance_delay(aDistanceDelay)
+		SoLoudImporter.Wav_set3dDistanceDelay(@objhandle, aDistanceDelay)
+	end
+	def set_3d_collider(aCollider, aUserData=0)
+		SoLoudImporter.Wav_set3dColliderEx(@objhandle, aCollider.objhandle, aUserData)
+	end
 	def set_filter(aFilterId, aFilter)
 		SoLoudImporter.Wav_setFilter(@objhandle, aFilterId, aFilter.objhandle)
 	end
@@ -638,6 +869,27 @@ class WavStream
 	end
 	def set_looping(aLoop)
 		SoLoudImporter.WavStream_setLooping(@objhandle, aLoop)
+	end
+	def set_3d_min_max_distance(aMinDistance, aMaxDistance)
+		SoLoudImporter.WavStream_set3dMinMaxDistance(@objhandle, aMinDistance, aMaxDistance)
+	end
+	def set_3d_attenuation(aAttenuationModel, aAttenuationRolloffFactor)
+		SoLoudImporter.WavStream_set3dAttenuation(@objhandle, aAttenuationModel, aAttenuationRolloffFactor)
+	end
+	def set_3d_doppler_factor(aDopplerFactor)
+		SoLoudImporter.WavStream_set3dDopplerFactor(@objhandle, aDopplerFactor)
+	end
+	def set_3d_processing(aDo3dProcessing)
+		SoLoudImporter.WavStream_set3dProcessing(@objhandle, aDo3dProcessing)
+	end
+	def set_3d_listener_relative(aListenerRelative)
+		SoLoudImporter.WavStream_set3dListenerRelative(@objhandle, aListenerRelative)
+	end
+	def set_3d_distance_delay(aDistanceDelay)
+		SoLoudImporter.WavStream_set3dDistanceDelay(@objhandle, aDistanceDelay)
+	end
+	def set_3d_collider(aCollider, aUserData=0)
+		SoLoudImporter.WavStream_set3dColliderEx(@objhandle, aCollider.objhandle, aUserData)
 	end
 	def set_filter(aFilterId, aFilter)
 		SoLoudImporter.WavStream_setFilter(@objhandle, aFilterId, aFilter.objhandle)

@@ -55,6 +55,22 @@ Soloud_playClockedEx = soloud_dll.Soloud_playClockedEx
 Soloud_playClockedEx.restype = ctypes.c_uint
 Soloud_playClockedEx.argtypes = [ctypes.c_void_p, ctypes.c_double, ctypes.c_void_p, ctypes.c_float, ctypes.c_float, ctypes.c_uint]
 
+Soloud_play3d = soloud_dll.Soloud_play3d
+Soloud_play3d.restype = ctypes.c_uint
+Soloud_play3d.argtypes = [ctypes.c_void_p, ctypes.c_void_p, ctypes.c_float, ctypes.c_float, ctypes.c_float]
+
+Soloud_play3dEx = soloud_dll.Soloud_play3dEx
+Soloud_play3dEx.restype = ctypes.c_uint
+Soloud_play3dEx.argtypes = [ctypes.c_void_p, ctypes.c_void_p, ctypes.c_float, ctypes.c_float, ctypes.c_float, ctypes.c_float, ctypes.c_float, ctypes.c_float, ctypes.c_float, ctypes.c_int, ctypes.c_uint]
+
+Soloud_play3dClocked = soloud_dll.Soloud_play3dClocked
+Soloud_play3dClocked.restype = ctypes.c_uint
+Soloud_play3dClocked.argtypes = [ctypes.c_void_p, ctypes.c_double, ctypes.c_void_p, ctypes.c_float, ctypes.c_float, ctypes.c_float]
+
+Soloud_play3dClockedEx = soloud_dll.Soloud_play3dClockedEx
+Soloud_play3dClockedEx.restype = ctypes.c_uint
+Soloud_play3dClockedEx.argtypes = [ctypes.c_void_p, ctypes.c_double, ctypes.c_void_p, ctypes.c_float, ctypes.c_float, ctypes.c_float, ctypes.c_float, ctypes.c_float, ctypes.c_float, ctypes.c_float, ctypes.c_uint]
+
 Soloud_seek = soloud_dll.Soloud_seek
 Soloud_seek.restype = None
 Soloud_seek.argtypes = [ctypes.c_void_p, ctypes.c_uint, ctypes.c_double]
@@ -255,6 +271,70 @@ Soloud_isVoiceGroupEmpty = soloud_dll.Soloud_isVoiceGroupEmpty
 Soloud_isVoiceGroupEmpty.restype = ctypes.c_int
 Soloud_isVoiceGroupEmpty.argtypes = [ctypes.c_void_p, ctypes.c_uint]
 
+Soloud_update3dAudio = soloud_dll.Soloud_update3dAudio
+Soloud_update3dAudio.restype = None
+Soloud_update3dAudio.argtypes = [ctypes.c_void_p]
+
+Soloud_set3dSoundSpeed = soloud_dll.Soloud_set3dSoundSpeed
+Soloud_set3dSoundSpeed.restype = ctypes.c_int
+Soloud_set3dSoundSpeed.argtypes = [ctypes.c_void_p, ctypes.c_float]
+
+Soloud_get3dSoundSpeed = soloud_dll.Soloud_get3dSoundSpeed
+Soloud_get3dSoundSpeed.restype = ctypes.c_float
+Soloud_get3dSoundSpeed.argtypes = [ctypes.c_void_p]
+
+Soloud_set3dListenerParameters = soloud_dll.Soloud_set3dListenerParameters
+Soloud_set3dListenerParameters.restype = None
+Soloud_set3dListenerParameters.argtypes = [ctypes.c_void_p, ctypes.c_float, ctypes.c_float, ctypes.c_float, ctypes.c_float, ctypes.c_float, ctypes.c_float, ctypes.c_float, ctypes.c_float, ctypes.c_float]
+
+Soloud_set3dListenerParametersEx = soloud_dll.Soloud_set3dListenerParametersEx
+Soloud_set3dListenerParametersEx.restype = None
+Soloud_set3dListenerParametersEx.argtypes = [ctypes.c_void_p, ctypes.c_float, ctypes.c_float, ctypes.c_float, ctypes.c_float, ctypes.c_float, ctypes.c_float, ctypes.c_float, ctypes.c_float, ctypes.c_float, ctypes.c_float, ctypes.c_float, ctypes.c_float]
+
+Soloud_set3dListenerPosition = soloud_dll.Soloud_set3dListenerPosition
+Soloud_set3dListenerPosition.restype = None
+Soloud_set3dListenerPosition.argtypes = [ctypes.c_void_p, ctypes.c_float, ctypes.c_float, ctypes.c_float]
+
+Soloud_set3dListenerAt = soloud_dll.Soloud_set3dListenerAt
+Soloud_set3dListenerAt.restype = None
+Soloud_set3dListenerAt.argtypes = [ctypes.c_void_p, ctypes.c_float, ctypes.c_float, ctypes.c_float]
+
+Soloud_set3dListenerUp = soloud_dll.Soloud_set3dListenerUp
+Soloud_set3dListenerUp.restype = None
+Soloud_set3dListenerUp.argtypes = [ctypes.c_void_p, ctypes.c_float, ctypes.c_float, ctypes.c_float]
+
+Soloud_set3dListenerVelocity = soloud_dll.Soloud_set3dListenerVelocity
+Soloud_set3dListenerVelocity.restype = None
+Soloud_set3dListenerVelocity.argtypes = [ctypes.c_void_p, ctypes.c_float, ctypes.c_float, ctypes.c_float]
+
+Soloud_set3dSourceParameters = soloud_dll.Soloud_set3dSourceParameters
+Soloud_set3dSourceParameters.restype = None
+Soloud_set3dSourceParameters.argtypes = [ctypes.c_void_p, ctypes.c_uint, ctypes.c_float, ctypes.c_float, ctypes.c_float]
+
+Soloud_set3dSourceParametersEx = soloud_dll.Soloud_set3dSourceParametersEx
+Soloud_set3dSourceParametersEx.restype = None
+Soloud_set3dSourceParametersEx.argtypes = [ctypes.c_void_p, ctypes.c_uint, ctypes.c_float, ctypes.c_float, ctypes.c_float, ctypes.c_float, ctypes.c_float, ctypes.c_float]
+
+Soloud_set3dSourcePosition = soloud_dll.Soloud_set3dSourcePosition
+Soloud_set3dSourcePosition.restype = None
+Soloud_set3dSourcePosition.argtypes = [ctypes.c_void_p, ctypes.c_uint, ctypes.c_float, ctypes.c_float, ctypes.c_float]
+
+Soloud_set3dSourceVelocity = soloud_dll.Soloud_set3dSourceVelocity
+Soloud_set3dSourceVelocity.restype = None
+Soloud_set3dSourceVelocity.argtypes = [ctypes.c_void_p, ctypes.c_uint, ctypes.c_float, ctypes.c_float, ctypes.c_float]
+
+Soloud_set3dSourceMinMaxDistance = soloud_dll.Soloud_set3dSourceMinMaxDistance
+Soloud_set3dSourceMinMaxDistance.restype = None
+Soloud_set3dSourceMinMaxDistance.argtypes = [ctypes.c_void_p, ctypes.c_uint, ctypes.c_float, ctypes.c_float]
+
+Soloud_set3dSourceAttenuation = soloud_dll.Soloud_set3dSourceAttenuation
+Soloud_set3dSourceAttenuation.restype = None
+Soloud_set3dSourceAttenuation.argtypes = [ctypes.c_void_p, ctypes.c_uint, ctypes.c_uint, ctypes.c_float]
+
+Soloud_set3dSourceDopplerFactor = soloud_dll.Soloud_set3dSourceDopplerFactor
+Soloud_set3dSourceDopplerFactor.restype = None
+Soloud_set3dSourceDopplerFactor.argtypes = [ctypes.c_void_p, ctypes.c_uint, ctypes.c_float]
+
 BiquadResonantFilter_destroy = soloud_dll.BiquadResonantFilter_destroy
 BiquadResonantFilter_destroy.restype = None
 BiquadResonantFilter_destroy.argtypes = [ctypes.c_void_p]
@@ -295,6 +375,22 @@ Bus_playClockedEx = soloud_dll.Bus_playClockedEx
 Bus_playClockedEx.restype = ctypes.c_uint
 Bus_playClockedEx.argtypes = [ctypes.c_void_p, ctypes.c_double, ctypes.c_void_p, ctypes.c_float, ctypes.c_float]
 
+Bus_play3d = soloud_dll.Bus_play3d
+Bus_play3d.restype = ctypes.c_uint
+Bus_play3d.argtypes = [ctypes.c_void_p, ctypes.c_void_p, ctypes.c_float, ctypes.c_float, ctypes.c_float]
+
+Bus_play3dEx = soloud_dll.Bus_play3dEx
+Bus_play3dEx.restype = ctypes.c_uint
+Bus_play3dEx.argtypes = [ctypes.c_void_p, ctypes.c_void_p, ctypes.c_float, ctypes.c_float, ctypes.c_float, ctypes.c_float, ctypes.c_float, ctypes.c_float, ctypes.c_float, ctypes.c_int]
+
+Bus_play3dClocked = soloud_dll.Bus_play3dClocked
+Bus_play3dClocked.restype = ctypes.c_uint
+Bus_play3dClocked.argtypes = [ctypes.c_void_p, ctypes.c_double, ctypes.c_void_p, ctypes.c_float, ctypes.c_float, ctypes.c_float]
+
+Bus_play3dClockedEx = soloud_dll.Bus_play3dClockedEx
+Bus_play3dClockedEx.restype = ctypes.c_uint
+Bus_play3dClockedEx.argtypes = [ctypes.c_void_p, ctypes.c_double, ctypes.c_void_p, ctypes.c_float, ctypes.c_float, ctypes.c_float, ctypes.c_float, ctypes.c_float, ctypes.c_float, ctypes.c_float]
+
 Bus_setVisualizationEnable = soloud_dll.Bus_setVisualizationEnable
 Bus_setVisualizationEnable.restype = None
 Bus_setVisualizationEnable.argtypes = [ctypes.c_void_p, ctypes.c_int]
@@ -310,6 +406,38 @@ Bus_getWave.argtypes = [ctypes.c_void_p]
 Bus_setLooping = soloud_dll.Bus_setLooping
 Bus_setLooping.restype = None
 Bus_setLooping.argtypes = [ctypes.c_void_p, ctypes.c_int]
+
+Bus_set3dMinMaxDistance = soloud_dll.Bus_set3dMinMaxDistance
+Bus_set3dMinMaxDistance.restype = None
+Bus_set3dMinMaxDistance.argtypes = [ctypes.c_void_p, ctypes.c_float, ctypes.c_float]
+
+Bus_set3dAttenuation = soloud_dll.Bus_set3dAttenuation
+Bus_set3dAttenuation.restype = None
+Bus_set3dAttenuation.argtypes = [ctypes.c_void_p, ctypes.c_uint, ctypes.c_float]
+
+Bus_set3dDopplerFactor = soloud_dll.Bus_set3dDopplerFactor
+Bus_set3dDopplerFactor.restype = None
+Bus_set3dDopplerFactor.argtypes = [ctypes.c_void_p, ctypes.c_float]
+
+Bus_set3dProcessing = soloud_dll.Bus_set3dProcessing
+Bus_set3dProcessing.restype = None
+Bus_set3dProcessing.argtypes = [ctypes.c_void_p, ctypes.c_int]
+
+Bus_set3dListenerRelative = soloud_dll.Bus_set3dListenerRelative
+Bus_set3dListenerRelative.restype = None
+Bus_set3dListenerRelative.argtypes = [ctypes.c_void_p, ctypes.c_int]
+
+Bus_set3dDistanceDelay = soloud_dll.Bus_set3dDistanceDelay
+Bus_set3dDistanceDelay.restype = None
+Bus_set3dDistanceDelay.argtypes = [ctypes.c_void_p, ctypes.c_int]
+
+Bus_set3dCollider = soloud_dll.Bus_set3dCollider
+Bus_set3dCollider.restype = None
+Bus_set3dCollider.argtypes = [ctypes.c_void_p, ctypes.c_void_p]
+
+Bus_set3dColliderEx = soloud_dll.Bus_set3dColliderEx
+Bus_set3dColliderEx.restype = None
+Bus_set3dColliderEx.argtypes = [ctypes.c_void_p, ctypes.c_void_p, ctypes.c_int]
 
 Bus_stop = soloud_dll.Bus_stop
 Bus_stop.restype = None
@@ -387,6 +515,38 @@ Modplug_setLooping = soloud_dll.Modplug_setLooping
 Modplug_setLooping.restype = None
 Modplug_setLooping.argtypes = [ctypes.c_void_p, ctypes.c_int]
 
+Modplug_set3dMinMaxDistance = soloud_dll.Modplug_set3dMinMaxDistance
+Modplug_set3dMinMaxDistance.restype = None
+Modplug_set3dMinMaxDistance.argtypes = [ctypes.c_void_p, ctypes.c_float, ctypes.c_float]
+
+Modplug_set3dAttenuation = soloud_dll.Modplug_set3dAttenuation
+Modplug_set3dAttenuation.restype = None
+Modplug_set3dAttenuation.argtypes = [ctypes.c_void_p, ctypes.c_uint, ctypes.c_float]
+
+Modplug_set3dDopplerFactor = soloud_dll.Modplug_set3dDopplerFactor
+Modplug_set3dDopplerFactor.restype = None
+Modplug_set3dDopplerFactor.argtypes = [ctypes.c_void_p, ctypes.c_float]
+
+Modplug_set3dProcessing = soloud_dll.Modplug_set3dProcessing
+Modplug_set3dProcessing.restype = None
+Modplug_set3dProcessing.argtypes = [ctypes.c_void_p, ctypes.c_int]
+
+Modplug_set3dListenerRelative = soloud_dll.Modplug_set3dListenerRelative
+Modplug_set3dListenerRelative.restype = None
+Modplug_set3dListenerRelative.argtypes = [ctypes.c_void_p, ctypes.c_int]
+
+Modplug_set3dDistanceDelay = soloud_dll.Modplug_set3dDistanceDelay
+Modplug_set3dDistanceDelay.restype = None
+Modplug_set3dDistanceDelay.argtypes = [ctypes.c_void_p, ctypes.c_int]
+
+Modplug_set3dCollider = soloud_dll.Modplug_set3dCollider
+Modplug_set3dCollider.restype = None
+Modplug_set3dCollider.argtypes = [ctypes.c_void_p, ctypes.c_void_p]
+
+Modplug_set3dColliderEx = soloud_dll.Modplug_set3dColliderEx
+Modplug_set3dColliderEx.restype = None
+Modplug_set3dColliderEx.argtypes = [ctypes.c_void_p, ctypes.c_void_p, ctypes.c_int]
+
 Modplug_setFilter = soloud_dll.Modplug_setFilter
 Modplug_setFilter.restype = None
 Modplug_setFilter.argtypes = [ctypes.c_void_p, ctypes.c_uint, ctypes.c_void_p]
@@ -435,6 +595,38 @@ Sfxr_setLooping = soloud_dll.Sfxr_setLooping
 Sfxr_setLooping.restype = None
 Sfxr_setLooping.argtypes = [ctypes.c_void_p, ctypes.c_int]
 
+Sfxr_set3dMinMaxDistance = soloud_dll.Sfxr_set3dMinMaxDistance
+Sfxr_set3dMinMaxDistance.restype = None
+Sfxr_set3dMinMaxDistance.argtypes = [ctypes.c_void_p, ctypes.c_float, ctypes.c_float]
+
+Sfxr_set3dAttenuation = soloud_dll.Sfxr_set3dAttenuation
+Sfxr_set3dAttenuation.restype = None
+Sfxr_set3dAttenuation.argtypes = [ctypes.c_void_p, ctypes.c_uint, ctypes.c_float]
+
+Sfxr_set3dDopplerFactor = soloud_dll.Sfxr_set3dDopplerFactor
+Sfxr_set3dDopplerFactor.restype = None
+Sfxr_set3dDopplerFactor.argtypes = [ctypes.c_void_p, ctypes.c_float]
+
+Sfxr_set3dProcessing = soloud_dll.Sfxr_set3dProcessing
+Sfxr_set3dProcessing.restype = None
+Sfxr_set3dProcessing.argtypes = [ctypes.c_void_p, ctypes.c_int]
+
+Sfxr_set3dListenerRelative = soloud_dll.Sfxr_set3dListenerRelative
+Sfxr_set3dListenerRelative.restype = None
+Sfxr_set3dListenerRelative.argtypes = [ctypes.c_void_p, ctypes.c_int]
+
+Sfxr_set3dDistanceDelay = soloud_dll.Sfxr_set3dDistanceDelay
+Sfxr_set3dDistanceDelay.restype = None
+Sfxr_set3dDistanceDelay.argtypes = [ctypes.c_void_p, ctypes.c_int]
+
+Sfxr_set3dCollider = soloud_dll.Sfxr_set3dCollider
+Sfxr_set3dCollider.restype = None
+Sfxr_set3dCollider.argtypes = [ctypes.c_void_p, ctypes.c_void_p]
+
+Sfxr_set3dColliderEx = soloud_dll.Sfxr_set3dColliderEx
+Sfxr_set3dColliderEx.restype = None
+Sfxr_set3dColliderEx.argtypes = [ctypes.c_void_p, ctypes.c_void_p, ctypes.c_int]
+
 Sfxr_setFilter = soloud_dll.Sfxr_setFilter
 Sfxr_setFilter.restype = None
 Sfxr_setFilter.argtypes = [ctypes.c_void_p, ctypes.c_uint, ctypes.c_void_p]
@@ -458,6 +650,38 @@ Speech_setText.argtypes = [ctypes.c_void_p, ctypes.c_char_p]
 Speech_setLooping = soloud_dll.Speech_setLooping
 Speech_setLooping.restype = None
 Speech_setLooping.argtypes = [ctypes.c_void_p, ctypes.c_int]
+
+Speech_set3dMinMaxDistance = soloud_dll.Speech_set3dMinMaxDistance
+Speech_set3dMinMaxDistance.restype = None
+Speech_set3dMinMaxDistance.argtypes = [ctypes.c_void_p, ctypes.c_float, ctypes.c_float]
+
+Speech_set3dAttenuation = soloud_dll.Speech_set3dAttenuation
+Speech_set3dAttenuation.restype = None
+Speech_set3dAttenuation.argtypes = [ctypes.c_void_p, ctypes.c_uint, ctypes.c_float]
+
+Speech_set3dDopplerFactor = soloud_dll.Speech_set3dDopplerFactor
+Speech_set3dDopplerFactor.restype = None
+Speech_set3dDopplerFactor.argtypes = [ctypes.c_void_p, ctypes.c_float]
+
+Speech_set3dProcessing = soloud_dll.Speech_set3dProcessing
+Speech_set3dProcessing.restype = None
+Speech_set3dProcessing.argtypes = [ctypes.c_void_p, ctypes.c_int]
+
+Speech_set3dListenerRelative = soloud_dll.Speech_set3dListenerRelative
+Speech_set3dListenerRelative.restype = None
+Speech_set3dListenerRelative.argtypes = [ctypes.c_void_p, ctypes.c_int]
+
+Speech_set3dDistanceDelay = soloud_dll.Speech_set3dDistanceDelay
+Speech_set3dDistanceDelay.restype = None
+Speech_set3dDistanceDelay.argtypes = [ctypes.c_void_p, ctypes.c_int]
+
+Speech_set3dCollider = soloud_dll.Speech_set3dCollider
+Speech_set3dCollider.restype = None
+Speech_set3dCollider.argtypes = [ctypes.c_void_p, ctypes.c_void_p]
+
+Speech_set3dColliderEx = soloud_dll.Speech_set3dColliderEx
+Speech_set3dColliderEx.restype = None
+Speech_set3dColliderEx.argtypes = [ctypes.c_void_p, ctypes.c_void_p, ctypes.c_int]
 
 Speech_setFilter = soloud_dll.Speech_setFilter
 Speech_setFilter.restype = None
@@ -491,6 +715,38 @@ Wav_setLooping = soloud_dll.Wav_setLooping
 Wav_setLooping.restype = None
 Wav_setLooping.argtypes = [ctypes.c_void_p, ctypes.c_int]
 
+Wav_set3dMinMaxDistance = soloud_dll.Wav_set3dMinMaxDistance
+Wav_set3dMinMaxDistance.restype = None
+Wav_set3dMinMaxDistance.argtypes = [ctypes.c_void_p, ctypes.c_float, ctypes.c_float]
+
+Wav_set3dAttenuation = soloud_dll.Wav_set3dAttenuation
+Wav_set3dAttenuation.restype = None
+Wav_set3dAttenuation.argtypes = [ctypes.c_void_p, ctypes.c_uint, ctypes.c_float]
+
+Wav_set3dDopplerFactor = soloud_dll.Wav_set3dDopplerFactor
+Wav_set3dDopplerFactor.restype = None
+Wav_set3dDopplerFactor.argtypes = [ctypes.c_void_p, ctypes.c_float]
+
+Wav_set3dProcessing = soloud_dll.Wav_set3dProcessing
+Wav_set3dProcessing.restype = None
+Wav_set3dProcessing.argtypes = [ctypes.c_void_p, ctypes.c_int]
+
+Wav_set3dListenerRelative = soloud_dll.Wav_set3dListenerRelative
+Wav_set3dListenerRelative.restype = None
+Wav_set3dListenerRelative.argtypes = [ctypes.c_void_p, ctypes.c_int]
+
+Wav_set3dDistanceDelay = soloud_dll.Wav_set3dDistanceDelay
+Wav_set3dDistanceDelay.restype = None
+Wav_set3dDistanceDelay.argtypes = [ctypes.c_void_p, ctypes.c_int]
+
+Wav_set3dCollider = soloud_dll.Wav_set3dCollider
+Wav_set3dCollider.restype = None
+Wav_set3dCollider.argtypes = [ctypes.c_void_p, ctypes.c_void_p]
+
+Wav_set3dColliderEx = soloud_dll.Wav_set3dColliderEx
+Wav_set3dColliderEx.restype = None
+Wav_set3dColliderEx.argtypes = [ctypes.c_void_p, ctypes.c_void_p, ctypes.c_int]
+
 Wav_setFilter = soloud_dll.Wav_setFilter
 Wav_setFilter.restype = None
 Wav_setFilter.argtypes = [ctypes.c_void_p, ctypes.c_uint, ctypes.c_void_p]
@@ -518,6 +774,38 @@ WavStream_getLength.argtypes = [ctypes.c_void_p]
 WavStream_setLooping = soloud_dll.WavStream_setLooping
 WavStream_setLooping.restype = None
 WavStream_setLooping.argtypes = [ctypes.c_void_p, ctypes.c_int]
+
+WavStream_set3dMinMaxDistance = soloud_dll.WavStream_set3dMinMaxDistance
+WavStream_set3dMinMaxDistance.restype = None
+WavStream_set3dMinMaxDistance.argtypes = [ctypes.c_void_p, ctypes.c_float, ctypes.c_float]
+
+WavStream_set3dAttenuation = soloud_dll.WavStream_set3dAttenuation
+WavStream_set3dAttenuation.restype = None
+WavStream_set3dAttenuation.argtypes = [ctypes.c_void_p, ctypes.c_uint, ctypes.c_float]
+
+WavStream_set3dDopplerFactor = soloud_dll.WavStream_set3dDopplerFactor
+WavStream_set3dDopplerFactor.restype = None
+WavStream_set3dDopplerFactor.argtypes = [ctypes.c_void_p, ctypes.c_float]
+
+WavStream_set3dProcessing = soloud_dll.WavStream_set3dProcessing
+WavStream_set3dProcessing.restype = None
+WavStream_set3dProcessing.argtypes = [ctypes.c_void_p, ctypes.c_int]
+
+WavStream_set3dListenerRelative = soloud_dll.WavStream_set3dListenerRelative
+WavStream_set3dListenerRelative.restype = None
+WavStream_set3dListenerRelative.argtypes = [ctypes.c_void_p, ctypes.c_int]
+
+WavStream_set3dDistanceDelay = soloud_dll.WavStream_set3dDistanceDelay
+WavStream_set3dDistanceDelay.restype = None
+WavStream_set3dDistanceDelay.argtypes = [ctypes.c_void_p, ctypes.c_int]
+
+WavStream_set3dCollider = soloud_dll.WavStream_set3dCollider
+WavStream_set3dCollider.restype = None
+WavStream_set3dCollider.argtypes = [ctypes.c_void_p, ctypes.c_void_p]
+
+WavStream_set3dColliderEx = soloud_dll.WavStream_set3dColliderEx
+WavStream_set3dColliderEx.restype = None
+WavStream_set3dColliderEx.argtypes = [ctypes.c_void_p, ctypes.c_void_p, ctypes.c_int]
 
 WavStream_setFilter = soloud_dll.WavStream_setFilter
 WavStream_setFilter.restype = None
@@ -571,6 +859,10 @@ class Soloud(object):
 		return Soloud_playEx(self.objhandle, aSound.objhandle, ctypes.c_float(aVolume), ctypes.c_float(aPan), ctypes.c_int(aPaused), ctypes.c_uint(aBus))
 	def play_clocked(self, aSoundTime, aSound, aVolume = 1.0, aPan = 0.0, aBus = 0):
 		return Soloud_playClockedEx(self.objhandle, ctypes.c_double(aSoundTime), aSound.objhandle, ctypes.c_float(aVolume), ctypes.c_float(aPan), ctypes.c_uint(aBus))
+	def play_3d(self, aSound, aPosX, aPosY, aPosZ, aVelX = 0.0, aVelY = 0.0, aVelZ = 0.0, aVolume = 1.0, aPaused = 0, aBus = 0):
+		return Soloud_play3dEx(self.objhandle, aSound.objhandle, ctypes.c_float(aPosX), ctypes.c_float(aPosY), ctypes.c_float(aPosZ), ctypes.c_float(aVelX), ctypes.c_float(aVelY), ctypes.c_float(aVelZ), ctypes.c_float(aVolume), ctypes.c_int(aPaused), ctypes.c_uint(aBus))
+	def play_3d_clocked(self, aSoundTime, aSound, aPosX, aPosY, aPosZ, aVelX = 0.0, aVelY = 0.0, aVelZ = 0.0, aVolume = 1.0, aBus = 0):
+		return Soloud_play3dClockedEx(self.objhandle, ctypes.c_double(aSoundTime), aSound.objhandle, ctypes.c_float(aPosX), ctypes.c_float(aPosY), ctypes.c_float(aPosZ), ctypes.c_float(aVelX), ctypes.c_float(aVelY), ctypes.c_float(aVelZ), ctypes.c_float(aVolume), ctypes.c_uint(aBus))
 	def seek(self, aVoiceHandle, aSeconds):
 		Soloud_seek(self.objhandle, ctypes.c_uint(aVoiceHandle), ctypes.c_double(aSeconds))
 	def stop(self, aVoiceHandle):
@@ -673,6 +965,34 @@ class Soloud(object):
 		return Soloud_isVoiceGroup(self.objhandle, ctypes.c_uint(aVoiceGroupHandle))
 	def is_voice_group_empty(self, aVoiceGroupHandle):
 		return Soloud_isVoiceGroupEmpty(self.objhandle, ctypes.c_uint(aVoiceGroupHandle))
+	def update_3d_audio(self):
+		Soloud_update3dAudio(self.objhandle)
+	def set_3d_sound_speed(self, aSpeed):
+		return Soloud_set3dSoundSpeed(self.objhandle, ctypes.c_float(aSpeed))
+	def get_3d_sound_speed(self):
+		return Soloud_get3dSoundSpeed(self.objhandle)
+	def set_3d_listener_parameters(self, aPosX, aPosY, aPosZ, aAtX, aAtY, aAtZ, aUpX, aUpY, aUpZ, aVelocityX = 0.0, aVelocityY = 0.0, aVelocityZ = 0.0):
+		Soloud_set3dListenerParametersEx(self.objhandle, ctypes.c_float(aPosX), ctypes.c_float(aPosY), ctypes.c_float(aPosZ), ctypes.c_float(aAtX), ctypes.c_float(aAtY), ctypes.c_float(aAtZ), ctypes.c_float(aUpX), ctypes.c_float(aUpY), ctypes.c_float(aUpZ), ctypes.c_float(aVelocityX), ctypes.c_float(aVelocityY), ctypes.c_float(aVelocityZ))
+	def set_3d_listener_position(self, aPosX, aPosY, aPosZ):
+		Soloud_set3dListenerPosition(self.objhandle, ctypes.c_float(aPosX), ctypes.c_float(aPosY), ctypes.c_float(aPosZ))
+	def set_3d_listener_at(self, aAtX, aAtY, aAtZ):
+		Soloud_set3dListenerAt(self.objhandle, ctypes.c_float(aAtX), ctypes.c_float(aAtY), ctypes.c_float(aAtZ))
+	def set_3d_listener_up(self, aUpX, aUpY, aUpZ):
+		Soloud_set3dListenerUp(self.objhandle, ctypes.c_float(aUpX), ctypes.c_float(aUpY), ctypes.c_float(aUpZ))
+	def set_3d_listener_velocity(self, aVelocityX, aVelocityY, aVelocityZ):
+		Soloud_set3dListenerVelocity(self.objhandle, ctypes.c_float(aVelocityX), ctypes.c_float(aVelocityY), ctypes.c_float(aVelocityZ))
+	def set_3d_source_parameters(self, aVoiceHandle, aPosX, aPosY, aPosZ, aVelocityX = 0.0, aVelocityY = 0.0, aVelocityZ = 0.0):
+		Soloud_set3dSourceParametersEx(self.objhandle, ctypes.c_uint(aVoiceHandle), ctypes.c_float(aPosX), ctypes.c_float(aPosY), ctypes.c_float(aPosZ), ctypes.c_float(aVelocityX), ctypes.c_float(aVelocityY), ctypes.c_float(aVelocityZ))
+	def set_3d_source_position(self, aVoiceHandle, aPosX, aPosY, aPosZ):
+		Soloud_set3dSourcePosition(self.objhandle, ctypes.c_uint(aVoiceHandle), ctypes.c_float(aPosX), ctypes.c_float(aPosY), ctypes.c_float(aPosZ))
+	def set_3d_source_velocity(self, aVoiceHandle, aVelocityX, aVelocityY, aVelocityZ):
+		Soloud_set3dSourceVelocity(self.objhandle, ctypes.c_uint(aVoiceHandle), ctypes.c_float(aVelocityX), ctypes.c_float(aVelocityY), ctypes.c_float(aVelocityZ))
+	def set_3d_source_min_max_distance(self, aVoiceHandle, aMinDistance, aMaxDistance):
+		Soloud_set3dSourceMinMaxDistance(self.objhandle, ctypes.c_uint(aVoiceHandle), ctypes.c_float(aMinDistance), ctypes.c_float(aMaxDistance))
+	def set_3d_source_attenuation(self, aVoiceHandle, aAttenuationModel, aAttenuationRolloffFactor):
+		Soloud_set3dSourceAttenuation(self.objhandle, ctypes.c_uint(aVoiceHandle), ctypes.c_uint(aAttenuationModel), ctypes.c_float(aAttenuationRolloffFactor))
+	def set_3d_source_doppler_factor(self, aVoiceHandle, aDopplerFactor):
+		Soloud_set3dSourceDopplerFactor(self.objhandle, ctypes.c_uint(aVoiceHandle), ctypes.c_float(aDopplerFactor))
 
 class BiquadResonantFilter(object):
 	NONE = 0
@@ -727,6 +1047,10 @@ class Bus(object):
 		return Bus_playEx(self.objhandle, aSound.objhandle, ctypes.c_float(aVolume), ctypes.c_float(aPan), ctypes.c_int(aPaused))
 	def play_clocked(self, aSoundTime, aSound, aVolume = 1.0, aPan = 0.0):
 		return Bus_playClockedEx(self.objhandle, ctypes.c_double(aSoundTime), aSound.objhandle, ctypes.c_float(aVolume), ctypes.c_float(aPan))
+	def play_3d(self, aSound, aPosX, aPosY, aPosZ, aVelX = 0.0, aVelY = 0.0, aVelZ = 0.0, aVolume = 1.0, aPaused = 0):
+		return Bus_play3dEx(self.objhandle, aSound.objhandle, ctypes.c_float(aPosX), ctypes.c_float(aPosY), ctypes.c_float(aPosZ), ctypes.c_float(aVelX), ctypes.c_float(aVelY), ctypes.c_float(aVelZ), ctypes.c_float(aVolume), ctypes.c_int(aPaused))
+	def play_3d_clocked(self, aSoundTime, aSound, aPosX, aPosY, aPosZ, aVelX = 0.0, aVelY = 0.0, aVelZ = 0.0, aVolume = 1.0):
+		return Bus_play3dClockedEx(self.objhandle, ctypes.c_double(aSoundTime), aSound.objhandle, ctypes.c_float(aPosX), ctypes.c_float(aPosY), ctypes.c_float(aPosZ), ctypes.c_float(aVelX), ctypes.c_float(aVelY), ctypes.c_float(aVelZ), ctypes.c_float(aVolume))
 	def set_visualization_enable(self, aEnable):
 		Bus_setVisualizationEnable(self.objhandle, ctypes.c_int(aEnable))
 	def calc_fft(self):
@@ -737,6 +1061,20 @@ class Bus(object):
 		return [f for f in floatbuf.contents]
 	def set_looping(self, aLoop):
 		Bus_setLooping(self.objhandle, ctypes.c_int(aLoop))
+	def set_3d_min_max_distance(self, aMinDistance, aMaxDistance):
+		Bus_set3dMinMaxDistance(self.objhandle, ctypes.c_float(aMinDistance), ctypes.c_float(aMaxDistance))
+	def set_3d_attenuation(self, aAttenuationModel, aAttenuationRolloffFactor):
+		Bus_set3dAttenuation(self.objhandle, ctypes.c_uint(aAttenuationModel), ctypes.c_float(aAttenuationRolloffFactor))
+	def set_3d_doppler_factor(self, aDopplerFactor):
+		Bus_set3dDopplerFactor(self.objhandle, ctypes.c_float(aDopplerFactor))
+	def set_3d_processing(self, aDo3dProcessing):
+		Bus_set3dProcessing(self.objhandle, ctypes.c_int(aDo3dProcessing))
+	def set_3d_listener_relative(self, aListenerRelative):
+		Bus_set3dListenerRelative(self.objhandle, ctypes.c_int(aListenerRelative))
+	def set_3d_distance_delay(self, aDistanceDelay):
+		Bus_set3dDistanceDelay(self.objhandle, ctypes.c_int(aDistanceDelay))
+	def set_3d_collider(self, aCollider, aUserData = 0):
+		Bus_set3dColliderEx(self.objhandle, aCollider.objhandle, ctypes.c_int(aUserData))
 	def stop(self):
 		Bus_stop(self.objhandle)
 
@@ -855,6 +1193,20 @@ class Modplug(object):
 		return Modplug_load(self.objhandle, ctypes.c_char_p(aFilename))
 	def set_looping(self, aLoop):
 		Modplug_setLooping(self.objhandle, ctypes.c_int(aLoop))
+	def set_3d_min_max_distance(self, aMinDistance, aMaxDistance):
+		Modplug_set3dMinMaxDistance(self.objhandle, ctypes.c_float(aMinDistance), ctypes.c_float(aMaxDistance))
+	def set_3d_attenuation(self, aAttenuationModel, aAttenuationRolloffFactor):
+		Modplug_set3dAttenuation(self.objhandle, ctypes.c_uint(aAttenuationModel), ctypes.c_float(aAttenuationRolloffFactor))
+	def set_3d_doppler_factor(self, aDopplerFactor):
+		Modplug_set3dDopplerFactor(self.objhandle, ctypes.c_float(aDopplerFactor))
+	def set_3d_processing(self, aDo3dProcessing):
+		Modplug_set3dProcessing(self.objhandle, ctypes.c_int(aDo3dProcessing))
+	def set_3d_listener_relative(self, aListenerRelative):
+		Modplug_set3dListenerRelative(self.objhandle, ctypes.c_int(aListenerRelative))
+	def set_3d_distance_delay(self, aDistanceDelay):
+		Modplug_set3dDistanceDelay(self.objhandle, ctypes.c_int(aDistanceDelay))
+	def set_3d_collider(self, aCollider, aUserData = 0):
+		Modplug_set3dColliderEx(self.objhandle, aCollider.objhandle, ctypes.c_int(aUserData))
 	def set_filter(self, aFilterId, aFilter):
 		Modplug_setFilter(self.objhandle, ctypes.c_uint(aFilterId), aFilter.objhandle)
 	def stop(self):
@@ -916,6 +1268,20 @@ class Sfxr(object):
 		return Sfxr_loadPreset(self.objhandle, ctypes.c_int(aPresetNo), ctypes.c_int(aRandSeed))
 	def set_looping(self, aLoop):
 		Sfxr_setLooping(self.objhandle, ctypes.c_int(aLoop))
+	def set_3d_min_max_distance(self, aMinDistance, aMaxDistance):
+		Sfxr_set3dMinMaxDistance(self.objhandle, ctypes.c_float(aMinDistance), ctypes.c_float(aMaxDistance))
+	def set_3d_attenuation(self, aAttenuationModel, aAttenuationRolloffFactor):
+		Sfxr_set3dAttenuation(self.objhandle, ctypes.c_uint(aAttenuationModel), ctypes.c_float(aAttenuationRolloffFactor))
+	def set_3d_doppler_factor(self, aDopplerFactor):
+		Sfxr_set3dDopplerFactor(self.objhandle, ctypes.c_float(aDopplerFactor))
+	def set_3d_processing(self, aDo3dProcessing):
+		Sfxr_set3dProcessing(self.objhandle, ctypes.c_int(aDo3dProcessing))
+	def set_3d_listener_relative(self, aListenerRelative):
+		Sfxr_set3dListenerRelative(self.objhandle, ctypes.c_int(aListenerRelative))
+	def set_3d_distance_delay(self, aDistanceDelay):
+		Sfxr_set3dDistanceDelay(self.objhandle, ctypes.c_int(aDistanceDelay))
+	def set_3d_collider(self, aCollider, aUserData = 0):
+		Sfxr_set3dColliderEx(self.objhandle, aCollider.objhandle, ctypes.c_int(aUserData))
 	def set_filter(self, aFilterId, aFilter):
 		Sfxr_setFilter(self.objhandle, ctypes.c_uint(aFilterId), aFilter.objhandle)
 	def stop(self):
@@ -943,6 +1309,20 @@ class Speech(object):
 		return Speech_setText(self.objhandle, ctypes.c_char_p(aText))
 	def set_looping(self, aLoop):
 		Speech_setLooping(self.objhandle, ctypes.c_int(aLoop))
+	def set_3d_min_max_distance(self, aMinDistance, aMaxDistance):
+		Speech_set3dMinMaxDistance(self.objhandle, ctypes.c_float(aMinDistance), ctypes.c_float(aMaxDistance))
+	def set_3d_attenuation(self, aAttenuationModel, aAttenuationRolloffFactor):
+		Speech_set3dAttenuation(self.objhandle, ctypes.c_uint(aAttenuationModel), ctypes.c_float(aAttenuationRolloffFactor))
+	def set_3d_doppler_factor(self, aDopplerFactor):
+		Speech_set3dDopplerFactor(self.objhandle, ctypes.c_float(aDopplerFactor))
+	def set_3d_processing(self, aDo3dProcessing):
+		Speech_set3dProcessing(self.objhandle, ctypes.c_int(aDo3dProcessing))
+	def set_3d_listener_relative(self, aListenerRelative):
+		Speech_set3dListenerRelative(self.objhandle, ctypes.c_int(aListenerRelative))
+	def set_3d_distance_delay(self, aDistanceDelay):
+		Speech_set3dDistanceDelay(self.objhandle, ctypes.c_int(aDistanceDelay))
+	def set_3d_collider(self, aCollider, aUserData = 0):
+		Speech_set3dColliderEx(self.objhandle, aCollider.objhandle, ctypes.c_int(aUserData))
 	def set_filter(self, aFilterId, aFilter):
 		Speech_setFilter(self.objhandle, ctypes.c_uint(aFilterId), aFilter.objhandle)
 	def stop(self):
@@ -974,6 +1354,20 @@ class Wav(object):
 		return Wav_getLength(self.objhandle)
 	def set_looping(self, aLoop):
 		Wav_setLooping(self.objhandle, ctypes.c_int(aLoop))
+	def set_3d_min_max_distance(self, aMinDistance, aMaxDistance):
+		Wav_set3dMinMaxDistance(self.objhandle, ctypes.c_float(aMinDistance), ctypes.c_float(aMaxDistance))
+	def set_3d_attenuation(self, aAttenuationModel, aAttenuationRolloffFactor):
+		Wav_set3dAttenuation(self.objhandle, ctypes.c_uint(aAttenuationModel), ctypes.c_float(aAttenuationRolloffFactor))
+	def set_3d_doppler_factor(self, aDopplerFactor):
+		Wav_set3dDopplerFactor(self.objhandle, ctypes.c_float(aDopplerFactor))
+	def set_3d_processing(self, aDo3dProcessing):
+		Wav_set3dProcessing(self.objhandle, ctypes.c_int(aDo3dProcessing))
+	def set_3d_listener_relative(self, aListenerRelative):
+		Wav_set3dListenerRelative(self.objhandle, ctypes.c_int(aListenerRelative))
+	def set_3d_distance_delay(self, aDistanceDelay):
+		Wav_set3dDistanceDelay(self.objhandle, ctypes.c_int(aDistanceDelay))
+	def set_3d_collider(self, aCollider, aUserData = 0):
+		Wav_set3dColliderEx(self.objhandle, aCollider.objhandle, ctypes.c_int(aUserData))
 	def set_filter(self, aFilterId, aFilter):
 		Wav_setFilter(self.objhandle, ctypes.c_uint(aFilterId), aFilter.objhandle)
 	def stop(self):
@@ -1003,6 +1397,20 @@ class WavStream(object):
 		return WavStream_getLength(self.objhandle)
 	def set_looping(self, aLoop):
 		WavStream_setLooping(self.objhandle, ctypes.c_int(aLoop))
+	def set_3d_min_max_distance(self, aMinDistance, aMaxDistance):
+		WavStream_set3dMinMaxDistance(self.objhandle, ctypes.c_float(aMinDistance), ctypes.c_float(aMaxDistance))
+	def set_3d_attenuation(self, aAttenuationModel, aAttenuationRolloffFactor):
+		WavStream_set3dAttenuation(self.objhandle, ctypes.c_uint(aAttenuationModel), ctypes.c_float(aAttenuationRolloffFactor))
+	def set_3d_doppler_factor(self, aDopplerFactor):
+		WavStream_set3dDopplerFactor(self.objhandle, ctypes.c_float(aDopplerFactor))
+	def set_3d_processing(self, aDo3dProcessing):
+		WavStream_set3dProcessing(self.objhandle, ctypes.c_int(aDo3dProcessing))
+	def set_3d_listener_relative(self, aListenerRelative):
+		WavStream_set3dListenerRelative(self.objhandle, ctypes.c_int(aListenerRelative))
+	def set_3d_distance_delay(self, aDistanceDelay):
+		WavStream_set3dDistanceDelay(self.objhandle, ctypes.c_int(aDistanceDelay))
+	def set_3d_collider(self, aCollider, aUserData = 0):
+		WavStream_set3dColliderEx(self.objhandle, aCollider.objhandle, ctypes.c_int(aUserData))
 	def set_filter(self, aFilterId, aFilter):
 		WavStream_setFilter(self.objhandle, ctypes.c_uint(aFilterId), aFilter.objhandle)
 	def stop(self):

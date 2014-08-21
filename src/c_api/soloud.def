@@ -10,6 +10,10 @@ EXPORTS
 	Soloud_playEx
 	Soloud_playClocked
 	Soloud_playClockedEx
+	Soloud_play3d
+	Soloud_play3dEx
+	Soloud_play3dClocked
+	Soloud_play3dClockedEx
 	Soloud_seek
 	Soloud_stop
 	Soloud_stopAll
@@ -60,6 +64,22 @@ EXPORTS
 	Soloud_addVoiceToGroup
 	Soloud_isVoiceGroup
 	Soloud_isVoiceGroupEmpty
+	Soloud_update3dAudio
+	Soloud_set3dSoundSpeed
+	Soloud_get3dSoundSpeed
+	Soloud_set3dListenerParameters
+	Soloud_set3dListenerParametersEx
+	Soloud_set3dListenerPosition
+	Soloud_set3dListenerAt
+	Soloud_set3dListenerUp
+	Soloud_set3dListenerVelocity
+	Soloud_set3dSourceParameters
+	Soloud_set3dSourceParametersEx
+	Soloud_set3dSourcePosition
+	Soloud_set3dSourceVelocity
+	Soloud_set3dSourceMinMaxDistance
+	Soloud_set3dSourceAttenuation
+	Soloud_set3dSourceDopplerFactor
 	BiquadResonantFilter_destroy
 	BiquadResonantFilter_create
 	BiquadResonantFilter_setParams
@@ -70,10 +90,22 @@ EXPORTS
 	Bus_playEx
 	Bus_playClocked
 	Bus_playClockedEx
+	Bus_play3d
+	Bus_play3dEx
+	Bus_play3dClocked
+	Bus_play3dClockedEx
 	Bus_setVisualizationEnable
 	Bus_calcFFT
 	Bus_getWave
 	Bus_setLooping
+	Bus_set3dMinMaxDistance
+	Bus_set3dAttenuation
+	Bus_set3dDopplerFactor
+	Bus_set3dProcessing
+	Bus_set3dListenerRelative
+	Bus_set3dDistanceDelay
+	Bus_set3dCollider
+	Bus_set3dColliderEx
 	Bus_stop
 	EchoFilter_destroy
 	EchoFilter_create
@@ -93,6 +125,14 @@ EXPORTS
 	Modplug_create
 	Modplug_load
 	Modplug_setLooping
+	Modplug_set3dMinMaxDistance
+	Modplug_set3dAttenuation
+	Modplug_set3dDopplerFactor
+	Modplug_set3dProcessing
+	Modplug_set3dListenerRelative
+	Modplug_set3dDistanceDelay
+	Modplug_set3dCollider
+	Modplug_set3dColliderEx
 	Modplug_setFilter
 	Modplug_stop
 	Prg_destroy
@@ -105,12 +145,28 @@ EXPORTS
 	Sfxr_loadParams
 	Sfxr_loadPreset
 	Sfxr_setLooping
+	Sfxr_set3dMinMaxDistance
+	Sfxr_set3dAttenuation
+	Sfxr_set3dDopplerFactor
+	Sfxr_set3dProcessing
+	Sfxr_set3dListenerRelative
+	Sfxr_set3dDistanceDelay
+	Sfxr_set3dCollider
+	Sfxr_set3dColliderEx
 	Sfxr_setFilter
 	Sfxr_stop
 	Speech_destroy
 	Speech_create
 	Speech_setText
 	Speech_setLooping
+	Speech_set3dMinMaxDistance
+	Speech_set3dAttenuation
+	Speech_set3dDopplerFactor
+	Speech_set3dProcessing
+	Speech_set3dListenerRelative
+	Speech_set3dDistanceDelay
+	Speech_set3dCollider
+	Speech_set3dColliderEx
 	Speech_setFilter
 	Speech_stop
 	Wav_destroy
@@ -119,6 +175,14 @@ EXPORTS
 	Wav_loadMem
 	Wav_getLength
 	Wav_setLooping
+	Wav_set3dMinMaxDistance
+	Wav_set3dAttenuation
+	Wav_set3dDopplerFactor
+	Wav_set3dProcessing
+	Wav_set3dListenerRelative
+	Wav_set3dDistanceDelay
+	Wav_set3dCollider
+	Wav_set3dColliderEx
 	Wav_setFilter
 	Wav_stop
 	WavStream_destroy
@@ -126,5 +190,13 @@ EXPORTS
 	WavStream_load
 	WavStream_getLength
 	WavStream_setLooping
+	WavStream_set3dMinMaxDistance
+	WavStream_set3dAttenuation
+	WavStream_set3dDopplerFactor
+	WavStream_set3dProcessing
+	WavStream_set3dListenerRelative
+	WavStream_set3dDistanceDelay
+	WavStream_set3dCollider
+	WavStream_set3dColliderEx
 	WavStream_setFilter
 	WavStream_stop

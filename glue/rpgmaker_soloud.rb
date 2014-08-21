@@ -1162,6 +1162,10 @@ module SoLoud
 		extern "unsigned int Soloud_playEx(Soloud *, AudioSource *, float, float, int, unsigned int)"
 		extern "unsigned int Soloud_playClocked(Soloud *, double, AudioSource *)"
 		extern "unsigned int Soloud_playClockedEx(Soloud *, double, AudioSource *, float, float, unsigned int)"
+		extern "unsigned int Soloud_play3d(Soloud *, AudioSource *, float, float, float)"
+		extern "unsigned int Soloud_play3dEx(Soloud *, AudioSource *, float, float, float, float, float, float, float, int, unsigned int)"
+		extern "unsigned int Soloud_play3dClocked(Soloud *, double, AudioSource *, float, float, float)"
+		extern "unsigned int Soloud_play3dClockedEx(Soloud *, double, AudioSource *, float, float, float, float, float, float, float, unsigned int)"
 		extern "void Soloud_seek(Soloud *, unsigned int, double)"
 		extern "void Soloud_stop(Soloud *, unsigned int)"
 		extern "void Soloud_stopAll(Soloud *)"
@@ -1212,6 +1216,22 @@ module SoLoud
 		extern "int Soloud_addVoiceToGroup(Soloud *, unsigned int, unsigned int)"
 		extern "int Soloud_isVoiceGroup(Soloud *, unsigned int)"
 		extern "int Soloud_isVoiceGroupEmpty(Soloud *, unsigned int)"
+		extern "void Soloud_update3dAudio(Soloud *)"
+		extern "int Soloud_set3dSoundSpeed(Soloud *, float)"
+		extern "float Soloud_get3dSoundSpeed(Soloud *)"
+		extern "void Soloud_set3dListenerParameters(Soloud *, float, float, float, float, float, float, float, float, float)"
+		extern "void Soloud_set3dListenerParametersEx(Soloud *, float, float, float, float, float, float, float, float, float, float, float, float)"
+		extern "void Soloud_set3dListenerPosition(Soloud *, float, float, float)"
+		extern "void Soloud_set3dListenerAt(Soloud *, float, float, float)"
+		extern "void Soloud_set3dListenerUp(Soloud *, float, float, float)"
+		extern "void Soloud_set3dListenerVelocity(Soloud *, float, float, float)"
+		extern "void Soloud_set3dSourceParameters(Soloud *, unsigned int, float, float, float)"
+		extern "void Soloud_set3dSourceParametersEx(Soloud *, unsigned int, float, float, float, float, float, float)"
+		extern "void Soloud_set3dSourcePosition(Soloud *, unsigned int, float, float, float)"
+		extern "void Soloud_set3dSourceVelocity(Soloud *, unsigned int, float, float, float)"
+		extern "void Soloud_set3dSourceMinMaxDistance(Soloud *, unsigned int, float, float)"
+		extern "void Soloud_set3dSourceAttenuation(Soloud *, unsigned int, unsigned int, float)"
+		extern "void Soloud_set3dSourceDopplerFactor(Soloud *, unsigned int, float)"
 		extern "void BiquadResonantFilter_destroy(BiquadResonantFilter *)"
 		extern "BiquadResonantFilter * BiquadResonantFilter_create()"
 		extern "int BiquadResonantFilter_setParams(BiquadResonantFilter *, int, float, float, float)"
@@ -1222,10 +1242,22 @@ module SoLoud
 		extern "unsigned int Bus_playEx(Bus *, AudioSource *, float, float, int)"
 		extern "unsigned int Bus_playClocked(Bus *, double, AudioSource *)"
 		extern "unsigned int Bus_playClockedEx(Bus *, double, AudioSource *, float, float)"
+		extern "unsigned int Bus_play3d(Bus *, AudioSource *, float, float, float)"
+		extern "unsigned int Bus_play3dEx(Bus *, AudioSource *, float, float, float, float, float, float, float, int)"
+		extern "unsigned int Bus_play3dClocked(Bus *, double, AudioSource *, float, float, float)"
+		extern "unsigned int Bus_play3dClockedEx(Bus *, double, AudioSource *, float, float, float, float, float, float, float)"
 		extern "void Bus_setVisualizationEnable(Bus *, int)"
 		extern "float * Bus_calcFFT(Bus *)"
 		extern "float * Bus_getWave(Bus *)"
 		extern "void Bus_setLooping(Bus *, int)"
+		extern "void Bus_set3dMinMaxDistance(Bus *, float, float)"
+		extern "void Bus_set3dAttenuation(Bus *, unsigned int, float)"
+		extern "void Bus_set3dDopplerFactor(Bus *, float)"
+		extern "void Bus_set3dProcessing(Bus *, int)"
+		extern "void Bus_set3dListenerRelative(Bus *, int)"
+		extern "void Bus_set3dDistanceDelay(Bus *, int)"
+		extern "void Bus_set3dCollider(Bus *, AudioCollider *)"
+		extern "void Bus_set3dColliderEx(Bus *, AudioCollider *, int)"
 		extern "void Bus_stop(Bus *)"
 		extern "void EchoFilter_destroy(EchoFilter *)"
 		extern "EchoFilter * EchoFilter_create()"
@@ -1245,6 +1277,14 @@ module SoLoud
 		extern "Modplug * Modplug_create()"
 		extern "int Modplug_load(Modplug *, const char *)"
 		extern "void Modplug_setLooping(Modplug *, int)"
+		extern "void Modplug_set3dMinMaxDistance(Modplug *, float, float)"
+		extern "void Modplug_set3dAttenuation(Modplug *, unsigned int, float)"
+		extern "void Modplug_set3dDopplerFactor(Modplug *, float)"
+		extern "void Modplug_set3dProcessing(Modplug *, int)"
+		extern "void Modplug_set3dListenerRelative(Modplug *, int)"
+		extern "void Modplug_set3dDistanceDelay(Modplug *, int)"
+		extern "void Modplug_set3dCollider(Modplug *, AudioCollider *)"
+		extern "void Modplug_set3dColliderEx(Modplug *, AudioCollider *, int)"
 		extern "void Modplug_setFilter(Modplug *, unsigned int, Filter *)"
 		extern "void Modplug_stop(Modplug *)"
 		extern "void Prg_destroy(Prg *)"
@@ -1257,12 +1297,28 @@ module SoLoud
 		extern "int Sfxr_loadParams(Sfxr *, const char *)"
 		extern "int Sfxr_loadPreset(Sfxr *, int, int)"
 		extern "void Sfxr_setLooping(Sfxr *, int)"
+		extern "void Sfxr_set3dMinMaxDistance(Sfxr *, float, float)"
+		extern "void Sfxr_set3dAttenuation(Sfxr *, unsigned int, float)"
+		extern "void Sfxr_set3dDopplerFactor(Sfxr *, float)"
+		extern "void Sfxr_set3dProcessing(Sfxr *, int)"
+		extern "void Sfxr_set3dListenerRelative(Sfxr *, int)"
+		extern "void Sfxr_set3dDistanceDelay(Sfxr *, int)"
+		extern "void Sfxr_set3dCollider(Sfxr *, AudioCollider *)"
+		extern "void Sfxr_set3dColliderEx(Sfxr *, AudioCollider *, int)"
 		extern "void Sfxr_setFilter(Sfxr *, unsigned int, Filter *)"
 		extern "void Sfxr_stop(Sfxr *)"
 		extern "void Speech_destroy(Speech *)"
 		extern "Speech * Speech_create()"
 		extern "int Speech_setText(Speech *, const char *)"
 		extern "void Speech_setLooping(Speech *, int)"
+		extern "void Speech_set3dMinMaxDistance(Speech *, float, float)"
+		extern "void Speech_set3dAttenuation(Speech *, unsigned int, float)"
+		extern "void Speech_set3dDopplerFactor(Speech *, float)"
+		extern "void Speech_set3dProcessing(Speech *, int)"
+		extern "void Speech_set3dListenerRelative(Speech *, int)"
+		extern "void Speech_set3dDistanceDelay(Speech *, int)"
+		extern "void Speech_set3dCollider(Speech *, AudioCollider *)"
+		extern "void Speech_set3dColliderEx(Speech *, AudioCollider *, int)"
 		extern "void Speech_setFilter(Speech *, unsigned int, Filter *)"
 		extern "void Speech_stop(Speech *)"
 		extern "void Wav_destroy(Wav *)"
@@ -1271,6 +1327,14 @@ module SoLoud
 		extern "int Wav_loadMem(Wav *, unsigned char *, unsigned int)"
 		extern "double Wav_getLength(Wav *)"
 		extern "void Wav_setLooping(Wav *, int)"
+		extern "void Wav_set3dMinMaxDistance(Wav *, float, float)"
+		extern "void Wav_set3dAttenuation(Wav *, unsigned int, float)"
+		extern "void Wav_set3dDopplerFactor(Wav *, float)"
+		extern "void Wav_set3dProcessing(Wav *, int)"
+		extern "void Wav_set3dListenerRelative(Wav *, int)"
+		extern "void Wav_set3dDistanceDelay(Wav *, int)"
+		extern "void Wav_set3dCollider(Wav *, AudioCollider *)"
+		extern "void Wav_set3dColliderEx(Wav *, AudioCollider *, int)"
 		extern "void Wav_setFilter(Wav *, unsigned int, Filter *)"
 		extern "void Wav_stop(Wav *)"
 		extern "void WavStream_destroy(WavStream *)"
@@ -1278,6 +1342,14 @@ module SoLoud
 		extern "int WavStream_load(WavStream *, const char *)"
 		extern "double WavStream_getLength(WavStream *)"
 		extern "void WavStream_setLooping(WavStream *, int)"
+		extern "void WavStream_set3dMinMaxDistance(WavStream *, float, float)"
+		extern "void WavStream_set3dAttenuation(WavStream *, unsigned int, float)"
+		extern "void WavStream_set3dDopplerFactor(WavStream *, float)"
+		extern "void WavStream_set3dProcessing(WavStream *, int)"
+		extern "void WavStream_set3dListenerRelative(WavStream *, int)"
+		extern "void WavStream_set3dDistanceDelay(WavStream *, int)"
+		extern "void WavStream_set3dCollider(WavStream *, AudioCollider *)"
+		extern "void WavStream_set3dColliderEx(WavStream *, AudioCollider *, int)"
 		extern "void WavStream_setFilter(WavStream *, unsigned int, Filter *)"
 		extern "void WavStream_stop(WavStream *)"
 	end
@@ -1312,17 +1384,23 @@ module SoLoud
 	def deinit()
 		SoLoud::CAPI.Soloud_deinit(@objhandle)
 		end
-	def getVersion()
+	def get_version()
 		SoLoud::CAPI.Soloud_getVersion(@objhandle)
 		end
-	def getErrorString(aErrorCode)
+	def get_error_string(aErrorCode)
 		SoLoud::CAPI.Soloud_getErrorString(@objhandle, aErrorCode)
 		end
 	def play(aSound, aVolume=1.0, aPan=0.0, aPaused=0, aBus=0)
 		SoLoud::CAPI.Soloud_playEx(@objhandle, aSound.objhandle, aVolume, aPan, aPaused, aBus)
 		end
-	def playClocked(aSoundTime, aSound, aVolume=1.0, aPan=0.0, aBus=0)
+	def play_clocked(aSoundTime, aSound, aVolume=1.0, aPan=0.0, aBus=0)
 		SoLoud::CAPI.Soloud_playClockedEx(@objhandle, aSoundTime, aSound.objhandle, aVolume, aPan, aBus)
+		end
+	def play_3d(aSound, aPosX, aPosY, aPosZ, aVelX=0.0, aVelY=0.0, aVelZ=0.0, aVolume=1.0, aPaused=0, aBus=0)
+		SoLoud::CAPI.Soloud_play3dEx(@objhandle, aSound.objhandle, aPosX, aPosY, aPosZ, aVelX, aVelY, aVelZ, aVolume, aPaused, aBus)
+		end
+	def play_3d_clocked(aSoundTime, aSound, aPosX, aPosY, aPosZ, aVelX=0.0, aVelY=0.0, aVelZ=0.0, aVolume=1.0, aBus=0)
+		SoLoud::CAPI.Soloud_play3dClockedEx(@objhandle, aSoundTime, aSound.objhandle, aPosX, aPosY, aPosZ, aVelX, aVelY, aVelZ, aVolume, aBus)
 		end
 	def seek(aVoiceHandle, aSeconds)
 		SoLoud::CAPI.Soloud_seek(@objhandle, aVoiceHandle, aSeconds)
@@ -1330,149 +1408,191 @@ module SoLoud
 	def stop(aVoiceHandle)
 		SoLoud::CAPI.Soloud_stop(@objhandle, aVoiceHandle)
 		end
-	def stopAll()
+	def stop_all()
 		SoLoud::CAPI.Soloud_stopAll(@objhandle)
 		end
-	def stopAudioSource(aSound)
+	def stop_audio_source(aSound)
 		SoLoud::CAPI.Soloud_stopAudioSource(@objhandle, aSound.objhandle)
 		end
-	def setFilterParameter(aVoiceHandle, aFilterId, aAttributeId, aValue)
+	def set_filter_parameter(aVoiceHandle, aFilterId, aAttributeId, aValue)
 		SoLoud::CAPI.Soloud_setFilterParameter(@objhandle, aVoiceHandle, aFilterId, aAttributeId, aValue)
 		end
-	def getFilterParameter(aVoiceHandle, aFilterId, aAttributeId)
+	def get_filter_parameter(aVoiceHandle, aFilterId, aAttributeId)
 		SoLoud::CAPI.Soloud_getFilterParameter(@objhandle, aVoiceHandle, aFilterId, aAttributeId)
 		end
-	def fadeFilterParameter(aVoiceHandle, aFilterId, aAttributeId, aTo, aTime)
+	def fade_filter_parameter(aVoiceHandle, aFilterId, aAttributeId, aTo, aTime)
 		SoLoud::CAPI.Soloud_fadeFilterParameter(@objhandle, aVoiceHandle, aFilterId, aAttributeId, aTo, aTime)
 		end
-	def oscillateFilterParameter(aVoiceHandle, aFilterId, aAttributeId, aFrom, aTo, aTime)
+	def oscillate_filter_parameter(aVoiceHandle, aFilterId, aAttributeId, aFrom, aTo, aTime)
 		SoLoud::CAPI.Soloud_oscillateFilterParameter(@objhandle, aVoiceHandle, aFilterId, aAttributeId, aFrom, aTo, aTime)
 		end
-	def getStreamTime(aVoiceHandle)
+	def get_stream_time(aVoiceHandle)
 		SoLoud::CAPI.Soloud_getStreamTime(@objhandle, aVoiceHandle)
 		end
-	def getPause(aVoiceHandle)
+	def get_pause(aVoiceHandle)
 		SoLoud::CAPI.Soloud_getPause(@objhandle, aVoiceHandle)
 		end
-	def getVolume(aVoiceHandle)
+	def get_volume(aVoiceHandle)
 		SoLoud::CAPI.Soloud_getVolume(@objhandle, aVoiceHandle)
 		end
-	def getPan(aVoiceHandle)
+	def get_pan(aVoiceHandle)
 		SoLoud::CAPI.Soloud_getPan(@objhandle, aVoiceHandle)
 		end
-	def getSamplerate(aVoiceHandle)
+	def get_samplerate(aVoiceHandle)
 		SoLoud::CAPI.Soloud_getSamplerate(@objhandle, aVoiceHandle)
 		end
-	def getProtectVoice(aVoiceHandle)
+	def get_protect_voice(aVoiceHandle)
 		SoLoud::CAPI.Soloud_getProtectVoice(@objhandle, aVoiceHandle)
 		end
-	def getActiveVoiceCount()
+	def get_active_voice_count()
 		SoLoud::CAPI.Soloud_getActiveVoiceCount(@objhandle)
 		end
-	def isValidVoiceHandle(aVoiceHandle)
+	def is_valid_voice_handle(aVoiceHandle)
 		SoLoud::CAPI.Soloud_isValidVoiceHandle(@objhandle, aVoiceHandle)
 		end
-	def getRelativePlaySpeed(aVoiceHandle)
+	def get_relative_play_speed(aVoiceHandle)
 		SoLoud::CAPI.Soloud_getRelativePlaySpeed(@objhandle, aVoiceHandle)
 		end
-	def getPostClipScaler()
+	def get_post_clip_scaler()
 		SoLoud::CAPI.Soloud_getPostClipScaler(@objhandle)
 		end
-	def getGlobalVolume()
+	def get_global_volume()
 		SoLoud::CAPI.Soloud_getGlobalVolume(@objhandle)
 		end
-	def setGlobalVolume(aVolume)
+	def set_global_volume(aVolume)
 		SoLoud::CAPI.Soloud_setGlobalVolume(@objhandle, aVolume)
 		end
-	def setPostClipScaler(aScaler)
+	def set_post_clip_scaler(aScaler)
 		SoLoud::CAPI.Soloud_setPostClipScaler(@objhandle, aScaler)
 		end
-	def setPause(aVoiceHandle, aPause)
+	def set_pause(aVoiceHandle, aPause)
 		SoLoud::CAPI.Soloud_setPause(@objhandle, aVoiceHandle, aPause)
 		end
-	def setPauseAll(aPause)
+	def set_pause_all(aPause)
 		SoLoud::CAPI.Soloud_setPauseAll(@objhandle, aPause)
 		end
-	def setRelativePlaySpeed(aVoiceHandle, aSpeed)
+	def set_relative_play_speed(aVoiceHandle, aSpeed)
 		SoLoud::CAPI.Soloud_setRelativePlaySpeed(@objhandle, aVoiceHandle, aSpeed)
 		end
-	def setProtectVoice(aVoiceHandle, aProtect)
+	def set_protect_voice(aVoiceHandle, aProtect)
 		SoLoud::CAPI.Soloud_setProtectVoice(@objhandle, aVoiceHandle, aProtect)
 		end
-	def setSamplerate(aVoiceHandle, aSamplerate)
+	def set_samplerate(aVoiceHandle, aSamplerate)
 		SoLoud::CAPI.Soloud_setSamplerate(@objhandle, aVoiceHandle, aSamplerate)
 		end
-	def setPan(aVoiceHandle, aPan)
+	def set_pan(aVoiceHandle, aPan)
 		SoLoud::CAPI.Soloud_setPan(@objhandle, aVoiceHandle, aPan)
 		end
-	def setPanAbsolute(aVoiceHandle, aLVolume, aRVolume)
+	def set_pan_absolute(aVoiceHandle, aLVolume, aRVolume)
 		SoLoud::CAPI.Soloud_setPanAbsolute(@objhandle, aVoiceHandle, aLVolume, aRVolume)
 		end
-	def setVolume(aVoiceHandle, aVolume)
+	def set_volume(aVoiceHandle, aVolume)
 		SoLoud::CAPI.Soloud_setVolume(@objhandle, aVoiceHandle, aVolume)
 		end
-	def setDelaySamples(aVoiceHandle, aSamples)
+	def set_delay_samples(aVoiceHandle, aSamples)
 		SoLoud::CAPI.Soloud_setDelaySamples(@objhandle, aVoiceHandle, aSamples)
 		end
-	def fadeVolume(aVoiceHandle, aTo, aTime)
+	def fade_volume(aVoiceHandle, aTo, aTime)
 		SoLoud::CAPI.Soloud_fadeVolume(@objhandle, aVoiceHandle, aTo, aTime)
 		end
-	def fadePan(aVoiceHandle, aTo, aTime)
+	def fade_pan(aVoiceHandle, aTo, aTime)
 		SoLoud::CAPI.Soloud_fadePan(@objhandle, aVoiceHandle, aTo, aTime)
 		end
-	def fadeRelativePlaySpeed(aVoiceHandle, aTo, aTime)
+	def fade_relative_play_speed(aVoiceHandle, aTo, aTime)
 		SoLoud::CAPI.Soloud_fadeRelativePlaySpeed(@objhandle, aVoiceHandle, aTo, aTime)
 		end
-	def fadeGlobalVolume(aTo, aTime)
+	def fade_global_volume(aTo, aTime)
 		SoLoud::CAPI.Soloud_fadeGlobalVolume(@objhandle, aTo, aTime)
 		end
-	def schedulePause(aVoiceHandle, aTime)
+	def schedule_pause(aVoiceHandle, aTime)
 		SoLoud::CAPI.Soloud_schedulePause(@objhandle, aVoiceHandle, aTime)
 		end
-	def scheduleStop(aVoiceHandle, aTime)
+	def schedule_stop(aVoiceHandle, aTime)
 		SoLoud::CAPI.Soloud_scheduleStop(@objhandle, aVoiceHandle, aTime)
 		end
-	def oscillateVolume(aVoiceHandle, aFrom, aTo, aTime)
+	def oscillate_volume(aVoiceHandle, aFrom, aTo, aTime)
 		SoLoud::CAPI.Soloud_oscillateVolume(@objhandle, aVoiceHandle, aFrom, aTo, aTime)
 		end
-	def oscillatePan(aVoiceHandle, aFrom, aTo, aTime)
+	def oscillate_pan(aVoiceHandle, aFrom, aTo, aTime)
 		SoLoud::CAPI.Soloud_oscillatePan(@objhandle, aVoiceHandle, aFrom, aTo, aTime)
 		end
-	def oscillateRelativePlaySpeed(aVoiceHandle, aFrom, aTo, aTime)
+	def oscillate_relative_play_speed(aVoiceHandle, aFrom, aTo, aTime)
 		SoLoud::CAPI.Soloud_oscillateRelativePlaySpeed(@objhandle, aVoiceHandle, aFrom, aTo, aTime)
 		end
-	def oscillateGlobalVolume(aFrom, aTo, aTime)
+	def oscillate_global_volume(aFrom, aTo, aTime)
 		SoLoud::CAPI.Soloud_oscillateGlobalVolume(@objhandle, aFrom, aTo, aTime)
 		end
-	def setGlobalFilter(aFilterId, aFilter)
+	def set_global_filter(aFilterId, aFilter)
 		SoLoud::CAPI.Soloud_setGlobalFilter(@objhandle, aFilterId, aFilter.objhandle)
 		end
-	def setVisualizationEnable(aEnable)
+	def set_visualization_enable(aEnable)
 		SoLoud::CAPI.Soloud_setVisualizationEnable(@objhandle, aEnable)
 		end
-	def calcFFT()
+	def calc_fft()
 		SoLoud::CAPI.Soloud_calcFFT(@objhandle)
 		end
-	def getWave()
+	def get_wave()
 		SoLoud::CAPI.Soloud_getWave(@objhandle)
 		end
-	def getLoopCount(aVoiceHandle)
+	def get_loop_count(aVoiceHandle)
 		SoLoud::CAPI.Soloud_getLoopCount(@objhandle, aVoiceHandle)
 		end
-	def createVoiceGroup()
+	def create_voice_group()
 		SoLoud::CAPI.Soloud_createVoiceGroup(@objhandle)
 		end
-	def destroyVoiceGroup(aVoiceGroupHandle)
+	def destroy_voice_group(aVoiceGroupHandle)
 		SoLoud::CAPI.Soloud_destroyVoiceGroup(@objhandle, aVoiceGroupHandle)
 		end
-	def addVoiceToGroup(aVoiceGroupHandle, aVoiceHandle)
+	def add_voice_to_group(aVoiceGroupHandle, aVoiceHandle)
 		SoLoud::CAPI.Soloud_addVoiceToGroup(@objhandle, aVoiceGroupHandle, aVoiceHandle)
 		end
-	def isVoiceGroup(aVoiceGroupHandle)
+	def is_voice_group(aVoiceGroupHandle)
 		SoLoud::CAPI.Soloud_isVoiceGroup(@objhandle, aVoiceGroupHandle)
 		end
-	def isVoiceGroupEmpty(aVoiceGroupHandle)
+	def is_voice_group_empty(aVoiceGroupHandle)
 		SoLoud::CAPI.Soloud_isVoiceGroupEmpty(@objhandle, aVoiceGroupHandle)
+		end
+	def update_3d_audio()
+		SoLoud::CAPI.Soloud_update3dAudio(@objhandle)
+		end
+	def set_3d_sound_speed(aSpeed)
+		SoLoud::CAPI.Soloud_set3dSoundSpeed(@objhandle, aSpeed)
+		end
+	def get_3d_sound_speed()
+		SoLoud::CAPI.Soloud_get3dSoundSpeed(@objhandle)
+		end
+	def set_3d_listener_parameters(aPosX, aPosY, aPosZ, aAtX, aAtY, aAtZ, aUpX, aUpY, aUpZ, aVelocityX=0.0, aVelocityY=0.0, aVelocityZ=0.0)
+		SoLoud::CAPI.Soloud_set3dListenerParametersEx(@objhandle, aPosX, aPosY, aPosZ, aAtX, aAtY, aAtZ, aUpX, aUpY, aUpZ, aVelocityX, aVelocityY, aVelocityZ)
+		end
+	def set_3d_listener_position(aPosX, aPosY, aPosZ)
+		SoLoud::CAPI.Soloud_set3dListenerPosition(@objhandle, aPosX, aPosY, aPosZ)
+		end
+	def set_3d_listener_at(aAtX, aAtY, aAtZ)
+		SoLoud::CAPI.Soloud_set3dListenerAt(@objhandle, aAtX, aAtY, aAtZ)
+		end
+	def set_3d_listener_up(aUpX, aUpY, aUpZ)
+		SoLoud::CAPI.Soloud_set3dListenerUp(@objhandle, aUpX, aUpY, aUpZ)
+		end
+	def set_3d_listener_velocity(aVelocityX, aVelocityY, aVelocityZ)
+		SoLoud::CAPI.Soloud_set3dListenerVelocity(@objhandle, aVelocityX, aVelocityY, aVelocityZ)
+		end
+	def set_3d_source_parameters(aVoiceHandle, aPosX, aPosY, aPosZ, aVelocityX=0.0, aVelocityY=0.0, aVelocityZ=0.0)
+		SoLoud::CAPI.Soloud_set3dSourceParametersEx(@objhandle, aVoiceHandle, aPosX, aPosY, aPosZ, aVelocityX, aVelocityY, aVelocityZ)
+		end
+	def set_3d_source_position(aVoiceHandle, aPosX, aPosY, aPosZ)
+		SoLoud::CAPI.Soloud_set3dSourcePosition(@objhandle, aVoiceHandle, aPosX, aPosY, aPosZ)
+		end
+	def set_3d_source_velocity(aVoiceHandle, aVelocityX, aVelocityY, aVelocityZ)
+		SoLoud::CAPI.Soloud_set3dSourceVelocity(@objhandle, aVoiceHandle, aVelocityX, aVelocityY, aVelocityZ)
+		end
+	def set_3d_source_min_max_distance(aVoiceHandle, aMinDistance, aMaxDistance)
+		SoLoud::CAPI.Soloud_set3dSourceMinMaxDistance(@objhandle, aVoiceHandle, aMinDistance, aMaxDistance)
+		end
+	def set_3d_source_attenuation(aVoiceHandle, aAttenuationModel, aAttenuationRolloffFactor)
+		SoLoud::CAPI.Soloud_set3dSourceAttenuation(@objhandle, aVoiceHandle, aAttenuationModel, aAttenuationRolloffFactor)
+		end
+	def set_3d_source_doppler_factor(aVoiceHandle, aDopplerFactor)
+		SoLoud::CAPI.Soloud_set3dSourceDopplerFactor(@objhandle, aVoiceHandle, aDopplerFactor)
 		end
 	end
 
@@ -1493,7 +1613,7 @@ module SoLoud
 		def destroy()
 			SoLoud::CAPI.BiquadResonantFilter_destroy(@objhandle)
 		end
-	def setParams(aType, aSampleRate, aFrequency, aResonance)
+	def set_params(aType, aSampleRate, aFrequency, aResonance)
 		SoLoud::CAPI.BiquadResonantFilter_setParams(@objhandle, aType, aSampleRate, aFrequency, aResonance)
 		end
 	end
@@ -1507,26 +1627,53 @@ module SoLoud
 		def destroy()
 			SoLoud::CAPI.Bus_destroy(@objhandle)
 		end
-	def setFilter(aFilterId, aFilter)
+	def set_filter(aFilterId, aFilter)
 		SoLoud::CAPI.Bus_setFilter(@objhandle, aFilterId, aFilter.objhandle)
 		end
 	def play(aSound, aVolume=1.0, aPan=0.0, aPaused=0)
 		SoLoud::CAPI.Bus_playEx(@objhandle, aSound.objhandle, aVolume, aPan, aPaused)
 		end
-	def playClocked(aSoundTime, aSound, aVolume=1.0, aPan=0.0)
+	def play_clocked(aSoundTime, aSound, aVolume=1.0, aPan=0.0)
 		SoLoud::CAPI.Bus_playClockedEx(@objhandle, aSoundTime, aSound.objhandle, aVolume, aPan)
 		end
-	def setVisualizationEnable(aEnable)
+	def play_3d(aSound, aPosX, aPosY, aPosZ, aVelX=0.0, aVelY=0.0, aVelZ=0.0, aVolume=1.0, aPaused=0)
+		SoLoud::CAPI.Bus_play3dEx(@objhandle, aSound.objhandle, aPosX, aPosY, aPosZ, aVelX, aVelY, aVelZ, aVolume, aPaused)
+		end
+	def play_3d_clocked(aSoundTime, aSound, aPosX, aPosY, aPosZ, aVelX=0.0, aVelY=0.0, aVelZ=0.0, aVolume=1.0)
+		SoLoud::CAPI.Bus_play3dClockedEx(@objhandle, aSoundTime, aSound.objhandle, aPosX, aPosY, aPosZ, aVelX, aVelY, aVelZ, aVolume)
+		end
+	def set_visualization_enable(aEnable)
 		SoLoud::CAPI.Bus_setVisualizationEnable(@objhandle, aEnable)
 		end
-	def calcFFT()
+	def calc_fft()
 		SoLoud::CAPI.Bus_calcFFT(@objhandle)
 		end
-	def getWave()
+	def get_wave()
 		SoLoud::CAPI.Bus_getWave(@objhandle)
 		end
-	def setLooping(aLoop)
+	def set_looping(aLoop)
 		SoLoud::CAPI.Bus_setLooping(@objhandle, aLoop)
+		end
+	def set_3d_min_max_distance(aMinDistance, aMaxDistance)
+		SoLoud::CAPI.Bus_set3dMinMaxDistance(@objhandle, aMinDistance, aMaxDistance)
+		end
+	def set_3d_attenuation(aAttenuationModel, aAttenuationRolloffFactor)
+		SoLoud::CAPI.Bus_set3dAttenuation(@objhandle, aAttenuationModel, aAttenuationRolloffFactor)
+		end
+	def set_3d_doppler_factor(aDopplerFactor)
+		SoLoud::CAPI.Bus_set3dDopplerFactor(@objhandle, aDopplerFactor)
+		end
+	def set_3d_processing(aDo3dProcessing)
+		SoLoud::CAPI.Bus_set3dProcessing(@objhandle, aDo3dProcessing)
+		end
+	def set_3d_listener_relative(aListenerRelative)
+		SoLoud::CAPI.Bus_set3dListenerRelative(@objhandle, aListenerRelative)
+		end
+	def set_3d_distance_delay(aDistanceDelay)
+		SoLoud::CAPI.Bus_set3dDistanceDelay(@objhandle, aDistanceDelay)
+		end
+	def set_3d_collider(aCollider, aUserData=0)
+		SoLoud::CAPI.Bus_set3dColliderEx(@objhandle, aCollider.objhandle, aUserData)
 		end
 	def stop()
 		SoLoud::CAPI.Bus_stop(@objhandle)
@@ -1542,7 +1689,7 @@ module SoLoud
 		def destroy()
 			SoLoud::CAPI.EchoFilter_destroy(@objhandle)
 		end
-	def setParams(aDelay, aDecay=0.7, aFilter=0.0)
+	def set_params(aDelay, aDecay=0.7, aFilter=0.0)
 		SoLoud::CAPI.EchoFilter_setParamsEx(@objhandle, aDelay, aDecay, aFilter)
 		end
 	end
@@ -1559,7 +1706,7 @@ module SoLoud
 		def destroy()
 			SoLoud::CAPI.FFTFilter_destroy(@objhandle)
 		end
-	def setParameters(aShift, aCombine=0, aScale=0.002)
+	def set_parameters(aShift, aCombine=0, aScale=0.002)
 		SoLoud::CAPI.FFTFilter_setParametersEx(@objhandle, aShift, aCombine, aScale)
 		end
 	end
@@ -1576,7 +1723,7 @@ module SoLoud
 		def destroy()
 			SoLoud::CAPI.FlangerFilter_destroy(@objhandle)
 		end
-	def setParams(aDelay, aFreq)
+	def set_params(aDelay, aFreq)
 		SoLoud::CAPI.FlangerFilter_setParams(@objhandle, aDelay, aFreq)
 		end
 	end
@@ -1593,7 +1740,7 @@ module SoLoud
 		def destroy()
 			SoLoud::CAPI.LofiFilter_destroy(@objhandle)
 		end
-	def setParams(aSampleRate, aBitdepth)
+	def set_params(aSampleRate, aBitdepth)
 		SoLoud::CAPI.LofiFilter_setParams(@objhandle, aSampleRate, aBitdepth)
 		end
 	end
@@ -1610,10 +1757,31 @@ module SoLoud
 	def load(aFilename)
 		SoLoud::CAPI.Modplug_load(@objhandle, aFilename)
 		end
-	def setLooping(aLoop)
+	def set_looping(aLoop)
 		SoLoud::CAPI.Modplug_setLooping(@objhandle, aLoop)
 		end
-	def setFilter(aFilterId, aFilter)
+	def set_3d_min_max_distance(aMinDistance, aMaxDistance)
+		SoLoud::CAPI.Modplug_set3dMinMaxDistance(@objhandle, aMinDistance, aMaxDistance)
+		end
+	def set_3d_attenuation(aAttenuationModel, aAttenuationRolloffFactor)
+		SoLoud::CAPI.Modplug_set3dAttenuation(@objhandle, aAttenuationModel, aAttenuationRolloffFactor)
+		end
+	def set_3d_doppler_factor(aDopplerFactor)
+		SoLoud::CAPI.Modplug_set3dDopplerFactor(@objhandle, aDopplerFactor)
+		end
+	def set_3d_processing(aDo3dProcessing)
+		SoLoud::CAPI.Modplug_set3dProcessing(@objhandle, aDo3dProcessing)
+		end
+	def set_3d_listener_relative(aListenerRelative)
+		SoLoud::CAPI.Modplug_set3dListenerRelative(@objhandle, aListenerRelative)
+		end
+	def set_3d_distance_delay(aDistanceDelay)
+		SoLoud::CAPI.Modplug_set3dDistanceDelay(@objhandle, aDistanceDelay)
+		end
+	def set_3d_collider(aCollider, aUserData=0)
+		SoLoud::CAPI.Modplug_set3dColliderEx(@objhandle, aCollider.objhandle, aUserData)
+		end
+	def set_filter(aFilterId, aFilter)
 		SoLoud::CAPI.Modplug_setFilter(@objhandle, aFilterId, aFilter.objhandle)
 		end
 	def stop()
@@ -1654,19 +1822,40 @@ module SoLoud
 		def destroy()
 			SoLoud::CAPI.Sfxr_destroy(@objhandle)
 		end
-	def resetParams()
+	def reset_params()
 		SoLoud::CAPI.Sfxr_resetParams(@objhandle)
 		end
-	def loadParams(aFilename)
+	def load_params(aFilename)
 		SoLoud::CAPI.Sfxr_loadParams(@objhandle, aFilename)
 		end
-	def loadPreset(aPresetNo, aRandSeed)
+	def load_preset(aPresetNo, aRandSeed)
 		SoLoud::CAPI.Sfxr_loadPreset(@objhandle, aPresetNo, aRandSeed)
 		end
-	def setLooping(aLoop)
+	def set_looping(aLoop)
 		SoLoud::CAPI.Sfxr_setLooping(@objhandle, aLoop)
 		end
-	def setFilter(aFilterId, aFilter)
+	def set_3d_min_max_distance(aMinDistance, aMaxDistance)
+		SoLoud::CAPI.Sfxr_set3dMinMaxDistance(@objhandle, aMinDistance, aMaxDistance)
+		end
+	def set_3d_attenuation(aAttenuationModel, aAttenuationRolloffFactor)
+		SoLoud::CAPI.Sfxr_set3dAttenuation(@objhandle, aAttenuationModel, aAttenuationRolloffFactor)
+		end
+	def set_3d_doppler_factor(aDopplerFactor)
+		SoLoud::CAPI.Sfxr_set3dDopplerFactor(@objhandle, aDopplerFactor)
+		end
+	def set_3d_processing(aDo3dProcessing)
+		SoLoud::CAPI.Sfxr_set3dProcessing(@objhandle, aDo3dProcessing)
+		end
+	def set_3d_listener_relative(aListenerRelative)
+		SoLoud::CAPI.Sfxr_set3dListenerRelative(@objhandle, aListenerRelative)
+		end
+	def set_3d_distance_delay(aDistanceDelay)
+		SoLoud::CAPI.Sfxr_set3dDistanceDelay(@objhandle, aDistanceDelay)
+		end
+	def set_3d_collider(aCollider, aUserData=0)
+		SoLoud::CAPI.Sfxr_set3dColliderEx(@objhandle, aCollider.objhandle, aUserData)
+		end
+	def set_filter(aFilterId, aFilter)
 		SoLoud::CAPI.Sfxr_setFilter(@objhandle, aFilterId, aFilter.objhandle)
 		end
 	def stop()
@@ -1683,13 +1872,34 @@ module SoLoud
 		def destroy()
 			SoLoud::CAPI.Speech_destroy(@objhandle)
 		end
-	def setText(aText)
+	def set_text(aText)
 		SoLoud::CAPI.Speech_setText(@objhandle, aText)
 		end
-	def setLooping(aLoop)
+	def set_looping(aLoop)
 		SoLoud::CAPI.Speech_setLooping(@objhandle, aLoop)
 		end
-	def setFilter(aFilterId, aFilter)
+	def set_3d_min_max_distance(aMinDistance, aMaxDistance)
+		SoLoud::CAPI.Speech_set3dMinMaxDistance(@objhandle, aMinDistance, aMaxDistance)
+		end
+	def set_3d_attenuation(aAttenuationModel, aAttenuationRolloffFactor)
+		SoLoud::CAPI.Speech_set3dAttenuation(@objhandle, aAttenuationModel, aAttenuationRolloffFactor)
+		end
+	def set_3d_doppler_factor(aDopplerFactor)
+		SoLoud::CAPI.Speech_set3dDopplerFactor(@objhandle, aDopplerFactor)
+		end
+	def set_3d_processing(aDo3dProcessing)
+		SoLoud::CAPI.Speech_set3dProcessing(@objhandle, aDo3dProcessing)
+		end
+	def set_3d_listener_relative(aListenerRelative)
+		SoLoud::CAPI.Speech_set3dListenerRelative(@objhandle, aListenerRelative)
+		end
+	def set_3d_distance_delay(aDistanceDelay)
+		SoLoud::CAPI.Speech_set3dDistanceDelay(@objhandle, aDistanceDelay)
+		end
+	def set_3d_collider(aCollider, aUserData=0)
+		SoLoud::CAPI.Speech_set3dColliderEx(@objhandle, aCollider.objhandle, aUserData)
+		end
+	def set_filter(aFilterId, aFilter)
 		SoLoud::CAPI.Speech_setFilter(@objhandle, aFilterId, aFilter.objhandle)
 		end
 	def stop()
@@ -1709,16 +1919,37 @@ module SoLoud
 	def load(aFilename)
 		SoLoud::CAPI.Wav_load(@objhandle, aFilename)
 		end
-	def loadMem(aMem, aLength)
+	def load_mem(aMem, aLength)
 		SoLoud::CAPI.Wav_loadMem(@objhandle, aMem, aLength)
 		end
-	def getLength()
+	def get_length()
 		SoLoud::CAPI.Wav_getLength(@objhandle)
 		end
-	def setLooping(aLoop)
+	def set_looping(aLoop)
 		SoLoud::CAPI.Wav_setLooping(@objhandle, aLoop)
 		end
-	def setFilter(aFilterId, aFilter)
+	def set_3d_min_max_distance(aMinDistance, aMaxDistance)
+		SoLoud::CAPI.Wav_set3dMinMaxDistance(@objhandle, aMinDistance, aMaxDistance)
+		end
+	def set_3d_attenuation(aAttenuationModel, aAttenuationRolloffFactor)
+		SoLoud::CAPI.Wav_set3dAttenuation(@objhandle, aAttenuationModel, aAttenuationRolloffFactor)
+		end
+	def set_3d_doppler_factor(aDopplerFactor)
+		SoLoud::CAPI.Wav_set3dDopplerFactor(@objhandle, aDopplerFactor)
+		end
+	def set_3d_processing(aDo3dProcessing)
+		SoLoud::CAPI.Wav_set3dProcessing(@objhandle, aDo3dProcessing)
+		end
+	def set_3d_listener_relative(aListenerRelative)
+		SoLoud::CAPI.Wav_set3dListenerRelative(@objhandle, aListenerRelative)
+		end
+	def set_3d_distance_delay(aDistanceDelay)
+		SoLoud::CAPI.Wav_set3dDistanceDelay(@objhandle, aDistanceDelay)
+		end
+	def set_3d_collider(aCollider, aUserData=0)
+		SoLoud::CAPI.Wav_set3dColliderEx(@objhandle, aCollider.objhandle, aUserData)
+		end
+	def set_filter(aFilterId, aFilter)
 		SoLoud::CAPI.Wav_setFilter(@objhandle, aFilterId, aFilter.objhandle)
 		end
 	def stop()
@@ -1738,13 +1969,34 @@ module SoLoud
 	def load(aFilename)
 		SoLoud::CAPI.WavStream_load(@objhandle, aFilename)
 		end
-	def getLength()
+	def get_length()
 		SoLoud::CAPI.WavStream_getLength(@objhandle)
 		end
-	def setLooping(aLoop)
+	def set_looping(aLoop)
 		SoLoud::CAPI.WavStream_setLooping(@objhandle, aLoop)
 		end
-	def setFilter(aFilterId, aFilter)
+	def set_3d_min_max_distance(aMinDistance, aMaxDistance)
+		SoLoud::CAPI.WavStream_set3dMinMaxDistance(@objhandle, aMinDistance, aMaxDistance)
+		end
+	def set_3d_attenuation(aAttenuationModel, aAttenuationRolloffFactor)
+		SoLoud::CAPI.WavStream_set3dAttenuation(@objhandle, aAttenuationModel, aAttenuationRolloffFactor)
+		end
+	def set_3d_doppler_factor(aDopplerFactor)
+		SoLoud::CAPI.WavStream_set3dDopplerFactor(@objhandle, aDopplerFactor)
+		end
+	def set_3d_processing(aDo3dProcessing)
+		SoLoud::CAPI.WavStream_set3dProcessing(@objhandle, aDo3dProcessing)
+		end
+	def set_3d_listener_relative(aListenerRelative)
+		SoLoud::CAPI.WavStream_set3dListenerRelative(@objhandle, aListenerRelative)
+		end
+	def set_3d_distance_delay(aDistanceDelay)
+		SoLoud::CAPI.WavStream_set3dDistanceDelay(@objhandle, aDistanceDelay)
+		end
+	def set_3d_collider(aCollider, aUserData=0)
+		SoLoud::CAPI.WavStream_set3dColliderEx(@objhandle, aCollider.objhandle, aUserData)
+		end
+	def set_filter(aFilterId, aFilter)
 		SoLoud::CAPI.WavStream_setFilter(@objhandle, aFilterId, aFilter.objhandle)
 		end
 	def stop()

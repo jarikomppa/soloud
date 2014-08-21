@@ -29,6 +29,7 @@ freely, subject to the following restrictions:
 #include "SDL/SDL.h"
 #endif
 #include <math.h>
+#include <stdio.h>
 
 #include "soloud.h"
 #include "soloud_wav.h"

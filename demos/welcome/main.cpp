@@ -31,6 +31,30 @@ freely, subject to the following restrictions:
 #include "soloud_wav.h"
 #include "soloud_thread.h"
 
+#ifdef _MSC_VER
+#include <conio.h>
+int mygetch()
+{
+	return _getch();
+}
+#else
+#include <termios.h>
+#include <unistd.h> 
+int mygetch( ) 
+{
+  struct termios oldt, newt;
+  int ch;
+  tcgetattr(STDIN_FILENO, &oldt);
+  newt = oldt;
+  newt.c_lflag &= ~(ICANON | ECHO);
+  tcsetattr(STDIN_FILENO, TCSANOW, &newt);
+  ch = getchar();
+  tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
+  return ch;
+}
+#endif
+
+
 
 // Entry point
 int main(int argc, char *argv[])
@@ -49,15 +73,16 @@ int main(int argc, char *argv[])
 
 	// Load background sample
 	wav.load("audio/windy_ambience.ogg");       // Load a wave file
+	wav.setLooping(1);                          // Tell SoLoud to loop the sound
 	int handle1 = soloud.play(wav);             // Play it
 	soloud.setVolume(handle1, 0.5f);            // Set volume; 1.0f is "normal"
 	soloud.setPan(handle1, -0.2f);              // Set pan; -1 is left, 1 is right
 	soloud.setRelativePlaySpeed(handle1, 0.9f); // Play a bit slower; 1.0f is normal
 
 	// Configure sound source
-	printf("%s\n", "What is your name?");
+	printf("%s\n>", "What is your name?");
 	char name[512];
-	scanf("%s",name);
+	scanf("%511s",name);
 	speech.setText(name);
 	// Play the sound source (we could do this several times if we wanted)
 	soloud.play(speech);
@@ -69,19 +94,19 @@ int main(int argc, char *argv[])
 		SoLoud::Thread::sleep(100);
 	}
 
+	soloud.stop(handle1); // stop the wind sound
+
 	// Load song
 	SoLoud::result loaded = mod.load("audio/BRUCE.S3M");
-	if( SoLoud::SO_NO_ERROR == loaded ) {
-		soloud.play(mod);
-	} else {
-		printf("%s\n", "Cannot find audio/BRUCE.S3M (or --with-libmodplug build option may be missing)");
-	}
-	
-	// Wait 
-	while (soloud.getActiveVoiceCount() > 0)
+	if (SoLoud::SO_NO_ERROR == loaded) 
 	{
-		// Still going, sleep for a bit
-		SoLoud::Thread::sleep(100);
+		soloud.play(mod);
+		printf("%s\n", "Playing music. Press a key to quit..");
+		mygetch();
+	} 
+	else 
+	{
+		printf("%s\n", "Cannot find audio/BRUCE.S3M (or --with-libmodplug build option may be missing)");
 	}
 
 	// Clean up SoLoud

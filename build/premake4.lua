@@ -6,6 +6,9 @@ local WITH_XAUDIO2 = 0
 local WITH_WINMM = 0
 local WITH_WASAPI = 0
 local WITH_OSS = 0
+local WITH_LIBMODPLUG = 0
+local WITH_PORTMIDI = 0
+local WITH_TOOLS = 0
 
 if (os.is("Windows")) then
 	WITH_WINMM = 1
@@ -53,6 +56,11 @@ newoption {
 }
 
 newoption {
+	trigger		  = "with-sdl",
+	description = "Include SDL backend in build"
+}
+
+newoption {
 	trigger		  = "with-portaudio",
 	description = "Include PortAudio backend in build"
 }
@@ -92,6 +100,31 @@ newoption {
 	description = "Include (optional) tools in build"
 }
 
+newoption {
+	trigger		  = "soloud-devel",
+	description = "Shorthand for options used while developing SoLoud"
+}
+
+if _OPTIONS["soloud-devel"] then
+    WITH_SDL = 1
+    WITH_SDL_NONDYN = 0
+    WITH_PORTAUDIO = 1
+    WITH_OPENAL = 1
+    WITH_XAUDIO2 = 0
+    WITH_WINMM = 0
+    WITH_WASAPI = 0
+    WITH_OSS = 1
+    if (os.is("Windows")) then
+    	WITH_XAUDIO2 = 0
+    	WITH_WINMM = 1
+    	WITH_WASAPI = 1
+    	WITH_OSS = 0
+    end
+    WITH_TOOLS = 1
+    WITH_LIBMODPLUG = 1
+    WITH_PORTMIDI = 1
+end
+
 if _OPTIONS["with-common-backends"] then
     WITH_SDL = 1
     WITH_SDL_NONDYN = 0
@@ -120,6 +153,10 @@ end
 
 if _OPTIONS["with-portaudio"] then
 	WITH_PORTAUDIO = 1  	
+end
+
+if _OPTIONS["with-sdl"] then
+	WITH_SDL = 1
 end
 
 if _OPTIONS["with-wasapi"] then
@@ -162,6 +199,32 @@ if _OPTIONS["with-native-only"] then
 	end
 end
 
+if _OPTIONS["with-libmodplug"] then
+	WITH_LIBMODPLUG = 1  	
+end
+
+if _OPTIONS["with-portmidi"] then
+	WITH_PORTMIDI = 1  	
+end
+
+if _OPTIONS["with-tools"] then
+	WITH_TOOLS = 1  	
+end
+
+print ("")
+print ("Active options:")
+print ("WITH_SDL = ", WITH_SDL)
+print ("WITH_PORTAUDIO = ", WITH_PORTAUDIO)
+print ("WITH_OPENAL = ", WITH_OPENAL)
+print ("WITH_XAUDIO2 = ", WITH_XAUDIO2)
+print ("WITH_WINMM = ", WITH_WINMM)
+print ("WITH_WASAPI = ", WITH_WASAPI)
+print ("WITH_OSS = ", WITH_OSS)
+print ("WITH_LIBMODPLUG = ", WITH_LIBMODPLUG)
+print ("WITH_PORTMIDI = ", WITH_PORTMIDI)
+print ("WITH_TOOLS = ", WITH_TOOLS)
+print ("")
+
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 
 solution "SoLoud"
@@ -187,7 +250,7 @@ solution "SoLoud"
 	}
 
 		links {"StaticLib"}
-if _OPTIONS["with-libmodplug"] then
+if (WITH_LIBMODPLUG == 1) then
 		links {"libmodplug"}
 end		
 		
@@ -219,7 +282,7 @@ end
 	}
 
 		links {"StaticLib"}
-if _OPTIONS["with-libmodplug"] then
+if (WITH_LIBMODPLUG == 1) then
 		links {"libmodplug"}
 end		
 		
@@ -240,7 +303,7 @@ end
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 
-if _OPTIONS["with-libmodplug"] then
+if (WITH_LIBMODPLUG == 1) then
 	project "libmodplug"
 		kind "StaticLib"
 		targetdir "../lib"
@@ -282,7 +345,7 @@ end
 		language "C++"
 
 		defines { "MODPLUG_STATIC" }
-if _OPTIONS["with-libmodplug"] then
+if (WITH_LIBMODPLUG == 1) then
 		defines { "WITH_MODPLUG" }
 end		
 		
@@ -400,7 +463,7 @@ end
 			flags { "EnableSSE2", "NoMinimalRebuild", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
-if _OPTIONS["with-tools"] then
+if (WITH_TOOLS == 1) then
 
 	project "codegen"
 		kind "ConsoleApp"
@@ -408,7 +471,7 @@ if _OPTIONS["with-tools"] then
 		files {
 		  "../src/tools/codegen/**.cpp"
 		}
-if _OPTIONS["with-libmodplug"] then
+if (WITH_LIBMODPLUG == 1) then
 		defines { "WITH_MODPLUG" }
 end		
 		configuration "Debug"
@@ -428,7 +491,7 @@ end
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 
-if _OPTIONS["with-tools"] then
+if (WITH_TOOLS == 1) then
 
 	project "resamplerlab"
 		kind "ConsoleApp"
@@ -466,7 +529,7 @@ end
 	}
 
 		links {"StaticLib"}
-if _OPTIONS["with-libmodplug"] then
+if (WITH_LIBMODPLUG == 1) then
 		links {"libmodplug"}
 end		
 	
@@ -504,7 +567,7 @@ end
 		}
 
 		links {"StaticLib"}
-if _OPTIONS["with-libmodplug"] then
+if (WITH_LIBMODPLUG == 1) then
 		links {"libmodplug"}
 end
 
@@ -540,6 +603,7 @@ end
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 
 if (WITH_SDL == 1) then
+
 
   project "3dtest"
 	kind "WindowedApp"
@@ -656,7 +720,7 @@ if (WITH_SDL == 1) then
 	}
 
 		links {"StaticLib", "sdlmain", "sdl"}
-if _OPTIONS["with-libmodplug"] then
+if (WITH_LIBMODPLUG == 1) then
 		links {"libmodplug"}
 end		
 		
@@ -724,7 +788,7 @@ end
 	  sdl_lib
 	}
 	
-	if _OPTIONS["with-portmidi"] then
+	if (WITH_PORTMIDI == 1) then
 		includedirs {
 		portmidi_include
 		}
@@ -740,7 +804,7 @@ end
 			objdir (buildroot .. "/debug")
 			targetname "piano_d"
 			flags { "Symbols" }
-		if _OPTIONS["with-portmidi"] then
+		if (WITH_PORTMIDI == 1) then
 			libdirs { portmidi_debug }
 		end
 			
@@ -751,7 +815,7 @@ end
 			objdir (buildroot .. "/release")
 			targetname "piano"
 			flags { "EnableSSE2", "NoMinimalRebuild", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
-		if _OPTIONS["with-portmidi"] then
+		if (WITH_PORTMIDI == 1) then
 			libdirs { portmidi_release }
 		end
 

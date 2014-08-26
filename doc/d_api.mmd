@@ -1,0 +1,54 @@
+## D API
+
+One of the generated glue interfaces for SoLoud is the D API.
+
+All of the existing interfaces can be used via the D API, but
+features that require extending SoLoud are not available.
+
+### Using the D API
+
+Include the soloud.d from the glue directory in your project, and
+make sure the SoLoud DLL is in the same directory as your
+executable files. You'll also want to link your executable against the
+generated soloud_dll_x86.lib.
+
+### D API Example
+
+The D API mirrors the c++ API.
+
+If the c++ API functions have default parameters, the same function
+in the D API will also have default parameters.
+
+As an example, here's a simple example in the C++ api:
+
+    SoLoud::Soloud soloud;
+    SoLoud::Speech speech;
+
+    speech.setText("Hello c++ api");
+
+    soloud.init(SoLoud::Soloud::CLIP_ROUNDOFF |
+                SoLoud::Soloud::ENABLE_VISUALIZATION);
+
+    soloud.setGlobalVolume(4);
+    soloud.play(speech);
+
+    // ...
+
+    soloud.deinit();
+
+Converted to the D API, this becomes:
+
+    Soloud soloud = Soloud.create();
+    Speech speech = Speech.create();
+
+    speech.setText("Hello c sharp api");
+
+    soloud.init(Soloud.CLIP_ROUNDOFF |
+                Soloud.ENABLE_VISUALIZATION);
+
+    soloud.setGlobalVolume(4);
+    soloud.play(speech);
+
+    // ...
+
+    soloud.deinit();

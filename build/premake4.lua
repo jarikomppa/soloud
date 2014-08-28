@@ -249,7 +249,7 @@ solution "SoLoud"
 	  "../include"
 	}
 
-		links {"StaticLib"}
+		links {"StaticLib", "pthread"}
 if (WITH_LIBMODPLUG == 1) then
 		links {"libmodplug"}
 end		
@@ -281,7 +281,7 @@ end
 	  "../include"
 	}
 
-		links {"StaticLib"}
+		links {"StaticLib", "pthread"}
 if (WITH_LIBMODPLUG == 1) then
 		links {"libmodplug"}
 end		
@@ -528,7 +528,7 @@ end
 	  "../include"
 	}
 
-		links {"StaticLib"}
+		links {"StaticLib", "pthread"}
 if (WITH_LIBMODPLUG == 1) then
 		links {"libmodplug"}
 end		

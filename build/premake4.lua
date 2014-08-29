@@ -26,7 +26,7 @@ local openal_root    = "/libraries/openal"
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 
-local sdl_include       = sdl_root .. "/include"      
+local sdl_include       = sdl_root .. "/include"
 local sdl_lib           = sdl_root .. "/lib"
 local portmidi_include  = portmidi_root .. "/pm_common"
 local portmidi_debug    = portmidi_root .. "/debug"
@@ -134,7 +134,7 @@ if _OPTIONS["with-common-backends"] then
     WITH_WINMM = 0
     WITH_WASAPI = 0
     WITH_OSS = 1
-    
+
     if (os.is("Windows")) then
     	WITH_XAUDIO2 = 0
     	WITH_WINMM = 1
@@ -144,15 +144,15 @@ if _OPTIONS["with-common-backends"] then
 end
 
 if _OPTIONS["with-xaudio2"] then
-	WITH_XAUDIO2 = 1  	
+	WITH_XAUDIO2 = 1
 end
 
 if _OPTIONS["with-openal"] then
-	WITH_OPENAL = 1  	
+	WITH_OPENAL = 1
 end
 
 if _OPTIONS["with-portaudio"] then
-	WITH_PORTAUDIO = 1  	
+	WITH_PORTAUDIO = 1
 end
 
 if _OPTIONS["with-sdl"] then
@@ -200,15 +200,15 @@ if _OPTIONS["with-native-only"] then
 end
 
 if _OPTIONS["with-libmodplug"] then
-	WITH_LIBMODPLUG = 1  	
+	WITH_LIBMODPLUG = 1
 end
 
 if _OPTIONS["with-portmidi"] then
-	WITH_PORTMIDI = 1  	
+	WITH_PORTMIDI = 1
 end
 
 if _OPTIONS["with-tools"] then
-	WITH_TOOLS = 1  	
+	WITH_TOOLS = 1
 end
 
 print ("")
@@ -234,7 +234,7 @@ solution "SoLoud"
 	if _PREMAKE_VERSION ~= "4.3" then
 		debugdir "../bin"
 	end
-	flags { "NoExceptions", "NoRTTI", "NoPCH" }		
+	flags { "NoExceptions", "NoRTTI", "NoPCH" }
 	if (os.is("Windows")) then defines { "_CRT_SECURE_NO_WARNINGS" } end
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
@@ -249,18 +249,18 @@ solution "SoLoud"
 	  "../include"
 	}
 
-		links {"StaticLib", "pthread"}
+		links {"StaticLib", os.is("windows") and "" or "pthread" }
 if (WITH_LIBMODPLUG == 1) then
 		links {"libmodplug"}
-end		
-		
+end
+
 		configuration "Debug"
 			defines { "DEBUG" }
 			flags {"Symbols" }
 			objdir (buildroot .. "/debug")
 			targetname "simplest_d"
 			flags { "Symbols" }
-			
+
 
 		configuration "Release"
 			defines { "NDEBUG" }
@@ -281,18 +281,18 @@ end
 	  "../include"
 	}
 
-		links {"StaticLib", "pthread"}
+		links {"StaticLib", os.is("windows") and "" or "pthread" }
 if (WITH_LIBMODPLUG == 1) then
 		links {"libmodplug"}
-end		
-		
+end
+
 		configuration "Debug"
 			defines { "DEBUG" }
 			flags {"Symbols" }
 			objdir (buildroot .. "/debug")
 			targetname "welcome_d"
 			flags { "Symbols" }
-			
+
 
 		configuration "Release"
 			defines { "NDEBUG" }
@@ -311,12 +311,12 @@ if (WITH_LIBMODPLUG == 1) then
 
 		defines { "MODPLUG_STATIC" }
 
-		files 
-		{ 
+		files
+		{
 		"../ext/libmodplug/src/**.cpp*"
 	  }
 
-		includedirs 
+		includedirs
 		{
 		"../ext/libmodplug/src/**"
 		}
@@ -327,7 +327,7 @@ if (WITH_LIBMODPLUG == 1) then
 			objdir (buildroot .. "/debug")
 			targetname "libmodplug_d"
 			flags { "Symbols" }
-			
+
 
 		configuration "Release"
 			defines { "NDEBUG" }
@@ -335,7 +335,7 @@ if (WITH_LIBMODPLUG == 1) then
 			objdir (buildroot .. "/release")
 			targetname "libmodplug"
 			flags { "EnableSSE2", "NoMinimalRebuild", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
-end    
+end
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 
@@ -347,16 +347,16 @@ end
 		defines { "MODPLUG_STATIC" }
 if (WITH_LIBMODPLUG == 1) then
 		defines { "WITH_MODPLUG" }
-end		
-		
-		files 
-		{ 
+end
+
+		files
+		{
 		"../src/audiosource/**.c*",
 		"../src/filter/**.c*",
-		"../src/core/**.c*"	    
+		"../src/core/**.c*"
 	  }
 
-		includedirs 
+		includedirs
 		{
 		  "../src/**",
 	  "../include"
@@ -370,21 +370,21 @@ if (WITH_OPENAL == 1) then
 	  "../include",
 	  openal_include
 	}
-end    
+end
 
-if (WITH_OSS == 1) then 
+if (WITH_OSS == 1) then
 	defines {"WITH_OSS"}
 	files {
 	  "../src/backend/oss/**.c*"
 	  }
 	includedirs {
 	  "../include"
-	}    
+	}
 end
 
 if (WITH_PORTAUDIO == 1) then
 	defines {"WITH_PORTAUDIO"}
-	
+
 	files {
 	  "../src/backend/portaudio/**.c*"
 	  }
@@ -415,8 +415,8 @@ if (WITH_SDL_NONDYN == 1) then
 	  sdl_include
 	}
 end
-	
-if (WITH_WASAPI == 1) then 
+
+if (WITH_WASAPI == 1) then
 		defines { "WITH_WASAPI" }
 	files {
 	  "../src/backend/wasapi/**.c*"
@@ -436,7 +436,7 @@ if (WITH_XAUDIO2 == 1) then
 	  dxsdk_include
 	}
 end
-	
+
 if (WITH_WINMM == 1) then
 		defines { "WITH_WINMM" }
 	files {
@@ -444,7 +444,7 @@ if (WITH_WINMM == 1) then
 	  }
 	includedirs {
 	  "../include"
-	}        
+	}
 end
 
 		configuration "Debug"
@@ -453,7 +453,7 @@ end
 			objdir (buildroot .. "/debug")
 			targetname "soloud_x86_d"
 			flags { "Symbols" }
-			
+
 
 		configuration "Release"
 			defines { "NDEBUG" }
@@ -473,13 +473,13 @@ if (WITH_TOOLS == 1) then
 		}
 if (WITH_LIBMODPLUG == 1) then
 		defines { "WITH_MODPLUG" }
-end		
+end
 		configuration "Debug"
 			defines { "DEBUG" }
 			flags {"Symbols" }
 			objdir (buildroot .. "/debug")
 			targetname "codegen_d"
-			flags { "Symbols" }			
+			flags { "Symbols" }
 
 		configuration "Release"
 			defines { "NDEBUG" }
@@ -505,7 +505,7 @@ if (WITH_TOOLS == 1) then
 			flags {"Symbols" }
 			objdir (buildroot .. "/debug")
 			targetname "resamplerlab_d"
-			flags { "Symbols" }			
+			flags { "Symbols" }
 
 		configuration "Release"
 			defines { "NDEBUG" }
@@ -528,11 +528,11 @@ end
 	  "../include"
 	}
 
-		links {"StaticLib", "pthread"}
+		links {"StaticLib", os.is("windows") and "" or "pthread" }
 if (WITH_LIBMODPLUG == 1) then
 		links {"libmodplug"}
-end		
-	
+end
+
 
 		configuration "Debug"
 			defines { "DEBUG" }
@@ -540,7 +540,7 @@ end
 			objdir (buildroot .. "/debug")
 			targetname "c_test_d"
 			flags { "Symbols" }
-			
+
 
 		configuration "Release"
 			defines { "NDEBUG" }
@@ -555,12 +555,12 @@ end
 		kind "SharedLib"
 		targetdir "../lib"
 		language "C++"
-		files 
-		{ 
+		files
+		{
 		  "../src/c_api/**.c*"
 		}
 
-		includedirs 
+		includedirs
 		{
 		  "../src/**",
 		  "../include"
@@ -571,7 +571,7 @@ if (WITH_LIBMODPLUG == 1) then
 		links {"libmodplug"}
 end
 
-if (os.is("Windows")) then 
+if (os.is("Windows")) then
 	linkoptions { "/DEF:\"../../src/c_api/soloud.def\"" }
 end
 
@@ -583,12 +583,12 @@ end
 			implibdir("../lib")
 			implibname "soloud_dll_x86_d"
 			flags { "Symbols" }
-			
+
 
 		configuration "Release"
 			defines { "NDEBUG" }
 			flags {"Optimize"}
-			objdir (buildroot .. "/release")			
+			objdir (buildroot .. "/release")
 			targetname "soloud_x86"
 			implibdir("../lib")
 			implibname("soloud_dll_x86")
@@ -596,9 +596,9 @@ end
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 
--- 
+--
 --  The rest of the projects require SDL
--- 
+--
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 
@@ -613,21 +613,21 @@ if (WITH_SDL == 1) then
 	  }
 	includedirs {
 	  "../include",
-	  sdl_include   
+	  sdl_include
 	}
 	libdirs {
 	  sdl_lib
 	}
 
 		links {"StaticLib", "sdlmain", "sdl"}
-		
+
 		configuration "Debug"
 			defines { "DEBUG" }
 			flags {"Symbols" }
 			objdir (buildroot .. "/debug")
 			targetname "3dtest_d"
 			flags { "Symbols" }
-			
+
 
 		configuration "Release"
 			defines { "NDEBUG" }
@@ -635,7 +635,7 @@ if (WITH_SDL == 1) then
 			objdir (buildroot .. "/release")
 			targetname "3dtest"
 			flags { "EnableSSE2", "NoMinimalRebuild", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
- 
+
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 
   project "mixbusses"
@@ -651,17 +651,17 @@ if (WITH_SDL == 1) then
 	libdirs {
 	  sdl_lib
 	}
-	
+
 
 		links {"StaticLib", "sdlmain", "sdl"}
-		
+
 		configuration "Debug"
 			defines { "DEBUG" }
 			flags {"Symbols" }
 			objdir (buildroot .. "/debug")
 			targetname "mixbusses_d"
 			flags { "Symbols" }
-			
+
 
 		configuration "Release"
 			defines { "NDEBUG" }
@@ -680,21 +680,21 @@ if (WITH_SDL == 1) then
 	  }
 	includedirs {
 	  "../include",
-	  sdl_include 
+	  sdl_include
 	}
 	libdirs {
 	  sdl_lib
 	}
 
 		links {"StaticLib", "sdlmain", "sdl"}
-		
+
 		configuration "Debug"
 			defines { "DEBUG" }
 			flags {"Symbols" }
 			objdir (buildroot .. "/debug")
 			targetname "pewpew_d"
 			flags { "Symbols" }
-			
+
 
 		configuration "Release"
 			defines { "NDEBUG" }
@@ -713,7 +713,7 @@ if (WITH_SDL == 1) then
 	  }
 	includedirs {
 	  "../include",
-	  sdl_include   
+	  sdl_include
 	}
 	libdirs {
 	  sdl_lib
@@ -722,15 +722,15 @@ if (WITH_SDL == 1) then
 		links {"StaticLib", "sdlmain", "sdl"}
 if (WITH_LIBMODPLUG == 1) then
 		links {"libmodplug"}
-end		
-		
+end
+
 		configuration "Debug"
 			defines { "DEBUG" }
 			flags {"Symbols" }
 			objdir (buildroot .. "/debug")
 			targetname "space_d"
 			flags { "Symbols" }
-			
+
 
 		configuration "Release"
 			defines { "NDEBUG" }
@@ -749,21 +749,21 @@ end
 	  }
 	includedirs {
 	  "../include",
-	  sdl_include 
+	  sdl_include
 	}
 	libdirs {
 	  sdl_lib
 	}
 
 		links {"StaticLib", "sdlmain", "sdl"}
-		
+
 		configuration "Debug"
 			defines { "DEBUG" }
 			flags {"Symbols" }
 			objdir (buildroot .. "/debug")
 			targetname "multimusic_d"
 			flags { "Symbols" }
-			
+
 
 		configuration "Release"
 			defines { "NDEBUG" }
@@ -787,7 +787,7 @@ end
 	libdirs {
 	  sdl_lib
 	}
-	
+
 	if (WITH_PORTMIDI == 1) then
 		includedirs {
 		portmidi_include
@@ -797,7 +797,7 @@ end
 	end
 
 		links {"StaticLib", "sdlmain", "sdl"}
-		
+
 		configuration "Debug"
 			defines { "DEBUG" }
 			flags {"Symbols" }
@@ -807,7 +807,7 @@ end
 		if (WITH_PORTMIDI == 1) then
 			libdirs { portmidi_debug }
 		end
-			
+
 
 		configuration "Release"
 			defines { "NDEBUG" }
@@ -829,21 +829,21 @@ end
 	  }
 	includedirs {
 	  "../include",
-	  sdl_include   
+	  sdl_include
 	}
 	libdirs {
 	  sdl_lib
 	}
 
 		links {"StaticLib", "sdlmain", "sdl"}
-		
+
 		configuration "Debug"
 			defines { "DEBUG" }
 			flags {"Symbols" }
 			objdir (buildroot .. "/debug")
 			targetname "env_d"
 			flags { "Symbols" }
-			
+
 
 		configuration "Release"
 			defines { "NDEBUG" }

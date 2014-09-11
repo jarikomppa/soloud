@@ -4,6 +4,11 @@ Core: 3d audio
 Soloud.update3dAudio()
 ----------------------
 
+Update the 3d parameters for the 3d voices. No positional effect occurs unless this function is called periodically.
+
+    gSoloud.set3dSourceVelocity(h, -1, 0, 0); // go west
+    gSoloud.update3dAudio(); // apply change to voices    
+
 Soloud.play3d()
 ---------------
 

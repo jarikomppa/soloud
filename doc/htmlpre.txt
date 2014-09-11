@@ -43,7 +43,7 @@
 <a href="faders.html">Core: Faders</a><br>
 <a href="voicegroups.html">Core: Voice Groups</a><br>
 <a href="coremisc.html">Core: Misc</a><br>
-<a href="coremisc.html">Core: 3d Audio</a><br>
+<a href="core3d.html">Core: 3d Audio</a><br>
 <br>
 <a href="mixbus.html">SoLoud::Bus</a><br>
 <br>

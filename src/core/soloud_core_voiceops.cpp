@@ -30,12 +30,12 @@ namespace SoLoud
 {
 	result Soloud::setVoiceRelativePlaySpeed(unsigned int aVoice, float aSpeed)
 	{
-		if( aSpeed <= 0.0f )
+		if (aSpeed <= 0.0f)
 		{
 			return INVALID_PARAMETER;
 		}
 
-		if (mVoice[aVoice] )
+		if (mVoice[aVoice])
 		{
 			mVoice[aVoice]->mRelativePlaySpeed = aSpeed;
 			mVoice[aVoice]->mSamplerate = mVoice[aVoice]->mBaseSamplerate * mVoice[aVoice]->mRelativePlaySpeed;

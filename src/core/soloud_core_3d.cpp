@@ -291,7 +291,7 @@ namespace SoLoud
 		}
 
 		setDelaySamples(h, samples);
-		setPause(h, 0);
+		setPause(h, aPaused);
 		return h;		
 	}
 

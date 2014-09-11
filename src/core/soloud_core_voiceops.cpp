@@ -28,13 +28,20 @@ freely, subject to the following restrictions:
 
 namespace SoLoud
 {
-	void Soloud::setVoiceRelativePlaySpeed(unsigned int aVoice, float aSpeed)
+	result Soloud::setVoiceRelativePlaySpeed(unsigned int aVoice, float aSpeed)
 	{
+		if (aSpeed <= 0.0f)
+		{
+			return INVALID_PARAMETER;
+		}
+
 		if (mVoice[aVoice])
 		{
 			mVoice[aVoice]->mRelativePlaySpeed = aSpeed;
 			mVoice[aVoice]->mSamplerate = mVoice[aVoice]->mBaseSamplerate * mVoice[aVoice]->mRelativePlaySpeed;
 		}
+
+		return 0;
 	}
 
 	void Soloud::setVoicePause(unsigned int aVoice, int aPause)

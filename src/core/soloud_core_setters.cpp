@@ -39,12 +39,14 @@ namespace SoLoud
 		mGlobalVolume = aVolume;
 	}		
 
-	void Soloud::setRelativePlaySpeed(handle aVoiceHandle, float aSpeed)
+	result Soloud::setRelativePlaySpeed(handle aVoiceHandle, float aSpeed)
 	{
+		result retVal = 0;
 		FOR_ALL_VOICES_PRE
 		mVoice[ch]->mRelativePlaySpeedFader.mActive = 0;
-		setVoiceRelativePlaySpeed(ch, aSpeed);
+		retVal = setVoiceRelativePlaySpeed(ch, aSpeed);
 		FOR_ALL_VOICES_POST
+		return retVal;
 	}
 
 	void Soloud::setSamplerate(handle aVoiceHandle, float aSamplerate)

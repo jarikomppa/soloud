@@ -340,7 +340,7 @@ namespace SoLoud
 		// Set voice (not handle) pan.
 		void setVoicePan(unsigned int aVoice, float aPan);
 		// Set voice (not handle) relative play speed.
-		void setVoiceRelativePlaySpeed(unsigned int aVoice, float aSpeed);
+		result setVoiceRelativePlaySpeed(unsigned int aVoice, float aSpeed);
 		// Set voice (not handle) volume.
 		void setVoiceVolume(unsigned int aVoice, float aVolume);
 		// Set voice (not handle) pause state.

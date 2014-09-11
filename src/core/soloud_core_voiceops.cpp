@@ -24,20 +24,24 @@ freely, subject to the following restrictions:
 
 #include "soloud.h"
 
-#include <cassert>
-
 // Direct voice operations (no mutexes - called from other functions)
 
 namespace SoLoud
 {
-	void Soloud::setVoiceRelativePlaySpeed(unsigned int aVoice, float aSpeed)
+	result Soloud::setVoiceRelativePlaySpeed(unsigned int aVoice, float aSpeed)
 	{
-		assert( aSpeed > 0.0f );
-		if (mVoice[aVoice] && aSpeed > 0.0f )
+		if( aSpeed <= 0.0f )
+		{
+			return INVALID_PARAMETER;
+		}
+
+		if (mVoice[aVoice] )
 		{
 			mVoice[aVoice]->mRelativePlaySpeed = aSpeed;
 			mVoice[aVoice]->mSamplerate = mVoice[aVoice]->mBaseSamplerate * mVoice[aVoice]->mRelativePlaySpeed;
 		}
+
+		return 0;
 	}
 
 	void Soloud::setVoicePause(unsigned int aVoice, int aPause)

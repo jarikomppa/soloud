@@ -193,7 +193,7 @@ namespace SoLoud
 		// Pause all voices
 		void setPauseAll(bool aPause);
 		// Set the relative play speed
-		void setRelativePlaySpeed(handle aVoiceHandle, float aSpeed);
+		result setRelativePlaySpeed(handle aVoiceHandle, float aSpeed);
 		// Set the voice protection state
 		void setProtectVoice(handle aVoiceHandle, bool aProtect);
 		// Set the sample rate

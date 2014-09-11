@@ -33,7 +33,7 @@ namespace SoLoud
 	void Soloud::setVoiceRelativePlaySpeed(unsigned int aVoice, float aSpeed)
 	{
 		assert( aSpeed > 0.0f );
-		if (mVoice[aVoice])
+		if (mVoice[aVoice] && aSpeed > 0.0f )
 		{
 			mVoice[aVoice]->mRelativePlaySpeed = aSpeed;
 			mVoice[aVoice]->mSamplerate = mVoice[aVoice]->mBaseSamplerate * mVoice[aVoice]->mRelativePlaySpeed;

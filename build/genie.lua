@@ -213,16 +213,16 @@ end
 
 print ("")
 print ("Active options:")
-print ("WITH_SDL = ", WITH_SDL)
-print ("WITH_PORTAUDIO = ", WITH_PORTAUDIO)
-print ("WITH_OPENAL = ", WITH_OPENAL)
-print ("WITH_XAUDIO2 = ", WITH_XAUDIO2)
-print ("WITH_WINMM = ", WITH_WINMM)
-print ("WITH_WASAPI = ", WITH_WASAPI)
-print ("WITH_OSS = ", WITH_OSS)
+print ("WITH_SDL        = ", WITH_SDL)
+print ("WITH_PORTAUDIO  = ", WITH_PORTAUDIO)
+print ("WITH_OPENAL     = ", WITH_OPENAL)
+print ("WITH_XAUDIO2    = ", WITH_XAUDIO2)
+print ("WITH_WINMM      = ", WITH_WINMM)
+print ("WITH_WASAPI     = ", WITH_WASAPI)
+print ("WITH_OSS        = ", WITH_OSS)
 print ("WITH_LIBMODPLUG = ", WITH_LIBMODPLUG)
-print ("WITH_PORTMIDI = ", WITH_PORTMIDI)
-print ("WITH_TOOLS = ", WITH_TOOLS)
+print ("WITH_PORTMIDI   = ", WITH_PORTMIDI)
+print ("WITH_TOOLS      = ", WITH_TOOLS)
 print ("")
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
@@ -230,10 +230,9 @@ print ("")
 solution "SoLoud"
   location(buildroot)
 	configurations { "Debug", "Release" }
+	startproject "simplest"	
 	targetdir "../bin"
-	if _PREMAKE_VERSION ~= "4.3" then
-		debugdir "../bin"
-	end
+	debugdir "../bin"
 	flags { "NoExceptions", "NoRTTI", "NoPCH" }
 	if (os.is("Windows")) then defines { "_CRT_SECURE_NO_WARNINGS" } end
 
@@ -249,7 +248,10 @@ solution "SoLoud"
 	  "../include"
 	}
 
-		links {"StaticLib", os.is("windows") and "" or "pthread" }
+		links {"StaticLib"}
+		if (not os.is("windows")) then
+		  links { "pthread" }
+		end
 if (WITH_LIBMODPLUG == 1) then
 		links {"libmodplug"}
 end
@@ -267,7 +269,7 @@ end
 			flags {"Optimize"}
 			objdir (buildroot .. "/release")
 			targetname "simplest"
-			flags { "EnableSSE2", "NoMinimalRebuild", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
+			flags { "EnableSSE2", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 
@@ -281,7 +283,10 @@ end
 	  "../include"
 	}
 
-		links {"StaticLib", os.is("windows") and "" or "pthread" }
+		links {"StaticLib"}
+		if (not os.is("windows")) then
+		  links { "pthread" }
+		end
 if (WITH_LIBMODPLUG == 1) then
 		links {"libmodplug"}
 end
@@ -299,7 +304,7 @@ end
 			flags {"Optimize"}
 			objdir (buildroot .. "/release")
 			targetname "welcome"
-			flags { "EnableSSE2", "NoMinimalRebuild", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
+			flags { "EnableSSE2", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 
@@ -334,7 +339,7 @@ if (WITH_LIBMODPLUG == 1) then
 			flags {"Optimize"}
 			objdir (buildroot .. "/release")
 			targetname "libmodplug"
-			flags { "EnableSSE2", "NoMinimalRebuild", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
+			flags { "EnableSSE2", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
 end
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
@@ -460,7 +465,7 @@ end
 			flags {"Optimize"}
 			objdir (buildroot .. "/release")
 			targetname "soloud_x86"
-			flags { "EnableSSE2", "NoMinimalRebuild", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
+			flags { "EnableSSE2", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 if (WITH_TOOLS == 1) then
@@ -486,7 +491,7 @@ end
 			flags {"Optimize"}
 			objdir (buildroot .. "/release")
 			targetname "codegen"
-			flags { "EnableSSE2", "NoMinimalRebuild", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
+			flags { "EnableSSE2", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
 end
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
@@ -512,7 +517,7 @@ if (WITH_TOOLS == 1) then
 			flags {"Optimize"}
 			objdir (buildroot .. "/release")
 			targetname "resamplerlab"
-			flags { "EnableSSE2", "NoMinimalRebuild", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
+			flags { "EnableSSE2", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
 end
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
@@ -528,7 +533,10 @@ end
 	  "../include"
 	}
 
-		links {"StaticLib", os.is("windows") and "" or "pthread" }
+		links {"StaticLib"}
+		if (not os.is("windows")) then
+		  links { "pthread" }
+		end
 if (WITH_LIBMODPLUG == 1) then
 		links {"libmodplug"}
 end
@@ -547,7 +555,7 @@ end
 			flags {"Optimize"}
 			objdir (buildroot .. "/release")
 			targetname "c_test"
-			flags { "EnableSSE2", "NoMinimalRebuild", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
+			flags { "EnableSSE2", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 
@@ -592,7 +600,7 @@ end
 			targetname "soloud_x86"
 			implibdir("../lib")
 			implibname("soloud_dll_x86")
-			flags { "EnableSSE2", "NoMinimalRebuild", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
+			flags { "EnableSSE2", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 
@@ -634,7 +642,7 @@ if (WITH_SDL == 1) then
 			flags {"Optimize"}
 			objdir (buildroot .. "/release")
 			targetname "3dtest"
-			flags { "EnableSSE2", "NoMinimalRebuild", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
+			flags { "EnableSSE2", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 
@@ -668,7 +676,7 @@ if (WITH_SDL == 1) then
 			flags {"Optimize"}
 			objdir (buildroot .. "/release")
 			targetname "mixbusses"
-			flags { "EnableSSE2", "NoMinimalRebuild", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
+			flags { "EnableSSE2", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 
@@ -701,7 +709,7 @@ if (WITH_SDL == 1) then
 			flags {"Optimize"}
 			objdir (buildroot .. "/release")
 			targetname "pewpew"
-			flags { "EnableSSE2", "NoMinimalRebuild", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
+			flags { "EnableSSE2", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 
@@ -737,7 +745,7 @@ end
 			flags {"Optimize"}
 			objdir (buildroot .. "/release")
 			targetname "space"
-			flags { "EnableSSE2", "NoMinimalRebuild", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
+			flags { "EnableSSE2", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 
@@ -770,7 +778,7 @@ end
 			flags {"Optimize"}
 			objdir (buildroot .. "/release")
 			targetname "multimusic"
-			flags { "EnableSSE2", "NoMinimalRebuild", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
+			flags { "EnableSSE2", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 
@@ -814,7 +822,7 @@ end
 			flags {"Optimize"}
 			objdir (buildroot .. "/release")
 			targetname "piano"
-			flags { "EnableSSE2", "NoMinimalRebuild", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
+			flags { "EnableSSE2", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
 		if (WITH_PORTMIDI == 1) then
 			libdirs { portmidi_release }
 		end
@@ -850,7 +858,7 @@ end
 			flags {"Optimize"}
 			objdir (buildroot .. "/release")
 			targetname "env"
-			flags { "EnableSSE2", "NoMinimalRebuild", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
+			flags { "EnableSSE2", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
 
 end
 

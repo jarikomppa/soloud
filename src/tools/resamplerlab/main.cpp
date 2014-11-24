@@ -436,7 +436,7 @@ void resample_gauss5(float *aSrc,
 
 	s0 = aSrc[p];
 
-	aDst[i] = 
+	aDst[i] = (float)
 		 (
 			s0 * 0.05 +
 			s1 * 0.25 +

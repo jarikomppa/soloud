@@ -89,8 +89,11 @@ namespace SoLoud
         }
         OSSData *data = static_cast<OSSData*>(aSoloud->mBackendData);
         data->audioProcessingDone = true;
-        Thread::wait(data->threadHandle);
-        Thread::release(data->threadHandle);
+        if (0 != data->threadHandle)
+        {
+            Thread::wait(data->threadHandle);
+            Thread::release(data->threadHandle);
+        }
         ioctl(data->ossDeviceHandle, SNDCTL_DSP_RESET, 0);       
         if (0 != data->sampleBuffer)
         {

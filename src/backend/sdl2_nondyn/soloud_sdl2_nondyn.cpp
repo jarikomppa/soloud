@@ -87,7 +87,7 @@ namespace SoLoud
 		as.format = AUDIO_S16;
 		as.channels = 2;
 		as.samples = aBuffer;
-		as.callback = soloud_sdlnondyn_audiomixer;
+		as.callback = soloud_sdl2nondyn_audiomixer;
 		as.userdata = (void*)aSoloud;
 
 		SDL_AudioSpec as2;

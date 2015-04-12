@@ -53,6 +53,10 @@ namespace SoLoud
 		int mArp;
 		int mLastNote;
 		int mPortamentoToNote;
+		int mVibrato;
+		int mVibratoIndex;
+		int mVibratoDepth;
+		int mVibratoSpeed;
 	};
 
 	class MonotoneInstance : public AudioSourceInstance
@@ -77,6 +81,7 @@ namespace SoLoud
 	{
 	public:
 		int mNotesHz[800];
+		int mVibTable[32];
 		int mHardwareChannels;
 		MonotoneSong mSong;
 		void clear();

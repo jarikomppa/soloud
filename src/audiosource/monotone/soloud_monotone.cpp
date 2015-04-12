@@ -50,6 +50,10 @@ namespace SoLoud
 			mChannel[i].mLastNote = 0;
 			mChannel[i].mPortamentoToNote = 0;
 			mChannel[i].mArp = 0;
+			mChannel[i].mVibrato = 0;
+			mChannel[i].mVibratoIndex = 0;
+			mChannel[i].mVibratoDepth = 1;
+			mChannel[i].mVibratoSpeed = 1;
 		}
 	}
 
@@ -84,6 +88,7 @@ namespace SoLoud
 						// by default, effects are off, and have to be set on every row.
 						mChannel[j].mPortamento = 0;
 						mChannel[j].mArp = 0;
+						mChannel[j].mVibrato = 0;
 						
 						int oldhz = mChannel[j].mFreq[0];
 
@@ -106,6 +111,7 @@ namespace SoLoud
 							mChannel[j].mFreq[2] = mChannel[j].mFreq[0];
 							mChannel[j].mPortamento = 0;
 							mChannel[j].mLastNote = note;
+							mChannel[j].mVibratoIndex = 0;
 						}
 						else
 						if (note == 0)
@@ -147,7 +153,9 @@ namespace SoLoud
 							break;
 						case 0x4:
 							// vibrato
-							// TBD
+							mChannel[j].mVibrato = 1;
+							if (effectdata2 != 0) mChannel[j].mVibratoDepth = effectdata2;
+							if (effectdata1 != 0) mChannel[j].mVibratoSpeed = effectdata1;
 							break;
 						case 0x5:
 							// pattern jump
@@ -190,6 +198,12 @@ namespace SoLoud
 				{
 					if (mChannel[j].mActive)
 					{
+						if (mChannel[j].mVibrato)
+						{
+							mChannel[j].mFreq[0] = mParent->mNotesHz[mChannel[j].mLastNote * 8 + (mParent->mVibTable[mChannel[j].mVibratoIndex] * mChannel[j].mVibratoDepth) / 64];
+							mChannel[j].mVibratoIndex += mChannel[j].mVibratoSpeed;
+							mChannel[j].mVibratoIndex %= 32;
+						}
 						if (mChannel[j].mPortamento && mRowTick != 0)
 						{
 							mChannel[j].mFreq[0] += mChannel[j].mPortamento;
@@ -283,6 +297,9 @@ namespace SoLoud
 			temphz = temphz * interval;
 			mNotesHz[i] = (int)floor(temphz + 0.5f);
 		}
+
+		for (i = 0; i < 32; i++)
+			mVibTable[i] = (int)floor(0.5 + 64 * sin(i * M_PI / 32 * 2));
 
 		mSong.mTitle = 0;
 		mSong.mComment = 0;

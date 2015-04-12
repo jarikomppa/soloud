@@ -209,7 +209,12 @@ namespace SoLoud
 			for (j = 0; j < 12; j++)
 			{
 				if (mPeriodInSamples[j])
+					// square:
 					aBuffer[i] += (mSampleCount % mPeriodInSamples[j] > (mPeriodInSamples[j] / 2)) ? 0.25 : -0.25;
+					// saw:
+					//aBuffer[i] += (mSampleCount % mPeriodInSamples[j] / (float)mPeriodInSamples[j]) - 0.5;
+					// sin: (has clicks because the curve isn't ramped to zero when switching)
+					//aBuffer[i] += sin((mSampleCount % mPeriodInSamples[j] / (float)mPeriodInSamples[j]) * M_PI * 2) * 0.2;
 			}
 
 			mSampleCount++;
@@ -291,7 +296,7 @@ namespace SoLoud
 			return FILE_NOT_FOUND;
 		}
 		int i;
-		char temp[200];
+		unsigned char temp[200];
 		fread(temp, 1, 9, f);
 		char magic[] = "\bMONOTONE";
 		for (i = 0; i < 9; i++)
@@ -304,10 +309,10 @@ namespace SoLoud
 		}
 		fread(temp, 1, 41, f);
 		temp[temp[0] + 1] = 0; // pascal -> asciiz: pascal strings have length as first byte
-		mSong.mTitle = mystrdup(temp + 1);
+		mSong.mTitle = mystrdup((char*)temp + 1);
 		fread(temp, 1, 41, f);
 		temp[temp[0] + 1] = 0; // pascal -> asciiz: pascal strings have length as first byte
-		mSong.mComment = mystrdup(temp + 1);
+		mSong.mComment = mystrdup((char*)temp + 1);
 		fread(temp, 1, 4, f);
 		mSong.mVersion = temp[0];
 		mSong.mTotalPatterns = temp[1];

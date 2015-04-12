@@ -132,11 +132,18 @@ namespace SoLoud
 							break;
 						case 0x3:
 							// portamento to note
-							mChannel[j].mPortamentoToNote = mChannel[j].mFreq[0];
-							mChannel[j].mFreq[0] = oldhz;
-							mChannel[j].mPortamento = effectdata1;
-							if (oldhz > mChannel[j].mPortamentoToNote)
-								mChannel[j].mPortamento *= -1;
+							mChannel[j].mPortamentoToNote = mParent->mNotesHz[note * 8];
+							if (oldhz != mChannel[j].mPortamentoToNote)
+							{
+								mChannel[j].mFreq[0] = oldhz;
+								mChannel[j].mPortamento = effectdata;
+								if (oldhz > mChannel[j].mPortamentoToNote)
+									mChannel[j].mPortamento *= -1;							
+							}
+							else
+							{
+								mChannel[j].mPortamentoToNote = 0;
+							}
 							break;
 						case 0x4:
 							// vibrato
@@ -188,8 +195,8 @@ namespace SoLoud
 							mChannel[j].mFreq[0] += mChannel[j].mPortamento;
 							if (mChannel[j].mPortamentoToNote)
 							{
-								if ((mChannel[j].mPortamentoToNote > 0 && mChannel[j].mFreq[0] > mChannel[j].mPortamentoToNote) ||
-   									(mChannel[j].mPortamentoToNote < 0 && mChannel[j].mFreq[0] < mChannel[j].mPortamentoToNote))
+								if ((mChannel[j].mPortamento > 0 && mChannel[j].mFreq[0] >= mChannel[j].mPortamentoToNote) ||
+   									(mChannel[j].mPortamento < 0 && mChannel[j].mFreq[0] <= mChannel[j].mPortamentoToNote))
 								{
 									mChannel[j].mFreq[0] = mChannel[j].mPortamentoToNote;
 									mChannel[j].mPortamentoToNote = 0;

@@ -39,7 +39,7 @@ namespace SoLoud
 		mTempo = 4;
 		mSampleCount = 0;
 		mNextChannel = 0;
-		mTick = 0;
+		mRowTick = 0;
 		int i;
 		for (i = 0; i < 12; i++)
 		{
@@ -60,8 +60,10 @@ namespace SoLoud
 			if ((mSampleCount % samplesPerTick) == 0)
 			{
 				// new tick
-				if (mTick % mTempo == 0)
+				mRowTick++;
+				if (mRowTick >= mTempo)
 				{
+					mRowTick = 0;
 					// Process row
 					int patternjump = mOrder + 1;
 					int rowjump = 0;
@@ -200,8 +202,6 @@ namespace SoLoud
 						mChannel[j].mFreq[2] += mChannel[j].mPortamento;
 					}
 				}
-
-				mTick++;
 			}
 			
 			aBuffer[i] = 0;

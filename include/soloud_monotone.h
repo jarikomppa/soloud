@@ -64,7 +64,7 @@ namespace SoLoud
 		int mRow;
 		int mSampleCount;
 		int mPeriodInSamples[12];
-		int mTick;
+		int mRowTick;
 
 		MonotoneInstance(Monotone *aParent);
 		virtual void getAudio(float *aBuffer, unsigned int aSamples);

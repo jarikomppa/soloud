@@ -38,12 +38,16 @@ namespace SoLoud
 		mRow = 0;
 		mTempo = 4;
 		mSampleCount = 0;
-		mPeriodInSamples = 0;
+		mNextChannel = 0;
 		mTick = 0;
 		int i;
 		for (i = 0; i < 12; i++)
 		{
+			mPeriodInSamples[i] = 0;
 			mChannel[i].mEnabled = i < mParent->mSong.mTotalTracks;
+			mChannel[i].mActive = 0;
+			mChannel[i].mArpCounter = 0;
+			mChannel[i].mLastNote = 0;
 		}
 	}
 
@@ -72,51 +76,79 @@ namespace SoLoud
 						unsigned int effectdata = (d)& 63;
 						unsigned int effectdata1 = (d >> 3) & 7;
 						unsigned int effectdata2 = (d >> 0) & 7;
-						mChannel[j].mActive = note != 0;
-						mChannel[j].mFreq[0] = mParent->mNotesHz[note * 8];
+
+						// by default, arp is off. has to be set on every row.
 						mChannel[j].mFreq[1] = mChannel[j].mFreq[0];
 						mChannel[j].mFreq[2] = mChannel[j].mFreq[0];
-						mChannel[j].mPortamento = 0;
-
-						switch (effect)
+						
+						if (note == 127)
 						{
-						case 0x0:
-							// arp
-							mChannel[j].mFreq[1] = mParent->mNotesHz[(note + effectdata1) * 8];
-							mChannel[j].mFreq[2] = mParent->mNotesHz[(note + effectdata2) * 8];
-							break;
-						case 0x1:
-							// portamento up
-							mChannel[j].mPortamento = effectdata;
-							break;
-						case 0x2:
-							// portamento down
-							mChannel[j].mPortamento = -(signed)effectdata;
-							break;
-						case 0x3:
-							// portamento to note
-							// TBD
-							break;
-						case 0x4:
-							// vibrato
-							// TBD
-							break;
-						case 0x5:
-							// pattern jump
-							patternjump = effectdata;
-							dojump = 1;
-							break;
-						case 0x6:
-							// row jump
-							rowjump = effectdata;
-							dojump = 1;
-							break;
-						case 0x7:
-							// set speed
-							mTempo = effectdata;
-							break;
-						default:
-							i = i;
+							// noteEnd
+							mChannel[j].mActive = 0;
+							mChannel[j].mFreq[0] = 0;
+							mChannel[j].mFreq[1] = 0;
+							mChannel[j].mFreq[2] = 0;
+							mChannel[j].mPortamento = 0;
+							mChannel[j].mLastNote = 0;
+						}
+						else
+						if (note != 0)
+						{
+							mChannel[j].mActive = 1;
+							mChannel[j].mFreq[0] = mParent->mNotesHz[note * 8];
+							mChannel[j].mFreq[1] = mChannel[j].mFreq[0];
+							mChannel[j].mFreq[2] = mChannel[j].mFreq[0];
+							mChannel[j].mPortamento = 0;
+							mChannel[j].mLastNote = note;
+						}
+						else
+						if (note == 0)
+						{
+							note = mChannel[j].mLastNote;
+						}
+
+						if (mChannel[j].mActive)
+						{
+							switch (effect)
+							{
+							case 0x0:
+								// arp
+								mChannel[j].mFreq[1] = mParent->mNotesHz[(note + effectdata1) * 8];
+								mChannel[j].mFreq[2] = mParent->mNotesHz[(note + effectdata2) * 8];
+								break;
+							case 0x1:
+								// portamento up
+								mChannel[j].mPortamento = effectdata;
+								break;
+							case 0x2:
+								// portamento down
+								mChannel[j].mPortamento = -(signed)effectdata;
+								break;
+							case 0x3:
+								// portamento to note
+								// TBD
+								break;
+							case 0x4:
+								// vibrato
+								// TBD
+								break;
+							case 0x5:
+								// pattern jump
+								patternjump = effectdata;
+								dojump = 1;
+								break;
+							case 0x6:
+								// row jump
+								rowjump = effectdata;
+								dojump = 1;
+								break;
+							case 0x7:
+								// set speed
+								mTempo = effectdata;
+								break;
+							default:
+								i = i;
+							}
 						}
 					}					
 					
@@ -137,12 +169,28 @@ namespace SoLoud
 					}
 				}
 
-				int channeltry = mTick % mParent->mSong.mTotalTracks;
-				mPeriodInSamples = 0;
-				if (mChannel[channeltry].mActive)
-					mPeriodInSamples = mSamplerate / mChannel[channeltry].mFreq[(mTick / mParent->mSong.mTotalTracks) % 3];
-				
+				int gotit = 0;
+				int tries = 0;
 				int j;
+				for (j = 0; j < 12; j++)
+				{
+					mPeriodInSamples[j] = 0;
+				}
+				
+				while (gotit < mParent->mHardwareChannels && tries < mParent->mSong.mTotalTracks)
+				{
+					if (mChannel[mNextChannel].mActive)
+					{
+						mPeriodInSamples[gotit] = mSamplerate / mChannel[mNextChannel].mFreq[mChannel[mNextChannel].mArpCounter];
+						mChannel[mNextChannel].mArpCounter++;
+						mChannel[mNextChannel].mArpCounter %= 3;
+						gotit++;
+					}
+					mNextChannel++;
+					mNextChannel %= mParent->mSong.mTotalTracks;
+					tries++;
+				}				
+								
 				for (j = 0; j < mParent->mSong.mTotalTracks; j++)
 				{
 					if (mChannel[j].mActive)
@@ -155,10 +203,15 @@ namespace SoLoud
 
 				mTick++;
 			}
-			if (mPeriodInSamples)
-				aBuffer[i] = (mSampleCount % mPeriodInSamples > (mPeriodInSamples / 2)) ? 0.25 : -0.25;
-			else
-				aBuffer[i] = 0;
+			
+			aBuffer[i] = 0;
+			int j;
+			for (j = 0; j < 12; j++)
+			{
+				if (mPeriodInSamples[j])
+					aBuffer[i] += (mSampleCount % mPeriodInSamples[j] > (mPeriodInSamples[j] / 2)) ? 0.25 : -0.25;
+			}
+
 			mSampleCount++;
 		}
 	}

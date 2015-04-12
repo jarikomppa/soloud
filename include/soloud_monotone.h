@@ -49,6 +49,8 @@ namespace SoLoud
 		int mActive;
 		int mFreq[3];
 		int mPortamento;
+		int mArpCounter;
+		int mLastNote;
 	};
 
 	class MonotoneInstance : public AudioSourceInstance
@@ -56,11 +58,12 @@ namespace SoLoud
 		Monotone *mParent;		
 	public:
 		MonotoneChannel mChannel[12];
+		int mNextChannel;
 		int mTempo; // ticks / row. Tick = 60hz. Default 4.
 		int mOrder;
 		int mRow;
 		int mSampleCount;
-		int mPeriodInSamples;
+		int mPeriodInSamples[12];
 		int mTick;
 
 		MonotoneInstance(Monotone *aParent);

@@ -109,48 +109,43 @@ namespace SoLoud
 							note = mChannel[j].mLastNote;
 						}
 
-						if (mChannel[j].mActive)
+						switch (effect)
 						{
-							switch (effect)
-							{
-							case 0x0:
-								// arp
-								mChannel[j].mFreq[1] = mParent->mNotesHz[(note + effectdata1) * 8];
-								mChannel[j].mFreq[2] = mParent->mNotesHz[(note + effectdata2) * 8];
-								break;
-							case 0x1:
-								// portamento up
-								mChannel[j].mPortamento = effectdata;
-								break;
-							case 0x2:
-								// portamento down
-								mChannel[j].mPortamento = -(signed)effectdata;
-								break;
-							case 0x3:
-								// portamento to note
-								// TBD
-								break;
-							case 0x4:
-								// vibrato
-								// TBD
-								break;
-							case 0x5:
-								// pattern jump
-								patternjump = effectdata;
-								dojump = 1;
-								break;
-							case 0x6:
-								// row jump
-								rowjump = effectdata;
-								dojump = 1;
-								break;
-							case 0x7:
-								// set speed
-								mTempo = effectdata;
-								break;
-							default:
-								i = i;
-							}
+						case 0x0:
+							// arp
+							mChannel[j].mFreq[1] = mParent->mNotesHz[(note + effectdata1) * 8];
+							mChannel[j].mFreq[2] = mParent->mNotesHz[(note + effectdata2) * 8];
+							break;
+						case 0x1:
+							// portamento up
+							mChannel[j].mPortamento = effectdata;
+							break;
+						case 0x2:
+							// portamento down
+							mChannel[j].mPortamento = -(signed)effectdata;
+							break;
+						case 0x3:
+							// portamento to note
+							// TBD
+							break;
+						case 0x4:
+							// vibrato
+							// TBD
+							break;
+						case 0x5:
+							// pattern jump
+							patternjump = effectdata;
+							dojump = 1;
+							break;
+						case 0x6:
+							// row jump
+							rowjump = effectdata;
+							dojump = 1;
+							break;
+						case 0x7:
+							// set speed
+							mTempo = effectdata;
+							break;
 						}
 					}					
 					

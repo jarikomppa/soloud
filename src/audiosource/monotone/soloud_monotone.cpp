@@ -48,6 +48,8 @@ namespace SoLoud
 			mChannel[i].mActive = 0;
 			mChannel[i].mArpCounter = 0;
 			mChannel[i].mLastNote = 0;
+			mChannel[i].mPortamentoToNote = 0;
+			mChannel[i].mArp = 0;
 		}
 	}
 
@@ -79,10 +81,12 @@ namespace SoLoud
 						unsigned int effectdata1 = (d >> 3) & 7;
 						unsigned int effectdata2 = (d >> 0) & 7;
 
-						// by default, arp is off. has to be set on every row.
-						mChannel[j].mFreq[1] = mChannel[j].mFreq[0];
-						mChannel[j].mFreq[2] = mChannel[j].mFreq[0];
+						// by default, effects are off, and have to be set on every row.
+						mChannel[j].mPortamento = 0;
+						mChannel[j].mArp = 0;
 						
+						int oldhz = mChannel[j].mFreq[0];
+
 						if (note == 127)
 						{
 							// noteEnd
@@ -115,6 +119,8 @@ namespace SoLoud
 							// arp
 							mChannel[j].mFreq[1] = mParent->mNotesHz[(note + effectdata1) * 8];
 							mChannel[j].mFreq[2] = mParent->mNotesHz[(note + effectdata2) * 8];
+							if (effectdata1 || effectdata2)
+								mChannel[j].mArp = 1;
 							break;
 						case 0x1:
 							// portamento up
@@ -126,7 +132,11 @@ namespace SoLoud
 							break;
 						case 0x3:
 							// portamento to note
-							// TBD
+							mChannel[j].mPortamentoToNote = mChannel[j].mFreq[0];
+							mChannel[j].mFreq[0] = oldhz;
+							mChannel[j].mPortamento = effectdata1;
+							if (oldhz > mChannel[j].mPortamentoToNote)
+								mChannel[j].mPortamento *= -1;
 							break;
 						case 0x4:
 							// vibrato
@@ -166,37 +176,58 @@ namespace SoLoud
 					}
 				}
 
+				int j;
+
+				// per tick events
+				for (j = 0; j < mParent->mSong.mTotalTracks; j++)
+				{
+					if (mChannel[j].mActive)
+					{
+						if (mChannel[j].mPortamento && mRowTick != 0)
+						{
+							mChannel[j].mFreq[0] += mChannel[j].mPortamento;
+							if (mChannel[j].mPortamentoToNote)
+							{
+								if ((mChannel[j].mPortamentoToNote > 0 && mChannel[j].mFreq[0] > mChannel[j].mPortamentoToNote) ||
+   									(mChannel[j].mPortamentoToNote < 0 && mChannel[j].mFreq[0] < mChannel[j].mPortamentoToNote))
+								{
+									mChannel[j].mFreq[0] = mChannel[j].mPortamentoToNote;
+									mChannel[j].mPortamentoToNote = 0;
+								}
+							}
+						}
+					}
+				}
+
+				// Channel fill
+
 				int gotit = 0;
 				int tries = 0;
-				int j;
 				for (j = 0; j < 12; j++)
 				{
 					mPeriodInSamples[j] = 0;
 				}
-				
+
 				while (gotit < mParent->mHardwareChannels && tries < mParent->mSong.mTotalTracks)
 				{
 					if (mChannel[mNextChannel].mActive)
 					{
-						mPeriodInSamples[gotit] = mSamplerate / mChannel[mNextChannel].mFreq[mChannel[mNextChannel].mArpCounter];
-						mChannel[mNextChannel].mArpCounter++;
-						mChannel[mNextChannel].mArpCounter %= 3;
+						if (mChannel[mNextChannel].mArp)
+						{
+							mPeriodInSamples[gotit] = mSamplerate / mChannel[mNextChannel].mFreq[mChannel[mNextChannel].mArpCounter];
+							mChannel[mNextChannel].mArpCounter++;
+							mChannel[mNextChannel].mArpCounter %= 3;
+						}
+						else
+						{
+							mPeriodInSamples[gotit] = mSamplerate / mChannel[mNextChannel].mFreq[0];
+						}
 						gotit++;
 					}
 					mNextChannel++;
 					mNextChannel %= mParent->mSong.mTotalTracks;
 					tries++;
-				}				
-								
-				for (j = 0; j < mParent->mSong.mTotalTracks; j++)
-				{
-					if (mChannel[j].mActive)
-					{
-						mChannel[j].mFreq[0] += mChannel[j].mPortamento;
-						mChannel[j].mFreq[1] += mChannel[j].mPortamento;
-						mChannel[j].mFreq[2] += mChannel[j].mPortamento;
-					}
-				}
+				}								
 			}
 			
 			aBuffer[i] = 0;

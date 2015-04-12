@@ -50,7 +50,9 @@ namespace SoLoud
 		int mFreq[3];
 		int mPortamento;
 		int mArpCounter;
+		int mArp;
 		int mLastNote;
+		int mPortamentoToNote;
 	};
 
 	class MonotoneInstance : public AudioSourceInstance

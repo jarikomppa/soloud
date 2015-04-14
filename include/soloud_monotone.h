@@ -57,6 +57,8 @@ namespace SoLoud
 		int mVibratoIndex;
 		int mVibratoDepth;
 		int mVibratoSpeed;
+		float mSamplePos;
+		float mSamplePosInc;
 	};
 
 	class MonotoneInstance : public AudioSourceInstance
@@ -69,7 +71,6 @@ namespace SoLoud
 		int mOrder;
 		int mRow;
 		int mSampleCount;
-		int mPeriodInSamples[12];
 		int mRowTick;
 
 		MonotoneInstance(Monotone *aParent);

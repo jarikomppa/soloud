@@ -43,7 +43,8 @@ namespace SoLoud
 		int i;
 		for (i = 0; i < 12; i++)
 		{
-			mPeriodInSamples[i] = 0;
+			mChannel[i].mSamplePos = 0;
+			mChannel[i].mSamplePosInc = 0;
 			mChannel[i].mEnabled = i < mParent->mSong.mTotalTracks;
 			mChannel[i].mActive = 0;
 			mChannel[i].mArpCounter = 0;
@@ -224,10 +225,6 @@ namespace SoLoud
 
 				int gotit = 0;
 				int tries = 0;
-				for (j = 0; j < 12; j++)
-				{
-					mPeriodInSamples[j] = 0;
-				}
 
 				while (gotit < mParent->mHardwareChannels && tries < mParent->mSong.mTotalTracks)
 				{
@@ -235,13 +232,13 @@ namespace SoLoud
 					{
 						if (mChannel[mNextChannel].mArp)
 						{
-							mPeriodInSamples[gotit] = mSamplerate / mChannel[mNextChannel].mFreq[mChannel[mNextChannel].mArpCounter];
+							mChannel[mNextChannel].mSamplePosInc = 1.0f / (mSamplerate / mChannel[mNextChannel].mFreq[mChannel[mNextChannel].mArpCounter]);
 							mChannel[mNextChannel].mArpCounter++;
 							mChannel[mNextChannel].mArpCounter %= 3;
 						}
 						else
 						{
-							mPeriodInSamples[gotit] = mSamplerate / mChannel[mNextChannel].mFreq[0];
+							mChannel[mNextChannel].mSamplePosInc = 1.0f / (mSamplerate / mChannel[mNextChannel].mFreq[0]);
 						}
 						gotit++;
 					}
@@ -255,13 +252,17 @@ namespace SoLoud
 			int j;
 			for (j = 0; j < 12; j++)
 			{
-				if (mPeriodInSamples[j])
+				if (mChannel[j].mActive)
+				{
+					float bleh;
+					mChannel[j].mSamplePos = modf(mChannel[j].mSamplePos + mChannel[j].mSamplePosInc, &bleh);
 					// square:
-					aBuffer[i] += (mSampleCount % mPeriodInSamples[j] > (mPeriodInSamples[j] / 2)) ? 0.25 : -0.25;
+					//aBuffer[i] += (mChannel[j].mSamplePos > 0.5f) ? 0.25 : -0.25;
 					// saw:
-					//aBuffer[i] += (mSampleCount % mPeriodInSamples[j] / (float)mPeriodInSamples[j]) - 0.5;
-					// sin: (has clicks because the curve isn't ramped to zero when switching)
-					//aBuffer[i] += sin((mSampleCount % mPeriodInSamples[j] / (float)mPeriodInSamples[j]) * M_PI * 2) * 0.2;
+					aBuffer[i] += ((mChannel[j].mSamplePos) - 0.5) * 0.5;
+					// sin: (has clicks because the curve isn't ramped to zero when note off)
+					//aBuffer[i] += sin(mChannel[j].mSamplePos * M_PI * 2) * 0.5;
+				}
 			}
 
 			mSampleCount++;

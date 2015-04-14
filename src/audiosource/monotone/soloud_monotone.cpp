@@ -252,17 +252,20 @@ namespace SoLoud
 			int j;
 			for (j = 0; j < 12; j++)
 			{
-				if (mChannel[j].mActive)
+				if (mChannel[j].mEnabled)
 				{
-					float bleh;
-					mChannel[j].mSamplePos = modf(mChannel[j].mSamplePos + mChannel[j].mSamplePosInc, &bleh);
+					if (mChannel[j].mActive)
+					{
+						float bleh;
+						mChannel[j].mSamplePos = modf(mChannel[j].mSamplePos + mChannel[j].mSamplePosInc, &bleh);
+					}
+					// square:
+					//aBuffer[i] += (mChannel[j].mSamplePos > 0.5f) ? 0.25 : -0.25;
+					// saw:
+					aBuffer[i] += ((mChannel[j].mSamplePos) - 0.5) * 0.5;
+					// sin: (has clicks because the curve isn't ramped to zero when note off)
+					//aBuffer[i] += sin(mChannel[j].mSamplePos * M_PI * 2) * 0.5;
 				}
-				// square:
-				//aBuffer[i] += (mChannel[j].mSamplePos > 0.5f) ? 0.25 : -0.25;
-				// saw:
-				//aBuffer[i] += ((mChannel[j].mSamplePos) - 0.5) * 0.5;
-				// sin: (has clicks because the curve isn't ramped to zero when note off)
-				aBuffer[i] += sin(mChannel[j].mSamplePos * M_PI * 2) * 0.5;
 			}
 
 			mSampleCount++;

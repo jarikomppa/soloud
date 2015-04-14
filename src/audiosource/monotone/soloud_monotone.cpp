@@ -43,8 +43,9 @@ namespace SoLoud
 		int i;
 		for (i = 0; i < 12; i++)
 		{
-			mChannel[i].mSamplePos = 0;
-			mChannel[i].mSamplePosInc = 0;
+			mOutput[i].mSamplePos = 0;
+			mOutput[i].mSamplePosInc = 0;
+			mOutput[i].mEnabled = i < mParent->mHardwareChannels;
 			mChannel[i].mEnabled = i < mParent->mSong.mTotalTracks;
 			mChannel[i].mActive = 0;
 			mChannel[i].mArpCounter = 0;
@@ -226,19 +227,22 @@ namespace SoLoud
 				int gotit = 0;
 				int tries = 0;
 
+				for (j = 0; j < mParent->mHardwareChannels; j++)
+					mOutput[j].mSamplePosInc = 0;
+
 				while (gotit < mParent->mHardwareChannels && tries < mParent->mSong.mTotalTracks)
 				{
 					if (mChannel[mNextChannel].mActive)
 					{
 						if (mChannel[mNextChannel].mArp)
 						{
-							mChannel[mNextChannel].mSamplePosInc = 1.0f / (mSamplerate / mChannel[mNextChannel].mFreq[mChannel[mNextChannel].mArpCounter]);
+							mOutput[gotit].mSamplePosInc = 1.0f / (mSamplerate / mChannel[mNextChannel].mFreq[mChannel[mNextChannel].mArpCounter]);
 							mChannel[mNextChannel].mArpCounter++;
 							mChannel[mNextChannel].mArpCounter %= 3;
 						}
 						else
 						{
-							mChannel[mNextChannel].mSamplePosInc = 1.0f / (mSamplerate / mChannel[mNextChannel].mFreq[0]);
+							mOutput[gotit].mSamplePosInc = 1.0f / (mSamplerate / mChannel[mNextChannel].mFreq[0]);
 						}
 						gotit++;
 					}
@@ -252,19 +256,16 @@ namespace SoLoud
 			int j;
 			for (j = 0; j < 12; j++)
 			{
-				if (mChannel[j].mEnabled)
+				if (mOutput[j].mEnabled)
 				{
-					if (mChannel[j].mActive)
-					{
-						float bleh;
-						mChannel[j].mSamplePos = modf(mChannel[j].mSamplePos + mChannel[j].mSamplePosInc, &bleh);
-					}
+					float bleh;
+					mOutput[j].mSamplePos = modf(mOutput[j].mSamplePos + mOutput[j].mSamplePosInc, &bleh);
 					// square:
-					//aBuffer[i] += (mChannel[j].mSamplePos > 0.5f) ? 0.25 : -0.25;
+					aBuffer[i] += (mOutput[j].mSamplePos > 0.5f) ? 0.25 : -0.25;
 					// saw:
-					aBuffer[i] += ((mChannel[j].mSamplePos) - 0.5) * 0.5;
+					//aBuffer[i] += ((mOutput[j].mSamplePos) - 0.5) * 0.5;
 					// sin: (has clicks because the curve isn't ramped to zero when note off)
-					//aBuffer[i] += sin(mChannel[j].mSamplePos * M_PI * 2) * 0.5;
+					//aBuffer[i] += sin(mOutput[j].mSamplePos * M_PI * 2) * 0.5;
 				}
 			}
 

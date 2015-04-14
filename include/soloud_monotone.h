@@ -57,6 +57,11 @@ namespace SoLoud
 		int mVibratoIndex;
 		int mVibratoDepth;
 		int mVibratoSpeed;
+	};
+
+	struct MonotoneHardwareChannel
+	{
+		int mEnabled;
 		float mSamplePos;
 		float mSamplePosInc;
 	};
@@ -66,6 +71,7 @@ namespace SoLoud
 		Monotone *mParent;		
 	public:
 		MonotoneChannel mChannel[12];
+		MonotoneHardwareChannel mOutput[12];
 		int mNextChannel;
 		int mTempo; // ticks / row. Tick = 60hz. Default 4.
 		int mOrder;

@@ -45,7 +45,7 @@ namespace SoLoud
 		{
 			mOutput[i].mSamplePos = 0;
 			mOutput[i].mSamplePosInc = 0;
-			mOutput[i].mEnabled = i < mParent->mHardwareChannels;
+			mOutput[i].mEnabled = i < mParent->mHardwareChannels && i < mParent->mSong.mTotalTracks;			
 			mChannel[i].mEnabled = i < mParent->mSong.mTotalTracks;
 			mChannel[i].mActive = 0;
 			mChannel[i].mArpCounter = 0;

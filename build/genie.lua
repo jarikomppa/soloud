@@ -634,10 +634,48 @@ end
 --  The rest of the projects require SDL
 --
 
--- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
-
 if (WITH_SDL == 1) then
 
+function CommonDemo(_name)
+  project(_name)
+	kind "WindowedApp"
+	language "C++"
+	files {
+	  "../demos/" .. _name .. "/**.c*",
+	  "../demos/common/**.c*",
+	  "../demos/common/imgui/**.c*",
+	  "../demos/common/glew/GL/**.c*"
+	  }
+	includedirs {
+	  "../include",
+	  "../demos/common",
+	  "../demos/common/imgui",
+	  "../demos/common/glew",
+	  sdl_include
+	}
+	libdirs {
+	  sdl_lib
+	}
+
+		links {"StaticLib", "sdlmain", "sdl", "opengl32"}
+
+		configuration "Debug"
+			defines { "DEBUG", "GLEW_STATIC" }
+			flags {"Symbols" }
+			objdir (buildroot .. "/debug")
+			targetname (_name .. "_d")
+			flags { "Symbols" }
+
+
+		configuration "Release"
+			defines { "NDEBUG", "GLEW_STATIC" }
+			flags {"Optimize"}
+			objdir (buildroot .. "/release")
+			targetname (_name)
+			flags { "EnableSSE2", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
+end
+
+-- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 
   project "3dtest"
 	kind "WindowedApp"
@@ -672,37 +710,7 @@ if (WITH_SDL == 1) then
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 
-  project "mixbusses"
-	kind "WindowedApp"
-	language "C++"
-	files {
-	  "../demos/mixbusses/**.c*"
-	  }
-	includedirs {
-	  "../include",
-	  sdl_include
-	}
-	libdirs {
-	  sdl_lib
-	}
-
-
-		links {"StaticLib", "sdlmain", "sdl"}
-
-		configuration "Debug"
-			defines { "DEBUG" }
-			flags {"Symbols" }
-			objdir (buildroot .. "/debug")
-			targetname "mixbusses_d"
-			flags { "Symbols" }
-
-
-		configuration "Release"
-			defines { "NDEBUG" }
-			flags {"Optimize"}
-			objdir (buildroot .. "/release")
-			targetname "mixbusses"
-			flags { "EnableSSE2", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
+  CommonDemo("mixbusses")
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 
@@ -775,36 +783,7 @@ end
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 
-  project "multimusic"
-	kind "WindowedApp"
-	language "C++"
-	files {
-	  "../demos/multimusic/**.c*"
-	  }
-	includedirs {
-	  "../include",
-	  sdl_include
-	}
-	libdirs {
-	  sdl_lib
-	}
-
-		links {"StaticLib", "sdlmain", "sdl"}
-
-		configuration "Debug"
-			defines { "DEBUG" }
-			flags {"Symbols" }
-			objdir (buildroot .. "/debug")
-			targetname "multimusic_d"
-			flags { "Symbols" }
-
-
-		configuration "Release"
-			defines { "NDEBUG" }
-			flags {"Optimize"}
-			objdir (buildroot .. "/release")
-			targetname "multimusic"
-			flags { "EnableSSE2", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
+   CommonDemo("multimusic")
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 

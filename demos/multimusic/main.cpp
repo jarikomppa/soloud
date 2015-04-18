@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
 		float *buf = gSoloud.getWave();
 		float *fft = gSoloud.calcFFT();
 
-		ImGui::SetNextWindowPos(ImVec2(400, 20));
+		ONCE(ImGui::SetNextWindowPos(ImVec2(400, 20)));
 		ImGui::Begin("Output");
 		ImGui::PlotLines("##Wave", buf, 256, 0, "Wave", -1, 1, ImVec2(264,80));
 		ImGui::PlotHistogram("##FFT", fft, 256/2, 0, "FFT", 0, 1, ImVec2(264,80),8);
@@ -83,7 +83,7 @@ int main(int argc, char *argv[])
 		ImGui::Text("Active voices    : %d", gSoloud.getActiveVoiceCount());
 		ImGui::End();
 
-		ImGui::SetNextWindowPos(ImVec2(20, 20));
+		ONCE(ImGui::SetNextWindowPos(ImVec2(20, 20)));
 		ImGui::Begin("Control");
 		
 		if (ImGui::Button("Fade to music 1"))

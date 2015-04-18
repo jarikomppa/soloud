@@ -1,6 +1,6 @@
 /*
 SoLoud audio engine
-Copyright (c) 2013-2014 Jari Komppa
+Copyright (c) 2013-2015 Jari Komppa
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -23,14 +23,10 @@ freely, subject to the following restrictions:
 */
 
 #include <stdlib.h>
-#if defined(_MSC_VER)
-#include "SDL.h"
-#else
-#include "SDL/SDL.h"
-#endif
 #include <math.h>
 #include <stdio.h>
-
+#include "imgui.h"
+#include "soloud_demo_framework.h"
 
 #include "soloud.h"
 #include "soloud_sfxr.h"
@@ -39,183 +35,137 @@ freely, subject to the following restrictions:
 SoLoud::Soloud gSoloud;
 SoLoud::Sfxr gSfx;
 
-SDL_Surface *screen;
-
-void putpixel(int x, int y, int color)
-{
-	if (y < 0 || y > 255 || x < 0 || x > 400) 
-		return;
-	unsigned int *ptr = (unsigned int*)screen->pixels;
-	int lineoffset = y * (screen->pitch / 4);
-	ptr[lineoffset + x] = color;
-}
-
-int fire1 = 0;
-int fire2 = 0;
-int fire3 = 0;
-
-int lasttick = 0;
-
-int bullet[1024] = { 0 };
+#define MAX_BULLETS 16
 int bulletidx = 0;
-
-void render()
-{   
-	// Lock surface if needed
-	if (SDL_MUSTLOCK(screen))
-		if (SDL_LockSurface(screen) < 0) 
-			return;
-
-	// Ask SDL for the time in milliseconds
-	int tick = SDL_GetTicks();
-
-	if (lasttick == 0) lasttick = tick;
-
-	while (lasttick < tick)
-	{
-		gSfx.loadPreset(SoLoud::Sfxr::LASER, 3);
-		if (fire1)
-		{
-			int h = gSoloud.playClocked(lasttick / 1000.0f, gSfx, 1,(rand()%100)/50.0f-1);
-			gSoloud.setRelativePlaySpeed(h, 1.0f - ((rand() % 200) / 1000.0f));
-		}
-
-		if (fire2)
-		{
-			int h = gSoloud.play(gSfx, 1, (rand()%100)/50.0f-1);
-			gSoloud.setRelativePlaySpeed(h, 1.0f - ((rand() % 200) / 1000.0f));
-		}
-
-		if (fire3)
-		{
-			int h = gSoloud.playClocked(lasttick / 1000.0f, gSfx, 1, (rand()%100)/50.0f-1);
-			gSoloud.setRelativePlaySpeed(h, 1.0f - ((rand() % 200) / 1000.0f));
-		}
-
-		if (fire1 || fire2 || fire3)
-		{
-			bullet[bulletidx & 1023] = 100;
-			bulletidx++;			
-		}
-
-		if (fire3) fire3 = 0;
-
-		int i;
-		for (i = 0; i < 1024; i++)
-		{
-			if (bullet[i])
-			{
-				bullet[i] += 5;
-				if (bullet[i] >= 400)
-					bullet[i] = 0;
-			}
-		}
-
-		lasttick += 10;
-	}
-
-	int i, j;
-
-	for (i = 0; i < 256; i++)
-		for (j = 0; j < 400; j++)
-			putpixel(j,i,0xff000000);
-
-	for (i = 0; i < 9; i++)
-		for (j = 0; j < 9; j++)
-			putpixel(90 + i, 124 + j, 0xffffffff);
-
-
-	for (i = 0; i < 1024; i++)
-		if (bullet[i])
-			putpixel(bullet[i], 128, 0xffffffff);
-
-	for (i = 0; i < (signed)gSoloud.getActiveVoiceCount(); i++)
-		putpixel(i * 4, 8, 0xffffffff);
-
-	// Unlock if needed
-	if (SDL_MUSTLOCK(screen)) 
-		SDL_UnlockSurface(screen);
-
-	// Tell SDL to update the whole screen
-	SDL_UpdateRect(screen, 0, 0, 400, 256);    
-}
-
+float bulletx[MAX_BULLETS];
+float bullety[MAX_BULLETS];
 
 // Entry point
 int main(int argc, char *argv[])
 {
-	// Initialize SDL's subsystems - in this case, only video.
-	if ( SDL_Init(SDL_INIT_VIDEO) < 0 ) 
-	{
-		fprintf(stderr, "Unable to init SDL: %s\n", SDL_GetError());
-		exit(1);
-	}
+	DemoInit();
+
+	int i;
+	for (i = 0; i < MAX_BULLETS; i++)
+		bullety[i] = 0;
 
 	// Use a slightly larger audio buffer to exaggarate the effect
-	gSoloud.init(SoLoud::Soloud::CLIP_ROUNDOFF, 0, 0, 8192);
+	gSoloud.init(SoLoud::Soloud::CLIP_ROUNDOFF | SoLoud::Soloud::ENABLE_VISUALIZATION, 0, 0, 4096);
+	gSfx.loadPreset(SoLoud::Sfxr::LASER, 3);
 
-	// Register SDL_Quit to be called at exit; makes sure things are
-	// cleaned up when we quit.
-	atexit(SDL_Quit);	
+	int lasttick = DemoTick();
+	int fire1 = 0;
+	int fire2 = 0;
+	int fire3 = 0;
 
-	// Attempt to create a 640x480 window with 32bit pixels.
-	screen = SDL_SetVideoMode(400, 256, 32, SDL_SWSURFACE);
-
-	// If we fail, return error.
-	if ( screen == NULL ) 
-	{
-		fprintf(stderr, "Unable to set 640x480 video: %s\n", SDL_GetError());
-		exit(1);
-	}
+	float x = 0;
 
 	// Main loop: loop forever.
 	while (1)
 	{
-		// Render stuff
-		render();		
-		// Poll for events, and handle the ones we care about.
-		SDL_Event event;
-		while (SDL_PollEvent(&event)) 
-		{
-			switch (event.type) 
-			{
-			case SDL_KEYDOWN:
-				switch (event.key.keysym.sym)
-				{
-				case SDLK_1:
-					fire1 = 1;
-					break;
-				case SDLK_2: 
-					fire2 = 1;
-					break;
-				case SDLK_3: 
-					fire3 = 1;
-					break;
-				}
-				break;
-			case SDL_KEYUP:
-				switch (event.key.keysym.sym)
-				{
-				case SDLK_1:
-					fire1 = 0;
-					break;
-				case SDLK_2: 
-					fire2 = 0;
-					break;
-				}
-				// If escape is pressed, return (and thus, quit)
-				if (event.key.keysym.sym == SDLK_ESCAPE)
-				{
-					gSoloud.deinit();
-					return 0;
-				}
-				break;
-			case SDL_QUIT:
-				gSoloud.deinit();
+		int tick = DemoTick();
 
-				return(0);
+		if (lasttick >= tick)
+		{
+			DemoYield();
+		}
+		else
+		while (lasttick < tick)
+		{
+			x = sin(lasttick * 0.01f) * 0.75;
+			gSfx.loadPreset(SoLoud::Sfxr::LASER, 3);
+			if (fire1)
+			{
+				gSoloud.playClocked(lasttick / 1000.0f, gSfx, 1, x);
+			}
+
+			if (fire2)
+			{
+				gSoloud.play(gSfx, 1, x);
+			}
+
+			if (fire3)
+			{
+				gSoloud.playClocked(lasttick / 1000.0f, gSfx, 1, x);
+			}
+
+			if (fire1 || fire2 || fire3)
+			{
+				bullety[bulletidx] = 350;
+				bulletx[bulletidx] = x;
+				bulletidx = (bulletidx + 1) % MAX_BULLETS;
+			}
+			
+			if (fire1) fire1 = 0;
+
+			for (i = 0; i < MAX_BULLETS; i++)
+			{
+				if (bullety[i])
+				{
+					bullety[i] -= 20;
+				}
+			}
+
+			lasttick += 40;
+		}
+
+		fire2 = 0;
+		fire3 = 0;
+
+		DemoUpdateStart();
+		DemoTriangle(400 + x * 100, 350, 
+			         375 + x * 100, 400, 
+					 425 + x * 100, 400, 
+					 0xffffffff);
+
+		for (i = 0; i < MAX_BULLETS; i++)
+		{
+			if (bullety[i] != 0)
+			{
+				DemoTriangle(400 + bulletx[i] * 100, bullety[i],
+					400-2.5f + bulletx[i] * 100, 10 + bullety[i],
+					400+2.5f + bulletx[i] * 100, 10 + bullety[i],
+					0xffffffff);
+
 			}
 		}
+
+		float *buf = gSoloud.getWave();
+		float *fft = gSoloud.calcFFT();
+
+		ONCE(ImGui::SetNextWindowPos(ImVec2(400, 20)));
+		ImGui::Begin("Output");
+		ImGui::PlotLines("##Wave", buf, 256, 0, "Wave", -1, 1, ImVec2(264, 80));
+		ImGui::PlotHistogram("##FFT", fft, 256 / 2, 0, "FFT", 0, 1, ImVec2(264, 80), 8);
+		ImGui::Text("Active voices     : %d", gSoloud.getActiveVoiceCount());
+		ImGui::Text("----|----|----|----|----|");
+
+		char temp[200];
+		for (i = 0; i < gSoloud.getActiveVoiceCount(); i++)
+			temp[i] = '-';
+		temp[i] = 0;
+		ImGui::Text(temp);
+
+		ImGui::End();
+
+		ONCE(ImGui::SetNextWindowPos(ImVec2(20, 20)));
+		ImGui::Begin("Control");
+		if (ImGui::Button("Play (single)"))
+		{
+			fire1 = 1;
+		}
+		ImGui::Text("Keep pressing button for repeat:");
+		if (ImGui::Button("Play", ImVec2(0, 0), true))
+		{
+			fire2 = 1;
+		}
+		if (ImGui::Button("PlayClocked", ImVec2(0, 0), true))
+		{
+			fire3 = 1;
+		}
+
+		ImGui::End();
+		DemoUpdateEnd();
 	}
 	return 0;
 }

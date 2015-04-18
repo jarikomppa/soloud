@@ -37,12 +37,87 @@
 #include <stdio.h>
 #include "imgui.h"
 
+
+GLuint loadShader(GLenum aShaderType, const char* aSource)
+{
+	GLuint shader = glCreateShader(aShaderType);
+	if (shader)
+	{
+		glShaderSource(shader, 1, &aSource, NULL);
+		glCompileShader(shader);
+		GLint compiled = 0;
+		glGetShaderiv(shader, GL_COMPILE_STATUS, &compiled);
+		if (!compiled)
+		{
+			GLint infoLen = 0;
+			glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &infoLen);
+			if (infoLen)
+			{
+				char* buf = (char*)malloc(infoLen);
+				if (buf)
+				{
+					glGetShaderInfoLog(shader, infoLen, NULL, buf);
+					printf("Could not compile shader %d:\n%s\n", aShaderType, buf);
+					free(buf);
+				}
+				glDeleteShader(shader);
+				shader = 0;
+			}
+		}
+	}
+	return shader;
+}
+
+GLuint createProgram(const char *aVertexSource, const char *aFragmentSource)
+{
+	GLuint vertexShader = loadShader(GL_VERTEX_SHADER, aVertexSource);
+	if (!vertexShader)
+	{
+		return 0;
+	}
+
+	GLuint pixelShader = loadShader(GL_FRAGMENT_SHADER, aFragmentSource);
+	if (!pixelShader)
+	{
+		return 0;
+	}
+
+	GLuint program = glCreateProgram();
+	if (program)
+	{
+		glAttachShader(program, vertexShader);
+		glAttachShader(program, pixelShader);
+		glLinkProgram(program);
+		GLint linkStatus = GL_FALSE;
+		glGetProgramiv(program, GL_LINK_STATUS, &linkStatus);
+		if (linkStatus != GL_TRUE)
+		{
+			GLint bufLength = 0;
+			glGetProgramiv(program, GL_INFO_LOG_LENGTH, &bufLength);
+			if (bufLength)
+			{
+				char *buf = (char*)malloc(bufLength);
+				if (buf)
+				{
+					glGetProgramInfoLog(program, bufLength, NULL, buf);
+					printf("Could not link program:\n%s\n", buf);
+					free(buf);
+				}
+			}
+			glDeleteProgram(program);
+			program = 0;
+		}
+	}
+	return program;
+}
+
+
 #define OFFSETOF(TYPE, ELEMENT) ((size_t)&(((TYPE *)0)->ELEMENT))
 
 // Shader variables
-static int shader_handle, vert_handle, frag_handle;
+static int shader_handle;
 static int texture_location, proj_mtx_location;
-static int position_location, uv_location, colour_location;
+static int position_location, uv_location, color_location;
 static size_t vbo_max_size = 20000;
 static unsigned int vbo_handle, vao_handle;
 
@@ -53,6 +128,18 @@ static void ImImpl_RenderDrawLists(ImDrawList** const cmd_lists, int cmd_lists_c
 {
 	if (cmd_lists_count == 0)
 		return;
+
+	glBindVertexArray(vao_handle);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo_handle);
+	glEnableVertexAttribArray(position_location);
+	glEnableVertexAttribArray(uv_location);
+	glEnableVertexAttribArray(color_location);
+
+	glVertexAttribPointer(position_location, 2, GL_FLOAT, GL_FALSE, sizeof(ImDrawVert), (GLvoid*)OFFSETOF(ImDrawVert, pos));
+	glVertexAttribPointer(uv_location, 2, GL_FLOAT, GL_FALSE, sizeof(ImDrawVert), (GLvoid*)OFFSETOF(ImDrawVert, uv));
+	glVertexAttribPointer(color_location, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(ImDrawVert), (GLvoid*)OFFSETOF(ImDrawVert, col));
+	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	// Setup render state: alpha-blending enabled, no face culling, no depth testing, scissor enabled
 	glEnable(GL_BLEND);
@@ -124,6 +211,9 @@ static void ImImpl_RenderDrawLists(ImDrawList** const cmd_lists, int cmd_lists_c
 	glUseProgram(0);
 	glDisable(GL_SCISSOR_TEST);
 	glBindTexture(GL_TEXTURE_2D, 0);
+	glDisableVertexAttribArray(position_location);
+	glDisableVertexAttribArray(uv_location);
+	glDisableVertexAttribArray(color_location);
 }
 
 
@@ -186,44 +276,93 @@ void ImImpl_InitGL()
 		"	Out_Color = Frag_Color * texture( Texture, Frag_UV.st);\n"
 		"}\n";
 
-	shader_handle = glCreateProgram();
-	vert_handle = glCreateShader(GL_VERTEX_SHADER);
-	frag_handle = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(vert_handle, 1, &vertex_shader, 0);
-	glShaderSource(frag_handle, 1, &fragment_shader, 0);
-	glCompileShader(vert_handle);
-	glCompileShader(frag_handle);
-	glAttachShader(shader_handle, vert_handle);
-	glAttachShader(shader_handle, frag_handle);
-	glLinkProgram(shader_handle);
+	shader_handle = createProgram(vertex_shader, fragment_shader);
 
 	texture_location = glGetUniformLocation(shader_handle, "Texture");
 	proj_mtx_location = glGetUniformLocation(shader_handle, "ProjMtx");
 	position_location = glGetAttribLocation(shader_handle, "Position");
 	uv_location = glGetAttribLocation(shader_handle, "UV");
-	colour_location = glGetAttribLocation(shader_handle, "Color");
+	color_location = glGetAttribLocation(shader_handle, "Color");
 
 	glGenBuffers(1, &vbo_handle);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo_handle);
 	glBufferData(GL_ARRAY_BUFFER, vbo_max_size, NULL, GL_DYNAMIC_DRAW);
 
 	glGenVertexArrays(1, &vao_handle);
-	glBindVertexArray(vao_handle);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo_handle);
-	glEnableVertexAttribArray(position_location);
-	glEnableVertexAttribArray(uv_location);
-	glEnableVertexAttribArray(colour_location);
-
-	glVertexAttribPointer(position_location, 2, GL_FLOAT, GL_FALSE, sizeof(ImDrawVert), (GLvoid*)OFFSETOF(ImDrawVert, pos));
-	glVertexAttribPointer(uv_location, 2, GL_FLOAT, GL_FALSE, sizeof(ImDrawVert), (GLvoid*)OFFSETOF(ImDrawVert, uv));
-	glVertexAttribPointer(colour_location, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(ImDrawVert), (GLvoid*)OFFSETOF(ImDrawVert, col));
-	glBindVertexArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	LoadFontsTexture();
 }
 
+static unsigned int flat_shader_handle, flat_position_location, flat_color_location, flat_vbo_handle;
 
+void framework_InitGL()
+{
+	const GLchar *vertex_shader =
+		"#version 330\n"
+		"in vec2 Position;\n"
+		"void main()\n"
+		"{\n"
+		"	gl_Position = vec4(Position.xy,0,1);\n"
+		"}\n";
+
+	const GLchar* fragment_shader =
+		"#version 330\n"
+		"uniform vec4 Color;\n"
+		"out vec4 Out_Color;\n"
+		"void main()\n"
+		"{\n"
+		"	Out_Color = Color;\n"
+		"}\n";
+
+	flat_shader_handle = createProgram(vertex_shader, fragment_shader);
+
+	flat_position_location = glGetAttribLocation(flat_shader_handle, "Position");
+	flat_color_location = glGetUniformLocation(flat_shader_handle, "Color");
+
+	glGenBuffers(1, &flat_vbo_handle);
+	glBindBuffer(GL_ARRAY_BUFFER, flat_vbo_handle);
+	glBufferData(GL_ARRAY_BUFFER, 3, NULL, GL_DYNAMIC_DRAW);
+
+	glBindBuffer(GL_ARRAY_BUFFER, flat_vbo_handle);
+	glEnableVertexAttribArray(flat_position_location);
+
+	glVertexAttribPointer(flat_position_location, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+void DemoTriangle(float x0, float y0, float x1, float y1, float x2, float y2, unsigned int color)
+{
+	glEnableVertexAttribArray(flat_position_location);
+
+	glUseProgram(flat_shader_handle);	
+
+	float buf[3 * 2];
+	buf[0] = x0;
+	buf[1] = y0;
+	buf[2] = x1;
+	buf[3] = y1;
+	buf[4] = x2;
+	buf[5] = y2;
+
+	int i;
+	for (i = 0; i < 3; i++)
+	{
+		buf[i * 2 + 0] = (buf[i * 2 + 0] / 400) - 1;
+		buf[i * 2 + 1] = 1 - (buf[i * 2 + 1] / 200);
+	}
+
+	glVertexAttribPointer(flat_position_location, 2, GL_FLOAT, GL_FALSE, 0, buf);
+
+	glUniform4f(flat_color_location, ((color >> 0) & 0xff) * (1 / 255.0f), ((color >> 8) & 0xff) * (1 / 255.0f), ((color >> 16) & 0xff) * (1 / 255.0f), ((color >> 24) & 0xff) * (1 / 255.0f));	
+
+	glDrawArrays(GL_TRIANGLES, 0, 3);
+
+	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glDisableVertexAttribArray(flat_position_location);
+	glUseProgram(0);
+}
 
 void InitImGui()
 {
@@ -298,9 +437,6 @@ void UpdateImGui()
 		io.AddInputCharacter(gUIState.keychar);
 		gUIState.keychar = 0;
 	}
-
-	// Start the frame
-	ImGui::NewFrame();
 }
 
 SDL_Surface *screen;
@@ -336,6 +472,8 @@ void DemoInit()
 	glewInit();
 
 	InitImGui();
+	framework_InitGL();
+
 
 	// Register SDL_Quit to be called at exit; makes sure things are
 	// cleaned up when we quit.
@@ -398,10 +536,14 @@ void DemoUpdateStart()
 	glClearColor(0.2, 0.2, 0.4, 0);
 	glClear(GL_COLOR_BUFFER_BIT);
 	UpdateImGui();
+
+	// Start the frame
+	ImGui::NewFrame();
 }
 
 void DemoUpdateEnd()
 {
+	// End frame
 	ImGui::Render();
 	SDL_GL_SwapBuffers();
 
@@ -410,4 +552,9 @@ void DemoUpdateEnd()
 int DemoTick()
 {
 	return SDL_GetTicks();
+}
+
+void DemoYield()
+{
+	SDL_Delay(1);
 }

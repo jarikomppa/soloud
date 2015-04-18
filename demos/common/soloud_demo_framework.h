@@ -25,8 +25,11 @@
 * Parts copied from ImGui examples
 */
 
+#define ONCE(x) { static int oncetrigger = 1; if (oncetrigger) { x; oncetrigger = 0; }}
+
 void DemoInit();
 void DemoUpdateStart();
 void DemoUpdateEnd();
 int DemoTick();
-
+void DemoYield();
+void DemoTriangle(float x0, float y0, float x1, float y1, float x2, float y2, unsigned int color);

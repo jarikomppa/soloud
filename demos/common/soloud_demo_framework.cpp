@@ -37,6 +37,29 @@
 #include <stdio.h>
 #include "imgui.h"
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
+GLuint loadTexture(char * aFilename)
+{
+	int x, y, comp;
+	unsigned char *image = stbi_load(aFilename, &x, &y, &comp, 4);
+	if (!image)
+		return 0;
+	int i;
+	unsigned int tex;
+	glGenTextures(1, &tex);
+	glBindTexture(GL_TEXTURE_2D, tex);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, x, y, 0, GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid*)image);
+	glGenerateMipmap(GL_TEXTURE_2D);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	stbi_image_free(image);
+	return tex;
+}
 
 GLuint loadShader(GLenum aShaderType, const char* aSource)
 {
@@ -120,6 +143,7 @@ static int texture_location, proj_mtx_location;
 static int position_location, uv_location, color_location;
 static size_t vbo_max_size = 20000;
 static unsigned int vbo_handle, vao_handle;
+static unsigned int desktop_tex;
 
 // This is the main rendering function that you have to implement and provide to ImGui (via setting up 'RenderDrawListsFn' in the ImGuiIO structure)
 // If text or lines are blurry when integrating ImGui in your engine:
@@ -293,9 +317,9 @@ void ImImpl_InitGL()
 	LoadFontsTexture();
 }
 
-static unsigned int flat_shader_handle, flat_position_location, flat_color_location, flat_vbo_handle;
+static unsigned int flat_shader_handle, flat_position_location, flat_color_location;
 
-void framework_InitGL()
+void framework_init_flat()
 {
 	const GLchar *vertex_shader =
 		"#version 330\n"
@@ -318,17 +342,37 @@ void framework_InitGL()
 
 	flat_position_location = glGetAttribLocation(flat_shader_handle, "Position");
 	flat_color_location = glGetUniformLocation(flat_shader_handle, "Color");
+}
 
-	glGenBuffers(1, &flat_vbo_handle);
-	glBindBuffer(GL_ARRAY_BUFFER, flat_vbo_handle);
-	glBufferData(GL_ARRAY_BUFFER, 3, NULL, GL_DYNAMIC_DRAW);
+static unsigned int tex_shader_handle, tex_position_location, tex_uv_location, tex_texture_position;
+void framework_init_tex()
+{
+	const GLchar *vertex_shader =
+		"#version 330\n"
+		"in vec2 Position;\n"
+		"in vec2 TexCoord;\n"
+		"out vec2 Frag_UV;\n"
+		"void main()\n"
+		"{\n"
+		"	Frag_UV = TexCoord;\n"
+		"	gl_Position = vec4(Position.xy,0,1);\n"
+		"}\n";
 
-	glBindBuffer(GL_ARRAY_BUFFER, flat_vbo_handle);
-	glEnableVertexAttribArray(flat_position_location);
+	const GLchar* fragment_shader =
+		"#version 330\n"
+		"uniform sampler2D Texture;\n"
+		"in vec2 Frag_UV;\n"
+		"out vec4 Out_Color;\n"
+		"void main()\n"
+		"{\n"
+		"	Out_Color = texture(Texture, Frag_UV.st);\n"
+		"}\n";
 
-	glVertexAttribPointer(flat_position_location, 2, GL_FLOAT, GL_FALSE, 0, 0);
-	glBindVertexArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	tex_shader_handle = createProgram(vertex_shader, fragment_shader);
+
+	tex_position_location = glGetAttribLocation(tex_shader_handle, "Position");
+	tex_uv_location = glGetAttribLocation(tex_shader_handle, "TexCoord");
+	tex_texture_position = glGetUniformLocation(flat_shader_handle, "Texture");
 }
 
 void DemoTriangle(float x0, float y0, float x1, float y1, float x2, float y2, unsigned int color)
@@ -363,6 +407,53 @@ void DemoTriangle(float x0, float y0, float x1, float y1, float x2, float y2, un
 	glDisableVertexAttribArray(flat_position_location);
 	glUseProgram(0);
 }
+
+void DemoTexQuad(int tex, float x0, float y0, float x1, float y1, float x2, float y2, float x3, float y3)
+{
+	glEnableVertexAttribArray(tex_position_location);
+	glEnableVertexAttribArray(tex_uv_location);
+
+	glUseProgram(tex_shader_handle);
+
+	float buf[4 * 2];
+	buf[0] = x0;
+	buf[1] = y0;
+	buf[2] = x1;
+	buf[3] = y1;
+	buf[4] = x2;
+	buf[5] = y2;
+	buf[6] = x3;
+	buf[7] = y3;
+
+	int i;
+	for (i = 0; i < 4; i++)
+	{
+		buf[i * 2 + 0] = (buf[i * 2 + 0] / 400) - 1;
+		buf[i * 2 + 1] = 1 - (buf[i * 2 + 1] / 200);
+	}
+
+	float uvbuf[4 * 2] =
+	{
+		0, 0,
+		1, 0,
+		0, 1,
+		1, 1
+	};
+
+
+	glVertexAttribPointer(tex_position_location, 2, GL_FLOAT, GL_FALSE, 0, buf);
+	glVertexAttribPointer(tex_uv_location, 2, GL_FLOAT, GL_FALSE, 0, uvbuf);
+	glActiveTexture(GL_TEXTURE0);
+	glUniform1i(tex_texture_position, 0);
+	glBindTexture(GL_TEXTURE_2D, tex);
+
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+	glDisableVertexAttribArray(tex_position_location);
+	glDisableVertexAttribArray(tex_uv_location);
+	glUseProgram(0);
+}
+
 
 void InitImGui()
 {
@@ -439,8 +530,6 @@ void UpdateImGui()
 	}
 }
 
-SDL_Surface *screen;
-
 
 void DemoInit()
 {
@@ -472,8 +561,9 @@ void DemoInit()
 	glewInit();
 
 	InitImGui();
-	framework_InitGL();
-
+	framework_init_flat();
+	framework_init_tex();
+	desktop_tex = loadTexture("graphics/soloud_bg.png");
 
 	// Register SDL_Quit to be called at exit; makes sure things are
 	// cleaned up when we quit.
@@ -535,6 +625,7 @@ void DemoUpdateStart()
 	}
 	glClearColor(0.2, 0.2, 0.4, 0);
 	glClear(GL_COLOR_BUFFER_BIT);
+	DemoTexQuad(desktop_tex, 0, 0, 800, 0, 0, 400, 800, 400);
 	UpdateImGui();
 
 	// Start the frame

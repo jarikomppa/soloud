@@ -1189,7 +1189,7 @@ module SoLoud
 		extern "void Soloud_setPostClipScaler(Soloud *, float)"
 		extern "void Soloud_setPause(Soloud *, unsigned int, int)"
 		extern "void Soloud_setPauseAll(Soloud *, int)"
-		extern "void Soloud_setRelativePlaySpeed(Soloud *, unsigned int, float)"
+		extern "int Soloud_setRelativePlaySpeed(Soloud *, unsigned int, float)"
 		extern "void Soloud_setProtectVoice(Soloud *, unsigned int, int)"
 		extern "void Soloud_setSamplerate(Soloud *, unsigned int, float)"
 		extern "void Soloud_setPan(Soloud *, unsigned int, float)"
@@ -1273,6 +1273,10 @@ module SoLoud
 		extern "void LofiFilter_destroy(LofiFilter *)"
 		extern "LofiFilter * LofiFilter_create()"
 		extern "int LofiFilter_setParams(LofiFilter *, float, float)"
+		extern "void DCRemovalFilter_destroy(DCRemovalFilter *)"
+		extern "DCRemovalFilter * DCRemovalFilter_create()"
+		extern "int DCRemovalFilter_setParams(DCRemovalFilter *)"
+		extern "int DCRemovalFilter_setParamsEx(DCRemovalFilter *, float)"
 		extern "void Modplug_destroy(Modplug *)"
 		extern "Modplug * Modplug_create()"
 		extern "int Modplug_load(Modplug *, const char *)"
@@ -1307,6 +1311,22 @@ module SoLoud
 		extern "void Sfxr_set3dColliderEx(Sfxr *, AudioCollider *, int)"
 		extern "void Sfxr_setFilter(Sfxr *, unsigned int, Filter *)"
 		extern "void Sfxr_stop(Sfxr *)"
+		extern "void Monotone_destroy(Monotone *)"
+		extern "void Monotone_clear(Monotone *)"
+		extern "Monotone * Monotone_create()"
+		extern "int Monotone_load(Monotone *, const char *)"
+		extern "int Monotone_loadEx(Monotone *, const char *, int)"
+		extern "void Monotone_setLooping(Monotone *, int)"
+		extern "void Monotone_set3dMinMaxDistance(Monotone *, float, float)"
+		extern "void Monotone_set3dAttenuation(Monotone *, unsigned int, float)"
+		extern "void Monotone_set3dDopplerFactor(Monotone *, float)"
+		extern "void Monotone_set3dProcessing(Monotone *, int)"
+		extern "void Monotone_set3dListenerRelative(Monotone *, int)"
+		extern "void Monotone_set3dDistanceDelay(Monotone *, int)"
+		extern "void Monotone_set3dCollider(Monotone *, AudioCollider *)"
+		extern "void Monotone_set3dColliderEx(Monotone *, AudioCollider *, int)"
+		extern "void Monotone_setFilter(Monotone *, unsigned int, Filter *)"
+		extern "void Monotone_stop(Monotone *)"
 		extern "void Speech_destroy(Speech *)"
 		extern "Speech * Speech_create()"
 		extern "int Speech_setText(Speech *, const char *)"
@@ -1745,6 +1765,20 @@ module SoLoud
 		end
 	end
 
+	class DCRemovalFilter
+		@objhandle=nil
+		attr_accessor :objhandle
+		def initialize(*args)
+			@objhandle = SoLoud::CAPI.DCRemovalFilter_create()
+		end
+		def destroy()
+			SoLoud::CAPI.DCRemovalFilter_destroy(@objhandle)
+		end
+	def set_params(aLength=0.1)
+		SoLoud::CAPI.DCRemovalFilter_setParamsEx(@objhandle, aLength)
+		end
+	end
+
 	class Modplug
 		@objhandle=nil
 		attr_accessor :objhandle
@@ -1860,6 +1894,53 @@ module SoLoud
 		end
 	def stop()
 		SoLoud::CAPI.Sfxr_stop(@objhandle)
+		end
+	end
+
+	class Monotone
+		@objhandle=nil
+		attr_accessor :objhandle
+		def initialize(*args)
+			@objhandle = SoLoud::CAPI.Monotone_create()
+		end
+		def destroy()
+			SoLoud::CAPI.Monotone_destroy(@objhandle)
+		end
+	def clear()
+		SoLoud::CAPI.Monotone_clear(@objhandle)
+		end
+	def load(aFilename, aHardwareChannels=1)
+		SoLoud::CAPI.Monotone_loadEx(@objhandle, aFilename, aHardwareChannels)
+		end
+	def set_looping(aLoop)
+		SoLoud::CAPI.Monotone_setLooping(@objhandle, aLoop)
+		end
+	def set_3d_min_max_distance(aMinDistance, aMaxDistance)
+		SoLoud::CAPI.Monotone_set3dMinMaxDistance(@objhandle, aMinDistance, aMaxDistance)
+		end
+	def set_3d_attenuation(aAttenuationModel, aAttenuationRolloffFactor)
+		SoLoud::CAPI.Monotone_set3dAttenuation(@objhandle, aAttenuationModel, aAttenuationRolloffFactor)
+		end
+	def set_3d_doppler_factor(aDopplerFactor)
+		SoLoud::CAPI.Monotone_set3dDopplerFactor(@objhandle, aDopplerFactor)
+		end
+	def set_3d_processing(aDo3dProcessing)
+		SoLoud::CAPI.Monotone_set3dProcessing(@objhandle, aDo3dProcessing)
+		end
+	def set_3d_listener_relative(aListenerRelative)
+		SoLoud::CAPI.Monotone_set3dListenerRelative(@objhandle, aListenerRelative)
+		end
+	def set_3d_distance_delay(aDistanceDelay)
+		SoLoud::CAPI.Monotone_set3dDistanceDelay(@objhandle, aDistanceDelay)
+		end
+	def set_3d_collider(aCollider, aUserData=0)
+		SoLoud::CAPI.Monotone_set3dColliderEx(@objhandle, aCollider.objhandle, aUserData)
+		end
+	def set_filter(aFilterId, aFilter)
+		SoLoud::CAPI.Monotone_setFilter(@objhandle, aFilterId, aFilter.objhandle)
+		end
+	def stop()
+		SoLoud::CAPI.Monotone_stop(@objhandle)
 		end
 	end
 

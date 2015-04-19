@@ -27,7 +27,7 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-/* SoLoud C-Api Code Generator (c)2013-2014 Jari Komppa http://iki.fi/sol/ */
+/* SoLoud C-Api Code Generator (c)2013-2015 Jari Komppa http://iki.fi/sol/ */
 
 #ifndef SOLOUD_C_H_INCLUDED
 #define SOLOUD_C_H_INCLUDED
@@ -88,9 +88,11 @@ typedef void * FFTFilter;
 typedef void * Filter;
 typedef void * FlangerFilter;
 typedef void * LofiFilter;
+typedef void * DCRemovalFilter;
 typedef void * Modplug;
 typedef void * Prg;
 typedef void * Sfxr;
+typedef void * Monotone;
 typedef void * Speech;
 typedef void * Wav;
 typedef void * WavStream;
@@ -136,7 +138,7 @@ void Soloud_setGlobalVolume(Soloud * aSoloud, float aVolume);
 void Soloud_setPostClipScaler(Soloud * aSoloud, float aScaler);
 void Soloud_setPause(Soloud * aSoloud, unsigned int aVoiceHandle, int aPause);
 void Soloud_setPauseAll(Soloud * aSoloud, int aPause);
-void Soloud_setRelativePlaySpeed(Soloud * aSoloud, unsigned int aVoiceHandle, float aSpeed);
+int Soloud_setRelativePlaySpeed(Soloud * aSoloud, unsigned int aVoiceHandle, float aSpeed);
 void Soloud_setProtectVoice(Soloud * aSoloud, unsigned int aVoiceHandle, int aProtect);
 void Soloud_setSamplerate(Soloud * aSoloud, unsigned int aVoiceHandle, float aSamplerate);
 void Soloud_setPan(Soloud * aSoloud, unsigned int aVoiceHandle, float aPan);
@@ -246,6 +248,14 @@ LofiFilter * LofiFilter_create();
 int LofiFilter_setParams(LofiFilter * aLofiFilter, float aSampleRate, float aBitdepth);
 
 /*
+ * DCRemovalFilter
+ */
+void DCRemovalFilter_destroy(DCRemovalFilter * aDCRemovalFilter);
+DCRemovalFilter * DCRemovalFilter_create();
+int DCRemovalFilter_setParams(DCRemovalFilter * aDCRemovalFilter);
+int DCRemovalFilter_setParamsEx(DCRemovalFilter * aDCRemovalFilter, float aLength /* = 0.1f */);
+
+/*
  * Modplug
  */
 void Modplug_destroy(Modplug * aModplug);
@@ -290,6 +300,26 @@ void Sfxr_set3dCollider(Sfxr * aSfxr, AudioCollider * aCollider);
 void Sfxr_set3dColliderEx(Sfxr * aSfxr, AudioCollider * aCollider, int aUserData /* = 0 */);
 void Sfxr_setFilter(Sfxr * aSfxr, unsigned int aFilterId, Filter * aFilter);
 void Sfxr_stop(Sfxr * aSfxr);
+
+/*
+ * Monotone
+ */
+void Monotone_destroy(Monotone * aMonotone);
+void Monotone_clear(Monotone * aMonotone);
+Monotone * Monotone_create();
+int Monotone_load(Monotone * aMonotone, const char * aFilename);
+int Monotone_loadEx(Monotone * aMonotone, const char * aFilename, int aHardwareChannels /* = 1 */);
+void Monotone_setLooping(Monotone * aMonotone, int aLoop);
+void Monotone_set3dMinMaxDistance(Monotone * aMonotone, float aMinDistance, float aMaxDistance);
+void Monotone_set3dAttenuation(Monotone * aMonotone, unsigned int aAttenuationModel, float aAttenuationRolloffFactor);
+void Monotone_set3dDopplerFactor(Monotone * aMonotone, float aDopplerFactor);
+void Monotone_set3dProcessing(Monotone * aMonotone, int aDo3dProcessing);
+void Monotone_set3dListenerRelative(Monotone * aMonotone, int aListenerRelative);
+void Monotone_set3dDistanceDelay(Monotone * aMonotone, int aDistanceDelay);
+void Monotone_set3dCollider(Monotone * aMonotone, AudioCollider * aCollider);
+void Monotone_set3dColliderEx(Monotone * aMonotone, AudioCollider * aCollider, int aUserData /* = 0 */);
+void Monotone_setFilter(Monotone * aMonotone, unsigned int aFilterId, Filter * aFilter);
+void Monotone_stop(Monotone * aMonotone);
 
 /*
  * Speech

@@ -197,9 +197,9 @@ pure @safe nothrow @nogc:
 		Soloud_setPauseAll(objhandle, aPause);
 	}
 
-	public void setRelativePlaySpeed(uint aVoiceHandle, float aSpeed)
+	public int setRelativePlaySpeed(uint aVoiceHandle, float aSpeed)
 	{
-		Soloud_setRelativePlaySpeed(objhandle, aVoiceHandle, aSpeed);
+		return Soloud_setRelativePlaySpeed(objhandle, aVoiceHandle, aSpeed);
 	}
 
 	public void setProtectVoice(uint aVoiceHandle, int aProtect)
@@ -645,6 +645,30 @@ pure @safe nothrow @nogc:
 
 }
 
+public struct DCRemovalFilter
+{
+pure @safe nothrow @nogc:
+
+	public SoloudObject soloudObject;
+	alias soloudObject this;
+
+	public static create()
+	{
+		return DCRemovalFilter(SoloudObject(DCRemovalFilter_create()));
+	}
+
+	~this()
+	{
+		DCRemovalFilter_destroy(objhandle);
+	}
+
+	public int setParams(float aLength = 0.1f)
+	{
+		return DCRemovalFilter_setParamsEx(objhandle, aLength);
+	}
+
+}
+
 public struct Modplug
 {
 pure @safe nothrow @nogc:
@@ -835,6 +859,85 @@ pure @safe nothrow @nogc:
 	public void stop()
 	{
 		Sfxr_stop(objhandle);
+	}
+
+}
+
+public struct Monotone
+{
+pure @safe nothrow @nogc:
+
+	public SoloudObject soloudObject;
+	alias soloudObject this;
+
+	public static create()
+	{
+		return Monotone(SoloudObject(Monotone_create()));
+	}
+
+	~this()
+	{
+		Monotone_destroy(objhandle);
+	}
+
+	public void clear()
+	{
+		Monotone_clear(objhandle);
+	}
+
+	public int load(const(char)* aFilename, int aHardwareChannels = 1)
+	{
+		return Monotone_loadEx(objhandle, aFilename, aHardwareChannels);
+	}
+
+	public void setLooping(int aLoop)
+	{
+		Monotone_setLooping(objhandle, aLoop);
+	}
+
+	public void set3dMinMaxDistance(float aMinDistance, float aMaxDistance)
+	{
+		Monotone_set3dMinMaxDistance(objhandle, aMinDistance, aMaxDistance);
+	}
+
+	public void set3dAttenuation(uint aAttenuationModel, float aAttenuationRolloffFactor)
+	{
+		Monotone_set3dAttenuation(objhandle, aAttenuationModel, aAttenuationRolloffFactor);
+	}
+
+	public void set3dDopplerFactor(float aDopplerFactor)
+	{
+		Monotone_set3dDopplerFactor(objhandle, aDopplerFactor);
+	}
+
+	public void set3dProcessing(int aDo3dProcessing)
+	{
+		Monotone_set3dProcessing(objhandle, aDo3dProcessing);
+	}
+
+	public void set3dListenerRelative(int aListenerRelative)
+	{
+		Monotone_set3dListenerRelative(objhandle, aListenerRelative);
+	}
+
+	public void set3dDistanceDelay(int aDistanceDelay)
+	{
+		Monotone_set3dDistanceDelay(objhandle, aDistanceDelay);
+	}
+
+	public void set3dCollider(SoloudObject aCollider, int aUserData = 0)
+	{
+		Monotone_set3dColliderEx(objhandle, aCollider.objhandle, aUserData);
+	}
+
+	public void setFilter(uint aFilterId, SoloudObject aFilter)
+	{
+		Monotone_setFilter(objhandle, aFilterId, aFilter.objhandle);
+	}
+
+	public void stop()
+	{
+		Monotone_stop(objhandle);
 	}
 
 }
@@ -1108,7 +1211,7 @@ private static extern(C) void Soloud_setGlobalVolume(int* aObjHandle, float aVol
 private static extern(C) void Soloud_setPostClipScaler(int* aObjHandle, float aScaler);
 private static extern(C) void Soloud_setPause(int* aObjHandle, uint aVoiceHandle, int aPause);
 private static extern(C) void Soloud_setPauseAll(int* aObjHandle, int aPause);
-private static extern(C) void Soloud_setRelativePlaySpeed(int* aObjHandle, uint aVoiceHandle, float aSpeed);
+private static extern(C) int Soloud_setRelativePlaySpeed(int* aObjHandle, uint aVoiceHandle, float aSpeed);
 private static extern(C) void Soloud_setProtectVoice(int* aObjHandle, uint aVoiceHandle, int aProtect);
 private static extern(C) void Soloud_setSamplerate(int* aObjHandle, uint aVoiceHandle, float aSamplerate);
 private static extern(C) void Soloud_setPan(int* aObjHandle, uint aVoiceHandle, float aPan);
@@ -1183,6 +1286,9 @@ private static extern(C) int FlangerFilter_setParams(int* aObjHandle, float aDel
 private static extern(C) int* LofiFilter_create();
 private static extern(C) int* LofiFilter_destroy(int* aObjHandle);
 private static extern(C) int LofiFilter_setParams(int* aObjHandle, float aSampleRate, float aBitdepth);
+private static extern(C) int* DCRemovalFilter_create();
+private static extern(C) int* DCRemovalFilter_destroy(int* aObjHandle);
+private static extern(C) int DCRemovalFilter_setParamsEx(int* aObjHandle, float aLength);
 private static extern(C) int* Modplug_create();
 private static extern(C) int* Modplug_destroy(int* aObjHandle);
 private static extern(C) int Modplug_load(int* aObjHandle, const(char)* aFilename);
@@ -1215,6 +1321,20 @@ private static extern(C) void Sfxr_set3dDistanceDelay(int* aObjHandle, int aDist
 private static extern(C) void Sfxr_set3dColliderEx(int* aObjHandle, int* aCollider, int aUserData);
 private static extern(C) void Sfxr_setFilter(int* aObjHandle, uint aFilterId, int* aFilter);
 private static extern(C) void Sfxr_stop(int* aObjHandle);
+private static extern(C) int* Monotone_create();
+private static extern(C) int* Monotone_destroy(int* aObjHandle);
+private static extern(C) void Monotone_clear(int* aObjHandle);
+private static extern(C) int Monotone_loadEx(int* aObjHandle, const(char)* aFilename, int aHardwareChannels);
+private static extern(C) void Monotone_setLooping(int* aObjHandle, int aLoop);
+private static extern(C) void Monotone_set3dMinMaxDistance(int* aObjHandle, float aMinDistance, float aMaxDistance);
+private static extern(C) void Monotone_set3dAttenuation(int* aObjHandle, uint aAttenuationModel, float aAttenuationRolloffFactor);
+private static extern(C) void Monotone_set3dDopplerFactor(int* aObjHandle, float aDopplerFactor);
+private static extern(C) void Monotone_set3dProcessing(int* aObjHandle, int aDo3dProcessing);
+private static extern(C) void Monotone_set3dListenerRelative(int* aObjHandle, int aListenerRelative);
+private static extern(C) void Monotone_set3dDistanceDelay(int* aObjHandle, int aDistanceDelay);
+private static extern(C) void Monotone_set3dColliderEx(int* aObjHandle, int* aCollider, int aUserData);
+private static extern(C) void Monotone_setFilter(int* aObjHandle, uint aFilterId, int* aFilter);
+private static extern(C) void Monotone_stop(int* aObjHandle);
 private static extern(C) int* Speech_create();
 private static extern(C) int* Speech_destroy(int* aObjHandle);
 private static extern(C) int Speech_setText(int* aObjHandle, const(char)* aText);

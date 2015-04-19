@@ -27,7 +27,7 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-/* SoLoud C-Api Code Generator (c)2013-2014 Jari Komppa http://iki.fi/sol/ */
+/* SoLoud C-Api Code Generator (c)2013-2015 Jari Komppa http://iki.fi/sol/ */
 
 #include "../include/soloud.h"
 #include "../include/soloud_audiosource.h"
@@ -277,10 +277,10 @@ void Soloud_setPauseAll(void * aClassPtr, int aPause)
 	cl->setPauseAll(aPause);
 }
 
-void Soloud_setRelativePlaySpeed(void * aClassPtr, unsigned int aVoiceHandle, float aSpeed)
+int Soloud_setRelativePlaySpeed(void * aClassPtr, unsigned int aVoiceHandle, float aSpeed)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
-	cl->setRelativePlaySpeed(aVoiceHandle, aSpeed);
+	return cl->setRelativePlaySpeed(aVoiceHandle, aSpeed);
 }
 
 void Soloud_setProtectVoice(void * aClassPtr, unsigned int aVoiceHandle, int aProtect)
@@ -769,6 +769,28 @@ int LofiFilter_setParams(void * aClassPtr, float aSampleRate, float aBitdepth)
 	return cl->setParams(aSampleRate, aBitdepth);
 }
 
+void DCRemovalFilter_destroy(void * aClassPtr)
+{
+  delete (DCRemovalFilter *)aClassPtr;
+}
+
+void * DCRemovalFilter_create()
+{
+  return (void *)new DCRemovalFilter;
+}
+
+int DCRemovalFilter_setParams(void * aClassPtr)
+{
+	DCRemovalFilter * cl = (DCRemovalFilter *)aClassPtr;
+	return cl->setParams();
+}
+
+int DCRemovalFilter_setParamsEx(void * aClassPtr, float aLength)
+{
+	DCRemovalFilter * cl = (DCRemovalFilter *)aClassPtr;
+	return cl->setParams(aLength);
+}
+
 void Modplug_destroy(void * aClassPtr)
 {
   delete (Modplug *)aClassPtr;
@@ -964,6 +986,100 @@ void Sfxr_setFilter(void * aClassPtr, unsigned int aFilterId, Filter * aFilter)
 void Sfxr_stop(void * aClassPtr)
 {
 	Sfxr * cl = (Sfxr *)aClassPtr;
+	cl->stop();
+}
+
+void Monotone_destroy(void * aClassPtr)
+{
+  delete (Monotone *)aClassPtr;
+}
+
+void Monotone_clear(void * aClassPtr)
+{
+	Monotone * cl = (Monotone *)aClassPtr;
+	cl->clear();
+}
+
+void * Monotone_create()
+{
+  return (void *)new Monotone;
+}
+
+int Monotone_load(void * aClassPtr, const char * aFilename)
+{
+	Monotone * cl = (Monotone *)aClassPtr;
+	return cl->load(aFilename);
+}
+
+int Monotone_loadEx(void * aClassPtr, const char * aFilename, int aHardwareChannels)
+{
+	Monotone * cl = (Monotone *)aClassPtr;
+	return cl->load(aFilename, aHardwareChannels);
+}
+
+void Monotone_setLooping(void * aClassPtr, int aLoop)
+{
+	Monotone * cl = (Monotone *)aClassPtr;
+	cl->setLooping(aLoop);
+}
+
+void Monotone_set3dMinMaxDistance(void * aClassPtr, float aMinDistance, float aMaxDistance)
+{
+	Monotone * cl = (Monotone *)aClassPtr;
+	cl->set3dMinMaxDistance(aMinDistance, aMaxDistance);
+}
+
+void Monotone_set3dAttenuation(void * aClassPtr, unsigned int aAttenuationModel, float aAttenuationRolloffFactor)
+{
+	Monotone * cl = (Monotone *)aClassPtr;
+	cl->set3dAttenuation(aAttenuationModel, aAttenuationRolloffFactor);
+}
+
+void Monotone_set3dDopplerFactor(void * aClassPtr, float aDopplerFactor)
+{
+	Monotone * cl = (Monotone *)aClassPtr;
+	cl->set3dDopplerFactor(aDopplerFactor);
+}
+
+void Monotone_set3dProcessing(void * aClassPtr, int aDo3dProcessing)
+{
+	Monotone * cl = (Monotone *)aClassPtr;
+	cl->set3dProcessing(aDo3dProcessing);
+}
+
+void Monotone_set3dListenerRelative(void * aClassPtr, int aListenerRelative)
+{
+	Monotone * cl = (Monotone *)aClassPtr;
+	cl->set3dListenerRelative(aListenerRelative);
+}
+
+void Monotone_set3dDistanceDelay(void * aClassPtr, int aDistanceDelay)
+{
+	Monotone * cl = (Monotone *)aClassPtr;
+	cl->set3dDistanceDelay(aDistanceDelay);
+}
+
+void Monotone_set3dCollider(void * aClassPtr, AudioCollider * aCollider)
+{
+	Monotone * cl = (Monotone *)aClassPtr;
+	cl->set3dCollider(aCollider);
+}
+
+void Monotone_set3dColliderEx(void * aClassPtr, AudioCollider * aCollider, int aUserData)
+{
+	Monotone * cl = (Monotone *)aClassPtr;
+	cl->set3dCollider(aCollider, aUserData);
+}
+
+void Monotone_setFilter(void * aClassPtr, unsigned int aFilterId, Filter * aFilter)
+{
+	Monotone * cl = (Monotone *)aClassPtr;
+	cl->setFilter(aFilterId, aFilter);
+}
+
+void Monotone_stop(void * aClassPtr)
+{
+	Monotone * cl = (Monotone *)aClassPtr;
 	cl->stop();
 }
 

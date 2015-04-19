@@ -164,7 +164,7 @@ Soloud_setPauseAll.restype = None
 Soloud_setPauseAll.argtypes = [ctypes.c_void_p, ctypes.c_int]
 
 Soloud_setRelativePlaySpeed = soloud_dll.Soloud_setRelativePlaySpeed
-Soloud_setRelativePlaySpeed.restype = None
+Soloud_setRelativePlaySpeed.restype = ctypes.c_int
 Soloud_setRelativePlaySpeed.argtypes = [ctypes.c_void_p, ctypes.c_uint, ctypes.c_float]
 
 Soloud_setProtectVoice = soloud_dll.Soloud_setProtectVoice
@@ -499,6 +499,22 @@ LofiFilter_setParams = soloud_dll.LofiFilter_setParams
 LofiFilter_setParams.restype = ctypes.c_int
 LofiFilter_setParams.argtypes = [ctypes.c_void_p, ctypes.c_float, ctypes.c_float]
 
+DCRemovalFilter_destroy = soloud_dll.DCRemovalFilter_destroy
+DCRemovalFilter_destroy.restype = None
+DCRemovalFilter_destroy.argtypes = [ctypes.c_void_p]
+
+DCRemovalFilter_create = soloud_dll.DCRemovalFilter_create
+DCRemovalFilter_create.restype = ctypes.c_void_p
+DCRemovalFilter_create.argtypes = []
+
+DCRemovalFilter_setParams = soloud_dll.DCRemovalFilter_setParams
+DCRemovalFilter_setParams.restype = ctypes.c_int
+DCRemovalFilter_setParams.argtypes = [ctypes.c_void_p]
+
+DCRemovalFilter_setParamsEx = soloud_dll.DCRemovalFilter_setParamsEx
+DCRemovalFilter_setParamsEx.restype = ctypes.c_int
+DCRemovalFilter_setParamsEx.argtypes = [ctypes.c_void_p, ctypes.c_float]
+
 Modplug_destroy = soloud_dll.Modplug_destroy
 Modplug_destroy.restype = None
 Modplug_destroy.argtypes = [ctypes.c_void_p]
@@ -634,6 +650,70 @@ Sfxr_setFilter.argtypes = [ctypes.c_void_p, ctypes.c_uint, ctypes.c_void_p]
 Sfxr_stop = soloud_dll.Sfxr_stop
 Sfxr_stop.restype = None
 Sfxr_stop.argtypes = [ctypes.c_void_p]
+
+Monotone_destroy = soloud_dll.Monotone_destroy
+Monotone_destroy.restype = None
+Monotone_destroy.argtypes = [ctypes.c_void_p]
+
+Monotone_clear = soloud_dll.Monotone_clear
+Monotone_clear.restype = None
+Monotone_clear.argtypes = [ctypes.c_void_p]
+
+Monotone_create = soloud_dll.Monotone_create
+Monotone_create.restype = ctypes.c_void_p
+Monotone_create.argtypes = []
+
+Monotone_load = soloud_dll.Monotone_load
+Monotone_load.restype = ctypes.c_int
+Monotone_load.argtypes = [ctypes.c_void_p, ctypes.c_char_p]
+
+Monotone_loadEx = soloud_dll.Monotone_loadEx
+Monotone_loadEx.restype = ctypes.c_int
+Monotone_loadEx.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_int]
+
+Monotone_setLooping = soloud_dll.Monotone_setLooping
+Monotone_setLooping.restype = None
+Monotone_setLooping.argtypes = [ctypes.c_void_p, ctypes.c_int]
+
+Monotone_set3dMinMaxDistance = soloud_dll.Monotone_set3dMinMaxDistance
+Monotone_set3dMinMaxDistance.restype = None
+Monotone_set3dMinMaxDistance.argtypes = [ctypes.c_void_p, ctypes.c_float, ctypes.c_float]
+
+Monotone_set3dAttenuation = soloud_dll.Monotone_set3dAttenuation
+Monotone_set3dAttenuation.restype = None
+Monotone_set3dAttenuation.argtypes = [ctypes.c_void_p, ctypes.c_uint, ctypes.c_float]
+
+Monotone_set3dDopplerFactor = soloud_dll.Monotone_set3dDopplerFactor
+Monotone_set3dDopplerFactor.restype = None
+Monotone_set3dDopplerFactor.argtypes = [ctypes.c_void_p, ctypes.c_float]
+
+Monotone_set3dProcessing = soloud_dll.Monotone_set3dProcessing
+Monotone_set3dProcessing.restype = None
+Monotone_set3dProcessing.argtypes = [ctypes.c_void_p, ctypes.c_int]
+
+Monotone_set3dListenerRelative = soloud_dll.Monotone_set3dListenerRelative
+Monotone_set3dListenerRelative.restype = None
+Monotone_set3dListenerRelative.argtypes = [ctypes.c_void_p, ctypes.c_int]
+
+Monotone_set3dDistanceDelay = soloud_dll.Monotone_set3dDistanceDelay
+Monotone_set3dDistanceDelay.restype = None
+Monotone_set3dDistanceDelay.argtypes = [ctypes.c_void_p, ctypes.c_int]
+
+Monotone_set3dCollider = soloud_dll.Monotone_set3dCollider
+Monotone_set3dCollider.restype = None
+Monotone_set3dCollider.argtypes = [ctypes.c_void_p, ctypes.c_void_p]
+
+Monotone_set3dColliderEx = soloud_dll.Monotone_set3dColliderEx
+Monotone_set3dColliderEx.restype = None
+Monotone_set3dColliderEx.argtypes = [ctypes.c_void_p, ctypes.c_void_p, ctypes.c_int]
+
+Monotone_setFilter = soloud_dll.Monotone_setFilter
+Monotone_setFilter.restype = None
+Monotone_setFilter.argtypes = [ctypes.c_void_p, ctypes.c_uint, ctypes.c_void_p]
+
+Monotone_stop = soloud_dll.Monotone_stop
+Monotone_stop.restype = None
+Monotone_stop.argtypes = [ctypes.c_void_p]
 
 Speech_destroy = soloud_dll.Speech_destroy
 Speech_destroy.restype = None
@@ -910,7 +990,7 @@ class Soloud(object):
 	def set_pause_all(self, aPause):
 		Soloud_setPauseAll(self.objhandle, ctypes.c_int(aPause))
 	def set_relative_play_speed(self, aVoiceHandle, aSpeed):
-		Soloud_setRelativePlaySpeed(self.objhandle, ctypes.c_uint(aVoiceHandle), ctypes.c_float(aSpeed))
+		return Soloud_setRelativePlaySpeed(self.objhandle, ctypes.c_uint(aVoiceHandle), ctypes.c_float(aSpeed))
 	def set_protect_voice(self, aVoiceHandle, aProtect):
 		Soloud_setProtectVoice(self.objhandle, ctypes.c_uint(aVoiceHandle), ctypes.c_int(aProtect))
 	def set_samplerate(self, aVoiceHandle, aSamplerate):
@@ -1171,6 +1251,27 @@ class LofiFilter(object):
 	def set_params(self, aSampleRate, aBitdepth):
 		return LofiFilter_setParams(self.objhandle, ctypes.c_float(aSampleRate), ctypes.c_float(aBitdepth))
 
+class DCRemovalFilter(object):
+	def __init__(self):
+		self.objhandle = DCRemovalFilter_create()
+	def __enter__(self):
+		return self
+	def __exit__(self, eType, eValue, eTrace):
+		DCRemovalFilter_destroy(self.objhandle)
+		self.objhandle = ctypes.c_void_p(0)
+		return False
+	def close(self):
+		DCRemovalFilter_destroy(self.objhandle)
+		self.objhandle = ctypes.c_void_p(0)
+	def destroy(self):
+		DCRemovalFilter_destroy(self.objhandle)
+		self.objhandle = ctypes.c_void_p(0)
+	def quit(self):
+		DCRemovalFilter_destroy(self.objhandle)
+		self.objhandle = ctypes.c_void_p(0)
+	def set_params(self, aLength = 0.1):
+		return DCRemovalFilter_setParamsEx(self.objhandle, ctypes.c_float(aLength))
+
 class Modplug(object):
 	def __init__(self):
 		self.objhandle = Modplug_create()
@@ -1286,6 +1387,49 @@ class Sfxr(object):
 		Sfxr_setFilter(self.objhandle, ctypes.c_uint(aFilterId), aFilter.objhandle)
 	def stop(self):
 		Sfxr_stop(self.objhandle)
+
+class Monotone(object):
+	def __init__(self):
+		self.objhandle = Monotone_create()
+	def __enter__(self):
+		return self
+	def __exit__(self, eType, eValue, eTrace):
+		Monotone_destroy(self.objhandle)
+		self.objhandle = ctypes.c_void_p(0)
+		return False
+	def close(self):
+		Monotone_destroy(self.objhandle)
+		self.objhandle = ctypes.c_void_p(0)
+	def destroy(self):
+		Monotone_destroy(self.objhandle)
+		self.objhandle = ctypes.c_void_p(0)
+	def quit(self):
+		Monotone_destroy(self.objhandle)
+		self.objhandle = ctypes.c_void_p(0)
+	def clear(self):
+		Monotone_clear(self.objhandle)
+	def load(self, aFilename, aHardwareChannels = 1):
+		return Monotone_loadEx(self.objhandle, ctypes.c_char_p(aFilename), ctypes.c_int(aHardwareChannels))
+	def set_looping(self, aLoop):
+		Monotone_setLooping(self.objhandle, ctypes.c_int(aLoop))
+	def set_3d_min_max_distance(self, aMinDistance, aMaxDistance):
+		Monotone_set3dMinMaxDistance(self.objhandle, ctypes.c_float(aMinDistance), ctypes.c_float(aMaxDistance))
+	def set_3d_attenuation(self, aAttenuationModel, aAttenuationRolloffFactor):
+		Monotone_set3dAttenuation(self.objhandle, ctypes.c_uint(aAttenuationModel), ctypes.c_float(aAttenuationRolloffFactor))
+	def set_3d_doppler_factor(self, aDopplerFactor):
+		Monotone_set3dDopplerFactor(self.objhandle, ctypes.c_float(aDopplerFactor))
+	def set_3d_processing(self, aDo3dProcessing):
+		Monotone_set3dProcessing(self.objhandle, ctypes.c_int(aDo3dProcessing))
+	def set_3d_listener_relative(self, aListenerRelative):
+		Monotone_set3dListenerRelative(self.objhandle, ctypes.c_int(aListenerRelative))
+	def set_3d_distance_delay(self, aDistanceDelay):
+		Monotone_set3dDistanceDelay(self.objhandle, ctypes.c_int(aDistanceDelay))
+	def set_3d_collider(self, aCollider, aUserData = 0):
+		Monotone_set3dColliderEx(self.objhandle, aCollider.objhandle, ctypes.c_int(aUserData))
+	def set_filter(self, aFilterId, aFilter):
+		Monotone_setFilter(self.objhandle, ctypes.c_uint(aFilterId), aFilter.objhandle)
+	def stop(self):
+		Monotone_stop(self.objhandle)
 
 class Speech(object):
 	def __init__(self):

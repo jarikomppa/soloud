@@ -56,8 +56,6 @@ EXPORTS
 	Soloud_oscillateGlobalVolume
 	Soloud_setGlobalFilter
 	Soloud_setVisualizationEnable
-	Soloud_calcFFT
-	Soloud_getWave
 	Soloud_getLoopCount
 	Soloud_createVoiceGroup
 	Soloud_destroyVoiceGroup
@@ -95,8 +93,6 @@ EXPORTS
 	Bus_play3dClocked
 	Bus_play3dClockedEx
 	Bus_setVisualizationEnable
-	Bus_calcFFT
-	Bus_getWave
 	Bus_setLooping
 	Bus_set3dMinMaxDistance
 	Bus_set3dAttenuation
@@ -192,7 +188,6 @@ EXPORTS
 	Wav_destroy
 	Wav_create
 	Wav_load
-	Wav_loadMem
 	Wav_getLength
 	Wav_setLooping
 	Wav_set3dMinMaxDistance

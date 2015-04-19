@@ -264,10 +264,10 @@ public class Soloud : SoloudObject
 	}
 
 	[DllImport("soloud_x86.dll", CallingConvention = CallingConvention.Cdecl)]
-	internal static extern void Soloud_setRelativePlaySpeed(IntPtr aObjHandle, uint aVoiceHandle, float aSpeed);
-	public void setRelativePlaySpeed(uint aVoiceHandle, float aSpeed)
+	internal static extern int Soloud_setRelativePlaySpeed(IntPtr aObjHandle, uint aVoiceHandle, float aSpeed);
+	public int setRelativePlaySpeed(uint aVoiceHandle, float aSpeed)
 	{
-		Soloud_setRelativePlaySpeed(objhandle, aVoiceHandle, aSpeed);
+		return Soloud_setRelativePlaySpeed(objhandle, aVoiceHandle, aSpeed);
 	}
 
 	[DllImport("soloud_x86.dll", CallingConvention = CallingConvention.Cdecl)]
@@ -882,6 +882,31 @@ public class LofiFilter : SoloudObject
 	}
 }
 
+public class DCRemovalFilter : SoloudObject
+{
+
+	[DllImport("soloud_x86.dll", CallingConvention = CallingConvention.Cdecl)]
+	internal static extern IntPtr DCRemovalFilter_create();
+	public DCRemovalFilter()
+	{
+		objhandle = DCRemovalFilter_create();
+	}
+
+	[DllImport("soloud_x86.dll", CallingConvention = CallingConvention.Cdecl)]
+	internal static extern IntPtr DCRemovalFilter_destroy(IntPtr aObjHandle);
+	~DCRemovalFilter()
+	{
+		DCRemovalFilter_destroy(objhandle);
+	}
+
+	[DllImport("soloud_x86.dll", CallingConvention = CallingConvention.Cdecl)]
+	internal static extern int DCRemovalFilter_setParamsEx(IntPtr aObjHandle, float aLength);
+	public int setParams(float aLength = 0.1f)
+	{
+		return DCRemovalFilter_setParamsEx(objhandle, aLength);
+	}
+}
+
 public class Modplug : SoloudObject
 {
 
@@ -1122,6 +1147,108 @@ public class Sfxr : SoloudObject
 	public void stop()
 	{
 		Sfxr_stop(objhandle);
+	}
+}
+
+public class Monotone : SoloudObject
+{
+
+	[DllImport("soloud_x86.dll", CallingConvention = CallingConvention.Cdecl)]
+	internal static extern IntPtr Monotone_create();
+	public Monotone()
+	{
+		objhandle = Monotone_create();
+	}
+
+	[DllImport("soloud_x86.dll", CallingConvention = CallingConvention.Cdecl)]
+	internal static extern IntPtr Monotone_destroy(IntPtr aObjHandle);
+	~Monotone()
+	{
+		Monotone_destroy(objhandle);
+	}
+
+	[DllImport("soloud_x86.dll", CallingConvention = CallingConvention.Cdecl)]
+	internal static extern void Monotone_clear(IntPtr aObjHandle);
+	public void clear()
+	{
+		Monotone_clear(objhandle);
+	}
+
+	[DllImport("soloud_x86.dll", CallingConvention = CallingConvention.Cdecl)]
+	internal static extern int Monotone_loadEx(IntPtr aObjHandle, [MarshalAs(UnmanagedType.LPStr)] string aFilename, int aHardwareChannels);
+	public int load(string aFilename, int aHardwareChannels = 1)
+	{
+		return Monotone_loadEx(objhandle, aFilename, aHardwareChannels);
+	}
+
+	[DllImport("soloud_x86.dll", CallingConvention = CallingConvention.Cdecl)]
+	internal static extern void Monotone_setLooping(IntPtr aObjHandle, int aLoop);
+	public void setLooping(int aLoop)
+	{
+		Monotone_setLooping(objhandle, aLoop);
+	}
+
+	[DllImport("soloud_x86.dll", CallingConvention = CallingConvention.Cdecl)]
+	internal static extern void Monotone_set3dMinMaxDistance(IntPtr aObjHandle, float aMinDistance, float aMaxDistance);
+	public void set3dMinMaxDistance(float aMinDistance, float aMaxDistance)
+	{
+		Monotone_set3dMinMaxDistance(objhandle, aMinDistance, aMaxDistance);
+	}
+
+	[DllImport("soloud_x86.dll", CallingConvention = CallingConvention.Cdecl)]
+	internal static extern void Monotone_set3dAttenuation(IntPtr aObjHandle, uint aAttenuationModel, float aAttenuationRolloffFactor);
+	public void set3dAttenuation(uint aAttenuationModel, float aAttenuationRolloffFactor)
+	{
+		Monotone_set3dAttenuation(objhandle, aAttenuationModel, aAttenuationRolloffFactor);
+	}
+
+	[DllImport("soloud_x86.dll", CallingConvention = CallingConvention.Cdecl)]
+	internal static extern void Monotone_set3dDopplerFactor(IntPtr aObjHandle, float aDopplerFactor);
+	public void set3dDopplerFactor(float aDopplerFactor)
+	{
+		Monotone_set3dDopplerFactor(objhandle, aDopplerFactor);
+	}
+
+	[DllImport("soloud_x86.dll", CallingConvention = CallingConvention.Cdecl)]
+	internal static extern void Monotone_set3dProcessing(IntPtr aObjHandle, int aDo3dProcessing);
+	public void set3dProcessing(int aDo3dProcessing)
+	{
+		Monotone_set3dProcessing(objhandle, aDo3dProcessing);
+	}
+
+	[DllImport("soloud_x86.dll", CallingConvention = CallingConvention.Cdecl)]
+	internal static extern void Monotone_set3dListenerRelative(IntPtr aObjHandle, int aListenerRelative);
+	public void set3dListenerRelative(int aListenerRelative)
+	{
+		Monotone_set3dListenerRelative(objhandle, aListenerRelative);
+	}
+
+	[DllImport("soloud_x86.dll", CallingConvention = CallingConvention.Cdecl)]
+	internal static extern void Monotone_set3dDistanceDelay(IntPtr aObjHandle, int aDistanceDelay);
+	public void set3dDistanceDelay(int aDistanceDelay)
+	{
+		Monotone_set3dDistanceDelay(objhandle, aDistanceDelay);
+	}
+
+	[DllImport("soloud_x86.dll", CallingConvention = CallingConvention.Cdecl)]
+	internal static extern void Monotone_set3dColliderEx(IntPtr aObjHandle, IntPtr aCollider, int aUserData);
+	public void set3dCollider(SoloudObject aCollider, int aUserData = 0)
+	{
+		Monotone_set3dColliderEx(objhandle, aCollider.objhandle, aUserData);
+	}
+
+	[DllImport("soloud_x86.dll", CallingConvention = CallingConvention.Cdecl)]
+	internal static extern void Monotone_setFilter(IntPtr aObjHandle, uint aFilterId, IntPtr aFilter);
+	public void setFilter(uint aFilterId, SoloudObject aFilter)
+	{
+		Monotone_setFilter(objhandle, aFilterId, aFilter.objhandle);
+	}
+
+	[DllImport("soloud_x86.dll", CallingConvention = CallingConvention.Cdecl)]
+	internal static extern void Monotone_stop(IntPtr aObjHandle);
+	public void stop()
+	{
+		Monotone_stop(objhandle);
 	}
 }
 

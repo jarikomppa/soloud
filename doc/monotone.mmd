@@ -6,6 +6,13 @@ is a pc-speaker tracker, available on GitHub at
 
 https://github.com/MobyGamer/MONOTONE/
 
+The SoLoud MONOTONE replayer can play MONOTONE v1 songs (only format 
+available at the time of this writing). You can pick the number of
+"hardware" voices used - typically the songs are composed for a single
+voice (PC beeper).
+
+The waveform used is square wave. Other waveforms can be used by 
+modifying the soloud_monotone.cpp.
 
 Monotone.clear()
 ----------------
@@ -22,7 +29,10 @@ Monotone.load()
 
 You tell monotone to load a file with the load function:
 
-    result load(const char *aFilename); // File to load
+    result load(const char *aFilename, int aHardwareChannels = 1); 
+
+Most songs are composed for a single hardware channel. SoLoud supports
+up to 12 hardware channels (more can be easily added by editing soloud_monotone.cpp)
 
 If loading fails, the function returns an error code.
 

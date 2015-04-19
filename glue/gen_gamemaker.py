@@ -1,5 +1,11 @@
 # Gamemaker wrapper generator
 
+import subprocess
+import glob
+import os
+import sys
+import shutil
+
 import soloud_codegen 
 
 UNSUPPORTED_TYPES = {
@@ -347,3 +353,20 @@ for x in soloud_codegen.soloud_func:
   fo.write("\t" + x[1] + "\n")
 fo.close()
 print "soloud_gamemaker_dll.def generated"
+
+print "compiling dll"
+callp = ["compile_gamemaker_dll.bat"]
+subprocess.call(callp)
+
+if not os.path.exists("gm_temp/soloud"):
+  os.makedirs("gm_temp/soloud")
+print "copying files to gm_temp"
+shutil.copy("soloud.extension.gmx", "gm_temp")
+shutil.copy("soloud_gamemaker_dll.dll", "gm_temp/soloud")
+shutil.copy("../lib/soloud_x86.dll", "gm_temp/soloud")
+shutil.copy("../bin/msvcr100.dll", "gm_temp/soloud")
+
+callp = ["make_gmez.bat"]
+subprocess.call(callp)
+
+print "Unless something went wrong, soloud.gmez should now be here."

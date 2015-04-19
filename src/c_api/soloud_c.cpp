@@ -102,7 +102,7 @@ unsigned int Soloud_play(void * aClassPtr, AudioSource * aSound)
 unsigned int Soloud_playEx(void * aClassPtr, AudioSource * aSound, float aVolume, float aPan, int aPaused, unsigned int aBus)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
-	return cl->play(*aSound, aVolume, aPan, aPaused, aBus);
+	return cl->play(*aSound, aVolume, aPan, !!aPaused, aBus);
 }
 
 unsigned int Soloud_playClocked(void * aClassPtr, double aSoundTime, AudioSource * aSound)
@@ -126,7 +126,7 @@ unsigned int Soloud_play3d(void * aClassPtr, AudioSource * aSound, float aPosX, 
 unsigned int Soloud_play3dEx(void * aClassPtr, AudioSource * aSound, float aPosX, float aPosY, float aPosZ, float aVelX, float aVelY, float aVelZ, float aVolume, int aPaused, unsigned int aBus)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
-	return cl->play3d(*aSound, aPosX, aPosY, aPosZ, aVelX, aVelY, aVelZ, aVolume, aPaused, aBus);
+	return cl->play3d(*aSound, aPosX, aPosY, aPosZ, aVelX, aVelY, aVelZ, aVolume, !!aPaused, aBus);
 }
 
 unsigned int Soloud_play3dClocked(void * aClassPtr, double aSoundTime, AudioSource * aSound, float aPosX, float aPosY, float aPosZ)
@@ -270,13 +270,13 @@ void Soloud_setPostClipScaler(void * aClassPtr, float aScaler)
 void Soloud_setPause(void * aClassPtr, unsigned int aVoiceHandle, int aPause)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
-	cl->setPause(aVoiceHandle, aPause);
+	cl->setPause(aVoiceHandle, !!aPause);
 }
 
 void Soloud_setPauseAll(void * aClassPtr, int aPause)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
-	cl->setPauseAll(aPause);
+	cl->setPauseAll(!!aPause);
 }
 
 int Soloud_setRelativePlaySpeed(void * aClassPtr, unsigned int aVoiceHandle, float aSpeed)
@@ -288,7 +288,7 @@ int Soloud_setRelativePlaySpeed(void * aClassPtr, unsigned int aVoiceHandle, flo
 void Soloud_setProtectVoice(void * aClassPtr, unsigned int aVoiceHandle, int aProtect)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
-	cl->setProtectVoice(aVoiceHandle, aProtect);
+	cl->setProtectVoice(aVoiceHandle, !!aProtect);
 }
 
 void Soloud_setSamplerate(void * aClassPtr, unsigned int aVoiceHandle, float aSamplerate)
@@ -390,7 +390,7 @@ void Soloud_setGlobalFilter(void * aClassPtr, unsigned int aFilterId, Filter * a
 void Soloud_setVisualizationEnable(void * aClassPtr, int aEnable)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
-	cl->setVisualizationEnable(aEnable);
+	cl->setVisualizationEnable(!!aEnable);
 }
 
 float * Soloud_calcFFT(void * aClassPtr)
@@ -578,7 +578,7 @@ unsigned int Bus_play(void * aClassPtr, AudioSource * aSound)
 unsigned int Bus_playEx(void * aClassPtr, AudioSource * aSound, float aVolume, float aPan, int aPaused)
 {
 	Bus * cl = (Bus *)aClassPtr;
-	return cl->play(*aSound, aVolume, aPan, aPaused);
+	return cl->play(*aSound, aVolume, aPan, !!aPaused);
 }
 
 unsigned int Bus_playClocked(void * aClassPtr, double aSoundTime, AudioSource * aSound)
@@ -602,7 +602,7 @@ unsigned int Bus_play3d(void * aClassPtr, AudioSource * aSound, float aPosX, flo
 unsigned int Bus_play3dEx(void * aClassPtr, AudioSource * aSound, float aPosX, float aPosY, float aPosZ, float aVelX, float aVelY, float aVelZ, float aVolume, int aPaused)
 {
 	Bus * cl = (Bus *)aClassPtr;
-	return cl->play3d(*aSound, aPosX, aPosY, aPosZ, aVelX, aVelY, aVelZ, aVolume, aPaused);
+	return cl->play3d(*aSound, aPosX, aPosY, aPosZ, aVelX, aVelY, aVelZ, aVolume, !!aPaused);
 }
 
 unsigned int Bus_play3dClocked(void * aClassPtr, double aSoundTime, AudioSource * aSound, float aPosX, float aPosY, float aPosZ)
@@ -620,7 +620,7 @@ unsigned int Bus_play3dClockedEx(void * aClassPtr, double aSoundTime, AudioSourc
 void Bus_setVisualizationEnable(void * aClassPtr, int aEnable)
 {
 	Bus * cl = (Bus *)aClassPtr;
-	cl->setVisualizationEnable(aEnable);
+	cl->setVisualizationEnable(!!aEnable);
 }
 
 float * Bus_calcFFT(void * aClassPtr)
@@ -638,7 +638,7 @@ float * Bus_getWave(void * aClassPtr)
 void Bus_setLooping(void * aClassPtr, int aLoop)
 {
 	Bus * cl = (Bus *)aClassPtr;
-	cl->setLooping(aLoop);
+	cl->setLooping(!!aLoop);
 }
 
 void Bus_set3dMinMaxDistance(void * aClassPtr, float aMinDistance, float aMaxDistance)
@@ -662,19 +662,19 @@ void Bus_set3dDopplerFactor(void * aClassPtr, float aDopplerFactor)
 void Bus_set3dProcessing(void * aClassPtr, int aDo3dProcessing)
 {
 	Bus * cl = (Bus *)aClassPtr;
-	cl->set3dProcessing(aDo3dProcessing);
+	cl->set3dProcessing(!!aDo3dProcessing);
 }
 
 void Bus_set3dListenerRelative(void * aClassPtr, int aListenerRelative)
 {
 	Bus * cl = (Bus *)aClassPtr;
-	cl->set3dListenerRelative(aListenerRelative);
+	cl->set3dListenerRelative(!!aListenerRelative);
 }
 
 void Bus_set3dDistanceDelay(void * aClassPtr, int aDistanceDelay)
 {
 	Bus * cl = (Bus *)aClassPtr;
-	cl->set3dDistanceDelay(aDistanceDelay);
+	cl->set3dDistanceDelay(!!aDistanceDelay);
 }
 
 void Bus_set3dCollider(void * aClassPtr, AudioCollider * aCollider)
@@ -812,7 +812,7 @@ int Modplug_load(void * aClassPtr, const char * aFilename)
 void Modplug_setLooping(void * aClassPtr, int aLoop)
 {
 	Modplug * cl = (Modplug *)aClassPtr;
-	cl->setLooping(aLoop);
+	cl->setLooping(!!aLoop);
 }
 
 void Modplug_set3dMinMaxDistance(void * aClassPtr, float aMinDistance, float aMaxDistance)
@@ -836,19 +836,19 @@ void Modplug_set3dDopplerFactor(void * aClassPtr, float aDopplerFactor)
 void Modplug_set3dProcessing(void * aClassPtr, int aDo3dProcessing)
 {
 	Modplug * cl = (Modplug *)aClassPtr;
-	cl->set3dProcessing(aDo3dProcessing);
+	cl->set3dProcessing(!!aDo3dProcessing);
 }
 
 void Modplug_set3dListenerRelative(void * aClassPtr, int aListenerRelative)
 {
 	Modplug * cl = (Modplug *)aClassPtr;
-	cl->set3dListenerRelative(aListenerRelative);
+	cl->set3dListenerRelative(!!aListenerRelative);
 }
 
 void Modplug_set3dDistanceDelay(void * aClassPtr, int aDistanceDelay)
 {
 	Modplug * cl = (Modplug *)aClassPtr;
-	cl->set3dDistanceDelay(aDistanceDelay);
+	cl->set3dDistanceDelay(!!aDistanceDelay);
 }
 
 void Modplug_set3dCollider(void * aClassPtr, AudioCollider * aCollider)
@@ -928,7 +928,7 @@ int Sfxr_loadPreset(void * aClassPtr, int aPresetNo, int aRandSeed)
 void Sfxr_setLooping(void * aClassPtr, int aLoop)
 {
 	Sfxr * cl = (Sfxr *)aClassPtr;
-	cl->setLooping(aLoop);
+	cl->setLooping(!!aLoop);
 }
 
 void Sfxr_set3dMinMaxDistance(void * aClassPtr, float aMinDistance, float aMaxDistance)
@@ -952,19 +952,19 @@ void Sfxr_set3dDopplerFactor(void * aClassPtr, float aDopplerFactor)
 void Sfxr_set3dProcessing(void * aClassPtr, int aDo3dProcessing)
 {
 	Sfxr * cl = (Sfxr *)aClassPtr;
-	cl->set3dProcessing(aDo3dProcessing);
+	cl->set3dProcessing(!!aDo3dProcessing);
 }
 
 void Sfxr_set3dListenerRelative(void * aClassPtr, int aListenerRelative)
 {
 	Sfxr * cl = (Sfxr *)aClassPtr;
-	cl->set3dListenerRelative(aListenerRelative);
+	cl->set3dListenerRelative(!!aListenerRelative);
 }
 
 void Sfxr_set3dDistanceDelay(void * aClassPtr, int aDistanceDelay)
 {
 	Sfxr * cl = (Sfxr *)aClassPtr;
-	cl->set3dDistanceDelay(aDistanceDelay);
+	cl->set3dDistanceDelay(!!aDistanceDelay);
 }
 
 void Sfxr_set3dCollider(void * aClassPtr, AudioCollider * aCollider)
@@ -1022,7 +1022,7 @@ int Monotone_loadEx(void * aClassPtr, const char * aFilename, int aHardwareChann
 void Monotone_setLooping(void * aClassPtr, int aLoop)
 {
 	Monotone * cl = (Monotone *)aClassPtr;
-	cl->setLooping(aLoop);
+	cl->setLooping(!!aLoop);
 }
 
 void Monotone_set3dMinMaxDistance(void * aClassPtr, float aMinDistance, float aMaxDistance)
@@ -1046,19 +1046,19 @@ void Monotone_set3dDopplerFactor(void * aClassPtr, float aDopplerFactor)
 void Monotone_set3dProcessing(void * aClassPtr, int aDo3dProcessing)
 {
 	Monotone * cl = (Monotone *)aClassPtr;
-	cl->set3dProcessing(aDo3dProcessing);
+	cl->set3dProcessing(!!aDo3dProcessing);
 }
 
 void Monotone_set3dListenerRelative(void * aClassPtr, int aListenerRelative)
 {
 	Monotone * cl = (Monotone *)aClassPtr;
-	cl->set3dListenerRelative(aListenerRelative);
+	cl->set3dListenerRelative(!!aListenerRelative);
 }
 
 void Monotone_set3dDistanceDelay(void * aClassPtr, int aDistanceDelay)
 {
 	Monotone * cl = (Monotone *)aClassPtr;
-	cl->set3dDistanceDelay(aDistanceDelay);
+	cl->set3dDistanceDelay(!!aDistanceDelay);
 }
 
 void Monotone_set3dCollider(void * aClassPtr, AudioCollider * aCollider)
@@ -1104,7 +1104,7 @@ int Speech_setText(void * aClassPtr, const char * aText)
 void Speech_setLooping(void * aClassPtr, int aLoop)
 {
 	Speech * cl = (Speech *)aClassPtr;
-	cl->setLooping(aLoop);
+	cl->setLooping(!!aLoop);
 }
 
 void Speech_set3dMinMaxDistance(void * aClassPtr, float aMinDistance, float aMaxDistance)
@@ -1128,19 +1128,19 @@ void Speech_set3dDopplerFactor(void * aClassPtr, float aDopplerFactor)
 void Speech_set3dProcessing(void * aClassPtr, int aDo3dProcessing)
 {
 	Speech * cl = (Speech *)aClassPtr;
-	cl->set3dProcessing(aDo3dProcessing);
+	cl->set3dProcessing(!!aDo3dProcessing);
 }
 
 void Speech_set3dListenerRelative(void * aClassPtr, int aListenerRelative)
 {
 	Speech * cl = (Speech *)aClassPtr;
-	cl->set3dListenerRelative(aListenerRelative);
+	cl->set3dListenerRelative(!!aListenerRelative);
 }
 
 void Speech_set3dDistanceDelay(void * aClassPtr, int aDistanceDelay)
 {
 	Speech * cl = (Speech *)aClassPtr;
-	cl->set3dDistanceDelay(aDistanceDelay);
+	cl->set3dDistanceDelay(!!aDistanceDelay);
 }
 
 void Speech_set3dCollider(void * aClassPtr, AudioCollider * aCollider)
@@ -1198,7 +1198,7 @@ double Wav_getLength(void * aClassPtr)
 void Wav_setLooping(void * aClassPtr, int aLoop)
 {
 	Wav * cl = (Wav *)aClassPtr;
-	cl->setLooping(aLoop);
+	cl->setLooping(!!aLoop);
 }
 
 void Wav_set3dMinMaxDistance(void * aClassPtr, float aMinDistance, float aMaxDistance)
@@ -1222,19 +1222,19 @@ void Wav_set3dDopplerFactor(void * aClassPtr, float aDopplerFactor)
 void Wav_set3dProcessing(void * aClassPtr, int aDo3dProcessing)
 {
 	Wav * cl = (Wav *)aClassPtr;
-	cl->set3dProcessing(aDo3dProcessing);
+	cl->set3dProcessing(!!aDo3dProcessing);
 }
 
 void Wav_set3dListenerRelative(void * aClassPtr, int aListenerRelative)
 {
 	Wav * cl = (Wav *)aClassPtr;
-	cl->set3dListenerRelative(aListenerRelative);
+	cl->set3dListenerRelative(!!aListenerRelative);
 }
 
 void Wav_set3dDistanceDelay(void * aClassPtr, int aDistanceDelay)
 {
 	Wav * cl = (Wav *)aClassPtr;
-	cl->set3dDistanceDelay(aDistanceDelay);
+	cl->set3dDistanceDelay(!!aDistanceDelay);
 }
 
 void Wav_set3dCollider(void * aClassPtr, AudioCollider * aCollider)
@@ -1286,7 +1286,7 @@ double WavStream_getLength(void * aClassPtr)
 void WavStream_setLooping(void * aClassPtr, int aLoop)
 {
 	WavStream * cl = (WavStream *)aClassPtr;
-	cl->setLooping(aLoop);
+	cl->setLooping(!!aLoop);
 }
 
 void WavStream_set3dMinMaxDistance(void * aClassPtr, float aMinDistance, float aMaxDistance)
@@ -1310,19 +1310,19 @@ void WavStream_set3dDopplerFactor(void * aClassPtr, float aDopplerFactor)
 void WavStream_set3dProcessing(void * aClassPtr, int aDo3dProcessing)
 {
 	WavStream * cl = (WavStream *)aClassPtr;
-	cl->set3dProcessing(aDo3dProcessing);
+	cl->set3dProcessing(!!aDo3dProcessing);
 }
 
 void WavStream_set3dListenerRelative(void * aClassPtr, int aListenerRelative)
 {
 	WavStream * cl = (WavStream *)aClassPtr;
-	cl->set3dListenerRelative(aListenerRelative);
+	cl->set3dListenerRelative(!!aListenerRelative);
 }
 
 void WavStream_set3dDistanceDelay(void * aClassPtr, int aDistanceDelay)
 {
 	WavStream * cl = (WavStream *)aClassPtr;
-	cl->set3dDistanceDelay(aDistanceDelay);
+	cl->set3dDistanceDelay(!!aDistanceDelay);
 }
 
 void WavStream_set3dCollider(void * aClassPtr, AudioCollider * aCollider)

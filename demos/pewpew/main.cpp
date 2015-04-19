@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
 		else
 		while (lasttick < tick)
 		{
-			x = sin(lasttick * 0.01f) * 0.75;
+			x = (float)sin(lasttick * 0.01f) * 0.75f;
 			gSfx.loadPreset(SoLoud::Sfxr::LASER, 3);
 			if (fire1)
 			{
@@ -112,7 +112,8 @@ int main(int argc, char *argv[])
 		fire2 = 0;
 		fire3 = 0;
 
-		x = sin(tick * 0.01f) * 0.75;
+		// Recalculate here for smoother visuals
+		x = (float)sin(tick * 0.01f) * 0.75f;
 
 		DemoUpdateStart();
 		DemoTriangle(400 + x * 100, 350, 
@@ -143,7 +144,7 @@ int main(int argc, char *argv[])
 		ImGui::Text("----|----|----|----|----|");
 
 		char temp[200];
-		for (i = 0; i < gSoloud.getActiveVoiceCount(); i++)
+		for (i = 0; i < (signed)gSoloud.getActiveVoiceCount(); i++)
 			temp[i] = '-';
 		temp[i] = 0;
 		ImGui::Text(temp);

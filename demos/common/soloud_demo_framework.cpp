@@ -49,7 +49,6 @@ GLuint loadTexture(char * aFilename)
 	unsigned char *image = stbi_load(aFilename, &x, &y, &comp, 4);
 	if (!image)
 		return 0;
-	int i;
 	unsigned int tex;
 	glGenTextures(1, &tex);
 	glBindTexture(GL_TEXTURE_2D, tex);
@@ -626,7 +625,7 @@ void DemoUpdateStart()
 			break;
 		}
 	}
-	glClearColor(0.2, 0.2, 0.4, 0);
+	glClearColor(0.2f, 0.2f, 0.4f, 0);
 	glClear(GL_COLOR_BUFFER_BIT);
 	DemoTexQuad(desktop_tex, 0, 0, 800, 0, 0, 400, 800, 400);
 	UpdateImGui();

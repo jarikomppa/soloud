@@ -26,3 +26,5 @@ out/
 *.exp
 doc/xelatex_output.txt
 doc/kindlegen_output.txt
+readme.txt
+*.idb

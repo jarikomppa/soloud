@@ -83,27 +83,27 @@ int main(int argc, char *argv[])
 
 		float tick = DemoTick() / 1000.0f;
 
-		float crazyx = sin(tick) * sin(tick * 0.234) * sin(tick * 4.234) * 150;
-		float crazyz = cos(tick) * cos(tick * 0.234) * cos(tick * 4.234) * 150 - 50;
-		float tickd = tick - 0.1;
-		float crazyxv = sin(tickd) * sin(tickd * 0.234) * sin(tickd * 4.234) * 150;
-		float crazyzv = cos(tickd) * cos(tickd * 0.234) * cos(tickd * 4.234) * 150 - 50;
+		float crazyx = (float)(sin(tick) * sin(tick * 0.234) * sin(tick * 4.234) * 150);
+		float crazyz = (float)(cos(tick) * cos(tick * 0.234) * cos(tick * 4.234) * 150 - 50);
+		float tickd = tick - 0.1f;
+		float crazyxv = (float)(sin(tickd) * sin(tickd * 0.234) * sin(tickd * 4.234) * 150);
+		float crazyzv = (float)(cos(tickd) * cos(tickd * 0.234) * cos(tickd * 4.234) * 150 - 50);
 		crazyxv = crazyxv - crazyx;
 		crazyzv = crazyzv - crazyz;
 
 		gSoloud.set3dSourceParameters(gSndHandle_crazy, crazyx, 0, crazyz, crazyxv, 0, crazyzv);
 
-		float orbitx = sin(tick) * 50;
-		float orbitz = cos(tick) * 50;
-		float orbitxv = sin(tickd) * 50;
-		float orbitzv = cos(tickd) * 50;
+		float orbitx = (float)sin(tick) * 50;
+		float orbitz = (float)cos(tick) * 50;
+		float orbitxv = (float)sin(tickd) * 50;
+		float orbitzv = (float)cos(tickd) * 50;
 		orbitxv = orbitxv - orbitx;
 		orbitzv = orbitzv - orbitz;
 		
 		gSoloud.set3dSourceParameters(gSndHandle_orbit, orbitx, 0, orbitz, orbitxv, 0, orbitzv);
 
-		float mousex = gMouseX - 400;
-		float mousez = gMouseY - 200;
+		float mousex = gMouseX - 400.0f;
+		float mousez = gMouseY - 200.0f;
 
 		gSoloud.set3dSourcePosition(gSndHandle_mouse, mousex, mousez, 0);
 

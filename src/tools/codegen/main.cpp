@@ -39,6 +39,7 @@ struct Method
 {
 	string mRetType;
 	string mFuncName;
+	vector<string> mOrigParmCast;
 	vector<string> mParmType;
 	vector<string> mParmName;
 	vector<string> mParmValue;
@@ -220,6 +221,11 @@ void parse_params(Method *m, char *b, int &ofs)
 		if (s == ",") NEXTTOKEN;
 
 		m->mParmName.push_back(pn);
+		// Add !! as "cast" to bools to avoid "performance warning" in msvc
+		if (pt == "bool")
+			m->mOrigParmCast.push_back("!!");
+		else
+			m->mOrigParmCast.push_back("");
 		m->mParmType.push_back(subs_str(pt));
 		m->mParmValue.push_back(pv);
 		m->mRef.push_back(ref);
@@ -703,7 +709,8 @@ void emit_func(FILE * f, int aClass, int aMethod)
 			if (m->mRef[i])
 				fprintf(f, "*");
 			fprintf(f, 
-				"%s",				
+				"%s%s",				
+				m->mOrigParmCast[i].c_str(),
 				m->mParmName[i].c_str());
 		}
 	}
@@ -769,7 +776,8 @@ void emit_func(FILE * f, int aClass, int aMethod)
 			if (m->mRef[i])
 				fprintf(f, "*");
 			fprintf(f, 
-				"%s",				
+				"%s%s",				
+				m->mOrigParmCast[i].c_str(),
 				m->mParmName[i].c_str());
 		}
 		fprintf(f,

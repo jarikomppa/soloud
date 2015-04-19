@@ -261,10 +261,10 @@ namespace SoLoud
 					float bleh;
 					mOutput[j].mSamplePos = modf(mOutput[j].mSamplePos + mOutput[j].mSamplePosInc, &bleh);
 					// square:
-					aBuffer[i] += (mOutput[j].mSamplePos > 0.5f) ? 0.25 : -0.25;
+					aBuffer[i] += (mOutput[j].mSamplePos > 0.5f) ? 0.25f : -0.25f;
 					// saw:
 					//aBuffer[i] += ((mOutput[j].mSamplePos) - 0.5) * 0.5;
-					// sin: (has clicks because the curve isn't ramped to zero when note off)
+					// sin: 
 					//aBuffer[i] += sin(mOutput[j].mSamplePos * M_PI * 2) * 0.5;
 				}
 			}

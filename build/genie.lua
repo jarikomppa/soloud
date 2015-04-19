@@ -677,36 +677,7 @@ end
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 
-  project "3dtest"
-	kind "WindowedApp"
-	language "C++"
-	files {
-	  "../demos/3dtest/**.c*"
-	  }
-	includedirs {
-	  "../include",
-	  sdl_include
-	}
-	libdirs {
-	  sdl_lib
-	}
-
-		links {"StaticLib", "sdlmain", "sdl"}
-
-		configuration "Debug"
-			defines { "DEBUG" }
-			flags {"Symbols" }
-			objdir (buildroot .. "/debug")
-			targetname "3dtest_d"
-			flags { "Symbols" }
-
-
-		configuration "Release"
-			defines { "NDEBUG" }
-			flags {"Optimize"}
-			objdir (buildroot .. "/release")
-			targetname "3dtest"
-			flags { "EnableSSE2", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
+  CommonDemo("3dtest")
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 

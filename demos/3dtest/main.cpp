@@ -1,6 +1,6 @@
 /*
 SoLoud audio engine
-Copyright (c) 2013-2014 Jari Komppa
+Copyright (c) 2013-2015 Jari Komppa
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -22,180 +22,155 @@ freely, subject to the following restrictions:
    distribution.
 */
 
+
 #include <stdlib.h>
-#if defined(_MSC_VER)
-#include "SDL.h"
-#else
-#include "SDL/SDL.h"
-#endif
 #include <math.h>
 #include <stdio.h>
+
+#include "imgui.h"
+#include "soloud_demo_framework.h"
 
 #include "soloud.h"
 #include "soloud_sfxr.h"
 #include "soloud_speech.h"
 
-
 SoLoud::Soloud gSoloud;
 SoLoud::Sfxr gSfx_mouse, gSfx_orbit;
 SoLoud::Speech gSfx_crazy;
 
-SDL_Surface *screen;
-
-void putpixel(int x, int y, int color)
-{
-	if (y < 0 || y > 255 || x < 0 || x > 400) 
-		return;
-	unsigned int *ptr = (unsigned int*)screen->pixels;
-	int lineoffset = y * (screen->pitch / 4);
-	ptr[lineoffset + x] = color;
-}
-
-int gMouseX = 0;
-int gMouseY = 0;
 int gSndHandle_mouse = 0;
 int gSndHandle_orbit = 0;
 int gSndHandle_crazy = 0;
 
-void render()
-{   
-	// Lock surface if needed
-	if (SDL_MUSTLOCK(screen))
-		if (SDL_LockSurface(screen) < 0) 
-			return;
-
-	float tick = SDL_GetTicks() / 1000.0f;
-
-	float crazyx = sin(tick) * sin(tick * 0.234) * sin(tick * 4.234) * 150;
-	float crazyz = cos(tick) * cos(tick * 0.234) * cos(tick * 4.234) * 150 - 50;
-	float tickd = tick - 0.1;
-	float crazyxv = sin(tickd) * sin(tickd * 0.234) * sin(tickd * 4.234) * 150;
-	float crazyzv = cos(tickd) * cos(tickd * 0.234) * cos(tickd * 4.234) * 150 - 50;
-	crazyxv = crazyxv - crazyx;
-	crazyzv = crazyzv - crazyz;
-
-	gSoloud.set3dSourceParameters(gSndHandle_crazy, crazyx, 0, crazyz, crazyxv, 0, crazyzv);
-
-	float orbitx = sin(tick) * 50;
-	float orbitz = cos(tick) * 50;
-	float orbitxv = sin(tickd) * 50;
-	float orbitzv = cos(tickd) * 50;
-	orbitxv = orbitxv - orbitx;
-	orbitzv = orbitzv - orbitz;	
-
-	gSoloud.set3dSourceParameters(gSndHandle_orbit, orbitx, 0, orbitz, orbitxv, 0, orbitzv);
-
-	gSoloud.update3dAudio();
-
-	int i, j;
-
-	for (i = 0; i < 256; i++)
-		for (j = 0; j < 400; j++)
-			putpixel(j,i,0xff000000);
-
-	for (i = 0; i < 9; i++)
-		for (j = 0; j < 9; j++)
-			putpixel(200-5 + i, 128-5 + j, 0xffffffff);
-
-	putpixel(200+orbitx,128+orbitz,0xff00ffff);
-	putpixel(200+orbitx+1,128+orbitz,0xff00ffff);
-	putpixel(200+orbitx,128+orbitz+1,0xff00ffff);
-	putpixel(200+orbitx+1,128+orbitz+1,0xff00ffff);
-	putpixel(200+crazyx,128+crazyz,0xffffff00);
-	putpixel(200+crazyx+1,128+crazyz,0xffffff00);
-	putpixel(200+crazyx,128+crazyz+1,0xffffff00);
-	putpixel(200+crazyx+1,128+crazyz+1,0xffffff00);
-
-	putpixel(200+crazyxv+1,128+crazyzv+1,0xffffff00);
-
-	// Unlock if needed
-	if (SDL_MUSTLOCK(screen)) 
-		SDL_UnlockSurface(screen);
-
-	// Tell SDL to update the whole screen
-	SDL_UpdateRect(screen, 0, 0, 400, 256);    
-}
-
-
 // Entry point
 int main(int argc, char *argv[])
 {
-	// Initialize SDL's subsystems - in this case, only video.
-	if ( SDL_Init(SDL_INIT_VIDEO) < 0 ) 
-	{
-		fprintf(stderr, "Unable to init SDL: %s\n", SDL_GetError());
-		exit(1);
-	}
+	DemoInit();
 
-	// Init SoLoud
-	gSoloud.init();
+	gSoloud.init(SoLoud::Soloud::CLIP_ROUNDOFF | SoLoud::Soloud::ENABLE_VISUALIZATION);
 	gSoloud.setGlobalVolume(4);
 
 	gSfx_mouse.loadPreset(SoLoud::Sfxr::LASER, 3);
 	gSfx_mouse.setLooping(1);
-	gSfx_mouse.set3dMinMaxDistance(1,200);
+	gSfx_mouse.set3dMinMaxDistance(1, 200);
 	gSfx_mouse.set3dAttenuation(SoLoud::AudioSource::EXPONENTIAL_DISTANCE, 0.5);
 	gSndHandle_mouse = gSoloud.play3d(gSfx_mouse, 100, 0, 0);
 
 	gSfx_orbit.loadPreset(SoLoud::Sfxr::COIN, 3);
 	gSfx_orbit.setLooping(1);
-	gSfx_orbit.set3dMinMaxDistance(1,200);
+	gSfx_orbit.set3dMinMaxDistance(1, 200);
 	gSfx_orbit.set3dAttenuation(SoLoud::AudioSource::EXPONENTIAL_DISTANCE, 0.5);
 	gSndHandle_orbit = gSoloud.play3d(gSfx_orbit, 50, 0, 0);
 
 	gSfx_crazy.setText("I'm going into space with my space ship space ship space ship spaceeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
 	gSfx_crazy.setLooping(1);
-	gSfx_crazy.set3dMinMaxDistance(1,400);
+	gSfx_crazy.set3dMinMaxDistance(1, 400);
 	gSfx_crazy.set3dAttenuation(SoLoud::AudioSource::EXPONENTIAL_DISTANCE, 0.25);
 	gSndHandle_crazy = gSoloud.play3d(gSfx_crazy, 50, 0, 0);
 
-	// Register SDL_Quit to be called at exit; makes sure things are
-	// cleaned up when we quit.
-	atexit(SDL_Quit);	
-
-	// Attempt to create a 640x480 window with 32bit pixels.
-	screen = SDL_SetVideoMode(400, 256, 32, SDL_SWSURFACE);
-
-	// If we fail, return error.
-	if ( screen == NULL ) 
-	{
-		fprintf(stderr, "Unable to set 640x480 video: %s\n", SDL_GetError());
-		exit(1);
-	}
+	bool orbit_enable = 1;
+	bool crazy_enable = 1;
+	bool mouse_enable = 1;
 
 	// Main loop: loop forever.
 	while (1)
 	{
-		// Render stuff
-		render();		
-		// Poll for events, and handle the ones we care about.
-		SDL_Event event;
-		while (SDL_PollEvent(&event)) 
-		{
-			switch (event.type) 
-			{
-			case SDL_MOUSEMOTION:
-				gMouseX = event.motion.x;
-				gMouseY = event.motion.y;
-				gSoloud.set3dSourcePosition(gSndHandle_mouse, gMouseX-200,0,gMouseY-128);
-				break;
+		DemoUpdateStart();
 
-			case SDL_KEYDOWN:
-				break;
-			case SDL_KEYUP:
-				// If escape is pressed, return (and thus, quit)
-				if (event.key.keysym.sym == SDLK_ESCAPE)
-				{
-					gSoloud.deinit();
-					return 0;
-				}
-				break;
-			case SDL_QUIT:
-				gSoloud.deinit();
+		gSoloud.setPause(gSndHandle_crazy, !crazy_enable);
+		gSoloud.setPause(gSndHandle_orbit, !orbit_enable);
+		gSoloud.setPause(gSndHandle_mouse, !mouse_enable);
 
-				return(0);
-			}
-		}
+		float tick = DemoTick() / 1000.0f;
+
+		float crazyx = sin(tick) * sin(tick * 0.234) * sin(tick * 4.234) * 150;
+		float crazyz = cos(tick) * cos(tick * 0.234) * cos(tick * 4.234) * 150 - 50;
+		float tickd = tick - 0.1;
+		float crazyxv = sin(tickd) * sin(tickd * 0.234) * sin(tickd * 4.234) * 150;
+		float crazyzv = cos(tickd) * cos(tickd * 0.234) * cos(tickd * 4.234) * 150 - 50;
+		crazyxv = crazyxv - crazyx;
+		crazyzv = crazyzv - crazyz;
+
+		gSoloud.set3dSourceParameters(gSndHandle_crazy, crazyx, 0, crazyz, crazyxv, 0, crazyzv);
+
+		float orbitx = sin(tick) * 50;
+		float orbitz = cos(tick) * 50;
+		float orbitxv = sin(tickd) * 50;
+		float orbitzv = cos(tickd) * 50;
+		orbitxv = orbitxv - orbitx;
+		orbitzv = orbitzv - orbitz;
+		
+		gSoloud.set3dSourceParameters(gSndHandle_orbit, orbitx, 0, orbitz, orbitxv, 0, orbitzv);
+
+		float mousex = gMouseX - 400;
+		float mousez = gMouseY - 200;
+
+		gSoloud.set3dSourcePosition(gSndHandle_mouse, mousex, mousez, 0);
+
+		gSoloud.update3dAudio();
+
+		DemoTriangle(
+			5+400, 5+200 - 20,
+			5+400 - 20, 5+200 + 20,
+			5+400 + 20, 5+200 + 20,
+			0x77000000);
+		DemoTriangle(
+			400, 200 - 20,
+			400 - 20, 200 + 20,
+			400 + 20, 200 + 20,
+			0xffeeeeee);
+
+		DemoTriangle(
+			5+400 + orbitx * 2, 5+200 + orbitz * 2 - 10,
+			5+400 + orbitx * 2 - 10, 5+200 + orbitz * 2 + 10,
+			5+400 + orbitx * 2 + 10, 5+200 + orbitz * 2 + 10,
+			0x77000000);
+		DemoTriangle(
+			400 + orbitx*2, 200 + orbitz*2-10,
+			400 + orbitx*2-10, 200 + orbitz*2+10,
+			400 + orbitx*2+10, 200 + orbitz*2+10,
+			0xffffff00);
+
+		DemoTriangle(
+			5 + 400 + crazyx * 2, 5 + 200 + crazyz * 2 - 10,
+			5 + 400 + crazyx * 2 - 10, 5 + 200 + crazyz * 2 + 10,
+			5 + 400 + crazyx * 2 + 10, 5 + 200 + crazyz * 2 + 10,
+			0x77000000);
+		DemoTriangle(
+			400 + crazyx * 2, 200 + crazyz * 2 - 10,
+			400 + crazyx * 2 - 10,200 + crazyz * 2 + 10,
+			400 + crazyx * 2 + 10,200 + crazyz * 2 + 10,
+			0xffff00ff);
+
+		DemoTriangle(
+			5 + 400 + mousex, 5 + 200 + mousez - 10,
+			5 + 400 + mousex - 10, 5 + 200 + mousez + 10,
+			5 + 400 + mousex + 10, 5 + 200 + mousez + 10,
+			0x77000000);
+		DemoTriangle(
+			400 + mousex, 200 + mousez - 10,
+			400 + mousex - 10, 200 + mousez + 10,
+			400 + mousex + 10, 200 + mousez + 10,
+			0xff00ffff);
+
+		float *buf = gSoloud.getWave();
+		float *fft = gSoloud.calcFFT();
+
+		ONCE(ImGui::SetNextWindowPos(ImVec2(500, 20)));
+		ImGui::Begin("Output");
+		ImGui::PlotLines("##Wave", buf, 256, 0, "Wave", -1, 1, ImVec2(264, 80));
+		ImGui::PlotHistogram("##FFT", fft, 256 / 2, 0, "FFT", 0, 1, ImVec2(264, 80), 8);
+		ImGui::Text("Active voices    : %d", gSoloud.getActiveVoiceCount());
+		ImGui::End();
+
+		ONCE(ImGui::SetNextWindowPos(ImVec2(20, 20)));
+		ImGui::Begin("Control");
+		ImGui::Checkbox("Orbit sound", &orbit_enable);
+		ImGui::Checkbox("Crazy sound", &crazy_enable);
+		ImGui::Checkbox("Mouse sound", &mouse_enable);
+
+		ImGui::End();
+		DemoUpdateEnd();
 	}
 	return 0;
 }

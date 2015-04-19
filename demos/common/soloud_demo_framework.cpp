@@ -40,6 +40,9 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
+int gMouseX = 0;
+int gMouseY = 0;
+
 GLuint loadTexture(char * aFilename)
 {
 	int x, y, comp;
@@ -627,6 +630,9 @@ void DemoUpdateStart()
 	glClear(GL_COLOR_BUFFER_BIT);
 	DemoTexQuad(desktop_tex, 0, 0, 800, 0, 0, 400, 800, 400);
 	UpdateImGui();
+
+	gMouseX = gUIState.mousex;
+	gMouseY = gUIState.mousey;
 
 	// Start the frame
 	ImGui::NewFrame();

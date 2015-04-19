@@ -17,25 +17,12 @@ Slightly more complicated console-based example, playing different kinds of soun
 multimusic
 ----------
 
-The multimusic example loads two OGG music loops as well as sound effects. You can use the keyboard keys 1 through 0 for various effects:
-
-Key   Effect
------ --------
-1     Play random sfxr "explosion" preset
-2     Play random sfxr "blip" preset
-3     Play random sfxr "coin" preset
-4     Play random sfxr "hurt" preset
-5     Play random sfxr "jump" preset
-6     Play random sfxr "laser" preset
-7     Fade music 1 in and music 2 out
-8     Fade music 2 in and music 1 out
-9     Fade music relative play speed way down
-0     Fade music relative play speed to normal
+The multimusic example loads two OGG music loops as well as sound effects. Use mouse to interact with the GUI to fade between songs, fade replay speed of the songs and to trigger sound effects.
 
 piano
 -----
 
-This example is a simple implementation of a playable instrument. The example also includes a simple waveform generator (soloud_basicwave.cpp/h), which can produce square, saw, sine and triangle waves. If compiled to use portmidi, you can also use a midi keyboard to drive the example.
+This example is a simple implementation of a playable instrument. The example also includes a simple waveform generator (soloud_basicwave.cpp/h), which can produce square, saw, sine and triangle waves. If compiled to use portmidi, you can also use an external midi keyboard to drive the example.
 
 Key(s)   Effect
 -------- --------
@@ -50,11 +37,10 @@ Speech synthesizer and on-screen text describe what different keys do when press
 mixbusses
 ---------
 
-The mixbusses example demonstrates the use of mixing busses. You can use "qw", "as" and "zx" keys to adjust volume of different busses.
+The mixbusses example demonstrates the use of mixing busses. You can use the GUI to adjust volume of different busses.
 
 ![Mix busses concept](images/mixbus)
 
-In case of this example, only one "music" and one "sfx" is played, but the idea is still the same.
 
 env
 ---
@@ -64,17 +50,9 @@ The env demo is a non-interactive demo of how SoLoud could be used to play envir
 pewpew
 ------
 
-The pewpew demo demonstrates the use of the playClocked commands.
+The pewpew demo demonstrates the use of the playClocked commands. Use the GUI buttons to trigger either single sound effect or repeated sound effect via play() and playClocked() calls.
 
-Key  Effect
----- ------
-1    Play sound repeatedly with playClocked()
-2    Play sound repeatedly with play()
-3    Play sound once with playClocked()
-
-To exaggarate the effect a bit, the demo requests a very large audio buffer from SoLoud. The difference between the play and playClocked
-effects is that with play(), all sounds triggered between audio buffers begin playing from the start of the next audio buffer, while 
-playClocked spreads the sounds across the audio buffer, making the sounds more separate.
+To exaggarate the effect a bit, the demo requests a very large audio buffer from SoLoud. The difference between the play and playClocked effects is that with play(), all sounds triggered between audio buffers begin playing from the start of the next audio buffer, while playClocked spreads the sounds across the audio buffer, making the sounds more separate.
 
 space
 -----

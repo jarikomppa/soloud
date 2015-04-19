@@ -1,0 +1,65 @@
+SoLoud::Monotone
+===============
+
+The SoLoud::Monotone is a replayer for MONOTONE tracker songs. MONOTONE
+is a pc-speaker tracker, available on GitHub at
+
+https://github.com/MobyGamer/MONOTONE/
+
+
+Monotone.clear()
+----------------
+
+You can clear all data from the Monotone object using clear:
+
+    void clear();
+    
+This is primarily used internally.
+
+
+Monotone.load()
+---------------
+
+You tell monotone to load a file with the load function:
+
+    result load(const char *aFilename); // File to load
+
+If loading fails, the function returns an error code.
+
+    SoLoud::Monotone swingin1;
+    swingin1.load("swingin1.mon");
+
+Monotone.setLooping()
+--------------------
+
+Adjusting the looping of a monotone sound does not currently
+have any effect. All music is set to loop by default. 
+
+Monotone.setFilter()
+-------------------
+
+As with any other audio source, you can attach filters to 
+monotone audio sources.
+
+    gMusic.setFilter(0, &gLofi);
+
+Monotone.stop()
+--------------
+
+You can stop all instances of a monotone sound source with
+stop(). This is equivalent of calling soloud.stopAudioSource()
+with the sound source.
+
+    gMusic.stop();
+    
+Inherited 3d audio interfaces
+-----------------------------
+Like all other audio sources, monotone inherits the 3d audio interfaces. Please refer to the 3d audio chapter for details on:
+
+- Monotone.set3dMinMaxDistance()
+- Monotone.set3dAttenuation()
+- Monotone.set3dDopplerFactor()
+- Monotone.set3dProcessing()
+- Monotone.set3dListenerRelative()
+- Monotone.set3dDistanceDelay()
+- Monotone.set3dCollider()

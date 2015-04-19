@@ -48,6 +48,8 @@ ga('send', 'pageview');
 <a href="ruby_api.html">Ruby-api</a><br>
 <a href="rpgmaker_api.html">RPGMaker-api</a><br>
 <a href="bmx_api.html">BlitzMax-api</a><br>
+<a href="gamemaker_api.html">GameMaker:Studio-api</a><br>
+<a href="d_api.html">D-api</a><br>
 <a href="cs_api.html">C#-api</a><br>
 <br>
 <a href="basics.html">Core: Basics</a><br>
@@ -65,6 +67,7 @@ ga('send', 'pageview');
 <a href="speech.html">SoLoud::Speech</a><br>
 <a href="sfxr.html">SoLoud::Sfxr</a><br>
 <a href="modplug.html">SoLoud::Modplug</a><br>
+<a href="monotone.html">SoLoud::Monotone</a><br>
 <a href="newsoundsources.html">New Audio Sources</a><br>
 <br>
 <a href="filters.html">SoLoud::Filter</a><br>
@@ -73,6 +76,7 @@ ga('send', 'pageview');
 <a href="fftfilter.html">SoLoud::FFTFilter</a><br>
 <a href="lofifilter.html">SoLoud::LofiFilter</a><br>
 <a href="flangerfilter.html">SoLoud::FlangerFilter</a><br>
+<a href="dcremovalfilter.html">SoLoud::DCRemovalFilter</a><br>
 <br>
 <a href="collider.html">SoLoud::AudioCollider</a><br>
 <br>

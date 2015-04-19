@@ -24,7 +24,9 @@ src = [
     "ruby_api.mmd",
     "rpgmaker_api.mmd",
     "bmx_api.mmd",
+    "gamemaker_api.mmd",
     "cs_api.mmd",
+    "d_api.mmd",
     "basics.mmd",
     "attributes.mmd",
     "faders.mmd",
@@ -38,6 +40,7 @@ src = [
     "speech.mmd",
     "sfxr.mmd",
     "modplug.mmd",
+    "monotone.mmd",
     "newsoundsources.mmd",
     "filters.mmd",
     "biquadfilter.mmd",
@@ -45,6 +48,7 @@ src = [
     "fftfilter.mmd",
     "lofifilter.mmd",
     "flangerfilter.mmd",
+    "dcremovalfilter.mmd",
     "collider.mmd",
     "backends.mmd"
     ]

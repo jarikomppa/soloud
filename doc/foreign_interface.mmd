@@ -7,3 +7,7 @@ you need the SoLoud DLL and a wrapper. The wrappers for SoLoud are not made
 by hand, but instead generated through Python scripts. This minimizes hassle
 when SoLoud gets new features, as the new wrappers can simply be generated via
 the scripts.
+
+Some foreign interfaces may be more complex, such as the GameMaker:Studio, which
+only supports variable types double and char*. For such, we generate a glue DLL
+to act as translator between GameMaker:Studio and the SoLoud "C" API DLL.

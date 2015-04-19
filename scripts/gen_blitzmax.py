@@ -3,7 +3,7 @@
 
 import soloud_codegen 
 
-fo = open("soloud.bmx", "w")
+fo = open("../glue/soloud.bmx", "w")
 
 """
 Global SoloudLib:Int = LoadLibraryA ("soloud_x86.dll")

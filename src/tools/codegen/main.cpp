@@ -31,7 +31,7 @@ freely, subject to the following restrictions:
 #define VERSION "SoLoud C-Api Code Generator (c)2013-2015 Jari Komppa http://iki.fi/sol/"
 
 #define OUTDIR "../src/c_api/"
-#define PYOUTDIR "../glue/"
+#define PYOUTDIR "../scripts/"
 
 using namespace std;
 

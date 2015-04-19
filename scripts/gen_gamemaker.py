@@ -368,5 +368,3 @@ shutil.copy("../bin/msvcr100.dll", "gm_temp/soloud")
 
 callp = ["make_gmez.bat"]
 subprocess.call(callp)
-
-print "Unless something went wrong, soloud.gmez should now be here."

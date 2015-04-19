@@ -2,7 +2,7 @@
 
 import soloud_codegen
 
-fo = open("rpgmaker_soloud.rb", "w")
+fo = open("../glue/rpgmaker_soloud.rb", "w")
 
 #   module SoLoudImporter
 #       extend DL::Importer

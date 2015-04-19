@@ -2,7 +2,7 @@
 
 import soloud_codegen
 
-fo = open("soloud.py", "w")
+fo = open("../glue/soloud.py", "w")
 
 #
 #    from ctypes import *

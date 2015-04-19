@@ -2,7 +2,7 @@
 
 import soloud_codegen
 
-fo = open("soloud.rb", "w")
+fo = open("../glue/soloud.rb", "w")
 
 #   module SoLoudImporter
 #       extend DL::Importer

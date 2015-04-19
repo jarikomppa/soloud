@@ -44,7 +44,9 @@ freely, subject to the following restrictions:
 #include "../include/soloud_wavstream.h"
 #include "../include/soloud_sfxr.h"
 #include "../include/soloud_flangerfilter.h"
+#include "../include/soloud_dcremovalfilter.h"
 #include "../include/soloud_modplug.h"
+#include "../include/soloud_monotone.h"
 
 using namespace SoLoud;
 

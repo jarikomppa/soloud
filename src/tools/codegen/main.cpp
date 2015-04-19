@@ -1,6 +1,6 @@
 ﻿/*
 SoLoud audio engine
-Copyright (c) 2013-2014 Jari Komppa
+Copyright (c) 2013-2015 Jari Komppa
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -28,7 +28,7 @@ freely, subject to the following restrictions:
 #include <vector>
 #include <string>
 
-#define VERSION "SoLoud C-Api Code Generator (c)2013-2014 Jari Komppa http://iki.fi/sol/"
+#define VERSION "SoLoud C-Api Code Generator (c)2013-2015 Jari Komppa http://iki.fi/sol/"
 
 #define OUTDIR "../src/c_api/"
 #define PYOUTDIR "../glue/"
@@ -579,9 +579,11 @@ void emit_cppstart(FILE * f)
 		"#include \"../include/soloud_wavstream.h\"\n"
 		"#include \"../include/soloud_sfxr.h\"\n"
 		"#include \"../include/soloud_flangerfilter.h\"\n"
+		"#include \"../include/soloud_dcremovalfilter.h\"\n"
 #if defined(WITH_MODPLUG)
 		"#include \"../include/soloud_modplug.h\"\n"
 #endif
+		"#include \"../include/soloud_monotone.h\"\n"
 
 		"\n"
 		"using namespace SoLoud;\n"
@@ -1087,10 +1089,12 @@ int main(int parc, char ** pars)
 	parse("../include/soloud_filter.h");
 	parse("../include/soloud_flangerfilter.h");
 	parse("../include/soloud_lofifilter.h");
+	parse("../include/soloud_dcremovalfilter.h");
 #if defined(WITH_MODPLUG)
 	parse("../include/soloud_modplug.h");
 #endif
 	parse("../include/soloud_sfxr.h");
+	parse("../include/soloud_monotone.h");
 	parse("../include/soloud_speech.h");
 	parse("../include/soloud_thread.h");
 	parse("../include/soloud_wav.h");

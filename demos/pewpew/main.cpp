@@ -112,11 +112,13 @@ int main(int argc, char *argv[])
 		fire2 = 0;
 		fire3 = 0;
 
+		x = sin(tick * 0.01f) * 0.75;
+
 		DemoUpdateStart();
 		DemoTriangle(400 + x * 100, 350, 
 			         375 + x * 100, 400, 
 					 425 + x * 100, 400, 
-					 0xffffffff);
+					 0xff3399ff);
 
 		for (i = 0; i < MAX_BULLETS; i++)
 		{
@@ -125,7 +127,7 @@ int main(int argc, char *argv[])
 				DemoTriangle(400 + bulletx[i] * 100, bullety[i],
 					400-2.5f + bulletx[i] * 100, 10 + bullety[i],
 					400+2.5f + bulletx[i] * 100, 10 + bullety[i],
-					0xffffffff);
+					0xffff7777);
 
 			}
 		}
@@ -150,11 +152,13 @@ int main(int argc, char *argv[])
 
 		ONCE(ImGui::SetNextWindowPos(ImVec2(20, 20)));
 		ImGui::Begin("Control");
+		ImGui::Text("Click to play a single sound:");
 		if (ImGui::Button("Play (single)"))
 		{
 			fire1 = 1;
 		}
-		ImGui::Text("Keep pressing button for repeat:");
+		ImGui::Separator();
+		ImGui::Text("\nKeep pressing button for repeat:");
 		if (ImGui::Button("Play", ImVec2(0, 0), true))
 		{
 			fire2 = 1;

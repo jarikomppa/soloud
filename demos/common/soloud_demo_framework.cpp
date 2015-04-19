@@ -398,7 +398,7 @@ void DemoTriangle(float x0, float y0, float x1, float y1, float x2, float y2, un
 
 	glVertexAttribPointer(flat_position_location, 2, GL_FLOAT, GL_FALSE, 0, buf);
 
-	glUniform4f(flat_color_location, ((color >> 0) & 0xff) * (1 / 255.0f), ((color >> 8) & 0xff) * (1 / 255.0f), ((color >> 16) & 0xff) * (1 / 255.0f), ((color >> 24) & 0xff) * (1 / 255.0f));	
+	glUniform4f(flat_color_location, ((color >> 16) & 0xff) * (1 / 255.0f), ((color >> 8) & 0xff) * (1 / 255.0f), ((color >> 0) & 0xff) * (1 / 255.0f), ((color >> 24) & 0xff) * (1 / 255.0f));	
 
 	glDrawArrays(GL_TRIANGLES, 0, 3);
 

@@ -714,36 +714,7 @@ end
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 
-  project "pewpew"
-	kind "WindowedApp"
-	language "C++"
-	files {
-	  "../demos/pewpew/**.c*"
-	  }
-	includedirs {
-	  "../include",
-	  sdl_include
-	}
-	libdirs {
-	  sdl_lib
-	}
-
-		links {"StaticLib", "sdlmain", "sdl"}
-
-		configuration "Debug"
-			defines { "DEBUG" }
-			flags {"Symbols" }
-			objdir (buildroot .. "/debug")
-			targetname "pewpew_d"
-			flags { "Symbols" }
-
-
-		configuration "Release"
-			defines { "NDEBUG" }
-			flags {"Optimize"}
-			objdir (buildroot .. "/release")
-			targetname "pewpew"
-			flags { "EnableSSE2", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
+  CommonDemo("pewpew")
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 

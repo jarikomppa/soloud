@@ -40,6 +40,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
+int gPressed[256], gWasPressed[256];
 int gMouseX = 0;
 int gMouseY = 0;
 
@@ -535,6 +536,9 @@ void UpdateImGui()
 
 void DemoInit()
 {
+	int i;
+	for (i = 0; i < 256; i++)
+		gPressed[i] = gWasPressed[i] = 0;
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE) < 0)
 	{
 		fprintf(stderr, "Video initialization failed: %s\n", SDL_GetError());
@@ -588,8 +592,13 @@ void DemoUpdateStart()
 			// if key is ASCII, accept it as character input
 			//			if ((event.key.keysym.unicode & 0xFF80) == 0)
 			//				gUIState.keychar = event.key.keysym.unicode & 0x7f;
+			if (event.key.keysym.sym < 256)
+				gPressed[event.key.keysym.sym] = 1;
+
 			break;
 		case SDL_KEYUP:
+			if (event.key.keysym.sym < 256)
+				gPressed[event.key.keysym.sym] = 0;
 			//			handle_key(event.key.keysym.sym, 0);
 			break;
 		case SDL_MOUSEMOTION:

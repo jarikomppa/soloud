@@ -737,10 +737,16 @@ end
 	kind "WindowedApp"
 	language "C++"
 	files {
-	  "../demos/piano/**.c*"
+	  "../demos/piano/**.c*",
+	  "../demos/common/**.c*",
+	  "../demos/common/imgui/**.c*",
+	  "../demos/common/glew/GL/**.c*"
 	  }
 	includedirs {
 	  "../include",
+	  "../demos/common",
+	  "../demos/common/imgui",
+	  "../demos/common/glew",
 	  sdl_include
 	}
 	libdirs {
@@ -755,10 +761,10 @@ end
 		links { "portmidi" }
 	end
 
-		links {"StaticLib", "sdlmain", "sdl"}
+		links {"StaticLib", "sdlmain", "sdl", "opengl32"}
 
 		configuration "Debug"
-			defines { "DEBUG" }
+			defines { "DEBUG", "GLEW_STATIC" }
 			flags {"Symbols" }
 			objdir (buildroot .. "/debug")
 			targetname "piano_d"
@@ -769,7 +775,7 @@ end
 
 
 		configuration "Release"
-			defines { "NDEBUG" }
+			defines { "NDEBUG", "GLEW_STATIC" }
 			flags {"Optimize"}
 			objdir (buildroot .. "/release")
 			targetname "piano"

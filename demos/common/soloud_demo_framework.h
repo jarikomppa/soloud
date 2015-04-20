@@ -27,6 +27,7 @@
 
 #define ONCE(x) { static int oncetrigger = 1; if (oncetrigger) { x; oncetrigger = 0; }}
 
+extern int gPressed[256], gWasPressed[256];
 extern int gMouseX, gMouseY;
 void DemoInit();
 void DemoUpdateStart();

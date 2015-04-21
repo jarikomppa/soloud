@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
 		ONCE(ImGui::SetNextWindowPos(ImVec2(500, 20)));
 		ImGui::Begin("Output");
 		ImGui::PlotLines("##Wave", buf, 256, 0, "Wave", -1, 1, ImVec2(264,80));
-		ImGui::PlotHistogram("##FFT", fft, 256/2, 0, "FFT", 0, 1, ImVec2(264,80),8);
+		ImGui::PlotHistogram("##FFT", fft, 256/2, 0, "FFT", 0, 10, ImVec2(264,80),8);
 		ImGui::Text("Music1 volume    : %d%%", (int)floor(gSoloud.getVolume(gMusichandle1) * 100));
 		ImGui::Text("Music2 volume    : %d%%", (int)floor(gSoloud.getVolume(gMusichandle2) * 100));
 		ImGui::Text("Music rel. speed : %d%%", (int)floor(gSoloud.getRelativePlaySpeed(gMusichandle2) * 100));

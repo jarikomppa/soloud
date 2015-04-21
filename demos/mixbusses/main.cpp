@@ -94,7 +94,7 @@ int main(int argc, char *argv[])
 		ONCE(ImGui::SetNextWindowPos(ImVec2(400, 20)));
 		ImGui::Begin("Output");
 		ImGui::PlotLines("##Wave", buf, 256, 0, "Wave", -1, 1, ImVec2(264, 80));
-		ImGui::PlotHistogram("##FFT", fft, 256 / 2, 0, "FFT", 0, 1, ImVec2(264, 80), 8);
+		ImGui::PlotHistogram("##FFT", fft, 256 / 2, 0, "FFT", 0, 10, ImVec2(264, 80), 8);
 		ImGui::Text("Speech bus volume : %d%%", (int)floor(gSoloud.getVolume(gSpeechbusHandle) * 100));
 		ImGui::Text("Music bus volume  : %d%%", (int)floor(gSoloud.getVolume(gMusicbusHandle) * 100));
 		ImGui::Text("Sfx bus volume    : %d%%", (int)floor(gSoloud.getVolume(gSfxbusHandle) * 100));

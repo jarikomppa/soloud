@@ -548,6 +548,32 @@ end
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 
+if (WITH_TOOLS == 1) then
+
+	project "lutgen"
+		kind "ConsoleApp"
+		language "C++"
+		files {
+		  "../src/tools/lutgen/**.c*"
+		}
+
+		configuration "Debug"
+			defines { "DEBUG" }
+			flags {"Symbols" }
+			objdir (buildroot .. "/debug")
+			targetname "lutgen_d"
+			flags { "Symbols" }
+
+		configuration "Release"
+			defines { "NDEBUG" }
+			flags {"Optimize"}
+			objdir (buildroot .. "/release")
+			targetname "lutgen"
+			flags { "EnableSSE2", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
+end
+
+-- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
+
   project "c_test"
 	kind "ConsoleApp"
 	language "C++"

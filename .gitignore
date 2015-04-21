@@ -26,5 +26,7 @@ out/
 *.exp
 doc/xelatex_output.txt
 doc/kindlegen_output.txt
-readme.txt
 *.idb
+doc/20*
+glue/soloud*
+scripts/soloud_codegen.py

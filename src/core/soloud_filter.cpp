@@ -46,6 +46,8 @@ namespace SoLoud
 	result FilterInstance::initParams(int aNumParams)
 	{		
 		mNumParams = aNumParams;
+		delete[] mParam;
+		delete[] mParamFader;
 		mParam = new float[mNumParams];
 		mParamFader = new Fader[mNumParams];
 

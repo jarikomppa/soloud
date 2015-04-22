@@ -91,7 +91,7 @@ namespace SoLoud
 			
 			for (i = 0; i < 128; i++)
 			{
-				aBuffer[ofs + i] = mMixBuffer[chofs + ((bofs + i) & 511)];
+				aBuffer[ofs + i] += (mMixBuffer[chofs + ((bofs + i) & 511)] - aBuffer[ofs + i]) * mParam[0];
 			}
 			ofs += 128;
 			bofs += 128;

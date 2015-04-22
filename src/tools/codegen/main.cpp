@@ -35,6 +35,32 @@ freely, subject to the following restrictions:
 
 using namespace std;
 
+char *gIncludeFile[] =
+{
+	"../include/soloud.h",
+	"../include/soloud_audiosource.h",
+	"../include/soloud_biquadresonantfilter.h",
+	"../include/soloud_lofifilter.h",
+	"../include/soloud_bus.h",
+	"../include/soloud_echofilter.h",
+	"../include/soloud_fader.h",
+	"../include/soloud_fftfilter.h",
+	"../include/soloud_filter.h",
+	"../include/soloud_speech.h",
+	"../include/soloud_thread.h",
+	"../include/soloud_wav.h",
+	"../include/soloud_wavstream.h",
+	"../include/soloud_sfxr.h",
+	"../include/soloud_flangerfilter.h",
+	"../include/soloud_dcremovalfilter.h",
+#if defined(WITH_MODPLUG)
+	"../include/soloud_modplug.h",
+#endif
+	"../include/soloud_monotone.h"
+};
+
+int gIncludeFileCount = sizeof(gIncludeFile) / sizeof(char*);
+
 struct Method
 {
 	string mRetType;
@@ -569,28 +595,11 @@ void fileheader(FILE * f)
 
 void emit_cppstart(FILE * f)
 {
-	fprintf(f,		
-		"#include \"../include/soloud.h\"\n"
-		"#include \"../include/soloud_audiosource.h\"\n"
-		"#include \"../include/soloud_biquadresonantfilter.h\"\n"
-		"#include \"../include/soloud_lofifilter.h\"\n"
-		"#include \"../include/soloud_bus.h\"\n"
-		"#include \"../include/soloud_echofilter.h\"\n"
-		"#include \"../include/soloud_fader.h\"\n"
-		"#include \"../include/soloud_fftfilter.h\"\n"
-		"#include \"../include/soloud_filter.h\"\n"
-		"#include \"../include/soloud_speech.h\"\n"
-		"#include \"../include/soloud_thread.h\"\n"
-		"#include \"../include/soloud_wav.h\"\n"
-		"#include \"../include/soloud_wavstream.h\"\n"
-		"#include \"../include/soloud_sfxr.h\"\n"
-		"#include \"../include/soloud_flangerfilter.h\"\n"
-		"#include \"../include/soloud_dcremovalfilter.h\"\n"
-#if defined(WITH_MODPLUG)
-		"#include \"../include/soloud_modplug.h\"\n"
-#endif
-		"#include \"../include/soloud_monotone.h\"\n"
+	int i;
+	for (i = 0; i < gIncludeFileCount; i++)
+		fprintf(f, "#include \"%s\"\n", gIncludeFile[i]);
 
+	fprintf(f,		
 		"\n"
 		"using namespace SoLoud;\n"
 		"\n"
@@ -1087,26 +1096,10 @@ int main(int parc, char ** pars)
 		return 0;
 	}
 
-	parse("../include/soloud.h");
-	parse("../include/soloud_audiosource.h");
-	parse("../include/soloud_biquadresonantfilter.h");
-	parse("../include/soloud_bus.h");
-	parse("../include/soloud_echofilter.h");
-	parse("../include/soloud_fader.h");
-	parse("../include/soloud_fftfilter.h");
-	parse("../include/soloud_filter.h");
-	parse("../include/soloud_flangerfilter.h");
-	parse("../include/soloud_lofifilter.h");
-	parse("../include/soloud_dcremovalfilter.h");
-#if defined(WITH_MODPLUG)
-	parse("../include/soloud_modplug.h");
-#endif
-	parse("../include/soloud_sfxr.h");
-	parse("../include/soloud_monotone.h");
-	parse("../include/soloud_speech.h");
-	parse("../include/soloud_thread.h");
-	parse("../include/soloud_wav.h");
-	parse("../include/soloud_wavstream.h");
+	int i;
+	for (i = 0; i < gIncludeFileCount; i++)
+		parse(gIncludeFile[i]);
+
 	printf("Handling inheritance..\n");
 	inherit_stuff();
 

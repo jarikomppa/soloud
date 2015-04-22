@@ -58,9 +58,6 @@ enum SOLOUD_ENUMS
 	BIQUADRESONANTFILTER_SAMPLERATE = 1,
 	BIQUADRESONANTFILTER_FREQUENCY = 2,
 	BIQUADRESONANTFILTER_RESONANCE = 3,
-	FLANGERFILTER_WET = 0,
-	FLANGERFILTER_DELAY = 1,
-	FLANGERFILTER_FREQ = 2,
 	LOFIFILTER_WET = 0,
 	LOFIFILTER_SAMPLERATE = 1,
 	LOFIFILTER_BITDEPTH = 2,
@@ -70,7 +67,10 @@ enum SOLOUD_ENUMS
 	SFXR_POWERUP = 3,
 	SFXR_HURT = 4,
 	SFXR_JUMP = 5,
-	SFXR_BLIP = 6
+	SFXR_BLIP = 6,
+	FLANGERFILTER_WET = 0,
+	FLANGERFILTER_DELAY = 1,
+	FLANGERFILTER_FREQ = 2
 };
 
 // Object handle typedefs
@@ -78,21 +78,21 @@ typedef void * Soloud;
 typedef void * AudioCollider;
 typedef void * AudioSource;
 typedef void * BiquadResonantFilter;
+typedef void * LofiFilter;
 typedef void * Bus;
 typedef void * EchoFilter;
 typedef void * Fader;
 typedef void * FFTFilter;
 typedef void * Filter;
-typedef void * FlangerFilter;
-typedef void * LofiFilter;
-typedef void * DCRemovalFilter;
-typedef void * Modplug;
-typedef void * Prg;
-typedef void * Sfxr;
-typedef void * Monotone;
 typedef void * Speech;
 typedef void * Wav;
 typedef void * WavStream;
+typedef void * Prg;
+typedef void * Sfxr;
+typedef void * FlangerFilter;
+typedef void * DCRemovalFilter;
+typedef void * Modplug;
+typedef void * Monotone;
 
 /*
  * Soloud
@@ -187,6 +187,13 @@ BiquadResonantFilter * BiquadResonantFilter_create();
 int BiquadResonantFilter_setParams(BiquadResonantFilter * aBiquadResonantFilter, int aType, float aSampleRate, float aFrequency, float aResonance);
 
 /*
+ * LofiFilter
+ */
+void LofiFilter_destroy(LofiFilter * aLofiFilter);
+LofiFilter * LofiFilter_create();
+int LofiFilter_setParams(LofiFilter * aLofiFilter, float aSampleRate, float aBitdepth);
+
+/*
  * Bus
  */
 void Bus_destroy(Bus * aBus);
@@ -227,94 +234,6 @@ int EchoFilter_setParamsEx(EchoFilter * aEchoFilter, float aDelay, float aDecay 
  */
 void FFTFilter_destroy(FFTFilter * aFFTFilter);
 FFTFilter * FFTFilter_create();
-
-/*
- * FlangerFilter
- */
-void FlangerFilter_destroy(FlangerFilter * aFlangerFilter);
-FlangerFilter * FlangerFilter_create();
-int FlangerFilter_setParams(FlangerFilter * aFlangerFilter, float aDelay, float aFreq);
-
-/*
- * LofiFilter
- */
-void LofiFilter_destroy(LofiFilter * aLofiFilter);
-LofiFilter * LofiFilter_create();
-int LofiFilter_setParams(LofiFilter * aLofiFilter, float aSampleRate, float aBitdepth);
-
-/*
- * DCRemovalFilter
- */
-void DCRemovalFilter_destroy(DCRemovalFilter * aDCRemovalFilter);
-DCRemovalFilter * DCRemovalFilter_create();
-int DCRemovalFilter_setParams(DCRemovalFilter * aDCRemovalFilter);
-int DCRemovalFilter_setParamsEx(DCRemovalFilter * aDCRemovalFilter, float aLength /* = 0.1f */);
-
-/*
- * Modplug
- */
-void Modplug_destroy(Modplug * aModplug);
-Modplug * Modplug_create();
-int Modplug_load(Modplug * aModplug, const char * aFilename);
-void Modplug_setLooping(Modplug * aModplug, int aLoop);
-void Modplug_set3dMinMaxDistance(Modplug * aModplug, float aMinDistance, float aMaxDistance);
-void Modplug_set3dAttenuation(Modplug * aModplug, unsigned int aAttenuationModel, float aAttenuationRolloffFactor);
-void Modplug_set3dDopplerFactor(Modplug * aModplug, float aDopplerFactor);
-void Modplug_set3dProcessing(Modplug * aModplug, int aDo3dProcessing);
-void Modplug_set3dListenerRelative(Modplug * aModplug, int aListenerRelative);
-void Modplug_set3dDistanceDelay(Modplug * aModplug, int aDistanceDelay);
-void Modplug_set3dCollider(Modplug * aModplug, AudioCollider * aCollider);
-void Modplug_set3dColliderEx(Modplug * aModplug, AudioCollider * aCollider, int aUserData /* = 0 */);
-void Modplug_setFilter(Modplug * aModplug, unsigned int aFilterId, Filter * aFilter);
-void Modplug_stop(Modplug * aModplug);
-
-/*
- * Prg
- */
-void Prg_destroy(Prg * aPrg);
-Prg * Prg_create();
-unsigned int Prg_rand(Prg * aPrg);
-void Prg_srand(Prg * aPrg, int aSeed);
-
-/*
- * Sfxr
- */
-void Sfxr_destroy(Sfxr * aSfxr);
-Sfxr * Sfxr_create();
-void Sfxr_resetParams(Sfxr * aSfxr);
-int Sfxr_loadParams(Sfxr * aSfxr, const char * aFilename);
-int Sfxr_loadPreset(Sfxr * aSfxr, int aPresetNo, int aRandSeed);
-void Sfxr_setLooping(Sfxr * aSfxr, int aLoop);
-void Sfxr_set3dMinMaxDistance(Sfxr * aSfxr, float aMinDistance, float aMaxDistance);
-void Sfxr_set3dAttenuation(Sfxr * aSfxr, unsigned int aAttenuationModel, float aAttenuationRolloffFactor);
-void Sfxr_set3dDopplerFactor(Sfxr * aSfxr, float aDopplerFactor);
-void Sfxr_set3dProcessing(Sfxr * aSfxr, int aDo3dProcessing);
-void Sfxr_set3dListenerRelative(Sfxr * aSfxr, int aListenerRelative);
-void Sfxr_set3dDistanceDelay(Sfxr * aSfxr, int aDistanceDelay);
-void Sfxr_set3dCollider(Sfxr * aSfxr, AudioCollider * aCollider);
-void Sfxr_set3dColliderEx(Sfxr * aSfxr, AudioCollider * aCollider, int aUserData /* = 0 */);
-void Sfxr_setFilter(Sfxr * aSfxr, unsigned int aFilterId, Filter * aFilter);
-void Sfxr_stop(Sfxr * aSfxr);
-
-/*
- * Monotone
- */
-void Monotone_destroy(Monotone * aMonotone);
-void Monotone_clear(Monotone * aMonotone);
-Monotone * Monotone_create();
-int Monotone_load(Monotone * aMonotone, const char * aFilename);
-int Monotone_loadEx(Monotone * aMonotone, const char * aFilename, int aHardwareChannels /* = 1 */);
-void Monotone_setLooping(Monotone * aMonotone, int aLoop);
-void Monotone_set3dMinMaxDistance(Monotone * aMonotone, float aMinDistance, float aMaxDistance);
-void Monotone_set3dAttenuation(Monotone * aMonotone, unsigned int aAttenuationModel, float aAttenuationRolloffFactor);
-void Monotone_set3dDopplerFactor(Monotone * aMonotone, float aDopplerFactor);
-void Monotone_set3dProcessing(Monotone * aMonotone, int aDo3dProcessing);
-void Monotone_set3dListenerRelative(Monotone * aMonotone, int aListenerRelative);
-void Monotone_set3dDistanceDelay(Monotone * aMonotone, int aDistanceDelay);
-void Monotone_set3dCollider(Monotone * aMonotone, AudioCollider * aCollider);
-void Monotone_set3dColliderEx(Monotone * aMonotone, AudioCollider * aCollider, int aUserData /* = 0 */);
-void Monotone_setFilter(Monotone * aMonotone, unsigned int aFilterId, Filter * aFilter);
-void Monotone_stop(Monotone * aMonotone);
 
 /*
  * Speech
@@ -372,6 +291,86 @@ void WavStream_set3dCollider(WavStream * aWavStream, AudioCollider * aCollider);
 void WavStream_set3dColliderEx(WavStream * aWavStream, AudioCollider * aCollider, int aUserData /* = 0 */);
 void WavStream_setFilter(WavStream * aWavStream, unsigned int aFilterId, Filter * aFilter);
 void WavStream_stop(WavStream * aWavStream);
+
+/*
+ * Prg
+ */
+void Prg_destroy(Prg * aPrg);
+Prg * Prg_create();
+unsigned int Prg_rand(Prg * aPrg);
+void Prg_srand(Prg * aPrg, int aSeed);
+
+/*
+ * Sfxr
+ */
+void Sfxr_destroy(Sfxr * aSfxr);
+Sfxr * Sfxr_create();
+void Sfxr_resetParams(Sfxr * aSfxr);
+int Sfxr_loadParams(Sfxr * aSfxr, const char * aFilename);
+int Sfxr_loadPreset(Sfxr * aSfxr, int aPresetNo, int aRandSeed);
+void Sfxr_setLooping(Sfxr * aSfxr, int aLoop);
+void Sfxr_set3dMinMaxDistance(Sfxr * aSfxr, float aMinDistance, float aMaxDistance);
+void Sfxr_set3dAttenuation(Sfxr * aSfxr, unsigned int aAttenuationModel, float aAttenuationRolloffFactor);
+void Sfxr_set3dDopplerFactor(Sfxr * aSfxr, float aDopplerFactor);
+void Sfxr_set3dProcessing(Sfxr * aSfxr, int aDo3dProcessing);
+void Sfxr_set3dListenerRelative(Sfxr * aSfxr, int aListenerRelative);
+void Sfxr_set3dDistanceDelay(Sfxr * aSfxr, int aDistanceDelay);
+void Sfxr_set3dCollider(Sfxr * aSfxr, AudioCollider * aCollider);
+void Sfxr_set3dColliderEx(Sfxr * aSfxr, AudioCollider * aCollider, int aUserData /* = 0 */);
+void Sfxr_setFilter(Sfxr * aSfxr, unsigned int aFilterId, Filter * aFilter);
+void Sfxr_stop(Sfxr * aSfxr);
+
+/*
+ * FlangerFilter
+ */
+void FlangerFilter_destroy(FlangerFilter * aFlangerFilter);
+FlangerFilter * FlangerFilter_create();
+int FlangerFilter_setParams(FlangerFilter * aFlangerFilter, float aDelay, float aFreq);
+
+/*
+ * DCRemovalFilter
+ */
+void DCRemovalFilter_destroy(DCRemovalFilter * aDCRemovalFilter);
+DCRemovalFilter * DCRemovalFilter_create();
+int DCRemovalFilter_setParams(DCRemovalFilter * aDCRemovalFilter);
+int DCRemovalFilter_setParamsEx(DCRemovalFilter * aDCRemovalFilter, float aLength /* = 0.1f */);
+
+/*
+ * Modplug
+ */
+void Modplug_destroy(Modplug * aModplug);
+Modplug * Modplug_create();
+int Modplug_load(Modplug * aModplug, const char * aFilename);
+void Modplug_setLooping(Modplug * aModplug, int aLoop);
+void Modplug_set3dMinMaxDistance(Modplug * aModplug, float aMinDistance, float aMaxDistance);
+void Modplug_set3dAttenuation(Modplug * aModplug, unsigned int aAttenuationModel, float aAttenuationRolloffFactor);
+void Modplug_set3dDopplerFactor(Modplug * aModplug, float aDopplerFactor);
+void Modplug_set3dProcessing(Modplug * aModplug, int aDo3dProcessing);
+void Modplug_set3dListenerRelative(Modplug * aModplug, int aListenerRelative);
+void Modplug_set3dDistanceDelay(Modplug * aModplug, int aDistanceDelay);
+void Modplug_set3dCollider(Modplug * aModplug, AudioCollider * aCollider);
+void Modplug_set3dColliderEx(Modplug * aModplug, AudioCollider * aCollider, int aUserData /* = 0 */);
+void Modplug_setFilter(Modplug * aModplug, unsigned int aFilterId, Filter * aFilter);
+void Modplug_stop(Modplug * aModplug);
+
+/*
+ * Monotone
+ */
+void Monotone_destroy(Monotone * aMonotone);
+Monotone * Monotone_create();
+int Monotone_load(Monotone * aMonotone, const char * aFilename);
+int Monotone_loadEx(Monotone * aMonotone, const char * aFilename, int aHardwareChannels /* = 1 */);
+void Monotone_setLooping(Monotone * aMonotone, int aLoop);
+void Monotone_set3dMinMaxDistance(Monotone * aMonotone, float aMinDistance, float aMaxDistance);
+void Monotone_set3dAttenuation(Monotone * aMonotone, unsigned int aAttenuationModel, float aAttenuationRolloffFactor);
+void Monotone_set3dDopplerFactor(Monotone * aMonotone, float aDopplerFactor);
+void Monotone_set3dProcessing(Monotone * aMonotone, int aDo3dProcessing);
+void Monotone_set3dListenerRelative(Monotone * aMonotone, int aListenerRelative);
+void Monotone_set3dDistanceDelay(Monotone * aMonotone, int aDistanceDelay);
+void Monotone_set3dCollider(Monotone * aMonotone, AudioCollider * aCollider);
+void Monotone_set3dColliderEx(Monotone * aMonotone, AudioCollider * aCollider, int aUserData /* = 0 */);
+void Monotone_setFilter(Monotone * aMonotone, unsigned int aFilterId, Filter * aFilter);
+void Monotone_stop(Monotone * aMonotone);
 #ifdef  __cplusplus
 } // extern "C"
 #endif

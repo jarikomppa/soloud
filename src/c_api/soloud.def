@@ -83,6 +83,9 @@ EXPORTS
 	BiquadResonantFilter_destroy
 	BiquadResonantFilter_create
 	BiquadResonantFilter_setParams
+	LofiFilter_destroy
+	LofiFilter_create
+	LofiFilter_setParams
 	Bus_destroy
 	Bus_create
 	Bus_setFilter
@@ -113,66 +116,6 @@ EXPORTS
 	EchoFilter_setParamsEx
 	FFTFilter_destroy
 	FFTFilter_create
-	FlangerFilter_destroy
-	FlangerFilter_create
-	FlangerFilter_setParams
-	LofiFilter_destroy
-	LofiFilter_create
-	LofiFilter_setParams
-	DCRemovalFilter_destroy
-	DCRemovalFilter_create
-	DCRemovalFilter_setParams
-	DCRemovalFilter_setParamsEx
-	Modplug_destroy
-	Modplug_create
-	Modplug_load
-	Modplug_setLooping
-	Modplug_set3dMinMaxDistance
-	Modplug_set3dAttenuation
-	Modplug_set3dDopplerFactor
-	Modplug_set3dProcessing
-	Modplug_set3dListenerRelative
-	Modplug_set3dDistanceDelay
-	Modplug_set3dCollider
-	Modplug_set3dColliderEx
-	Modplug_setFilter
-	Modplug_stop
-	Prg_destroy
-	Prg_create
-	Prg_rand
-	Prg_srand
-	Sfxr_destroy
-	Sfxr_create
-	Sfxr_resetParams
-	Sfxr_loadParams
-	Sfxr_loadPreset
-	Sfxr_setLooping
-	Sfxr_set3dMinMaxDistance
-	Sfxr_set3dAttenuation
-	Sfxr_set3dDopplerFactor
-	Sfxr_set3dProcessing
-	Sfxr_set3dListenerRelative
-	Sfxr_set3dDistanceDelay
-	Sfxr_set3dCollider
-	Sfxr_set3dColliderEx
-	Sfxr_setFilter
-	Sfxr_stop
-	Monotone_destroy
-	Monotone_clear
-	Monotone_create
-	Monotone_load
-	Monotone_loadEx
-	Monotone_setLooping
-	Monotone_set3dMinMaxDistance
-	Monotone_set3dAttenuation
-	Monotone_set3dDopplerFactor
-	Monotone_set3dProcessing
-	Monotone_set3dListenerRelative
-	Monotone_set3dDistanceDelay
-	Monotone_set3dCollider
-	Monotone_set3dColliderEx
-	Monotone_setFilter
-	Monotone_stop
 	Speech_destroy
 	Speech_create
 	Speech_setText
@@ -218,3 +161,59 @@ EXPORTS
 	WavStream_set3dColliderEx
 	WavStream_setFilter
 	WavStream_stop
+	Prg_destroy
+	Prg_create
+	Prg_rand
+	Prg_srand
+	Sfxr_destroy
+	Sfxr_create
+	Sfxr_resetParams
+	Sfxr_loadParams
+	Sfxr_loadPreset
+	Sfxr_setLooping
+	Sfxr_set3dMinMaxDistance
+	Sfxr_set3dAttenuation
+	Sfxr_set3dDopplerFactor
+	Sfxr_set3dProcessing
+	Sfxr_set3dListenerRelative
+	Sfxr_set3dDistanceDelay
+	Sfxr_set3dCollider
+	Sfxr_set3dColliderEx
+	Sfxr_setFilter
+	Sfxr_stop
+	FlangerFilter_destroy
+	FlangerFilter_create
+	FlangerFilter_setParams
+	DCRemovalFilter_destroy
+	DCRemovalFilter_create
+	DCRemovalFilter_setParams
+	DCRemovalFilter_setParamsEx
+	Modplug_destroy
+	Modplug_create
+	Modplug_load
+	Modplug_setLooping
+	Modplug_set3dMinMaxDistance
+	Modplug_set3dAttenuation
+	Modplug_set3dDopplerFactor
+	Modplug_set3dProcessing
+	Modplug_set3dListenerRelative
+	Modplug_set3dDistanceDelay
+	Modplug_set3dCollider
+	Modplug_set3dColliderEx
+	Modplug_setFilter
+	Modplug_stop
+	Monotone_destroy
+	Monotone_create
+	Monotone_load
+	Monotone_loadEx
+	Monotone_setLooping
+	Monotone_set3dMinMaxDistance
+	Monotone_set3dAttenuation
+	Monotone_set3dDopplerFactor
+	Monotone_set3dProcessing
+	Monotone_set3dListenerRelative
+	Monotone_set3dDistanceDelay
+	Monotone_set3dCollider
+	Monotone_set3dColliderEx
+	Monotone_setFilter
+	Monotone_stop

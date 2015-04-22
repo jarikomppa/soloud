@@ -91,11 +91,12 @@ namespace SoLoud
 		int mVibTable[32];
 		int mHardwareChannels;
 		MonotoneSong mSong;
-		void clear();
 		Monotone();
 		~Monotone();
 		result load(const char *aFilename, int aHardwareChannels = 1);
 		virtual AudioSourceInstance *createInstance();
+	public:
+		void clear();
 	};
 };
 

@@ -128,7 +128,7 @@ namespace SoLoud
 		unsigned int i;
 		for (i = 0; i < aChannels; i++)
 		{
-			filterChannel(aBuffer + i* aSamples, aSamples, aSamplerate, aTime, i, aChannels);
+			filterChannel(aBuffer + i * aSamples, aSamples, aSamplerate, aTime, i, aChannels);
 		}
 	}
 

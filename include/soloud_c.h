@@ -58,9 +58,6 @@ enum SOLOUD_ENUMS
 	BIQUADRESONANTFILTER_SAMPLERATE = 1,
 	BIQUADRESONANTFILTER_FREQUENCY = 2,
 	BIQUADRESONANTFILTER_RESONANCE = 3,
-	FFTFILTER_OVER = 0,
-	FFTFILTER_SUBTRACT = 1,
-	FFTFILTER_MULTIPLY = 2,
 	FLANGERFILTER_WET = 0,
 	FLANGERFILTER_DELAY = 1,
 	FLANGERFILTER_FREQ = 2,
@@ -230,8 +227,6 @@ int EchoFilter_setParamsEx(EchoFilter * aEchoFilter, float aDelay, float aDecay 
  */
 void FFTFilter_destroy(FFTFilter * aFFTFilter);
 FFTFilter * FFTFilter_create();
-int FFTFilter_setParameters(FFTFilter * aFFTFilter, int aShift);
-int FFTFilter_setParametersEx(FFTFilter * aFFTFilter, int aShift, int aCombine /* = 0 */, float aScale /* = 0.002f */);
 
 /*
  * FlangerFilter

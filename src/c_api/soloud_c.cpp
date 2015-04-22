@@ -727,18 +727,6 @@ void * FFTFilter_create()
   return (void *)new FFTFilter;
 }
 
-int FFTFilter_setParameters(void * aClassPtr, int aShift)
-{
-	FFTFilter * cl = (FFTFilter *)aClassPtr;
-	return cl->setParameters(aShift);
-}
-
-int FFTFilter_setParametersEx(void * aClassPtr, int aShift, int aCombine, float aScale)
-{
-	FFTFilter * cl = (FFTFilter *)aClassPtr;
-	return cl->setParameters(aShift, aCombine, aScale);
-}
-
 void FlangerFilter_destroy(void * aClassPtr)
 {
   delete (FlangerFilter *)aClassPtr;

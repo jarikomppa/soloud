@@ -113,8 +113,6 @@ EXPORTS
 	EchoFilter_setParamsEx
 	FFTFilter_destroy
 	FFTFilter_create
-	FFTFilter_setParameters
-	FFTFilter_setParametersEx
 	FlangerFilter_destroy
 	FlangerFilter_create
 	FlangerFilter_setParams

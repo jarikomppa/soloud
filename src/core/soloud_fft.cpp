@@ -76,7 +76,7 @@ static void do_fft_8(float *f, const float *x)
         /* Third pass */
         {
             coef_index = 0;
-            const float sqrt2_2 = sqrt(2.0f) * 0.5f;
+            float sqrt2_2 = sqrt(2.0f) * 0.5f;
             do
             {
                 float v;
@@ -106,7 +106,7 @@ static void do_fft_8(float *f, const float *x)
             nbr_coef = 1 << pass;
             h_nbr_coef = nbr_coef >> 1;
             d_nbr_coef = nbr_coef << 1;
-            const float *cos_ptr = Soloud_fft_trig_8 + (1L << (pass - 1)) - 4;
+            float *cos_ptr = Soloud_fft_trig_8 + (1L << (pass - 1)) - 4;
 
             do
             {
@@ -155,7 +155,7 @@ static void do_fft_8(float *f, const float *x)
 }
 
 
-static void    do_fft_10(float *f, const float *x)
+static void do_fft_10(float *f, const float *x)
 {
     float tempbuf[1024];
     float *sf = tempbuf;
@@ -432,7 +432,7 @@ namespace SoLoud
 {
     namespace FFT
     {
-        void fft512(float *aBuffer)
+        void fft1024(float *aBuffer)
         {
             float temp[1024];
             memcpy(temp, aBuffer, sizeof(float) * 1024);

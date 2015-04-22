@@ -344,7 +344,7 @@ namespace SoLoud
 		}
 		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 
-		SoLoud::FFT::fft512(temp);
+		SoLoud::FFT::fft1024(temp);
 
 		for (i = 0; i < 256; i++)
 		{

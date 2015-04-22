@@ -1,39 +1,12 @@
 SoLoud::FFTFilter
 =================
 
-The FFT filter is a simple voice-breaking filter that uses FFT and
-inverse FFT. It's pretty much a broken filter and will most likely
-get replaced in a future version of SoLoud.
+The FFT filter is a short-time fourier transform filter which can
+be used as basis for FFT-based effects. The base implementation
+does a simple tone downshifting.
 
 The filter exists mainly to adjust the speech synthesizer's voice in
 strange ways. It can also be used as basis for other FFT-based filters.
 
 The filter does not support changing of parameters on the fly, nor does
 it take changing of relative play speed into account.
-
-There are three parameters, shift, combine and scale. Finding usable
-results from the filter can be done mainly through trial and error. The
-combine tells the filter how to combine the wet and dry signals - OVER
-uses wet signal directly, SUBTRACT subtracts the wet signal from the
-dry, and MULTIPLY multiplies them together.
-
-Scale exists because the resulting volume level can be all over the
-place.
-
-    // Set up echo filter
-    gFFTFilter.setParams(-15, FFTFilter::SUBTRACT, 0.002f);  
-    // Set the filter as the first filter of the speech
-    gSpeech.setFilter(0, &gFFTFilter); 
-
-The first attribute (0) of the filter is the "wet" value, which can be
-changed while the sound is playing.
-
-FFTFilter.setParameters()
--------------------------
-
-Set the parameters of the filter.
-
-    gFFTFilter.setParams(-15, FFTFilter::SUBTRACT, 0.002f);
-    
-Changing the parameters does not affect "live" sounds. If invalid pameters are
-given, the function will return error.

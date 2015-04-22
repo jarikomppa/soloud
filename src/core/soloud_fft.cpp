@@ -76,7 +76,7 @@ static void do_fft_8(float *f, const float *x)
         /* Third pass */
         {
             coef_index = 0;
-            const float sqrt2_2 = sqrt(2.0f);
+            const float sqrt2_2 = sqrt(2.0f) * 0.5f;
             do
             {
                 float v;
@@ -154,6 +154,7 @@ static void do_fft_8(float *f, const float *x)
     }
 }
 
+
 static void    do_fft_10(float *f, const float *x)
 {
     float tempbuf[1024];
@@ -198,7 +199,7 @@ static void    do_fft_10(float *f, const float *x)
         /* Third pass */
         {
             coef_index = 0;
-            float sqrt2_2 = sqrt(2.0f);
+            float sqrt2_2 = sqrt(2.0f) * 0.5f;
             do
             {
                 float v;
@@ -352,7 +353,7 @@ static void do_ifft_8(float *f, float *x)
 
         /* Antepenultimate pass */
         {
-            float sqrt2_2 = sqrt(2.0f);
+            float sqrt2_2 = sqrt(2.0f) * 0.5f;
             coef_index = 0;
             do
             {
@@ -449,7 +450,7 @@ namespace SoLoud
         {
             float temp[256];
             memcpy(temp, aBuffer, sizeof(float) * 256);
-            do_fft_8(temp, aBuffer);
+			do_ifft_8(temp, aBuffer);
         }
     };
 };

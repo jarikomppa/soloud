@@ -29,21 +29,21 @@ distribution.
 
 namespace SoLoud
 {
-	unsigned int File::read_uint8()
+	unsigned int File::read8()
 	{
 		unsigned char d = 0;
 		read((unsigned char*)&d, 1);
 		return d;
 	}
 
-	unsigned int File::read_uint16()
+	unsigned int File::read16()
 	{
 		unsigned short d = 0;
 		read((unsigned char*)&d, 2);
 		return d;
 	}
 
-	unsigned int File::read_uint32()
+	unsigned int File::read32()
 	{
 		unsigned int d = 0;
 		read((unsigned char*)&d, 4);
@@ -75,6 +75,11 @@ namespace SoLoud
 		return ftell(mFileHandle);
 	}
 
+	FILE *DiskFile::getFilePtr()
+	{
+		return mFileHandle;
+	}
+
 	DiskFile::~DiskFile()
 	{
 		if (mFileHandle)
@@ -86,7 +91,7 @@ namespace SoLoud
 		mFileHandle = 0;
 	}
 
-	result DiskFile::open(char *aFilename)
+	result DiskFile::open(const char *aFilename)
 	{
 		mFileHandle = fopen(aFilename, "rb");
 		if (!mFileHandle)
@@ -127,6 +132,11 @@ namespace SoLoud
 		return mOffset;
 	}
 
+	unsigned char * MemoryFile::getMemPtr()
+	{
+		return mDataPtr;
+	}
+
 	MemoryFile::~MemoryFile()
 	{
 		if (mDataOwned)
@@ -141,7 +151,7 @@ namespace SoLoud
 		mDataOwned = false;
 	}
 
-	result MemoryFile::open(unsigned char *aData, unsigned int aDataLength, bool aCopy, bool aTakeOwnership)
+	result MemoryFile::openMem(unsigned char *aData, unsigned int aDataLength, bool aCopy, bool aTakeOwnership)
 	{
 		if (aData == NULL || aDataLength == 0)
 			return INVALID_PARAMETER;
@@ -167,23 +177,22 @@ namespace SoLoud
 		return SO_NO_ERROR;
 	}
 
-	result MemoryFile::open(File *aFile)
+	result MemoryFile::openToMem(const char *aFile)
 	{
-		if (aFile == NULL)
-			return INVALID_PARAMETER;
-
 		if (mDataOwned)
 			delete[] mDataPtr;
 		mDataPtr = 0;
 
-		mDataLength = aFile->length();
+		DiskFile df;
+		int res = df.open(aFile);
+		if (res != SO_NO_ERROR)
+			return res;
+
+		mDataLength = df.length();
 		mDataPtr = new unsigned char[mDataLength];
 		if (mDataPtr == NULL)
 			return OUT_OF_MEMORY;
-		int pos = aFile->pos();
-		aFile->seek(0);
-		aFile->read(mDataPtr, mDataLength);
-		aFile->seek(pos);
+		df.read(mDataPtr, mDataLength);
 		mDataOwned = true;
 		return SO_NO_ERROR;
 	}

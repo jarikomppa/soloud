@@ -33,13 +33,15 @@ namespace SoLoud
 	class File
 	{
 	public:
-		unsigned int read_uint8();
-		unsigned int read_uint16();
-		unsigned int read_uint32();
+		unsigned int read8();
+		unsigned int read16();
+		unsigned int read32();
 		virtual unsigned int read(unsigned char *aDst, unsigned int aBytes) = 0;
 		virtual unsigned int length() = 0;
 		virtual void seek(int aOffset) = 0;
 		virtual unsigned int pos() = 0;
+		virtual FILE * getFilePtr() { return 0; }
+		virtual unsigned char * getMemPtr() { return 0; }
 	};
 
 	class DiskFile : public File
@@ -53,7 +55,8 @@ namespace SoLoud
 		virtual unsigned int pos();
 		~DiskFile();
 		DiskFile();
-		result open(char *aFilename);
+		result open(const char *aFilename);
+		virtual FILE * getFilePtr();
 	};
 
 	class MemoryFile : public File
@@ -68,10 +71,11 @@ namespace SoLoud
 		virtual unsigned int length();
 		virtual void seek(int aOffset);
 		virtual unsigned int pos();
+		virtual unsigned char * getMemPtr();
 		~MemoryFile();
 		MemoryFile();
-		result open(unsigned char *aData, unsigned int aDataLength, bool aCopy=false, bool aTakeOwnership=true);
-		result open(File *aFile);
+		result openMem(unsigned char *aData, unsigned int aDataLength, bool aCopy=false, bool aTakeOwnership=true);
+		result openToMem(const char *aFilename);
 	};
 };
 

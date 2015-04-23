@@ -27,6 +27,7 @@ freely, subject to the following restrictions:
 #include <string.h>
 #include <math.h>
 #include "soloud_monotone.h"
+#include "soloud_file.h"
 
 namespace SoLoud
 {
@@ -254,19 +255,59 @@ namespace SoLoud
 			
 			aBuffer[i] = 0;
 			int j;
-			for (j = 0; j < 12; j++)
+			switch (mParent->mWaveform)
 			{
-				if (mOutput[j].mEnabled)
+			case Monotone::SAW:
+				for (j = 0; j < 12; j++)
 				{
-					float bleh;
-					mOutput[j].mSamplePos = modf(mOutput[j].mSamplePos + mOutput[j].mSamplePosInc, &bleh);
-					// square:
-					aBuffer[i] += (mOutput[j].mSamplePos > 0.5f) ? 0.25f : -0.25f;
-					// saw:
-					//aBuffer[i] += ((mOutput[j].mSamplePos) - 0.5) * 0.5;
-					// sin: 
-					//aBuffer[i] += sin(mOutput[j].mSamplePos * M_PI * 2) * 0.5;
+					if (mOutput[j].mEnabled)
+					{
+						float bleh;
+						mOutput[j].mSamplePos = modf(mOutput[j].mSamplePos + mOutput[j].mSamplePosInc, &bleh);
+						// saw:
+						aBuffer[i] += ((mOutput[j].mSamplePos) - 0.5f) * 0.5f;
+					}
 				}
+				break;
+			case Monotone::SIN:
+				for (j = 0; j < 12; j++)
+				{
+					if (mOutput[j].mEnabled)
+					{
+						float bleh;
+						mOutput[j].mSamplePos = modf(mOutput[j].mSamplePos + mOutput[j].mSamplePosInc, &bleh);
+						// sin: 
+						aBuffer[i] += (float)sin(mOutput[j].mSamplePos * M_PI * 2) * 0.5f;
+					}
+				}
+				break;
+			case Monotone::SAWSIN:
+				for (j = 0; j < 12; j++)
+				{
+					if (mOutput[j].mEnabled)
+					{
+						float bleh;
+						mOutput[j].mSamplePos = modf(mOutput[j].mSamplePos + mOutput[j].mSamplePosInc, &bleh);
+						// sawsin:
+						bleh = ((mOutput[j].mSamplePos) - 0.5f) * 0.5f;
+						bleh *= (float)sin(mOutput[j].mSamplePos * M_PI * 2) * 0.5f;
+						aBuffer[i] += bleh;
+					}
+				}
+				break;
+			case Monotone::SQUARE:
+			default:
+				for (j = 0; j < 12; j++)
+				{
+					if (mOutput[j].mEnabled)
+					{
+						float bleh;
+						mOutput[j].mSamplePos = modf(mOutput[j].mSamplePos + mOutput[j].mSamplePosInc, &bleh);
+						// square:
+						aBuffer[i] += (mOutput[j].mSamplePos > 0.5f) ? 0.25f : -0.25f;
+					}
+				}
+				break;
 			}
 
 			mSampleCount++;
@@ -312,6 +353,9 @@ namespace SoLoud
 
 		mBaseSamplerate = 44100;
 		mChannels = 1;
+
+		mHardwareChannels = 1;
+		mWaveform = SQUARE;
 	}
 
 	void Monotone::clear()
@@ -341,49 +385,67 @@ namespace SoLoud
 		return res;
 	}
 
-	result Monotone::load(const char *aFilename, int aHardwareChannels)
+	void Monotone::setParams(int aHardwareChannels, int aWaveform)
 	{
 		mHardwareChannels = aHardwareChannels;
+		mWaveform = aWaveform;
+	}
+	
+	result Monotone::loadMem(unsigned char *aMem, unsigned int aLength, bool aCopy, bool aTakeOwnership)
+	{
+		MemoryFile mf;
+		int res = mf.openMem(aMem, aLength, aCopy, aTakeOwnership);
+		if (res != SO_NO_ERROR)
+			return res;
+		return loadFile(&mf);
+	}
+
+	result Monotone::load(const char *aFilename)
+	{
+		DiskFile df;
+		int res = df.open(aFilename);
+		if (res != SO_NO_ERROR)
+			return res;
+		return loadFile(&df);
+	}
+
+	result Monotone::loadFile(File *aFile)
+	{
+		if (aFile == NULL)
+			return INVALID_PARAMETER;
 		clear();
-		FILE * f = fopen(aFilename, "rb");
-		if (!f)
-		{
-			return FILE_NOT_FOUND;
-		}
 		int i;
 		unsigned char temp[200];
-		fread(temp, 1, 9, f);
+		aFile->read(temp, 9);
 		char magic[] = "\bMONOTONE";
 		for (i = 0; i < 9; i++)
 		{
 			if (temp[i] != magic[i])
 			{
-				fclose(f);
 				return FILE_LOAD_FAILED;
 			}
 		}
-		fread(temp, 1, 41, f);
+		aFile->read(temp, 41);
 		temp[temp[0] + 1] = 0; // pascal -> asciiz: pascal strings have length as first byte
 		mSong.mTitle = mystrdup((char*)temp + 1);
-		fread(temp, 1, 41, f);
+		aFile->read(temp, 41);
 		temp[temp[0] + 1] = 0; // pascal -> asciiz: pascal strings have length as first byte
 		mSong.mComment = mystrdup((char*)temp + 1);
-		fread(temp, 1, 4, f);
+		aFile->read(temp, 4);
 		mSong.mVersion = temp[0];
 		mSong.mTotalPatterns = temp[1];
 		mSong.mTotalTracks = temp[2];
 		mSong.mCellSize = temp[3];
 		if (mSong.mVersion != 1 || mSong.mCellSize != 2)
 		{
-			fclose(f);
 			return FILE_LOAD_FAILED;
 		}
-		fread(mSong.mOrder, 1, 256, f);
+		aFile->read(mSong.mOrder, 256);
 		int totalnotes = 64 * mSong.mTotalPatterns * mSong.mTotalTracks;
 		mSong.mPatternData = new unsigned int[totalnotes];
 		for (i = 0; i < totalnotes; i++)
 		{
-			fread(temp, 1, 2, f);
+			aFile->read(temp, 2);
 			unsigned int datavalue = temp[0] | (temp[1] << 8);
 			mSong.mPatternData[i] = datavalue;
 			unsigned int note = (datavalue >> 9) & 127;
@@ -393,7 +455,6 @@ namespace SoLoud
 			unsigned int effectdata2 = (datavalue >> 0) & 7;
 		}
 
-		fclose(f);
 		return SO_NO_ERROR;
 	}
 

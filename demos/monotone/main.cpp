@@ -49,7 +49,8 @@ int main(int argc, char *argv[])
 {
 	DemoInit();
 
-	gMusic.load("audio/Jakim - Aboriginal Derivatives.mon", 10);
+	gMusic.load("audio/Jakim - Aboriginal Derivatives.mon");
+	gMusic.setParams(10);
 
 	gEcho.setParams(0.2f, 0.5f, 0.05f);
 	gBiquad.setParams(SoLoud::BiquadResonantFilter::LOWPASS, 44100, 4000, 2);

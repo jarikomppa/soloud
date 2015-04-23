@@ -30,6 +30,7 @@ freely, subject to the following restrictions:
 namespace SoLoud
 {
 	class Monotone;
+	class File;
 
 	struct MonotoneSong
 	{
@@ -87,13 +88,25 @@ namespace SoLoud
 	class Monotone : public AudioSource
 	{
 	public:
+		enum MONOTONE_WAVEFORMS
+		{
+			SQUARE = 0,
+			SAW    = 1,
+			SIN    = 2,
+			SAWSIN = 3
+		};
+		
 		int mNotesHz[800];
 		int mVibTable[32];
 		int mHardwareChannels;
+		int mWaveform;
 		MonotoneSong mSong;
 		Monotone();
 		~Monotone();
-		result load(const char *aFilename, int aHardwareChannels = 1);
+		void setParams(int aHardwareChannels, int aWaveform = SQUARE);
+		result load(const char *aFilename);
+		result loadMem(unsigned char *aMem, unsigned int aLength, bool aCopy = false, bool aTakeOwnership = true);
+		result loadFile(File *aFile);
 		virtual AudioSourceInstance *createInstance();
 	public:
 		void clear();

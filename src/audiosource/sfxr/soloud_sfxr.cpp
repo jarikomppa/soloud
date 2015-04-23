@@ -27,6 +27,7 @@ freely, subject to the following restrictions:
 #include <stdio.h>
 #include <math.h>
 #include "soloud_sfxr.h"
+#include "soloud_file.h"
 
 namespace SoLoud
 {
@@ -510,63 +511,75 @@ namespace SoLoud
 		mParams.sound_vol=0.5f;
 	}
 
-	result Sfxr::loadParams(const char* aFilename)
+	result Sfxr::loadParamsMem(unsigned char *aMem, unsigned int aLength, bool aCopy, bool aTakeOwnership)
 	{
-		FILE* file=fopen(aFilename, "rb");
-		if(!file)
-			return FILE_NOT_FOUND;
+		MemoryFile mf;
+		int res = mf.openMem(aMem, aLength, aCopy, aTakeOwnership);
+		if (res != SO_NO_ERROR)
+			return res;
+		return loadParamsFile(&mf);
+	}
 
+	result Sfxr::loadParams(const char *aFilename)
+	{
+		DiskFile df;
+		int res = df.open(aFilename);
+		if (res != SO_NO_ERROR)
+			return res;
+		return loadParamsFile(&df);
+	}
+
+	result Sfxr::loadParamsFile(File *aFile)
+	{
 		int version=0;
-		fread(&version, 1, sizeof(int), file);
+		aFile->read((unsigned char*)&version, sizeof(int));
 		if(version!=100 && version!=101 && version!=102)
 		{
-			fclose(file);
 			return FILE_LOAD_FAILED;
 		}
 
-		fread(&mParams.wave_type, 1, sizeof(int), file);
+		aFile->read((unsigned char*)&mParams.wave_type, sizeof(int));
 
 
 		mParams.sound_vol=0.5f;
 		if(version==102)
-			fread(&mParams.sound_vol, 1, sizeof(float), file);
+			aFile->read((unsigned char*)&mParams.sound_vol, sizeof(float));
 
-		fread(&mParams.p_base_freq, 1, sizeof(float), file);
-		fread(&mParams.p_freq_limit, 1, sizeof(float), file);
-		fread(&mParams.p_freq_ramp, 1, sizeof(float), file);
+		aFile->read((unsigned char*)&mParams.p_base_freq, sizeof(float));
+		aFile->read((unsigned char*)&mParams.p_freq_limit, sizeof(float));
+		aFile->read((unsigned char*)&mParams.p_freq_ramp, sizeof(float));
 		if(version>=101)
-			fread(&mParams.p_freq_dramp, 1, sizeof(float), file);
-		fread(&mParams.p_duty, 1, sizeof(float), file);
-		fread(&mParams.p_duty_ramp, 1, sizeof(float), file);
+			aFile->read((unsigned char*)&mParams.p_freq_dramp, sizeof(float));
+		aFile->read((unsigned char*)&mParams.p_duty, sizeof(float));
+		aFile->read((unsigned char*)&mParams.p_duty_ramp, sizeof(float));
 
-		fread(&mParams.p_vib_strength, 1, sizeof(float), file);
-		fread(&mParams.p_vib_speed, 1, sizeof(float), file);
-		fread(&mParams.p_vib_delay, 1, sizeof(float), file);
+		aFile->read((unsigned char*)&mParams.p_vib_strength, sizeof(float));
+		aFile->read((unsigned char*)&mParams.p_vib_speed, sizeof(float));
+		aFile->read((unsigned char*)&mParams.p_vib_delay, sizeof(float));
 
-		fread(&mParams.p_env_attack, 1, sizeof(float), file);
-		fread(&mParams.p_env_sustain, 1, sizeof(float), file);
-		fread(&mParams.p_env_decay, 1, sizeof(float), file);
-		fread(&mParams.p_env_punch, 1, sizeof(float), file);
+		aFile->read((unsigned char*)&mParams.p_env_attack, sizeof(float));
+		aFile->read((unsigned char*)&mParams.p_env_sustain, sizeof(float));
+		aFile->read((unsigned char*)&mParams.p_env_decay, sizeof(float));
+		aFile->read((unsigned char*)&mParams.p_env_punch, sizeof(float));
 
-		fread(&mParams.filter_on, 1, sizeof(bool), file);
-		fread(&mParams.p_lpf_resonance, 1, sizeof(float), file);
-		fread(&mParams.p_lpf_freq, 1, sizeof(float), file);
-		fread(&mParams.p_lpf_ramp, 1, sizeof(float), file);
-		fread(&mParams.p_hpf_freq, 1, sizeof(float), file);
-		fread(&mParams.p_hpf_ramp, 1, sizeof(float), file);
+		aFile->read((unsigned char*)&mParams.filter_on, sizeof(bool));
+		aFile->read((unsigned char*)&mParams.p_lpf_resonance, sizeof(float));
+		aFile->read((unsigned char*)&mParams.p_lpf_freq, sizeof(float));
+		aFile->read((unsigned char*)&mParams.p_lpf_ramp, sizeof(float));
+		aFile->read((unsigned char*)&mParams.p_hpf_freq, sizeof(float));
+		aFile->read((unsigned char*)&mParams.p_hpf_ramp, sizeof(float));
 	
-		fread(&mParams.p_pha_offset, 1, sizeof(float), file);
-		fread(&mParams.p_pha_ramp, 1, sizeof(float), file);
+		aFile->read((unsigned char*)&mParams.p_pha_offset, sizeof(float));
+		aFile->read((unsigned char*)&mParams.p_pha_ramp, sizeof(float));
 
-		fread(&mParams.p_repeat_speed, 1, sizeof(float), file);
+		aFile->read((unsigned char*)&mParams.p_repeat_speed, sizeof(float));
 
 		if(version>=101)
 		{
-			fread(&mParams.p_arp_speed, 1, sizeof(float), file);
-			fread(&mParams.p_arp_mod, 1, sizeof(float), file);
+			aFile->read((unsigned char*)&mParams.p_arp_speed, sizeof(float));
+			aFile->read((unsigned char*)&mParams.p_arp_mod, sizeof(float));
 		}
 
-		fclose(file);
 		return 0;
 	}
 

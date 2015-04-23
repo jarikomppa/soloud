@@ -30,7 +30,6 @@ freely, subject to the following restrictions:
 
 
 struct stb_vorbis;
-class File;
 
 namespace SoLoud
 {

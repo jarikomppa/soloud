@@ -70,7 +70,11 @@ enum SOLOUD_ENUMS
 	SFXR_BLIP = 6,
 	FLANGERFILTER_WET = 0,
 	FLANGERFILTER_DELAY = 1,
-	FLANGERFILTER_FREQ = 2
+	FLANGERFILTER_FREQ = 2,
+	MONOTONE_SQUARE = 0,
+	MONOTONE_SAW = 1,
+	MONOTONE_SIN = 2,
+	MONOTONE_SAWSIN = 3
 };
 
 // Object handle typedefs
@@ -93,6 +97,7 @@ typedef void * FlangerFilter;
 typedef void * DCRemovalFilter;
 typedef void * Modplug;
 typedef void * Monotone;
+typedef void * File;
 
 /*
  * Soloud
@@ -260,6 +265,8 @@ void Wav_destroy(Wav * aWav);
 Wav * Wav_create();
 int Wav_load(Wav * aWav, const char * aFilename);
 int Wav_loadMem(Wav * aWav, unsigned char * aMem, unsigned int aLength);
+int Wav_loadMemEx(Wav * aWav, unsigned char * aMem, unsigned int aLength, int aCopy /* = false */, int aTakeOwnership /* = true */);
+int Wav_loadFile(Wav * aWav, File * aFile);
 double Wav_getLength(Wav * aWav);
 void Wav_setLooping(Wav * aWav, int aLoop);
 void Wav_set3dMinMaxDistance(Wav * aWav, float aMinDistance, float aMaxDistance);
@@ -279,6 +286,11 @@ void Wav_stop(Wav * aWav);
 void WavStream_destroy(WavStream * aWavStream);
 WavStream * WavStream_create();
 int WavStream_load(WavStream * aWavStream, const char * aFilename);
+int WavStream_loadMem(WavStream * aWavStream, unsigned char * aData, unsigned int aDataLen);
+int WavStream_loadMemEx(WavStream * aWavStream, unsigned char * aData, unsigned int aDataLen, int aCopy /* = false */, int aTakeOwnership /* = true */);
+int WavStream_loadToMem(WavStream * aWavStream, const char * aFilename);
+int WavStream_loadFile(WavStream * aWavStream, File * aFile);
+int WavStream_loadFileToMem(WavStream * aWavStream, File * aFile);
 double WavStream_getLength(WavStream * aWavStream);
 void WavStream_setLooping(WavStream * aWavStream, int aLoop);
 void WavStream_set3dMinMaxDistance(WavStream * aWavStream, float aMinDistance, float aMaxDistance);
@@ -307,6 +319,9 @@ void Sfxr_destroy(Sfxr * aSfxr);
 Sfxr * Sfxr_create();
 void Sfxr_resetParams(Sfxr * aSfxr);
 int Sfxr_loadParams(Sfxr * aSfxr, const char * aFilename);
+int Sfxr_loadParamsMem(Sfxr * aSfxr, unsigned char * aMem, unsigned int aLength);
+int Sfxr_loadParamsMemEx(Sfxr * aSfxr, unsigned char * aMem, unsigned int aLength, int aCopy /* = false */, int aTakeOwnership /* = true */);
+int Sfxr_loadParamsFile(Sfxr * aSfxr, File * aFile);
 int Sfxr_loadPreset(Sfxr * aSfxr, int aPresetNo, int aRandSeed);
 void Sfxr_setLooping(Sfxr * aSfxr, int aLoop);
 void Sfxr_set3dMinMaxDistance(Sfxr * aSfxr, float aMinDistance, float aMaxDistance);
@@ -341,6 +356,9 @@ int DCRemovalFilter_setParamsEx(DCRemovalFilter * aDCRemovalFilter, float aLengt
 void Modplug_destroy(Modplug * aModplug);
 Modplug * Modplug_create();
 int Modplug_load(Modplug * aModplug, const char * aFilename);
+int Modplug_loadMem(Modplug * aModplug, unsigned char * aMem, unsigned int aLength);
+int Modplug_loadMemEx(Modplug * aModplug, unsigned char * aMem, unsigned int aLength, int aCopy /* = false */, int aTakeOwnership /* = true */);
+int Modplug_loadFile(Modplug * aModplug, File * aFile);
 void Modplug_setLooping(Modplug * aModplug, int aLoop);
 void Modplug_set3dMinMaxDistance(Modplug * aModplug, float aMinDistance, float aMaxDistance);
 void Modplug_set3dAttenuation(Modplug * aModplug, unsigned int aAttenuationModel, float aAttenuationRolloffFactor);
@@ -358,8 +376,12 @@ void Modplug_stop(Modplug * aModplug);
  */
 void Monotone_destroy(Monotone * aMonotone);
 Monotone * Monotone_create();
+void Monotone_setParams(Monotone * aMonotone, int aHardwareChannels);
+void Monotone_setParamsEx(Monotone * aMonotone, int aHardwareChannels, int aWaveform /* = SQUARE */);
 int Monotone_load(Monotone * aMonotone, const char * aFilename);
-int Monotone_loadEx(Monotone * aMonotone, const char * aFilename, int aHardwareChannels /* = 1 */);
+int Monotone_loadMem(Monotone * aMonotone, unsigned char * aMem, unsigned int aLength);
+int Monotone_loadMemEx(Monotone * aMonotone, unsigned char * aMem, unsigned int aLength, int aCopy /* = false */, int aTakeOwnership /* = true */);
+int Monotone_loadFile(Monotone * aMonotone, File * aFile);
 void Monotone_setLooping(Monotone * aMonotone, int aLoop);
 void Monotone_set3dMinMaxDistance(Monotone * aMonotone, float aMinDistance, float aMaxDistance);
 void Monotone_set3dAttenuation(Monotone * aMonotone, unsigned int aAttenuationModel, float aAttenuationRolloffFactor);

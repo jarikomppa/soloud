@@ -134,6 +134,8 @@ EXPORTS
 	Wav_create
 	Wav_load
 	Wav_loadMem
+	Wav_loadMemEx
+	Wav_loadFile
 	Wav_getLength
 	Wav_setLooping
 	Wav_set3dMinMaxDistance
@@ -149,6 +151,11 @@ EXPORTS
 	WavStream_destroy
 	WavStream_create
 	WavStream_load
+	WavStream_loadMem
+	WavStream_loadMemEx
+	WavStream_loadToMem
+	WavStream_loadFile
+	WavStream_loadFileToMem
 	WavStream_getLength
 	WavStream_setLooping
 	WavStream_set3dMinMaxDistance
@@ -169,6 +176,9 @@ EXPORTS
 	Sfxr_create
 	Sfxr_resetParams
 	Sfxr_loadParams
+	Sfxr_loadParamsMem
+	Sfxr_loadParamsMemEx
+	Sfxr_loadParamsFile
 	Sfxr_loadPreset
 	Sfxr_setLooping
 	Sfxr_set3dMinMaxDistance
@@ -191,6 +201,9 @@ EXPORTS
 	Modplug_destroy
 	Modplug_create
 	Modplug_load
+	Modplug_loadMem
+	Modplug_loadMemEx
+	Modplug_loadFile
 	Modplug_setLooping
 	Modplug_set3dMinMaxDistance
 	Modplug_set3dAttenuation
@@ -204,8 +217,12 @@ EXPORTS
 	Modplug_stop
 	Monotone_destroy
 	Monotone_create
+	Monotone_setParams
+	Monotone_setParamsEx
 	Monotone_load
-	Monotone_loadEx
+	Monotone_loadMem
+	Monotone_loadMemEx
+	Monotone_loadFile
 	Monotone_setLooping
 	Monotone_set3dMinMaxDistance
 	Monotone_set3dAttenuation

@@ -884,6 +884,7 @@ void generate()
 			fprintf(pyff, "%s'%s'", (i!=0)?",\n":"", gClass[i]->mName.c_str());
 		}
 	}
+	fprintf(f, "typedef void * File;\n");
 
 	fprintf(pyff, "\n]\n\n");
 

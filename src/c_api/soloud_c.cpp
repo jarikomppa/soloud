@@ -847,6 +847,18 @@ int Wav_loadMem(void * aClassPtr, unsigned char * aMem, unsigned int aLength)
 	return cl->loadMem(aMem, aLength);
 }
 
+int Wav_loadMemEx(void * aClassPtr, unsigned char * aMem, unsigned int aLength, int aCopy, int aTakeOwnership)
+{
+	Wav * cl = (Wav *)aClassPtr;
+	return cl->loadMem(aMem, aLength, !!aCopy, !!aTakeOwnership);
+}
+
+int Wav_loadFile(void * aClassPtr, File * aFile)
+{
+	Wav * cl = (Wav *)aClassPtr;
+	return cl->loadFile(aFile);
+}
+
 double Wav_getLength(void * aClassPtr)
 {
 	Wav * cl = (Wav *)aClassPtr;
@@ -933,6 +945,36 @@ int WavStream_load(void * aClassPtr, const char * aFilename)
 {
 	WavStream * cl = (WavStream *)aClassPtr;
 	return cl->load(aFilename);
+}
+
+int WavStream_loadMem(void * aClassPtr, unsigned char * aData, unsigned int aDataLen)
+{
+	WavStream * cl = (WavStream *)aClassPtr;
+	return cl->loadMem(aData, aDataLen);
+}
+
+int WavStream_loadMemEx(void * aClassPtr, unsigned char * aData, unsigned int aDataLen, int aCopy, int aTakeOwnership)
+{
+	WavStream * cl = (WavStream *)aClassPtr;
+	return cl->loadMem(aData, aDataLen, !!aCopy, !!aTakeOwnership);
+}
+
+int WavStream_loadToMem(void * aClassPtr, const char * aFilename)
+{
+	WavStream * cl = (WavStream *)aClassPtr;
+	return cl->loadToMem(aFilename);
+}
+
+int WavStream_loadFile(void * aClassPtr, File * aFile)
+{
+	WavStream * cl = (WavStream *)aClassPtr;
+	return cl->loadFile(aFile);
+}
+
+int WavStream_loadFileToMem(void * aClassPtr, File * aFile)
+{
+	WavStream * cl = (WavStream *)aClassPtr;
+	return cl->loadFileToMem(aFile);
 }
 
 double WavStream_getLength(void * aClassPtr)
@@ -1049,6 +1091,24 @@ int Sfxr_loadParams(void * aClassPtr, const char * aFilename)
 {
 	Sfxr * cl = (Sfxr *)aClassPtr;
 	return cl->loadParams(aFilename);
+}
+
+int Sfxr_loadParamsMem(void * aClassPtr, unsigned char * aMem, unsigned int aLength)
+{
+	Sfxr * cl = (Sfxr *)aClassPtr;
+	return cl->loadParamsMem(aMem, aLength);
+}
+
+int Sfxr_loadParamsMemEx(void * aClassPtr, unsigned char * aMem, unsigned int aLength, int aCopy, int aTakeOwnership)
+{
+	Sfxr * cl = (Sfxr *)aClassPtr;
+	return cl->loadParamsMem(aMem, aLength, !!aCopy, !!aTakeOwnership);
+}
+
+int Sfxr_loadParamsFile(void * aClassPtr, File * aFile)
+{
+	Sfxr * cl = (Sfxr *)aClassPtr;
+	return cl->loadParamsFile(aFile);
 }
 
 int Sfxr_loadPreset(void * aClassPtr, int aPresetNo, int aRandSeed)
@@ -1177,6 +1237,24 @@ int Modplug_load(void * aClassPtr, const char * aFilename)
 	return cl->load(aFilename);
 }
 
+int Modplug_loadMem(void * aClassPtr, unsigned char * aMem, unsigned int aLength)
+{
+	Modplug * cl = (Modplug *)aClassPtr;
+	return cl->loadMem(aMem, aLength);
+}
+
+int Modplug_loadMemEx(void * aClassPtr, unsigned char * aMem, unsigned int aLength, int aCopy, int aTakeOwnership)
+{
+	Modplug * cl = (Modplug *)aClassPtr;
+	return cl->loadMem(aMem, aLength, !!aCopy, !!aTakeOwnership);
+}
+
+int Modplug_loadFile(void * aClassPtr, File * aFile)
+{
+	Modplug * cl = (Modplug *)aClassPtr;
+	return cl->loadFile(aFile);
+}
+
 void Modplug_setLooping(void * aClassPtr, int aLoop)
 {
 	Modplug * cl = (Modplug *)aClassPtr;
@@ -1253,16 +1331,40 @@ void * Monotone_create()
   return (void *)new Monotone;
 }
 
+void Monotone_setParams(void * aClassPtr, int aHardwareChannels)
+{
+	Monotone * cl = (Monotone *)aClassPtr;
+	cl->setParams(aHardwareChannels);
+}
+
+void Monotone_setParamsEx(void * aClassPtr, int aHardwareChannels, int aWaveform)
+{
+	Monotone * cl = (Monotone *)aClassPtr;
+	cl->setParams(aHardwareChannels, aWaveform);
+}
+
 int Monotone_load(void * aClassPtr, const char * aFilename)
 {
 	Monotone * cl = (Monotone *)aClassPtr;
 	return cl->load(aFilename);
 }
 
-int Monotone_loadEx(void * aClassPtr, const char * aFilename, int aHardwareChannels)
+int Monotone_loadMem(void * aClassPtr, unsigned char * aMem, unsigned int aLength)
 {
 	Monotone * cl = (Monotone *)aClassPtr;
-	return cl->load(aFilename, aHardwareChannels);
+	return cl->loadMem(aMem, aLength);
+}
+
+int Monotone_loadMemEx(void * aClassPtr, unsigned char * aMem, unsigned int aLength, int aCopy, int aTakeOwnership)
+{
+	Monotone * cl = (Monotone *)aClassPtr;
+	return cl->loadMem(aMem, aLength, !!aCopy, !!aTakeOwnership);
+}
+
+int Monotone_loadFile(void * aClassPtr, File * aFile)
+{
+	Monotone * cl = (Monotone *)aClassPtr;
+	return cl->loadFile(aFile);
 }
 
 void Monotone_setLooping(void * aClassPtr, int aLoop)

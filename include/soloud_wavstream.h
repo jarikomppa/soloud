@@ -30,6 +30,7 @@ freely, subject to the following restrictions:
 
 
 struct stb_vorbis;
+class File;
 
 namespace SoLoud
 {
@@ -61,6 +62,7 @@ namespace SoLoud
 		int mOgg;
 		char *mFilename;
 		File *mMemFile;
+		File *mStreamFile;
 		unsigned int mDataOffset;
 		unsigned int mBits;
 		unsigned int mChannels;
@@ -71,6 +73,8 @@ namespace SoLoud
 		result load(const char *aFilename);
 		result loadMem(unsigned char *aData, unsigned int aDataLen, bool aCopy = false, bool aTakeOwnership = true);
 		result loadToMem(const char *aFilename);
+		result loadFile(File *aFile);
+		result loadFileToMem(File *aFile);		
 		virtual AudioSourceInstance *createInstance();
 		time getLength();
 	public:

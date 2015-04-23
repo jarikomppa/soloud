@@ -48,6 +48,7 @@
 //  HEADER BEGINS HERE
 //
 
+
 #ifndef STB_VORBIS_INCLUDE_STB_VORBIS_H
 #define STB_VORBIS_INCLUDE_STB_VORBIS_H
 
@@ -58,6 +59,8 @@
 #ifndef STB_VORBIS_NO_STDIO
 #include <stdio.h>
 #endif
+
+#include "soloud_file_hack_on.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -369,6 +372,7 @@ enum STBVorbisError
 }
 #endif
 
+
 #endif // STB_VORBIS_INCLUDE_STB_VORBIS_H
 //
 //  HEADER ENDS HERE
@@ -376,6 +380,7 @@ enum STBVorbisError
 //////////////////////////////////////////////////////////////////////////////
 
 #ifndef STB_VORBIS_HEADER_ONLY
+
 
 // global configuration settings (e.g. set these in the project/makefile),
 // or just set them in this file at the top (although ideally the first few
@@ -5443,3 +5448,5 @@ int stb_vorbis_get_samples_float(stb_vorbis *f, int channels, float **buffer, in
 */
 
 #endif // STB_VORBIS_HEADER_ONLY
+
+#include "soloud_file_hack_off.h"

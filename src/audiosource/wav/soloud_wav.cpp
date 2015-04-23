@@ -285,14 +285,7 @@ namespace SoLoud
 		 	aReader->seek(0);
 			int e = 0;
 			stb_vorbis *v = 0;
-			if (aReader->getMemPtr())
-            {
-				v = stb_vorbis_open_memory(aReader->getMemPtr(), aReader->length(), &e, 0);
-            }
-			else
-            {
-				v = stb_vorbis_open_file(aReader->getFilePtr(), 0, &e, 0);
-            }
+			v = stb_vorbis_open_file((Soloud_Filehack*)aReader, 0, &e, 0);
 
 			if (0 != v)
             {
@@ -325,6 +318,11 @@ namespace SoLoud
 		MemoryFile dr;
         dr.openMem(aMem, aLength, aCopy, aTakeOwnership);
 		return testAndLoadFile(&dr);
+	}
+
+	result Wav::loadFile(File *aFile)
+	{
+		return testAndLoadFile(aFile);
 	}
 
 	AudioSourceInstance *Wav::createInstance()

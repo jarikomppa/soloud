@@ -28,6 +28,8 @@ freely, subject to the following restrictions:
 #include <stdio.h>
 #include "soloud.h"
 
+typedef void* Soloud_Filehack;
+
 namespace SoLoud
 {
 	class File
@@ -76,6 +78,7 @@ namespace SoLoud
 		MemoryFile();
 		result openMem(unsigned char *aData, unsigned int aDataLength, bool aCopy=false, bool aTakeOwnership=true);
 		result openToMem(const char *aFilename);
+		result openFileToMem(File *aFile);
 	};
 };
 

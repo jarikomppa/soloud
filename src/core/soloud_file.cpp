@@ -159,6 +159,7 @@ namespace SoLoud
 		if (mDataOwned)
 			delete[] mDataPtr;
 		mDataPtr = 0;
+		mOffset = 0;
 
 		mDataLength = aDataLength;
 
@@ -182,6 +183,7 @@ namespace SoLoud
 		if (mDataOwned)
 			delete[] mDataPtr;
 		mDataPtr = 0;
+		mOffset = 0;
 
 		DiskFile df;
 		int res = df.open(aFile);
@@ -196,5 +198,78 @@ namespace SoLoud
 		mDataOwned = true;
 		return SO_NO_ERROR;
 	}
+
+	result MemoryFile::openFileToMem(File *aFile)
+	{
+		if (mDataOwned)
+			delete[] mDataPtr;
+		mDataPtr = 0;
+		mOffset = 0;
+
+		mDataLength = aFile->length();
+		mDataPtr = new unsigned char[mDataLength];
+		if (mDataPtr == NULL)
+			return OUT_OF_MEMORY;
+		aFile->read(mDataPtr, mDataLength);
+		mDataOwned = true;
+		return SO_NO_ERROR;
+	}
 }
 
+extern "C"
+{
+	int Soloud_Filehack_fgetc(Soloud_Filehack *f)
+	{
+		SoLoud::File *fp = (SoLoud::File *)f;
+		return fp->read8();
+	}
+
+	int Soloud_Filehack_fread(void *dst, int s, int c, Soloud_Filehack *f)
+	{
+		SoLoud::File *fp = (SoLoud::File *)f;
+		return fp->read((unsigned char*)dst, s*c) / s;
+
+	}
+
+	int Soloud_Filehack_fseek(Soloud_Filehack *f, int base, int idx)
+	{
+		SoLoud::File *fp = (SoLoud::File *)f;
+		switch (base)
+		{
+		case SEEK_CUR:
+			fp->seek(fp->pos() + idx);
+			break;
+		case SEEK_END:
+			fp->seek(fp->length() + idx);
+			break;
+		default:
+			fp->seek(idx);
+		}
+		return 0;
+	}
+
+	int Soloud_Filehack_ftell(Soloud_Filehack *f)
+	{
+		SoLoud::File *fp = (SoLoud::File *)f;
+		return fp->pos();
+	}
+
+	int Soloud_Filehack_fclose(Soloud_Filehack *f)
+	{
+		SoLoud::File *fp = (SoLoud::File *)f;
+		delete fp;
+		return 0;
+	}
+
+	Soloud_Filehack * Soloud_Filehack_fopen(const char *aFilename, char *aMode)
+	{
+		SoLoud::DiskFile *df = new SoLoud::DiskFile();
+		int res = df->open(aFilename);
+		if (res != SoLoud::SO_NO_ERROR)
+		{
+			delete df;
+			df = 0;
+		}
+		return (Soloud_Filehack*)df;
+	}
+}

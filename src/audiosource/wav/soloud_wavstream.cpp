@@ -52,6 +52,11 @@ namespace SoLoud
 			df->open(aParent->mFilename);
 		}
 		else
+		if (aParent->mStreamFile)
+		{
+			mFile = aParent->mStreamFile;
+		}
+		else
 		{
 			return;
 		}
@@ -62,14 +67,7 @@ namespace SoLoud
 			{
 				int e;
 
-				if (mFile->getMemPtr())
-				{
-					mOgg = stb_vorbis_open_memory(mFile->getMemPtr(), mFile->length(), &e, 0);
-				}
-				else
-				{
-					mOgg = stb_vorbis_open_file(mFile->getFilePtr(), 0, &e, 0);
-				}
+				mOgg = stb_vorbis_open_file((Soloud_Filehack *)mFile, 0, &e, 0);
 
 				if (!mOgg)
 				{
@@ -93,7 +91,7 @@ namespace SoLoud
 		{
 			stb_vorbis_close(mOgg);
 		}
-		if (mFile)
+		if (mFile != mParent->mStreamFile)
 		{
 			delete mFile;
 		}
@@ -368,14 +366,7 @@ namespace SoLoud
 		fp->seek(0);
 		int e;
 		stb_vorbis *v;
-		if (fp->getMemPtr())
-		{
-			v = stb_vorbis_open_memory(fp->getMemPtr(), fp->length(), &e, 0);
-		}
-		else
-		{
-			v = stb_vorbis_open_file(fp->getFilePtr(), 0, &e, 0);
-		}
+		v = stb_vorbis_open_file((Soloud_Filehack *)fp, 0, &e, 0);
 		stb_vorbis_info info = stb_vorbis_get_info(v);
 		if (info.channels > 1)
 		{
@@ -424,6 +415,7 @@ namespace SoLoud
 	{
 		delete[] mFilename;
 		delete mMemFile;
+		mStreamFile = 0;
 		mMemFile = 0;
 		mFilename = 0;
 		mSampleCount = 0;
@@ -454,14 +446,47 @@ namespace SoLoud
 
 	result WavStream::loadToMem(const char *aFilename)
 	{
+		DiskFile df;
+		int res = df.open(aFilename);
+		if (res == SO_NO_ERROR)
+		{
+			res = loadFileToMem(&df);
+		}
+		return res;
+	}
+
+	result WavStream::loadFile(File *aFile)
+	{
 		delete[] mFilename;
 		delete mMemFile;
+		mStreamFile = 0;
 		mMemFile = 0;
 		mFilename = 0;
 		mSampleCount = 0;
-		DiskFile df;
+
+		int res = parse(aFile);
+
+		if (res != SO_NO_ERROR)
+		{
+			return res;
+		}
+
+		mStreamFile = aFile;
+
+		return 0;
+	}
+
+	result WavStream::loadFileToMem(File *aFile)
+	{
+		delete[] mFilename;
+		delete mMemFile;
+		mStreamFile = 0;
+		mMemFile = 0;
+		mFilename = 0;
+		mSampleCount = 0;
+
 		MemoryFile *mf = new MemoryFile();
-		int res = mf->openToMem(aFilename);
+		int res = mf->openFileToMem(aFile);
 		if (res != SO_NO_ERROR)
 		{
 			delete mf;
@@ -480,6 +505,7 @@ namespace SoLoud
 
 		return res;
 	}
+
 
 	result WavStream::parse(File *aFile)
 	{

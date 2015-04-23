@@ -59,15 +59,15 @@ namespace SoLoud
 	unsigned int DiskFile::length()
 	{
 		int pos = ftell(mFileHandle);
-		fseek(mFileHandle, SEEK_END, 0);
+		fseek(mFileHandle, 0, SEEK_END);
 		int len = ftell(mFileHandle);
-		fseek(mFileHandle, SEEK_SET, pos);
+		fseek(mFileHandle, pos, SEEK_SET);
 		return len;
 	}
 
 	void DiskFile::seek(int aOffset)
 	{
-		fseek(mFileHandle, SEEK_SET, aOffset);
+		fseek(mFileHandle, aOffset, SEEK_SET);
 	}
 
 	unsigned int DiskFile::pos()
@@ -97,6 +97,11 @@ namespace SoLoud
 		if (!mFileHandle)
 			return FILE_NOT_FOUND;
 		return SO_NO_ERROR;
+	}
+
+	int DiskFile::eof()
+	{
+		return feof(mFileHandle);
 	}
 
 
@@ -214,6 +219,13 @@ namespace SoLoud
 		mDataOwned = true;
 		return SO_NO_ERROR;
 	}
+
+	int MemoryFile::eof()
+	{
+		if (mOffset >= mDataLength)
+			return 1;
+		return 0;
+	}
 }
 
 extern "C"
@@ -221,6 +233,8 @@ extern "C"
 	int Soloud_Filehack_fgetc(Soloud_Filehack *f)
 	{
 		SoLoud::File *fp = (SoLoud::File *)f;
+		if (fp->eof())
+			return EOF;		
 		return fp->read8();
 	}
 
@@ -231,7 +245,7 @@ extern "C"
 
 	}
 
-	int Soloud_Filehack_fseek(Soloud_Filehack *f, int base, int idx)
+	int Soloud_Filehack_fseek(Soloud_Filehack *f, int idx, int base)
 	{
 		SoLoud::File *fp = (SoLoud::File *)f;
 		switch (base)

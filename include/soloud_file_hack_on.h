@@ -40,7 +40,7 @@ extern "C" {
 
 extern int Soloud_Filehack_fgetc(Soloud_Filehack *f);
 extern int Soloud_Filehack_fread(void *dst, int s, int c, Soloud_Filehack *f);
-extern int Soloud_Filehack_fseek(Soloud_Filehack *f, int base, int idx);
+extern int Soloud_Filehack_fseek(Soloud_Filehack *f, int idx, int base);
 extern int Soloud_Filehack_ftell(Soloud_Filehack *f);
 extern int Soloud_Filehack_fclose(Soloud_Filehack *f);
 extern Soloud_Filehack * Soloud_Filehack_fopen(const char *aFilename, char *aMode);

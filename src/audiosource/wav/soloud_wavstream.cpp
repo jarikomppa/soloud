@@ -367,6 +367,8 @@ namespace SoLoud
 		int e;
 		stb_vorbis *v;
 		v = stb_vorbis_open_file((Soloud_Filehack *)fp, 0, &e, 0);
+		if (v == NULL)
+			return FILE_LOAD_FAILED;
 		stb_vorbis_info info = stb_vorbis_get_info(v);
 		if (info.channels > 1)
 		{

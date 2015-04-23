@@ -38,6 +38,7 @@ namespace SoLoud
 		unsigned int read8();
 		unsigned int read16();
 		unsigned int read32();
+		virtual int eof() = 0;
 		virtual unsigned int read(unsigned char *aDst, unsigned int aBytes) = 0;
 		virtual unsigned int length() = 0;
 		virtual void seek(int aOffset) = 0;
@@ -51,6 +52,7 @@ namespace SoLoud
 	public:
 		FILE *mFileHandle;
 
+		virtual int eof();
 		virtual unsigned int read(unsigned char *aDst, unsigned int aBytes);
 		virtual unsigned int length();
 		virtual void seek(int aOffset);
@@ -69,6 +71,7 @@ namespace SoLoud
 		unsigned int mOffset;
 		bool mDataOwned;
 
+		virtual int eof();
 		virtual unsigned int read(unsigned char *aDst, unsigned int aBytes);
 		virtual unsigned int length();
 		virtual void seek(int aOffset);

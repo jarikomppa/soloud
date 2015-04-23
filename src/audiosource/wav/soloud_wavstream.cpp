@@ -55,6 +55,7 @@ namespace SoLoud
 		if (aParent->mStreamFile)
 		{
 			mFile = aParent->mStreamFile;
+			mFile->seek(0); // stb_vorbis assumes file offset to be at start of ogg
 		}
 		else
 		{
@@ -71,7 +72,8 @@ namespace SoLoud
 
 				if (!mOgg)
 				{
-					delete mFile;
+					if (mFile != mParent->mStreamFile)
+						delete mFile;
 					mFile = 0;
 				}
 				mOggFrameSize = 0;

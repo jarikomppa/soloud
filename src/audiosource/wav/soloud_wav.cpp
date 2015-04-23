@@ -303,9 +303,10 @@ namespace SoLoud
 	result Wav::load(const char *aFilename)
 	{
 		DiskFile dr;
-		if (!dr.open(aFilename))
+		int res = dr.open(aFilename);
+		if (res != SO_NO_ERROR)
         {
-			return FILE_NOT_FOUND;
+			return res;
         }
 		return testAndLoadFile(&dr);
 	}

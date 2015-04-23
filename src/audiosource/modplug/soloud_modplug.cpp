@@ -28,6 +28,7 @@ freely, subject to the following restrictions:
 #ifdef WITH_MODPLUG
 #include "../ext/libmodplug/src/modplug.h"
 #endif
+#include "soloud_file.h"
 
 namespace SoLoud
 {
@@ -99,33 +100,42 @@ namespace SoLoud
 #endif
 	}
 
-	result Modplug::load(const char* aFilename)
+	result Modplug::loadMem(unsigned char *aMem, unsigned int aLength, bool aCopy, bool aTakeOwnership)
+	{
+		MemoryFile mf;
+		int res = mf.openMem(aMem, aLength, aCopy, aTakeOwnership);
+		if (res != SO_NO_ERROR)
+			return res;
+		return loadFile(&mf);
+	}
+
+	result Modplug::load(const char *aFilename)
+	{
+		DiskFile df;
+		int res = df.open(aFilename);
+		if (res != SO_NO_ERROR)
+			return res;
+		return loadFile(&df);
+	}
+
+	result Modplug::loadFile(File *aFile)
 	{
 #ifdef WITH_MODPLUG
-		FILE * f = fopen(aFilename, "rb");
-		if (!f)
-		{
-			return FILE_NOT_FOUND;
-		}
-
+		
 		if (mData)
 		{
 			delete[] mData;
 		}
 
-		fseek(f, 0, SEEK_END);
-		mDataLen = ftell(f);
-		fseek(f, 0, SEEK_SET);
+		mDataLen = aFile->length();
 		mData = new char[mDataLen];
 		if (!mData)
 		{
 			mData = 0;
 			mDataLen = 0;
-			fclose(f);
 			return OUT_OF_MEMORY;
 		}
-		fread(mData,1,mDataLen,f);
-		fclose(f);
+		aFile->read((unsigned char*)mData, mDataLen);
 
 		ModPlugFile* mpf = ModPlug_Load((const void*)mData, mDataLen);
 		if (!mpf)

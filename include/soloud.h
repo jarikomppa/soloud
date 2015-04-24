@@ -243,6 +243,9 @@ namespace SoLoud
 
 		// Get current loop count. Returns 0 if handle is not valid. (All audio sources may not update loop count)
 		unsigned int getLoopCount(handle aVoiceHandle);
+		
+		// Get audiosource-specific information from a voice. 
+		float getVoiceInfo(handle aVoiceHandle, unsigned int aInfoKey);
 
 		// Create a voice group. Returns 0 if unable (out of voice groups / out of memory)
 		handle createVoiceGroup();

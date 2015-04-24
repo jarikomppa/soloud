@@ -286,6 +286,11 @@ namespace SoLoud
 		mCollider = aCollider;
 		mColliderData = aUserData;
 	}
+	
+	float AudioSourceInstance::getInfo(unsigned int aInfoKey)
+	{
+	    return 0;
+	}
 
 };
 

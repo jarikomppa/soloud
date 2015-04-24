@@ -157,6 +157,8 @@ namespace SoLoud
 		virtual void seek(time aSeconds, float *mScratch, unsigned int mScratchSize);
 		// Rewind stream. Base implementation returns NOT_IMPLEMENTED, meaning it can't rewind.
 		virtual result rewind();
+		// Get information. Returns 0 by default.
+		virtual float getInfo(unsigned int aInfoKey);
 	};
 
 	class Soloud;

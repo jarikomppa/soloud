@@ -1,11 +1,14 @@
-Premake
-=======
+Premake / GENie
+===============
 
-SoLoud comes with a premake4 script. If you want to build SoLoud as static library, instead of including the source files in your project, this can be handy.
+SoLoud comes with a GENie script. GENie is a fork of premake4, and the script may still be compatible with the latest premake.
 
+If you want to build SoLoud as static library, instead of including the source files in your project, this can be handy.
+
+GENie can be downloaded from >https://github.com/bkaradzic/genie>.
 Premake can be downloaded from <http://industriousone.com/premake>.
 
-Unfortunately, premake4 cannot magically figure out where your libraries may be installed, so you may have to edit the premake4.lua file. The lines to edit can be found at the very beginning of the file, with the following defaults:
+Unfortunately, GENie cannot magically figure out where your libraries may be installed, so you may have to edit the genie.lua file. The lines to edit can be found at the very beginning of the file, with the following defaults:
 
     local sdl_root       = "/libraries/sdl"
     local portmidi_root  = "/libraries/portmidi"
@@ -15,24 +18,33 @@ Unfortunately, premake4 cannot magically figure out where your libraries may be 
 
 You will most likely want to edit at least the sdl_root variable. After your edits, you can run premake4 to generate makefiles or the IDE project files of your preference, such as:
 
-    premake4 vs2010
+    genie vs2013
     
-The current version (4.3) supports codeblocks, codelite, vs2002, vs2003, vs2005, vs2008, vs2010, xcode3 and gnu makefiles 
-(gmake). New version with at least vs2012 support is coming soon (I hope).
+The current version (104) supports codeblocks, codelite, vs2008, vs2010, vs2012, vs2013, vs2015, xcode3, xcode4 and gnu makefiles 
+(gmake). 
 
 You can also use one or more of the optional parameters to change the build behavior. 
 
 Option                Description
 -------------------   -----------
+soloud-devel          Shorthand for options used while developing SoLoud
+with-common-backends  Includes common backends in build
 with-libmodplug       Include libmodplug in build
-with-native-only      Only native backends (winmm/oss) in build
-with-portmidi         Use portmidi to drive midi keyboard in the piano demo
+with-native-only      Only native backends (winmm/oss) in build (default)
+with-openal           Include OpenAL backend in build
+with-portaudio        Include PortAudio backend in build
+with-portmidi         Use PortMidi to drive midi keyboard in the piano demo
+with-sdl              Include SDL backend in build
 with-sdl-only         Only include sdl in build
 with-sdlnondyn-only   Only include sdl that doesn't use dyndll in build
+with-sdl2             Include SDL2 backend in build
+with-sdl2-only        Only include sdl2 in build
+with-sdl2nondyn-only  Only include sdl2 that doesn't use dyndll in build
 with-tools            Include (optional) tools in build
-with-xaudio2          Include xaudio2 in build
+with-wasapi           Include WASAPI backend in build
+with-xaudio2          Include XAudio2 backend in build
 
-So for example, in order to build SoLoud with libmodplug and tools on vs2010, use:
+So for example, in order to build SoLoud with libmodplug and tools on vs2013, use:
 
-    premake4 --with-libmodplug --with-tools vs2010 
+    genie --with-libmodplug --with-tools vs2013
     

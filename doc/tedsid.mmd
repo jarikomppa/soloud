@@ -1,0 +1,147 @@
+SoLoud::TedSid
+===============
+
+The SoLoud::TedSid is a replayer for TED and SID soundchip register
+write dumps, based on tedplay (c) 2012 Attila Grosz, used under 
+Unlicense http://unlicense.org/.
+
+TED is the soundchip of the commodore plus/4, and SID is the soundchip
+of the commodore 64.
+
+The TED and SID songs are actually complete c64 or plus/4 programs,
+so in order to avoid running a complete c64 emulator in an audio engine,
+we only simulate the soundchips at real time. To generate the dumps,
+you can use the tedsid2dump.exe tool.
+
+You can use the Soloud.getInfo() interface to query TED and SID
+register values while the song is playing. The SID registers are mapped
+to values 0-31 and the TED registers to 64-69.
+
+TedSid.load()
+-------------
+
+You tell TedSid to load a file with the load function:
+
+    result load(const char *aFilename); 
+
+If loading fails, the function returns an error code.
+
+    SoLoud::TedSid galway;
+    galway.load("galway.sid.dump");
+
+TedSid.loadMem()
+----------------
+Alternate way of loading the file is to read from a memory buffer.
+
+    result loadMem(unsigned char *aMem, int aLength, 
+                   bool aCopy, bool aTakeOwnership);
+
+SoLoud function assumes that the pointer and the data pointed will
+be valid as long as SoLoud needs them. You can use the aCopy parameter
+to tell SoLoud to take a copy of the data instead of using the pointers
+directly, and the aTakeOwnership parameter to tell SoLoud to free the
+pointer when the object is being destroyed.
+
+TedSid.loadToMem()
+------------------
+The loadToMem() tells SoLoud to load the whole file to a memory buffer
+and stream it from there.
+
+TedSid.loadFileToMem()
+----------------------
+The loadFileToMem() function performs the memory loading of loadToMem()
+using SoLoud::File objects, same way as loadFile() does.
+
+
+TedSid.loadFile()
+-----------------
+The loadFile() can be used to load audio from a SoLoud::File object. This
+is useful for integrating with virtual filesystems / packfiles, such as
+PhysFS.
+
+
+TedSid.setLooping()
+-------------------
+
+Adjusting the looping of a TedSid sound does not currently
+have any effect. All music is set to loop by default. 
+
+TedSid.setFilter()
+------------------
+
+As with any other audio source, you can attach filters to 
+monotone audio sources.
+
+    gMusic.setFilter(0, &gLofi);
+
+TedSid.stop()
+-------------
+
+You can stop all instances of a monotone sound source with
+stop(). This is equivalent of calling soloud.stopAudioSource()
+with the sound source.
+
+    gMusic.stop();
+    
+tedsid2dump tool
+----------------
+The tedsid2dump tool can be used to dump audio chip register writes from plus/4 and c64 tunes.
+The tool actually runs the program code inside a limited commodore plus/4 emulator, and records
+the audio chip register writes as they happen, along with timestamp so they can be played back
+within SoLoud.
+
+    Usage:
+    tedsid2dump filename msecs [-s speed] [-m sid model] [-t tune number] [-i]
+
+    Where:
+    -s 1-5, song speed. 3 = single, 5 = double. Default 3
+    -m model 0:6581 1:8580 2:8580DB 3:6581R1. Default 1
+    -t the number of sub-tune to play. Default 1
+    -i Show information and quit
+    -q Quantize timestamps by 1000 ticks
+
+    Example:
+    tedsid2dump foobar.sid 60000 -s 5 -m 0 -t 1
+    
+Songs may require different replay speeds. If your song sounds wrong, you may want to try a different song speed.
+
+If the tempo is right but some instrument sounds wrong, it's possible you're playing with a wrong SID revision.
+6581 and 8580 are the most common.
+
+It is also possible to quantize the timestamps. This may affect the way the song sounds, as the register writes
+won't be even close to cycle-accurate anymore, but it will also dramatically shrink the dump file sizes.
+
+Dump file format
+----------------
+
+### Header
+
+Offset | Size | Information                             |
+------ | ---- | -------------------------------------   |
+0      |  5   | 'D' 'u' 'm' 'p' and 0 bytes signature.
+5      |  1   | SID model
+6      |  2   | 2 reserved bytes (set to 0)
+
+### Timestamp
+
+Pattern            | Information
+------------------ | --------------------------------------------------------------
+1 aaaaaaa aaaaaaaa | Timestamp. Highest bit always on, rest (a) is timestamp delta.
+0 bbbbbbb cccccccc | Reg write. Highest bit always off, b is register, c is value.
+
+Since the data is stored in x86 big-endian format, the bytes are actually swapped.
+
+To decode, read two bytes; if the highest bit of the second byte is on, this is a timestamp, otherwise it's a register write.
+The timestamp delta value says how many clocks to wait until the write should be executed.
+
+Inherited 3d audio interfaces
+-----------------------------
+Like all other audio sources, monotone inherits the 3d audio interfaces. Please refer to the 3d audio chapter for details on:
+
+- TedSid.set3dMinMaxDistance()
+- TedSid.set3dAttenuation()
+- TedSid.set3dDopplerFactor()
+- TedSid.set3dProcessing()
+- TedSid.set3dListenerRelative()
+- TedSid.set3dDistanceDelay()
+- TedSid.set3dCollider()

@@ -100,3 +100,11 @@ To enable the base implementation of seek to seek backwards from the
 current play position, sound source may implement the rewind function.
 In most cases the rewind is easier to implement than actual smart
 seeking.
+
+AudioSourceInstance.getInfo()
+-----------------------------
+
+Optionally, you can provide the getInfo() interface to let the application
+query real-time information about your audio source. This information
+may be channel volumes, register values, or some other information of
+interest.

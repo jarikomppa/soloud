@@ -826,7 +826,17 @@ float square(float v)
 	return -1;
 }
 
-void upsampletest(int aResampler, int aFunction, float aMultiplier, FILE *aIndexf)
+char *resamplername[MAX_RESAMPLER] =
+{
+	"point",
+	"linear",
+	"catmull-rom",
+	"sinc6",
+	"gauss5",
+	"experiment"
+};
+
+void upsampletest(int aResampler, int aFunction, float aMultiplier, FILE *aIndexf, FILE *aIndexfs)
 {
 	float *a, *b, *temp;
 	int i;
@@ -837,7 +847,7 @@ void upsampletest(int aResampler, int aFunction, float aMultiplier, FILE *aIndex
 	temp = new float[src_samples];
 	
 	char *func = "";
-	char *samp = "";
+	char *samp = resamplername[aResampler];
 
 	switch (aFunction)
 	{
@@ -883,6 +893,7 @@ void upsampletest(int aResampler, int aFunction, float aMultiplier, FILE *aIndex
 	int prev = 0;
 	int samples_out = 0;
 	int mSrcOffset = 0;
+	
 
 	while (samples_out < 512)
 	{
@@ -900,27 +911,21 @@ void upsampletest(int aResampler, int aFunction, float aMultiplier, FILE *aIndex
 		{
 		//case 0:
 		default:
-			samp = "point";
 			resample_pointsample(temp + curr, temp + prev, b + samples_out, mSrcOffset, writesamples, 44100 / aMultiplier, 44100, step_fixed);
 			break;
 		case 1:
-			samp = "linear";
 			resample_linear(temp + curr, temp + prev, b + samples_out, mSrcOffset, writesamples, 44100 / aMultiplier, 44100, step_fixed);
 			break;
 		case 2:
-			samp = "catmull-rom";
 			resample_catmullrom(temp + curr, temp + prev, b + samples_out, mSrcOffset, writesamples, 44100 / aMultiplier, 44100, step_fixed);
 			break;
 		case 3:
-			samp = "sinc6";
 			resample_sinc6(temp + curr, temp + prev, b + samples_out, mSrcOffset, writesamples, 44100 / aMultiplier, 44100, step_fixed);
 			break;
 		case 4:
-			samp = "gauss5";
 			resample_gauss5(temp + curr, temp + prev, b + samples_out, mSrcOffset, writesamples, 44100 / aMultiplier, 44100, step_fixed);
 			break;
 		case 5:
-			samp = "experiment";
 			resample_experiment(temp + curr, temp + prev, b + samples_out, mSrcOffset, writesamples, 44100 / aMultiplier, 44100, step_fixed);
 			break;
 		}
@@ -946,6 +951,7 @@ void upsampletest(int aResampler, int aFunction, float aMultiplier, FILE *aIndex
 	plot_diff(tempstr, 512, 256, a, b, 0xff0000ff, 0xffff0000, 0xffffffff, 0xffcccccc);
 
 	fprintf(aIndexf, "<img src=\"%s\">&nbsp;", tempstr);
+	fprintf(aIndexfs, "<img src=\"%s\">&nbsp;", tempstr);
 
 	delete[] a;
 	delete[] b;
@@ -957,6 +963,16 @@ void upsampletest(int aResampler, int aFunction, float aMultiplier, FILE *aIndex
 int main(int parc, char ** pars)
 {
 	setbuf(stdout, NULL);
+	FILE * indexfs[MAX_RESAMPLER];
+	int i;
+	for (i = 0; i < MAX_RESAMPLER; i++)
+	{
+		char temp[200];
+		sprintf(temp, "index_%s.html", resamplername[i]);
+		indexfs[i] = fopen(temp, "w");
+		fprintf(indexfs[i],
+			"<html>\n<body>\n");
+	}
 	FILE * indexf = fopen("index.html", "w");
 	fprintf(indexf,
 		"<html>\n<body>\n");
@@ -967,7 +983,7 @@ int main(int parc, char ** pars)
 		{
 			for (samp = 0; samp < MAX_RESAMPLER; samp++)
 			{
-				upsampletest(samp, func, (float)(k * k * 3 + 2), indexf);
+				upsampletest(samp, func, (float)(k * k * 3 + 2), indexf, indexfs[samp]);
 			}
 			fprintf(indexf, "<br><br>\n");
 		}
@@ -975,11 +991,16 @@ int main(int parc, char ** pars)
 		{
 			for (samp = 0; samp < MAX_RESAMPLER; samp++)
 			{
-				upsampletest(samp, func, (float)(1.0f / (k * k * 3 + 2)), indexf);
+				upsampletest(samp, func, (float)(1.0f / (k * k * 3 + 2)), indexf, indexfs[samp]);
 			}
 			fprintf(indexf, "<br><br>\n");
 		}
 	}
 	fprintf(indexf,"</body>\n</html>\n");
 	fclose(indexf);
+	for (i = 0; i < MAX_RESAMPLER; i++)
+	{
+		fprintf(indexfs[i], "</body>\n</html>\n");
+		fclose(indexfs[i]);
+	}
 }

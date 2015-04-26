@@ -62,6 +62,11 @@ newoption {
 }
 
 newoption {
+	trigger		  = "with-sdl2",
+	description = "Include SDL2 backend in build"
+}
+
+newoption {
 	trigger		  = "with-portaudio",
 	description = "Include PortAudio backend in build"
 }
@@ -89,6 +94,16 @@ newoption {
 newoption {
 	trigger		  = "with-sdlnondyn-only",
 	description = "Only include sdl that doesn't use dyndll in build"
+}
+
+newoption {
+	trigger		  = "with-sdl2-only",
+	description = "Only include sdl2 in build"
+}
+
+newoption {
+	trigger		  = "with-sdl2nondyn-only",
+	description = "Only include sdl2 that doesn't use dyndll in build"
 }
 
 newoption {
@@ -162,12 +177,30 @@ if _OPTIONS["with-sdl"] then
 	WITH_SDL = 1
 end
 
+if _OPTIONS["with-sdl2"] then
+	WITH_SDL = 1
+end
+
 if _OPTIONS["with-wasapi"] then
 	WITH_WASAPI = 1
 end
 
 if _OPTIONS["with-sdl-only"] then
 	WITH_SDL = 1
+	WITH_SDL_NONDYN = 0
+	WITH_SDL2_NONDYN = 0
+	WITH_PORTAUDIO = 0
+	WITH_OPENAL = 0
+	WITH_XAUDIO2 = 0
+	WITH_WINMM = 0
+	WITH_WASAPI = 0
+	WITH_OSS = 0
+end
+
+if _OPTIONS["with-sdl2-only"] then
+	WITH_SDL = 1
+	WITH_SDL_NONDYN = 0
+	WITH_SDL2_NONDYN = 0
 	WITH_PORTAUDIO = 0
 	WITH_OPENAL = 0
 	WITH_XAUDIO2 = 0
@@ -199,8 +232,22 @@ if _OPTIONS["with-sdl2nondyn-only"] then
 	WITH_OSS = 0
 end
 
+if _OPTIONS["with-sdl2nondyn-only"] then
+	WITH_SDL = 0
+	WITH_SDL_NONDYN = 0
+	WITH_SDL2_NONDYN = 1
+	WITH_PORTAUDIO = 0
+	WITH_OPENAL = 0
+	WITH_XAUDIO2 = 0
+	WITH_WINMM = 0
+	WITH_WASAPI = 0
+	WITH_OSS = 0
+end
+
 if _OPTIONS["with-native-only"] then
 	WITH_SDL = 0
+	WITH_SDL_NONDYN = 0
+	WITH_SDL2_NONDYN = 0
 	WITH_PORTAUDIO = 0
 	WITH_OPENAL = 0
 	WITH_XAUDIO2 = 0

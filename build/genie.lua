@@ -524,6 +524,34 @@ end
 
 if (WITH_TOOLS == 1) then
 
+	project "tedsid2dump"
+		kind "ConsoleApp"
+		language "C++"
+		files {
+		  "../src/tools/tedsid2dump/**.cpp"
+		}
+if (WITH_LIBMODPLUG == 1) then
+		defines { "WITH_MODPLUG" }
+end
+		configuration "Debug"
+			defines { "DEBUG" }
+			flags {"Symbols" }
+			objdir (buildroot .. "/debug")
+			targetname "tedsid2dump_d"
+			flags { "Symbols" }
+
+		configuration "Release"
+			defines { "NDEBUG" }
+			flags {"Optimize"}
+			objdir (buildroot .. "/release")
+			targetname "tedsid2dump"
+			flags { "EnableSSE2", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
+end
+
+-- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
+
+if (WITH_TOOLS == 1) then
+
 	project "resamplerlab"
 		kind "ConsoleApp"
 		language "C++"
@@ -759,6 +787,9 @@ end
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 
+   CommonDemo("tedsid")
+
+-- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
   project "piano"
 	kind "WindowedApp"
 	language "C++"

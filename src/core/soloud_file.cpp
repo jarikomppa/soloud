@@ -93,6 +93,8 @@ namespace SoLoud
 
 	result DiskFile::open(const char *aFilename)
 	{
+		if (!aFilename)
+			return INVALID_PARAMETER;
 		mFileHandle = fopen(aFilename, "rb");
 		if (!mFileHandle)
 			return FILE_NOT_FOUND;
@@ -185,6 +187,8 @@ namespace SoLoud
 
 	result MemoryFile::openToMem(const char *aFile)
 	{
+		if (!aFile)
+			return INVALID_PARAMETER;
 		if (mDataOwned)
 			delete[] mDataPtr;
 		mDataPtr = 0;

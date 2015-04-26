@@ -56,7 +56,8 @@ char *gIncludeFile[] =
 #if defined(WITH_MODPLUG)
 	"../include/soloud_modplug.h",
 #endif
-	"../include/soloud_monotone.h"
+	"../include/soloud_monotone.h",
+	"../include/soloud_tedsid.h"
 };
 
 int gIncludeFileCount = sizeof(gIncludeFile) / sizeof(char*);

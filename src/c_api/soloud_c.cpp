@@ -47,6 +47,7 @@ freely, subject to the following restrictions:
 #include "../include/soloud_dcremovalfilter.h"
 #include "../include/soloud_modplug.h"
 #include "../include/soloud_monotone.h"
+#include "../include/soloud_tedsid.h"
 
 using namespace SoLoud;
 
@@ -409,6 +410,12 @@ unsigned int Soloud_getLoopCount(void * aClassPtr, unsigned int aVoiceHandle)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
 	return cl->getLoopCount(aVoiceHandle);
+}
+
+float Soloud_getInfo(void * aClassPtr, unsigned int aVoiceHandle, unsigned int aInfoKey)
+{
+	Soloud * cl = (Soloud *)aClassPtr;
+	return cl->getInfo(aVoiceHandle, aInfoKey);
 }
 
 unsigned int Soloud_createVoiceGroup(void * aClassPtr)
@@ -1331,16 +1338,16 @@ void * Monotone_create()
   return (void *)new Monotone;
 }
 
-void Monotone_setParams(void * aClassPtr, int aHardwareChannels)
+int Monotone_setParams(void * aClassPtr, int aHardwareChannels)
 {
 	Monotone * cl = (Monotone *)aClassPtr;
-	cl->setParams(aHardwareChannels);
+	return cl->setParams(aHardwareChannels);
 }
 
-void Monotone_setParamsEx(void * aClassPtr, int aHardwareChannels, int aWaveform)
+int Monotone_setParamsEx(void * aClassPtr, int aHardwareChannels, int aWaveform)
 {
 	Monotone * cl = (Monotone *)aClassPtr;
-	cl->setParams(aHardwareChannels, aWaveform);
+	return cl->setParams(aHardwareChannels, aWaveform);
 }
 
 int Monotone_load(void * aClassPtr, const char * aFilename)
@@ -1430,6 +1437,118 @@ void Monotone_setFilter(void * aClassPtr, unsigned int aFilterId, Filter * aFilt
 void Monotone_stop(void * aClassPtr)
 {
 	Monotone * cl = (Monotone *)aClassPtr;
+	cl->stop();
+}
+
+void TedSid_destroy(void * aClassPtr)
+{
+  delete (TedSid *)aClassPtr;
+}
+
+void * TedSid_create()
+{
+  return (void *)new TedSid;
+}
+
+int TedSid_load(void * aClassPtr, const char * aFilename)
+{
+	TedSid * cl = (TedSid *)aClassPtr;
+	return cl->load(aFilename);
+}
+
+int TedSid_loadToMem(void * aClassPtr, const char * aFilename)
+{
+	TedSid * cl = (TedSid *)aClassPtr;
+	return cl->loadToMem(aFilename);
+}
+
+int TedSid_loadMem(void * aClassPtr, unsigned char * aMem, unsigned int aLength)
+{
+	TedSid * cl = (TedSid *)aClassPtr;
+	return cl->loadMem(aMem, aLength);
+}
+
+int TedSid_loadMemEx(void * aClassPtr, unsigned char * aMem, unsigned int aLength, int aCopy, int aTakeOwnership)
+{
+	TedSid * cl = (TedSid *)aClassPtr;
+	return cl->loadMem(aMem, aLength, !!aCopy, !!aTakeOwnership);
+}
+
+int TedSid_loadFileToMem(void * aClassPtr, File * aFile)
+{
+	TedSid * cl = (TedSid *)aClassPtr;
+	return cl->loadFileToMem(aFile);
+}
+
+int TedSid_loadFile(void * aClassPtr, File * aFile)
+{
+	TedSid * cl = (TedSid *)aClassPtr;
+	return cl->loadFile(aFile);
+}
+
+void TedSid_setLooping(void * aClassPtr, int aLoop)
+{
+	TedSid * cl = (TedSid *)aClassPtr;
+	cl->setLooping(!!aLoop);
+}
+
+void TedSid_set3dMinMaxDistance(void * aClassPtr, float aMinDistance, float aMaxDistance)
+{
+	TedSid * cl = (TedSid *)aClassPtr;
+	cl->set3dMinMaxDistance(aMinDistance, aMaxDistance);
+}
+
+void TedSid_set3dAttenuation(void * aClassPtr, unsigned int aAttenuationModel, float aAttenuationRolloffFactor)
+{
+	TedSid * cl = (TedSid *)aClassPtr;
+	cl->set3dAttenuation(aAttenuationModel, aAttenuationRolloffFactor);
+}
+
+void TedSid_set3dDopplerFactor(void * aClassPtr, float aDopplerFactor)
+{
+	TedSid * cl = (TedSid *)aClassPtr;
+	cl->set3dDopplerFactor(aDopplerFactor);
+}
+
+void TedSid_set3dProcessing(void * aClassPtr, int aDo3dProcessing)
+{
+	TedSid * cl = (TedSid *)aClassPtr;
+	cl->set3dProcessing(!!aDo3dProcessing);
+}
+
+void TedSid_set3dListenerRelative(void * aClassPtr, int aListenerRelative)
+{
+	TedSid * cl = (TedSid *)aClassPtr;
+	cl->set3dListenerRelative(!!aListenerRelative);
+}
+
+void TedSid_set3dDistanceDelay(void * aClassPtr, int aDistanceDelay)
+{
+	TedSid * cl = (TedSid *)aClassPtr;
+	cl->set3dDistanceDelay(!!aDistanceDelay);
+}
+
+void TedSid_set3dCollider(void * aClassPtr, AudioCollider * aCollider)
+{
+	TedSid * cl = (TedSid *)aClassPtr;
+	cl->set3dCollider(aCollider);
+}
+
+void TedSid_set3dColliderEx(void * aClassPtr, AudioCollider * aCollider, int aUserData)
+{
+	TedSid * cl = (TedSid *)aClassPtr;
+	cl->set3dCollider(aCollider, aUserData);
+}
+
+void TedSid_setFilter(void * aClassPtr, unsigned int aFilterId, Filter * aFilter)
+{
+	TedSid * cl = (TedSid *)aClassPtr;
+	cl->setFilter(aFilterId, aFilter);
+}
+
+void TedSid_stop(void * aClassPtr)
+{
+	TedSid * cl = (TedSid *)aClassPtr;
 	cl->stop();
 }
 

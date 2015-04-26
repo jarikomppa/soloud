@@ -385,10 +385,13 @@ namespace SoLoud
 		return res;
 	}
 
-	void Monotone::setParams(int aHardwareChannels, int aWaveform)
+	result Monotone::setParams(int aHardwareChannels, int aWaveform)
 	{
+		if (aHardwareChannels <= 0 || aWaveform <= 0)
+			return INVALID_PARAMETER;
 		mHardwareChannels = aHardwareChannels;
 		mWaveform = aWaveform;
+		return SO_NO_ERROR;
 	}
 	
 	result Monotone::loadMem(unsigned char *aMem, unsigned int aLength, bool aCopy, bool aTakeOwnership)

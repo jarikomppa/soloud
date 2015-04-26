@@ -97,6 +97,7 @@ typedef void * FlangerFilter;
 typedef void * DCRemovalFilter;
 typedef void * Modplug;
 typedef void * Monotone;
+typedef void * TedSid;
 typedef void * File;
 
 /*
@@ -162,6 +163,7 @@ void Soloud_setVisualizationEnable(Soloud * aSoloud, int aEnable);
 float * Soloud_calcFFT(Soloud * aSoloud);
 float * Soloud_getWave(Soloud * aSoloud);
 unsigned int Soloud_getLoopCount(Soloud * aSoloud, unsigned int aVoiceHandle);
+float Soloud_getInfo(Soloud * aSoloud, unsigned int aVoiceHandle, unsigned int aInfoKey);
 unsigned int Soloud_createVoiceGroup(Soloud * aSoloud);
 int Soloud_destroyVoiceGroup(Soloud * aSoloud, unsigned int aVoiceGroupHandle);
 int Soloud_addVoiceToGroup(Soloud * aSoloud, unsigned int aVoiceGroupHandle, unsigned int aVoiceHandle);
@@ -376,8 +378,8 @@ void Modplug_stop(Modplug * aModplug);
  */
 void Monotone_destroy(Monotone * aMonotone);
 Monotone * Monotone_create();
-void Monotone_setParams(Monotone * aMonotone, int aHardwareChannels);
-void Monotone_setParamsEx(Monotone * aMonotone, int aHardwareChannels, int aWaveform /* = SQUARE */);
+int Monotone_setParams(Monotone * aMonotone, int aHardwareChannels);
+int Monotone_setParamsEx(Monotone * aMonotone, int aHardwareChannels, int aWaveform /* = SQUARE */);
 int Monotone_load(Monotone * aMonotone, const char * aFilename);
 int Monotone_loadMem(Monotone * aMonotone, unsigned char * aMem, unsigned int aLength);
 int Monotone_loadMemEx(Monotone * aMonotone, unsigned char * aMem, unsigned int aLength, int aCopy /* = false */, int aTakeOwnership /* = true */);
@@ -393,6 +395,29 @@ void Monotone_set3dCollider(Monotone * aMonotone, AudioCollider * aCollider);
 void Monotone_set3dColliderEx(Monotone * aMonotone, AudioCollider * aCollider, int aUserData /* = 0 */);
 void Monotone_setFilter(Monotone * aMonotone, unsigned int aFilterId, Filter * aFilter);
 void Monotone_stop(Monotone * aMonotone);
+
+/*
+ * TedSid
+ */
+void TedSid_destroy(TedSid * aTedSid);
+TedSid * TedSid_create();
+int TedSid_load(TedSid * aTedSid, const char * aFilename);
+int TedSid_loadToMem(TedSid * aTedSid, const char * aFilename);
+int TedSid_loadMem(TedSid * aTedSid, unsigned char * aMem, unsigned int aLength);
+int TedSid_loadMemEx(TedSid * aTedSid, unsigned char * aMem, unsigned int aLength, int aCopy /* = false */, int aTakeOwnership /* = true */);
+int TedSid_loadFileToMem(TedSid * aTedSid, File * aFile);
+int TedSid_loadFile(TedSid * aTedSid, File * aFile);
+void TedSid_setLooping(TedSid * aTedSid, int aLoop);
+void TedSid_set3dMinMaxDistance(TedSid * aTedSid, float aMinDistance, float aMaxDistance);
+void TedSid_set3dAttenuation(TedSid * aTedSid, unsigned int aAttenuationModel, float aAttenuationRolloffFactor);
+void TedSid_set3dDopplerFactor(TedSid * aTedSid, float aDopplerFactor);
+void TedSid_set3dProcessing(TedSid * aTedSid, int aDo3dProcessing);
+void TedSid_set3dListenerRelative(TedSid * aTedSid, int aListenerRelative);
+void TedSid_set3dDistanceDelay(TedSid * aTedSid, int aDistanceDelay);
+void TedSid_set3dCollider(TedSid * aTedSid, AudioCollider * aCollider);
+void TedSid_set3dColliderEx(TedSid * aTedSid, AudioCollider * aCollider, int aUserData /* = 0 */);
+void TedSid_setFilter(TedSid * aTedSid, unsigned int aFilterId, Filter * aFilter);
+void TedSid_stop(TedSid * aTedSid);
 #ifdef  __cplusplus
 } // extern "C"
 #endif

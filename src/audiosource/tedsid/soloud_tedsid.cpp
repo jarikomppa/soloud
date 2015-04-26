@@ -132,6 +132,8 @@ namespace SoLoud
 
 	result TedSid::loadMem(unsigned char *aMem, unsigned int aLength, bool aCopy, bool aTakeOwnership)
 	{
+		if (!aMem || aLength == 0)
+			return INVALID_PARAMETER;
 		MemoryFile *mf = new MemoryFile;
 		if (!mf)
 			return OUT_OF_MEMORY;
@@ -154,6 +156,8 @@ namespace SoLoud
 
 	result TedSid::load(const char *aFilename)
 	{
+		if (!aFilename)
+			return INVALID_PARAMETER;
 		DiskFile *df = new DiskFile;
 		if (!df) return OUT_OF_MEMORY;
 		int res = df->open(aFilename);
@@ -166,6 +170,50 @@ namespace SoLoud
 			return res;
 		}
 		mFileOwned = true;				
+		return SO_NO_ERROR;
+	}
+
+	result TedSid::loadToMem(const char *aFilename)
+	{
+		if (!aFilename)
+			return INVALID_PARAMETER;
+		MemoryFile *mf = new MemoryFile;
+		if (!mf) return OUT_OF_MEMORY;
+		int res = mf->openToMem(aFilename);
+		if (res != SO_NO_ERROR)
+		{
+			delete mf;
+			return res;
+		}
+		res = loadFile(mf);
+		if (res != SO_NO_ERROR)
+		{
+			delete mf;
+			return res;
+		}
+		mFileOwned = true;
+		return SO_NO_ERROR;
+	}
+
+	result TedSid::loadFileToMem(File *aFile)
+	{
+		if (!aFile)
+			return INVALID_PARAMETER;
+		MemoryFile *mf = new MemoryFile;
+		if (!mf) return OUT_OF_MEMORY;
+		int res = mf->openFileToMem(aFile);
+		if (res != SO_NO_ERROR)
+		{
+			delete mf;
+			return res;
+		}
+		res = loadFile(mf);
+		if (res != SO_NO_ERROR)
+		{
+			delete mf;
+			return res;
+		}
+		mFileOwned = true;
 		return SO_NO_ERROR;
 	}
 

@@ -59,6 +59,7 @@ EXPORTS
 	Soloud_calcFFT
 	Soloud_getWave
 	Soloud_getLoopCount
+	Soloud_getInfo
 	Soloud_createVoiceGroup
 	Soloud_destroyVoiceGroup
 	Soloud_addVoiceToGroup
@@ -234,3 +235,22 @@ EXPORTS
 	Monotone_set3dColliderEx
 	Monotone_setFilter
 	Monotone_stop
+	TedSid_destroy
+	TedSid_create
+	TedSid_load
+	TedSid_loadToMem
+	TedSid_loadMem
+	TedSid_loadMemEx
+	TedSid_loadFileToMem
+	TedSid_loadFile
+	TedSid_setLooping
+	TedSid_set3dMinMaxDistance
+	TedSid_set3dAttenuation
+	TedSid_set3dDopplerFactor
+	TedSid_set3dProcessing
+	TedSid_set3dListenerRelative
+	TedSid_set3dDistanceDelay
+	TedSid_set3dCollider
+	TedSid_set3dColliderEx
+	TedSid_setFilter
+	TedSid_stop

@@ -103,7 +103,7 @@ namespace SoLoud
 		return 0;
 	}
 
-	float Soloud::getVoiceInfo(handle aVoiceHandle, unsigned int mInfoKey)
+	float Soloud::getInfo(handle aVoiceHandle, unsigned int mInfoKey)
 	{
 		if (mLockMutexFunc) mLockMutexFunc(mMutex);
 		int ch = getVoiceFromHandle(aVoiceHandle);

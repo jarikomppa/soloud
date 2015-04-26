@@ -63,7 +63,9 @@ namespace SoLoud
 		TedSid();
 		~TedSid();
 		result load(const char *aFilename);
+		result loadToMem(const char *aFilename);
 		result loadMem(unsigned char *aMem, unsigned int aLength, bool aCopy = false, bool aTakeOwnership = true);
+		result loadFileToMem(File *aFile);
 		result loadFile(File *aFile);
 		virtual AudioSourceInstance *createInstance();
 	};

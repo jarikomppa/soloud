@@ -43,6 +43,7 @@ src = [
     "sfxr.mmd",
     "modplug.mmd",
     "monotone.mmd",
+    "tedsid.mmd",
     "newsoundsources.mmd",
     "filters.mmd",
     "biquadfilter.mmd",

@@ -68,6 +68,7 @@ ga('send', 'pageview');
 <a href="sfxr.html">SoLoud::Sfxr</a><br>
 <a href="modplug.html">SoLoud::Modplug</a><br>
 <a href="monotone.html">SoLoud::Monotone</a><br>
+<a href="tedsid.html">SoLoud::TedSid</a><br>
 <a href="newsoundsources.html">New Audio Sources</a><br>
 <br>
 <a href="filters.html">SoLoud::Filter</a><br>

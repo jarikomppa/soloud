@@ -148,3 +148,11 @@ This can be useful at least to detect when some sound loops.
     
 Invalid handles and unsupported sound sources will cause the function to
 return 0.
+
+Soloud.getInfo()
+----------------
+Some sound sources let you get real-time information from the active voice.
+
+    float reg10 = soloud.getInfo(c64song, 10);
+    
+If the call is not supported, or the handle is invalid, the function returns 0.

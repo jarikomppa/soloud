@@ -27,6 +27,24 @@ If loading fails, the function returns an error code.
     SoLoud::Modplug spacedeb;
     spacedeb.load("spacedeb.mod");
 
+Modplug.loadFile()
+------------------
+The loadFile() can be used to load audio from a SoLoud::File object. This
+is useful for integrating with virtual filesystems / packfiles, such as
+PhysFS.
+
+Modplug.loadMem()
+-----------------
+Alternate way of loading the file is to read from a memory buffer.
+
+    result loadMem(unsigned char *aMem, int aLength, 
+                   bool aCopy, bool aTakeOwnership);
+
+The aTakeOwnership parameter can be used to tell SoLoud to free the pointer
+once it's done with it. The aCopy parameter is here for compatibility with
+the other loadMem functions.
+
+
 Modplug.setLooping()
 --------------------
 

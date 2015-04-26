@@ -31,7 +31,7 @@ If loading fails, the function returns an error code.
     coin.loadPreset(Sfxr::COIN, 3247);
 
 Sfxr.loadParams()
-----------
+-----------------
 
 Effect parameters can also be loaded from a configuration file
 saved from the sfxr tool.
@@ -42,6 +42,24 @@ If loading fails, the function returns an error code.
 
     SoLoud::Sfxr boom;
     boom.loadParams("boom.sfx");
+
+Sfxr.loadParamsMem()
+--------------------
+Alternate way of loading the parameters is to read from a memory buffer.
+
+    result loadParamsMem(unsigned char *aMem, int aLength, 
+                         bool aCopy, bool aTakeOwnership);
+
+The aTakeOwnership parameter can be used to tell SoLoud to free the pointer
+once it's done with it. The aCopy parameter is here for compatibility with
+the other loadMem functions.
+
+Sfxr.loadParamsFile()
+---------------------
+The loadFile() can be used to load parameters from a SoLoud::File object. This
+is useful for integrating with virtual filesystems / packfiles, such as
+PhysFS.
+
 
 Sfxr.resetParams()
 ------------------

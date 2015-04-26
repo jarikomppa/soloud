@@ -11,7 +11,8 @@ good side is, after loading, these samples are very lightweight, as
 their processing is mostly just a memory copy.
 
 For lengthy samples like background music, you may want to use
-SoLoud::WavStream instead.
+SoLoud::WavStream instead. The Wav is all about speed, and always
+decodes the whole sample into memory at load time.
 
 Wav.load()
 ----------
@@ -33,15 +34,26 @@ Wav.loadMem()
 
 Alternate way of loading samples is to read from a memory buffer.
 
-    void loadMem(unsigned char *aMem, int aLength); // Sample to load
+    result loadMem(unsigned char *aMem, int aLength, 
+                   bool aCopy, bool aTakeOwnership);
 
 If loading fails, the sample will be silent.
 
     SoLoud::Wav boom;
     boom.loadMem(boomMemoryResource, boomMemoryResourceLength);
 
-If the loading function is called while there are instances playing, the
-result is undefined (most likely a crash).
+SoLoud function assumes that the pointer and the data pointed will
+be valid as long as SoLoud needs them. You can use the aCopy parameter
+to tell SoLoud to take a copy of the data instead of using the pointers
+directly, and the aTakeOwnership parameter to tell SoLoud to free the
+pointer when the object is being destroyed.
+
+Wav.loadFile()
+--------------
+The loadFile() can be used to load audio from a SoLoud::File object. This
+is useful for integrating with virtual filesystems / packfiles, such as
+PhysFS.
+
 
 Wav.setLooping()
 ----------------

@@ -22,6 +22,7 @@ C_TO_PY_TYPES = {
     "float":"ctypes.c_float",
     "double":"ctypes.c_double",
     "float *":"ctypes.POINTER(ctypes.c_float * 256)",
+    "File *":"ctypes.c_void_p",
     "unsigned char *":"ctypes.POINTER(ctypes.c_ubyte)"
 }
 

@@ -16,6 +16,7 @@ UNSUPPORTED_TYPES = {
     "float":0,
     "double":0,
     "float *":1,
+    "File *":1,
     "unsigned char *":1
 }
 

@@ -14,6 +14,7 @@ C_TO_CS_TYPES = {
     "float":"float",
     "double":"double",
     "float *":"float[]",
+    "File *":"SoloudObject",
     "unsigned char *":"IntPtr"
 }
 

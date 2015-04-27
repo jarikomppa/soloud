@@ -66,7 +66,7 @@ namespace SoLoud
 		unsigned int i;
 		for (i = 0; i < 12; i++)
 		{
-			mOutput[i].mEnabled = i < mParent->mHardwareChannels && i < mParent->mSong.mTotalTracks;
+			mOutput[i].mEnabled = i < (unsigned int)mParent->mHardwareChannels && i < (unsigned int)mParent->mSong.mTotalTracks;
 		}
 		for (i = 0; i < aSamples; i++)
 		{

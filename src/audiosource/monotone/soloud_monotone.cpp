@@ -64,6 +64,10 @@ namespace SoLoud
 	{
 		int samplesPerTick = (int)floor(mSamplerate / 60);
 		unsigned int i;
+		for (i = 0; i < 12; i++)
+		{
+			mOutput[i].mEnabled = i < mParent->mHardwareChannels && i < mParent->mSong.mTotalTracks;
+		}
 		for (i = 0; i < aSamples; i++)
 		{
 			if ((mSampleCount % samplesPerTick) == 0)
@@ -289,8 +293,8 @@ namespace SoLoud
 						float bleh;
 						mOutput[j].mSamplePos = modf(mOutput[j].mSamplePos + mOutput[j].mSamplePosInc, &bleh);
 						// sawsin:
-						bleh = ((mOutput[j].mSamplePos) - 0.5f) * 0.5f;
-						bleh *= (float)sin(mOutput[j].mSamplePos * M_PI * 2) * 0.5f;
+						bleh = ((mOutput[j].mSamplePos) - 0.5f);
+						bleh *= (float)sin(mOutput[j].mSamplePos * M_PI * 2);
 						aBuffer[i] += bleh;
 					}
 				}
@@ -387,7 +391,7 @@ namespace SoLoud
 
 	result Monotone::setParams(int aHardwareChannels, int aWaveform)
 	{
-		if (aHardwareChannels <= 0 || aWaveform <= 0)
+		if (aHardwareChannels <= 0 || aWaveform < 0)
 			return INVALID_PARAMETER;
 		mHardwareChannels = aHardwareChannels;
 		mWaveform = aWaveform;

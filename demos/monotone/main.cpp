@@ -70,6 +70,9 @@ int main(int argc, char *argv[])
 	float filter_param1[4] = { 1000, 8000, 0, 0 };
 	float filter_param2[4] = { 2, 3,  0, 0 };
 	
+	int hwchannels = 4;
+	int waveform = 0;
+
 	// Main loop: loop forever.
 	while (1)
 	{
@@ -90,14 +93,43 @@ int main(int argc, char *argv[])
 
 		ONCE(ImGui::SetNextWindowPos(ImVec2(500, 20)));
 		ImGui::Begin("Output");
-		ImGui::PlotLines("##Wave", buf, 256, 0, "Wave", -1, 1, ImVec2(264,80));
+		ImGui::PlotLines("##Wave", buf, 256, 0, "Wave", -1, 1, ImVec2(264, 80));
 		ImGui::PlotHistogram("##FFT", fft, 256/2, 0, "FFT", 0, 10, ImVec2(264,80),8);
 		ImGui::Text("Music volume     : %d%%", (int)floor(gSoloud.getVolume(gMusichandle) * 100));
 		ImGui::Text("Active voices    : %d", gSoloud.getActiveVoiceCount());
 		ImGui::End();
 
 		ONCE(ImGui::SetNextWindowPos(ImVec2(20, 20)));
+		
 		ImGui::Begin("Control");
+		if (ImGui::SliderInt("Channels", &hwchannels, 1, 4))
+		{
+			gMusic.setParams(hwchannels, waveform);
+		}
+		if (ImGui::CollapsingHeader("Waveform", (const char*)0, true, false))
+		{
+			if (ImGui::RadioButton("Square", waveform == SoLoud::Monotone::SQUARE))
+			{
+				waveform = SoLoud::Monotone::SQUARE;
+				gMusic.setParams(hwchannels, waveform);
+			}
+			if (ImGui::RadioButton("Saw", waveform == SoLoud::Monotone::SAW))
+			{
+				waveform = SoLoud::Monotone::SAW;
+				gMusic.setParams(hwchannels, waveform);
+			}
+			if (ImGui::RadioButton("Sin", waveform == SoLoud::Monotone::SIN))
+			{
+				waveform = SoLoud::Monotone::SIN;
+				gMusic.setParams(hwchannels, waveform);
+			}
+			if (ImGui::RadioButton("SawSin", waveform == SoLoud::Monotone::SAWSIN))
+			{
+				waveform = SoLoud::Monotone::SAWSIN;
+				gMusic.setParams(hwchannels, waveform);
+			}
+		}
+		ImGui::Separator();
 		ImGui::Text("Biquad filter (lowpass)");
 		ImGui::SliderFloat("Wet##4", &filter_param0[0], 0, 1);
 		ImGui::SliderFloat("Frequency##4", &filter_param1[0], 0, 8000);

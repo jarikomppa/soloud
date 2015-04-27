@@ -159,7 +159,7 @@ int main(int argc, char *argv[])
 				FILE * f = fopen(s, "rb");
 				if (!f)
 				{
-					printf("Error: %s not found. Run without parameters for help.\n");
+					printf("Error: %s not found. Run without parameters for help.\n", s);
 					return -1;
 				}
 				fclose(f);

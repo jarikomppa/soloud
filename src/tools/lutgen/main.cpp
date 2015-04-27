@@ -70,10 +70,10 @@ void fileheader(FILE * f)
 
 void gen_bitrev(FILE *f, int bits)
 {
-	long				length;
-	long				cnt;
-	long				br_index;
-	long				bit; 
+	int				length;
+	int				cnt;
+	int				br_index;
+	int				bit;
 
 	length = 1L << bits;
 
@@ -103,7 +103,7 @@ void gen_bitrev(FILE *f, int bits)
 
 void gen_triglut(FILE * f, int bits)
 {
-	long		total_len;
+	int		total_len;
 
 	float *_ptr = 0;
 	total_len = (1L << (bits - 1)) - 4;
@@ -116,12 +116,12 @@ void gen_triglut(FILE * f, int bits)
 	const double	PI = atan(1.0f) * 4;
 	for (int level = 3; level < bits; ++level)
 	{
-		const long		level_len = 1L << (level - 1);
+		const int		level_len = 1L << (level - 1);
 		float * const	level_ptr = const_cast<float *> (_ptr + (1L << (level - 1)) - 4);
 		
 		const double	mul = PI / (level_len << 1);
 
-		for (long i = 0; i < level_len; ++i)
+		for (int i = 0; i < level_len; ++i)
 		{
 			level_ptr[i] = (float)cos(i * mul);
 		}

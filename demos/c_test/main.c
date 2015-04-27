@@ -50,7 +50,7 @@ int main(int parc, char ** pars)
 		for (i = p; i < 60; i++)
 			printf(" ");
 		printf("\r");
-		printf("%c\r", "|\\-/"[i&3]);
+		printf("%c\r", (int)("|\\-/"[i&3]));
 		i++;
 	}
 	printf("\nFinished.\n");

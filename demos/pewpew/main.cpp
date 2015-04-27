@@ -54,9 +54,9 @@ int main(int argc, char *argv[])
 	gSfx.loadPreset(SoLoud::Sfxr::LASER, 3);
 
 	int lasttick = DemoTick();
-	int fire1 = 0;
-	int fire2 = 0;
-	int fire3 = 0;
+	bool fire1 = 0;
+	bool fire2 = 0;
+	bool fire3 = 0;
 
 	float x = 0;
 
@@ -70,107 +70,100 @@ int main(int argc, char *argv[])
 			DemoYield();
 		}
 		else
-		while (lasttick < tick)
 		{
-			x = (float)sin(lasttick * 0.01f) * 0.75f;
-			gSfx.loadPreset(SoLoud::Sfxr::LASER, 3);
-			if (fire1)
+			while (lasttick < tick)
 			{
-				gSoloud.playClocked(lasttick / 1000.0f, gSfx, 1, x);
+				x = (float)sin(lasttick * 0.01f) * 0.75f;
+				gSfx.loadPreset(SoLoud::Sfxr::LASER, 3);
+				if (fire1)
+				{
+					gSoloud.playClocked(lasttick / 1000.0f, gSfx, 1, x);
+				}
+
+				if (fire2)
+				{
+					gSoloud.play(gSfx, 1, x);
+				}
+
+				if (fire3)
+				{
+					gSoloud.playClocked(lasttick / 1000.0f, gSfx, 1, x);
+				}
+
+				if (fire1 || fire2 || fire3)
+				{
+					bullety[bulletidx] = 350;
+					bulletx[bulletidx] = x;
+					bulletidx = (bulletidx + 1) % MAX_BULLETS;
+				}
+
+				if (fire1) fire1 = 0;
+
+				for (i = 0; i < MAX_BULLETS; i++)
+				{
+					if (bullety[i])
+					{
+						bullety[i] -= 20;
+					}
+				}
+
+				lasttick += 40;
 			}
 
-			if (fire2)
-			{
-				gSoloud.play(gSfx, 1, x);
-			}
+			// Recalculate here for smoother visuals
+			x = (float)sin(tick * 0.01f) * 0.75f;
 
-			if (fire3)
-			{
-				gSoloud.playClocked(lasttick / 1000.0f, gSfx, 1, x);
-			}
-
-			if (fire1 || fire2 || fire3)
-			{
-				bullety[bulletidx] = 350;
-				bulletx[bulletidx] = x;
-				bulletidx = (bulletidx + 1) % MAX_BULLETS;
-			}
-			
-			if (fire1) fire1 = 0;
+			DemoUpdateStart();
+			DemoTriangle(400 + x * 100, 350,
+				375 + x * 100, 400,
+				425 + x * 100, 400,
+				0xff3399ff);
 
 			for (i = 0; i < MAX_BULLETS; i++)
 			{
-				if (bullety[i])
+				if (bullety[i] != 0)
 				{
-					bullety[i] -= 20;
+					DemoTriangle(400 + bulletx[i] * 100, bullety[i],
+						400 - 2.5f + bulletx[i] * 100, 10 + bullety[i],
+						400 + 2.5f + bulletx[i] * 100, 10 + bullety[i],
+						0xff773333);
+
 				}
 			}
 
-			lasttick += 40;
-		}
+			float *buf = gSoloud.getWave();
+			float *fft = gSoloud.calcFFT();
 
-		fire2 = 0;
-		fire3 = 0;
+			ONCE(ImGui::SetNextWindowPos(ImVec2(500, 20)));
+			ImGui::Begin("Output");
+			ImGui::PlotLines("##Wave", buf, 256, 0, "Wave", -1, 1, ImVec2(264, 80));
+			ImGui::PlotHistogram("##FFT", fft, 256 / 2, 0, "FFT", 0, 10, ImVec2(264, 80), 8);
+			ImGui::Text("Active voices     : %d", gSoloud.getActiveVoiceCount());
+			ImGui::Text("----|----|----|----|----|");
 
-		// Recalculate here for smoother visuals
-		x = (float)sin(tick * 0.01f) * 0.75f;
+			char temp[200];
+			for (i = 0; i < (signed)gSoloud.getActiveVoiceCount(); i++)
+				temp[i] = '-';
+			temp[i] = 0;
+			ImGui::Text(temp);
 
-		DemoUpdateStart();
-		DemoTriangle(400 + x * 100, 350, 
-			         375 + x * 100, 400, 
-					 425 + x * 100, 400, 
-					 0xff3399ff);
+			ImGui::End();
 
-		for (i = 0; i < MAX_BULLETS; i++)
-		{
-			if (bullety[i] != 0)
+			ONCE(ImGui::SetNextWindowPos(ImVec2(20, 20)));
+			ImGui::Begin("Control");
+			ImGui::Text("Click to play a single sound:");
+			if (ImGui::Button("Play (single)"))
 			{
-				DemoTriangle(400 + bulletx[i] * 100, bullety[i],
-					400-2.5f + bulletx[i] * 100, 10 + bullety[i],
-					400+2.5f + bulletx[i] * 100, 10 + bullety[i],
-					0xffff7777);
-
+				fire1 = 1;
 			}
+			ImGui::Separator();
+			ImGui::Text("\nCheckbox for repeated calls:");
+			ImGui::Checkbox("Play", &fire2);
+			ImGui::Checkbox("PlayClocked", &fire3);
+
+			ImGui::End();
+			DemoUpdateEnd();
 		}
-
-		float *buf = gSoloud.getWave();
-		float *fft = gSoloud.calcFFT();
-
-		ONCE(ImGui::SetNextWindowPos(ImVec2(500, 20)));
-		ImGui::Begin("Output");
-		ImGui::PlotLines("##Wave", buf, 256, 0, "Wave", -1, 1, ImVec2(264, 80));
-		ImGui::PlotHistogram("##FFT", fft, 256 / 2, 0, "FFT", 0, 10, ImVec2(264, 80), 8);
-		ImGui::Text("Active voices     : %d", gSoloud.getActiveVoiceCount());
-		ImGui::Text("----|----|----|----|----|");
-
-		char temp[200];
-		for (i = 0; i < (signed)gSoloud.getActiveVoiceCount(); i++)
-			temp[i] = '-';
-		temp[i] = 0;
-		ImGui::Text(temp);
-
-		ImGui::End();
-
-		ONCE(ImGui::SetNextWindowPos(ImVec2(20, 20)));
-		ImGui::Begin("Control");
-		ImGui::Text("Click to play a single sound:");
-		if (ImGui::Button("Play (single)"))
-		{
-			fire1 = 1;
-		}
-		ImGui::Separator();
-		ImGui::Text("\nKeep pressing button for repeat:");
-		if (ImGui::Button("Play", ImVec2(0, 0), true))
-		{
-			fire2 = 1;
-		}
-		if (ImGui::Button("PlayClocked", ImVec2(0, 0), true))
-		{
-			fire3 = 1;
-		}
-
-		ImGui::End();
-		DemoUpdateEnd();
 	}
 	return 0;
 }

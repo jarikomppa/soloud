@@ -94,8 +94,15 @@ int main(int argc, char *argv[])
 		ONCE(ImGui::SetNextWindowPos(ImVec2(500, 20)));
 		ImGui::Begin("Output");
 		ImGui::PlotLines("##Wave", buf, 256, 0, "Wave", -1, 1, ImVec2(264,80));
-		ImGui::PlotHistogram("##FFT", fft, 256/2, 0, "FFT", 0, 10, ImVec2(264,80),8);
-		ImGui::Text("Active voices    : %d", gSoloud.getActiveVoiceCount());
+		ImGui::PlotHistogram("##FFT", fft, 256 / 2, 0, "FFT", 0, 10, ImVec2(264, 80), 8);
+		float sidregs[32 + 5];
+		int i;
+		for (i = 0; i < 32; i++)
+			sidregs[i] = gSoloud.getInfo(gMusichandle1, i);
+		for (i = 0; i < 5; i++)
+			sidregs[32+i] = gSoloud.getInfo(gMusichandle2, i + 64);
+		ImGui::PlotHistogram("##SID", sidregs, 32 + 5, 0, "          SID               TED", 0, 0xff, ImVec2(264, 80), 4);
+
 		ImGui::Text("SID: %02X %02X %02X %02X %02X %02X %02X %02X", (int)gSoloud.getInfo(gMusichandle1, 0), (int)gSoloud.getInfo(gMusichandle1, 1), (int)gSoloud.getInfo(gMusichandle1, 2), (int)gSoloud.getInfo(gMusichandle1, 3), (int)gSoloud.getInfo(gMusichandle1, 4), (int)gSoloud.getInfo(gMusichandle1, 5), (int)gSoloud.getInfo(gMusichandle1, 6), (int)gSoloud.getInfo(gMusichandle1, 7));
 		ImGui::Text("     %02X %02X %02X %02X %02X %02X %02X %02X", (int)gSoloud.getInfo(gMusichandle1, 8), (int)gSoloud.getInfo(gMusichandle1, 9), (int)gSoloud.getInfo(gMusichandle1,10), (int)gSoloud.getInfo(gMusichandle1,11), (int)gSoloud.getInfo(gMusichandle1,12), (int)gSoloud.getInfo(gMusichandle1,13), (int)gSoloud.getInfo(gMusichandle1,14), (int)gSoloud.getInfo(gMusichandle1,15));
 		ImGui::Text("     %02X %02X %02X %02X %02X %02X %02X %02X", (int)gSoloud.getInfo(gMusichandle1,16), (int)gSoloud.getInfo(gMusichandle1,17), (int)gSoloud.getInfo(gMusichandle1,18), (int)gSoloud.getInfo(gMusichandle1,19), (int)gSoloud.getInfo(gMusichandle1,20), (int)gSoloud.getInfo(gMusichandle1,21), (int)gSoloud.getInfo(gMusichandle1,22), (int)gSoloud.getInfo(gMusichandle1,23));

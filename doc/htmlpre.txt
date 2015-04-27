@@ -82,6 +82,8 @@ ga('send', 'pageview');
 <a href="collider.html">SoLoud::AudioCollider</a><br>
 <br>
 <a href="backends.html">Back-ends</a><br>
+<br>
+<a href="File.html">SoLoud::File</a><br>
 <hr>
 <a href="http://iki.fi/sol/">Author's site</a>
 </div>		  

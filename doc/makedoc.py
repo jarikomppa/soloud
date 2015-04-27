@@ -53,7 +53,8 @@ src = [
     "flangerfilter.mmd",
     "dcremovalfilter.mmd",
     "collider.mmd",
-    "backends.mmd"
+    "backends.mmd",
+    "file.mmd"
     ]
 
 website_only = [

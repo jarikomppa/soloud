@@ -83,7 +83,7 @@ ga('send', 'pageview');
 <br>
 <a href="backends.html">Back-ends</a><br>
 <br>
-<a href="File.html">SoLoud::File</a><br>
+<a href="file.html">SoLoud::File</a><br>
 <hr>
 <a href="http://iki.fi/sol/">Author's site</a>
 </div>		  

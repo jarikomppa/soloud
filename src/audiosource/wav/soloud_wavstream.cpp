@@ -285,7 +285,7 @@ namespace SoLoud
 	{
 		mFilename = 0;
 		mSampleCount = 0;
-		mOgg = NULL;
+		mOgg = 0;
 		mDataOffset = 0;
 		mBits = 0;
 		mChannels = 0;

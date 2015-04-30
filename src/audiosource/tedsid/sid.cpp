@@ -7,7 +7,7 @@
 
 #include <math.h>
 #include <memory.h>
-#include "SID.h"
+#include "sid.h"
 //#include "Tedmem.h"
 
 #define DIGIBLASTER_MULT 14

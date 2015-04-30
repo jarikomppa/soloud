@@ -34,8 +34,8 @@ freely, subject to the following restrictions:
 #include <float.h>
 #endif
 
-#if !defined(WITH_SDL) && !defined(WITH_PORTAUDIO) && !defined(WITH_OPENAL) && !defined(WITH_XAUDIO2) && !defined(WITH_WINMM) && !defined(WITH_WASAPI) && !defined(WITH_OSS) && !defined(WITH_SDL_NONDYN) && !defined(WITH_SDL2_NONDYN)
-#error It appears you haven't enabled any of the back-ends. Please #define one or more of the WITH_ defines (or use premake)
+#if !defined(WITH_SDL2) && !defined(WITH_SDL) && !defined(WITH_PORTAUDIO) && !defined(WITH_OPENAL) && !defined(WITH_XAUDIO2) && !defined(WITH_WINMM) && !defined(WITH_WASAPI) && !defined(WITH_OSS) && !defined(WITH_SDL_NONDYN) && !defined(WITH_SDL2_NONDYN)
+#error It appears you haven't enabled any of the back-ends. Please #define one or more of the WITH_ defines (or use premake) '
 #endif
 
 

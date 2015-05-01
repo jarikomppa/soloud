@@ -266,8 +266,8 @@ namespace SoLoud
 				{
 					if (mOutput[j].mEnabled)
 					{
-						float bleh;
-						mOutput[j].mSamplePos = modf(mOutput[j].mSamplePos + mOutput[j].mSamplePosInc, &bleh);
+						float bleh = mOutput[j].mSamplePos + mOutput[j].mSamplePosInc;
+						mOutput[j].mSamplePos = bleh - (long)bleh;
 						// saw:
 						aBuffer[i] += ((mOutput[j].mSamplePos) - 0.5f) * 0.5f;
 					}
@@ -278,8 +278,8 @@ namespace SoLoud
 				{
 					if (mOutput[j].mEnabled)
 					{
-						float bleh;
-						mOutput[j].mSamplePos = modf(mOutput[j].mSamplePos + mOutput[j].mSamplePosInc, &bleh);
+						float bleh = mOutput[j].mSamplePos + mOutput[j].mSamplePosInc;
+						mOutput[j].mSamplePos = bleh - (long)bleh;
 						// sin: 
 						aBuffer[i] += (float)sin(mOutput[j].mSamplePos * M_PI * 2) * 0.5f;
 					}
@@ -290,8 +290,8 @@ namespace SoLoud
 				{
 					if (mOutput[j].mEnabled)
 					{
-						float bleh;
-						mOutput[j].mSamplePos = modf(mOutput[j].mSamplePos + mOutput[j].mSamplePosInc, &bleh);
+						float bleh = mOutput[j].mSamplePos + mOutput[j].mSamplePosInc;
+						mOutput[j].mSamplePos = bleh - (long)bleh;
 						// sawsin:
 						bleh = ((mOutput[j].mSamplePos) - 0.5f);
 						bleh *= (float)sin(mOutput[j].mSamplePos * M_PI * 2);
@@ -305,8 +305,8 @@ namespace SoLoud
 				{
 					if (mOutput[j].mEnabled)
 					{
-						float bleh;
-						mOutput[j].mSamplePos = modf(mOutput[j].mSamplePos + mOutput[j].mSamplePosInc, &bleh);
+						float bleh = mOutput[j].mSamplePos + mOutput[j].mSamplePosInc;
+						mOutput[j].mSamplePos = bleh - (long)bleh;
 						// square:
 						aBuffer[i] += (mOutput[j].mSamplePos > 0.5f) ? 0.25f : -0.25f;
 					}

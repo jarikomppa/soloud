@@ -110,6 +110,7 @@ namespace SoLoud
 			WINMM,
 			XAUDIO2,
 			WASAPI,
+			ALSA,
 			OSS,
 			OPENAL,
 			BACKEND_MAX,

@@ -6,6 +6,7 @@ local WITH_OPENAL = 0
 local WITH_XAUDIO2 = 0
 local WITH_WINMM = 0
 local WITH_WASAPI = 0
+local WITH_ALSA = 0
 local WITH_OSS = 0
 local WITH_LIBMODPLUG = 0
 local WITH_PORTMIDI = 0
@@ -14,6 +15,7 @@ local WITH_TOOLS = 0
 if (os.is("Windows")) then
 	WITH_WINMM = 1
 else
+	WITH_ALSA = 1
 	WITH_OSS = 1
 end
 
@@ -281,6 +283,7 @@ print ("WITH_OPENAL     = ", WITH_OPENAL)
 print ("WITH_XAUDIO2    = ", WITH_XAUDIO2)
 print ("WITH_WINMM      = ", WITH_WINMM)
 print ("WITH_WASAPI     = ", WITH_WASAPI)
+print ("WITH_ALSA       = ", WITH_ALSA)
 print ("WITH_OSS        = ", WITH_OSS)
 print ("WITH_LIBMODPLUG = ", WITH_LIBMODPLUG)
 print ("WITH_PORTMIDI   = ", WITH_PORTMIDI)
@@ -309,6 +312,9 @@ solution "SoLoud"
 	includedirs {
 	  "../include"
 	}
+if (WITH_ALSA == 1) then
+	links {"asound"}
+end
 
 		links {"StaticLib"}
 		if (not os.is("windows")) then
@@ -344,6 +350,9 @@ end
 	includedirs {
 	  "../include"
 	}
+if (WITH_ALSA == 1) then
+	links {"asound"}
+end
 
 		links {"StaticLib"}
 		if (not os.is("windows")) then
@@ -436,6 +445,16 @@ if (WITH_OPENAL == 1) then
 	includedirs {
 	  "../include",
 	  openal_include
+	}
+end
+
+if (WITH_ALSA == 1) then
+	defines {"WITH_ALSA"}
+	files {
+	  "../src/backend/alsa/**.c*"
+	  }
+	includedirs {
+	  "../include"
 	}
 end
 
@@ -667,6 +686,9 @@ end
 if (WITH_LIBMODPLUG == 1) then
 		links {"libmodplug"}
 end
+if (WITH_ALSA == 1) then
+	links {"asound"}
+end
 
 
 		configuration "Debug"
@@ -757,6 +779,9 @@ function CommonDemo(_name)
 	libdirs {
 	  sdl_lib
 	}
+if (WITH_ALSA == 1) then
+	links {"asound"}
+end
 
 		links {"StaticLib", "sdlmain", "sdl", "opengl32"}
 
@@ -803,6 +828,9 @@ end
 	libdirs {
 	  sdl_lib
 	}
+if (WITH_ALSA == 1) then
+	links {"asound"}
+end
 
 		links {"StaticLib", "sdlmain", "sdl"}
 if (WITH_LIBMODPLUG == 1) then
@@ -857,6 +885,10 @@ end
 	  sdl_lib
 	}
 
+if (WITH_ALSA == 1) then
+	links {"asound"}
+end
+
 	if (WITH_PORTMIDI == 1) then
 		includedirs {
 		portmidi_include
@@ -903,6 +935,10 @@ end
 	libdirs {
 	  sdl_lib
 	}
+
+if (WITH_ALSA == 1) then
+	links {"asound"}
+end
 
 		links {"StaticLib", "sdlmain", "sdl"}
 

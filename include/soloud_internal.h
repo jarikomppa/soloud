@@ -56,6 +56,9 @@ namespace SoLoud
 	// OSS back-end initialization call
 	result oss_init(SoLoud::Soloud *aSoloud, unsigned int aFlags = Soloud::CLIP_ROUNDOFF, unsigned int aSamplerate = 44100, unsigned int aBuffer = 2048);
 
+	// ALSA back-end initialization call
+	result alsa_init(SoLoud::Soloud *aSoloud, unsigned int aFlags = Soloud::CLIP_ROUNDOFF, unsigned int aSamplerate = 44100, unsigned int aBuffer = 2048);
+
 	// Deinterlace samples in a buffer. From 12121212 to 11112222
 	void deinterlace_samples(const float *aSourceBuffer, float *aDestBuffer, unsigned int aSamples, unsigned int aChannels);
 

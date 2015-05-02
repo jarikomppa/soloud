@@ -104,6 +104,7 @@ namespace SoLoud
 		aSoloud->mBackendCleanupFunc = soloud_sdl2nondyn_deinit;
 
 		SDL_PauseAudio(0);
+        aSoloud->mBackendString = "SDL2 (static)";
 		return 0;
 	}
 	

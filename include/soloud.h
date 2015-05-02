@@ -135,6 +135,17 @@ namespace SoLoud
 		// Translate error number to an asciiz string
 		const char * getErrorString(result aErrorCode) const;
 
+		// Returns current backend ID (BACKENDS enum)
+		unsigned int getBackendId();
+		// Returns current backend string. May be NULL.
+		const char * getBackendString();
+		// Returns current backend channel count (1 mono, 2 stereo, etc)
+		unsigned int getBackendChannels();
+		// Returns current backend sample rate
+		unsigned int getBackendSamplerate();
+		// Returns current backend buffer size
+		unsigned int getBackendBufferSize();
+
 		// Start playing a sound. Returns voice handle, which can be ignored or used to alter the playing sound's parameters.
 		handle play(AudioSource &aSound, float aVolume = 1.0f, float aPan = 0.0f, bool aPaused = 0, unsigned int aBus = 0);
 		// Start playing a sound delayed in relation to other sounds called via this function.
@@ -311,6 +322,10 @@ namespace SoLoud
 		unsigned int mSamplerate;
 		// Output channel count
 		unsigned int mChannels;
+		// Current backend ID
+		unsigned int mBackendID;
+		// Current backend string
+		const char * mBackendString;
 		// Maximum size of output buffer; used to calculate needed scratch.
 		unsigned int mBufferSize;
 		// Flags; see Soloud::FLAGS

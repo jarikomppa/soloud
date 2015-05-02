@@ -117,8 +117,9 @@ static int load_dll()
 			dPa_OpenDefaultStream == NULL)
 		{
 			dPa_OpenDefaultStream = NULL;
-			return -1;
+			return 0;
 		}
+		return 1;
 	}
 	return 0;	
 }

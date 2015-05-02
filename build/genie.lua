@@ -379,6 +379,44 @@ end
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 
+  project "enumerate"
+	kind "ConsoleApp"
+	language "C++"
+	files {
+	  "../demos/enumerate/**.c*"
+	  }
+	includedirs {
+	  "../include"
+	}
+if (WITH_ALSA == 1) then
+	links {"asound"}
+end
+
+		links {"StaticLib"}
+		if (not os.is("windows")) then
+		  links { "pthread" }
+		end
+if (WITH_LIBMODPLUG == 1) then
+		links {"libmodplug"}
+end
+
+		configuration "Debug"
+			defines { "DEBUG" }
+			flags {"Symbols" }
+			objdir (buildroot .. "/debug")
+			targetname "enumerate_d"
+			flags { "Symbols" }
+
+
+		configuration "Release"
+			defines { "NDEBUG" }
+			flags {"Optimize"}
+			objdir (buildroot .. "/release")
+			targetname "enumerate"
+			flags { "EnableSSE2", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
+
+-- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
+
 if (WITH_LIBMODPLUG == 1) then
 	project "libmodplug"
 		kind "StaticLib"

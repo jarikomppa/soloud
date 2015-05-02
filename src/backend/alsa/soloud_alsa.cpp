@@ -168,6 +168,7 @@ namespace SoLoud
         {
             return UNKNOWN_ERROR;
         }
+        aSoloud->mBackendString = "ALSA";
         return 0;
     }
 };

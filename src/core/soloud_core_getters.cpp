@@ -250,4 +250,36 @@ namespace SoLoud
 		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 		return v;
 	}
+
+	// Returns current backend ID
+	unsigned int Soloud::getBackendId()
+	{
+		return mBackendID;
+
+	}
+
+	// Returns current backend string
+	const char * Soloud::getBackendString()
+	{
+		return mBackendString;
+	}
+
+	// Returns current backend channel count (1 mono, 2 stereo, etc)
+	unsigned int Soloud::getBackendChannels()
+	{
+		return mChannels;
+	}
+
+	// Returns current backend sample rate
+	unsigned int Soloud::getBackendSamplerate()
+	{
+		return mSamplerate;
+	}
+
+	// Returns current backend buffer size
+	unsigned int Soloud::getBackendBufferSize()
+	{
+		return mBufferSize;
+	}
+
 }

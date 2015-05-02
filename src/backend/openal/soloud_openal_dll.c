@@ -64,7 +64,9 @@ static al_GenSources dAlGenSources;
 
 static HMODULE openDll()
 {
-    return LoadLibraryA("soft_oal.dll");
+	HMODULE x = LoadLibraryA("soft_oal.dll");
+	if (x == 0) x = LoadLibraryA("OpenAL32.dll");
+	return x;
 }
 
 static void* getDllProc(HMODULE aDllHandle, const char *aProcName)

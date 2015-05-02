@@ -246,6 +246,7 @@ namespace SoLoud
             return UNKNOWN_ERROR;
         }
         data->sourceVoice->Start();
+        aSoloud->mBackendString = "XAudio2";
         return 0;
     }
 };

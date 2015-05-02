@@ -68,6 +68,8 @@ namespace SoLoud
 		mStreamTime = 0;
 		mLastClockedTime = 0;
 		mAudioSourceID = 1;
+		mBackendString = 0;
+		mBackendID = 0;
 		int i;
 		for (i = 0; i < FILTERS_PER_STREAM; i++)
 		{
@@ -133,6 +135,11 @@ namespace SoLoud
 		if (aBackend < 0 || aBackend >= BACKEND_MAX || aSamplerate < 0 || aBufferSize < 0)
 			return INVALID_PARAMETER;
 
+		deinit();
+
+		mBackendID = 0;
+		mBackendString = 0;
+
 		int samplerate = 44100;
 		int buffersize = 2048;
 		int inited = 0;
@@ -142,14 +149,16 @@ namespace SoLoud
 
 #if defined(WITH_SDL_NONDYN)
 		if (aBackend == Soloud::SDL || 
-			aBackend == Soloud::SDL2 ||
 			aBackend == Soloud::AUTO)
 		{
 			if (aBufferSize == Soloud::AUTO) buffersize = 2048;
 
 			int ret = sdlnondyn_init(this, aFlags, samplerate, buffersize);
 			if (ret == 0)
+			{
 				inited = 1;
+				mBackendID = Soloud::SDL;
+			}
 
 			if (ret != 0 && aBackend != Soloud::AUTO)
 				return ret;			
@@ -157,15 +166,17 @@ namespace SoLoud
 #endif
 
 #if defined(WITH_SDL2_NONDYN)
-		if (aBackend == Soloud::SDL ||
-			aBackend == Soloud::SDL2 ||
+		if (aBackend == Soloud::SDL2 ||
 			aBackend == Soloud::AUTO)
 		{
 			if (aBufferSize == Soloud::AUTO) buffersize = 2048;
 
 			int ret = sdl2nondyn_init(this, aFlags, samplerate, buffersize);
 			if (ret == 0)
+			{
 				inited = 1;
+				mBackendID = Soloud::SDL2;
+			}
 
 			if (ret != 0 && aBackend != Soloud::AUTO)
 				return ret;
@@ -181,7 +192,10 @@ namespace SoLoud
 
 			int ret = sdl_init(this, aFlags, samplerate, buffersize);
 			if (ret == 0)
+			{
 				inited = 1;
+				mBackendID = Soloud::SDL;
+			}
 
 			if (ret != 0 && aBackend != Soloud::AUTO)
 				return ret;			
@@ -197,7 +211,10 @@ namespace SoLoud
 
 			int ret = portaudio_init(this, aFlags, samplerate, buffersize);
 			if (ret == 0)
+			{
 				inited = 1;
+				mBackendID = Soloud::PORTAUDIO;
+			}
 
 			if (ret != 0 && aBackend != Soloud::AUTO)
 				return ret;			
@@ -213,7 +230,10 @@ namespace SoLoud
 
 			int ret = xaudio2_init(this, aFlags, samplerate, buffersize);
 			if (ret == 0)
+			{
 				inited = 1;
+				mBackendID = Soloud::XAUDIO2;
+			}
 
 			if (ret != 0 && aBackend != Soloud::AUTO)
 				return ret;			
@@ -229,7 +249,10 @@ namespace SoLoud
 
 			int ret = winmm_init(this, aFlags, samplerate, buffersize);
 			if (ret == 0)
+			{
 				inited = 1;
+				mBackendID = Soloud::WINMM;
+			}
 
 			if (ret != 0 && aBackend != Soloud::AUTO)
 				return ret;			
@@ -245,7 +268,10 @@ namespace SoLoud
 
 			int ret = wasapi_init(this, aFlags, samplerate, buffersize);
 			if (ret == 0)
+			{
 				inited = 1;
+				mBackendID = Soloud::WASAPI;
+			}
 
 			if (ret != 0 && aBackend != Soloud::AUTO)
 				return ret;			
@@ -261,7 +287,10 @@ namespace SoLoud
 
 			int ret = alsa_init(this, aFlags, samplerate, buffersize);
 			if (ret == 0)
+			{
 				inited = 1;
+				mBackendID = Soloud::ALSA;
+			}
 
 			if (ret != 0 && aBackend != Soloud::AUTO)
 				return ret;			
@@ -277,7 +306,10 @@ namespace SoLoud
 
 			int ret = oss_init(this, aFlags, samplerate, buffersize);
 			if (ret == 0)
+			{
 				inited = 1;
+				mBackendID = Soloud::OSS;
+			}
 
 			if (ret != 0 && aBackend != Soloud::AUTO)
 				return ret;			
@@ -293,12 +325,17 @@ namespace SoLoud
 
 			int ret = openal_init(this, aFlags, samplerate, buffersize);
 			if (ret == 0)
+			{
 				inited = 1;
+				mBackendID = Soloud::OPENAL;
+			}
 
 			if (ret != 0 && aBackend != Soloud::AUTO)
 				return ret;			
 		}
 #endif
+		if (!inited && aBackend != Soloud::AUTO)
+			return NOT_IMPLEMENTED;
 		if (!inited)
 			return UNKNOWN_ERROR;
 		return 0;

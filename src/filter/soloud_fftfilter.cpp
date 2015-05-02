@@ -30,6 +30,17 @@ freely, subject to the following restrictions:
 
 namespace SoLoud
 {
+	FFTFilterInstance::FFTFilterInstance()
+	{
+		mParent = 0;
+		mInputBuffer = 0;
+		mMixBuffer = 0;
+		mTemp = 0;
+		int i;
+		for (i = 0; i < MAX_CHANNELS; i++)
+			mOffset[i] = 0;
+	}
+
 	FFTFilterInstance::FFTFilterInstance(FFTFilter *aParent)
 	{
 		mParent = aParent;

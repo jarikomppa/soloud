@@ -1,6 +1,6 @@
 /*
 SoLoud audio engine
-Copyright (c) 2013-2014 Jari Komppa
+Copyright (c) 2013-2015 Jari Komppa
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -22,36 +22,37 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#ifndef SOLOUD_FFTFILTER_H
-#define SOLOUD_FFTFILTER_H
-
 #include "soloud.h"
+
+#if !defined(WITH_NULL)
 
 namespace SoLoud
 {
-	class FFTFilter;
-
-	class FFTFilterInstance : public FilterInstance
+    result null_init(Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer)
 	{
-		float *mTemp;
-		float *mInputBuffer;
-		float *mMixBuffer;
-		unsigned int mOffset[MAX_CHANNELS];
-		FFTFilter *mParent;
-	public:
-		virtual void fftFilterChannel(float *aFFTBuffer, unsigned int aSamples, float aSamplerate, time aTime, unsigned int aChannel, unsigned int aChannels);
-		virtual void filterChannel(float *aBuffer, unsigned int aSamples, float aSamplerate, time aTime, unsigned int aChannel, unsigned int aChannels);
-		virtual ~FFTFilterInstance();
-		FFTFilterInstance(FFTFilter *aParent);
-		FFTFilterInstance();
-	};
+		return NOT_IMPLEMENTED;
+	}
+};
 
-	class FFTFilter : public Filter
-	{
-	public:
-		virtual FilterInstance *createInstance();
-		FFTFilter();
-	};
-}
+#else
 
+namespace SoLoud
+{
+    static void nullCleanup(Soloud *aSoloud)
+    {
+    }
+
+    result null_init(Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer)
+    {
+        aSoloud->mBackendData = 0;
+        aSoloud->mBackendCleanupFunc = nullCleanup;
+
+        aSoloud->mMutex = 0;
+        aSoloud->mLockMutexFunc = 0;
+        aSoloud->mUnlockMutexFunc = 0;
+        aSoloud->postinit(aSamplerate, aBuffer, aFlags);
+        aSoloud->mBackendString = "null driver";
+        return 0;
+    }
+};
 #endif

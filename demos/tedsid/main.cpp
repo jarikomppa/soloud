@@ -31,17 +31,17 @@ freely, subject to the following restrictions:
 
 #include "soloud.h"
 #include "soloud_tedsid.h"
-#include "soloud_fftfilter.h"
 #include "soloud_biquadresonantfilter.h"
 #include "soloud_echofilter.h"
 #include "soloud_dcremovalfilter.h"
+#include "soloud_bassboostfilter.h"
 
 SoLoud::Soloud gSoloud;
 SoLoud::TedSid gMusic1, gMusic2;
 SoLoud::BiquadResonantFilter gBiquad;
-SoLoud::FFTFilter gFFT;
 SoLoud::EchoFilter gEcho;
 SoLoud::DCRemovalFilter gDCRemoval;
+SoLoud::BassboostFilter gBassboost;
 int gMusichandle1, gMusichandle2;
 
 // Entry point
@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
 	gMusic2.setLooping(1);
 
 	gSoloud.setGlobalFilter(0, &gBiquad);
-	gSoloud.setGlobalFilter(1, &gFFT);
+	gSoloud.setGlobalFilter(1, &gBassboost);
 	gSoloud.setGlobalFilter(2, &gEcho);
 	gSoloud.setGlobalFilter(3, &gDCRemoval);
 
@@ -128,7 +128,7 @@ int main(int argc, char *argv[])
 		ImGui::SliderFloat("Frequency##4", &filter_param1[0], 0, 8000);
 		ImGui::SliderFloat("Resonance##4", &filter_param2[0], 1, 20);
 		ImGui::Separator();
-		ImGui::Text("FFT filter");
+		ImGui::Text("Bassboost filter");
 		ImGui::SliderFloat("Wet##2", &filter_param0[1], 0, 1);
 		ImGui::Separator();
 		ImGui::Text("Echo filter");

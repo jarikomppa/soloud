@@ -22,35 +22,29 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#ifndef SOLOUD_FFTFILTER_H
-#define SOLOUD_FFTFILTER_H
+#ifndef SOLOUD_BASSBOOSTFILTER_H
+#define SOLOUD_BASSBOOSTFILTER_H
 
 #include "soloud.h"
+#include "soloud_fftfilter.h"
 
 namespace SoLoud
 {
-	class FFTFilter;
+	class BassboostFilter;
 
-	class FFTFilterInstance : public FilterInstance
+	class BassboostFilterInstance : public FFTFilterInstance
 	{
-		float *mTemp;
-		float *mInputBuffer;
-		float *mMixBuffer;
-		unsigned int mOffset[MAX_CHANNELS];
-		FFTFilter *mParent;
+		BassboostFilter *mParent;
 	public:
 		virtual void fftFilterChannel(float *aFFTBuffer, unsigned int aSamples, float aSamplerate, time aTime, unsigned int aChannel, unsigned int aChannels);
-		virtual void filterChannel(float *aBuffer, unsigned int aSamples, float aSamplerate, time aTime, unsigned int aChannel, unsigned int aChannels);
-		virtual ~FFTFilterInstance();
-		FFTFilterInstance(FFTFilter *aParent);
-		FFTFilterInstance();
+		BassboostFilterInstance(BassboostFilter *aParent);
 	};
 
-	class FFTFilter : public Filter
+	class BassboostFilter : public FFTFilter
 	{
 	public:
 		virtual FilterInstance *createInstance();
-		FFTFilter();
+		BassboostFilter();
 	};
 }
 

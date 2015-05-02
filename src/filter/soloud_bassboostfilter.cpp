@@ -22,36 +22,35 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#ifndef SOLOUD_FFTFILTER_H
-#define SOLOUD_FFTFILTER_H
-
+#include <string.h>
 #include "soloud.h"
+#include "soloud_bassboostfilter.h"
+
 
 namespace SoLoud
 {
-	class FFTFilter;
-
-	class FFTFilterInstance : public FilterInstance
+	BassboostFilterInstance::BassboostFilterInstance(BassboostFilter *aParent)
 	{
-		float *mTemp;
-		float *mInputBuffer;
-		float *mMixBuffer;
-		unsigned int mOffset[MAX_CHANNELS];
-		FFTFilter *mParent;
-	public:
-		virtual void fftFilterChannel(float *aFFTBuffer, unsigned int aSamples, float aSamplerate, time aTime, unsigned int aChannel, unsigned int aChannels);
-		virtual void filterChannel(float *aBuffer, unsigned int aSamples, float aSamplerate, time aTime, unsigned int aChannel, unsigned int aChannels);
-		virtual ~FFTFilterInstance();
-		FFTFilterInstance(FFTFilter *aParent);
-		FFTFilterInstance();
-	};
+		mParent = aParent;
+		initParams(1);
+	}
 
-	class FFTFilter : public Filter
+	void BassboostFilterInstance::fftFilterChannel(float *aFFTBuffer, unsigned int aSamples, float aSamplerate, time aTime, unsigned int aChannel, unsigned int aChannels)
 	{
-	public:
-		virtual FilterInstance *createInstance();
-		FFTFilter();
-	};
+		unsigned int i;
+		for (i = 0; i < 2; i++)
+		{
+			aFFTBuffer[i] *= 4;
+		}
+	}
+
+
+	BassboostFilter::BassboostFilter()
+	{
+	}
+
+	FilterInstance *BassboostFilter::createInstance()
+	{
+		return new BassboostFilterInstance(this);
+	}
 }
-
-#endif

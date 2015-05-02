@@ -113,6 +113,7 @@ namespace SoLoud
 			ALSA,
 			OSS,
 			OPENAL,
+			NULLDRIVER,
 			BACKEND_MAX,
 		};
 

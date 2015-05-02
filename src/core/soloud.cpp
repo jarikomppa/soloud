@@ -334,6 +334,25 @@ namespace SoLoud
 				return ret;			
 		}
 #endif
+
+#if defined(WITH_NULL)
+		if (!inited &&
+			(aBackend == Soloud::NULLDRIVER))
+		{
+			if (aBufferSize == Soloud::AUTO) buffersize = 2048;
+
+			int ret = null_init(this, aFlags, samplerate, buffersize);
+			if (ret == 0)
+			{
+				inited = 1;
+				mBackendID = Soloud::NULLDRIVER;
+			}
+
+			if (ret != 0)
+				return ret;			
+		}
+#endif
+
 		if (!inited && aBackend != Soloud::AUTO)
 			return NOT_IMPLEMENTED;
 		if (!inited)

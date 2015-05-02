@@ -8,6 +8,7 @@ local WITH_WINMM = 0
 local WITH_WASAPI = 0
 local WITH_ALSA = 0
 local WITH_OSS = 0
+local WITH_NULL = 1
 local WITH_LIBMODPLUG = 0
 local WITH_PORTMIDI = 0
 local WITH_TOOLS = 0
@@ -379,6 +380,41 @@ end
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 
+  project "null"
+	kind "ConsoleApp"
+	language "C++"
+	files {
+	  "../demos/null/**.c*"
+	  }
+	includedirs {
+	  "../include"
+	}
+if (WITH_ALSA == 1) then
+	links {"asound"}
+end
+
+		links {"StaticLib"}
+		if (not os.is("windows")) then
+		  links { "pthread" }
+		end
+
+		configuration "Debug"
+			defines { "DEBUG" }
+			flags {"Symbols" }
+			objdir (buildroot .. "/debug")
+			targetname "null_d"
+			flags { "Symbols" }
+
+
+		configuration "Release"
+			defines { "NDEBUG" }
+			flags {"Optimize"}
+			objdir (buildroot .. "/release")
+			targetname "null"
+			flags { "EnableSSE2", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
+
+-- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
+
   project "enumerate"
 	kind "ConsoleApp"
 	language "C++"
@@ -581,6 +617,15 @@ if (WITH_WINMM == 1) then
 	  "../include"
 	}
 end
+if (WITH_NULL == 1) then
+    defines { "WITH_NULL" }
+	files {
+	  "../src/backend/null/**.c*"
+	  }
+	includedirs {
+	  "../include"
+	}
+end    
 
 		configuration "Debug"
 			defines { "DEBUG" }

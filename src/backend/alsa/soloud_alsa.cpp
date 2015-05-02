@@ -136,7 +136,8 @@ namespace SoLoud
         snd_pcm_hw_params_set_access(handle, params, SND_PCM_ACCESS_RW_INTERLEAVED);
         snd_pcm_hw_params_set_format(handle, params, SND_PCM_FORMAT_S16_LE);
         snd_pcm_hw_params_set_channels(handle, params, 2);
-
+        snd_pcm_hw_params_set_buffer_size(handle, params, aBuffer);
+        
         unsigned int val = aSamplerate;
         int dir = 0;
         rc = snd_pcm_hw_params_set_rate_near(handle, params, &val, &dir);
@@ -150,6 +151,11 @@ namespace SoLoud
         {
             return UNKNOWN_ERROR;
         }
+
+        snd_pcm_hw_params_get_rate(params, &val, &dir);
+        aSamplerate = val;
+        snd_pcm_hw_params_get_channels(params, &val);
+        data->channels = val;
 
         data->buffer = new float[data->samples*data->channels];
         data->sampleBuffer = new short[data->samples*data->channels];

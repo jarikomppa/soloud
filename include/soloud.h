@@ -303,9 +303,10 @@ namespace SoLoud
 		void set3dSourceDopplerFactor(handle aVoiceHandle, float aDopplerFactor);
 
 		// Rest of the stuff is used internally.
-	public:
-		// Mix and return N stereo samples in the buffer. Called by the back-end.
+
+		// Mix and return N stereo samples in the buffer. Called by the back-end, or user with null driver.
 		void mix(float *aBuffer, unsigned int aSamples);
+	public:
 		// Handle rest of initialization (called from backend)
 		void postinit(unsigned int aSamplerate, unsigned int aBufferSize, unsigned int aFlags);
 

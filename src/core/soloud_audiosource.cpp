@@ -122,6 +122,14 @@ namespace SoLoud
 		{
 			mFlags |= AudioSourceInstance::LISTENER_RELATIVE;
 		}
+		if (aSource.mFlags & AudioSource::INAUDIBLE_KILL)
+		{
+			mFlags |= AudioSourceInstance::INAUDIBLE_KILL;
+		}
+		if (aSource.mFlags & AudioSource::INAUDIBLE_TICK)
+		{
+			mFlags |= AudioSourceInstance::INAUDIBLE_TICK;
+		}
 
 		mCollider = aSource.mCollider;
 		mColliderData = aSource.mColliderData;

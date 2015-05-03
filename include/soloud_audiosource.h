@@ -63,7 +63,13 @@ namespace SoLoud
 			// This audio instance is affected by 3d processing
 			PROCESS_3D = 8,
 			// This audio instance has listener-relative 3d coordinates
-			LISTENER_RELATIVE = 16
+			LISTENER_RELATIVE = 16,
+			// Currently inaudible
+			INAUDIBLE = 32,
+			// If inaudible, should be killed (default = don't kill)
+			INAUDIBLE_KILL = 64,
+			// If inaudible, should still be ticked (default = pause)
+			INAUDIBLE_TICK = 128
 		};
 		// Ctor
 		AudioSourceInstance();
@@ -180,7 +186,11 @@ namespace SoLoud
 			// Audio instances created from this source have listener-relative 3d coordinates
 			LISTENER_RELATIVE = 16,
 			// Delay start of sound by the distance from listener
-			DISTANCE_DELAY = 32
+			DISTANCE_DELAY = 32,
+			// If inaudible, should be killed (default = don't kill)
+			INAUDIBLE_KILL = 64,
+			// If inaudible, should still be ticked (default = pause)
+			INAUDIBLE_TICK = 128
 		};
 		enum ATTENUATION_MODELS
 		{

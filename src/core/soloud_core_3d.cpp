@@ -245,6 +245,22 @@ namespace SoLoud
 			//speakervol = speakervol * speakervol;
 			v->mChannelVolume[i] = vol * speakervol;
 		}
+
+		if (vol < 0.01f)
+		{
+			// Inaudible.
+			v->mFlags |= AudioSourceInstance::INAUDIBLE;
+
+			if (v->mFlags & AudioSourceInstance::INAUDIBLE_KILL)
+			{
+				stopVoice(aVoice);
+			}
+		}
+		else
+		{
+			v->mFlags &= ~AudioSourceInstance::INAUDIBLE;
+		}
+
 	}
 
 	void Soloud::update3dAudio()

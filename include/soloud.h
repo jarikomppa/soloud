@@ -36,14 +36,14 @@ freely, subject to the following restrictions:
 #define WINDOWS_VERSION
 #endif
 
-#define SOLOUD_VERSION 101
+#define SOLOUD_VERSION 102
 
 /////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////
 // Configuration defines
 
 // Maximum number of filters per stream
-#define FILTERS_PER_STREAM 4
+#define FILTERS_PER_STREAM 8
 
 // Number of samples to process on one go
 #define SAMPLE_GRANULARITY 512

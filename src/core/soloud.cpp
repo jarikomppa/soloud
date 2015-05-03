@@ -548,7 +548,8 @@ namespace SoLoud
 		{
 			if (mVoice[i] && 
 				mVoice[i]->mBusHandle == aBus && 
-				!(mVoice[i]->mFlags & AudioSourceInstance::PAUSED))
+				!(mVoice[i]->mFlags & AudioSourceInstance::PAUSED) &&
+				!(mVoice[i]->mFlags & AudioSourceInstance::INAUDIBLE))
 			{
 				unsigned int j;
 				float step = mVoice[i]->mSamplerate / aSamplerate;
@@ -709,6 +710,104 @@ namespace SoLoud
 					
 				mVoice[i]->mCurrentChannelVolume[0] = lpand;
 				mVoice[i]->mCurrentChannelVolume[1] = rpand;
+
+				// clear voice if the sound is over
+				if (!(mVoice[i]->mFlags & AudioSourceInstance::LOOPING) && mVoice[i]->hasEnded())
+				{
+					stopVoice(i);
+				}
+			}
+			else
+			if (mVoice[i] &&
+				mVoice[i]->mBusHandle == aBus &&
+				!(mVoice[i]->mFlags & AudioSourceInstance::PAUSED) &&
+				(mVoice[i]->mFlags & AudioSourceInstance::INAUDIBLE) &&
+				(mVoice[i]->mFlags & AudioSourceInstance::INAUDIBLE_TICK))
+			{
+				// Inaudible but needs ticking. Do minimal work (keep counters up to date and ask audiosource for data)
+				float step = mVoice[i]->mSamplerate / aSamplerate;
+				int step_fixed = (int)floor(step * FIXPOINT_FRAC_MUL);
+				unsigned int outofs = 0;
+
+				if (mVoice[i]->mDelaySamples)
+				{
+					if (mVoice[i]->mDelaySamples > aSamples)
+					{
+						outofs = aSamples;
+						mVoice[i]->mDelaySamples -= aSamples;
+					}
+					else
+					{
+						outofs = mVoice[i]->mDelaySamples;
+						mVoice[i]->mDelaySamples = 0;
+					}
+				}
+
+				while (outofs < aSamples)
+				{
+					if (mVoice[i]->mLeftoverSamples == 0)
+					{
+						// Swap resample buffers (ping-pong)
+						AudioSourceResampleData * t = mVoice[i]->mResampleData[0];
+						mVoice[i]->mResampleData[0] = mVoice[i]->mResampleData[1];
+						mVoice[i]->mResampleData[1] = t;
+
+						// Get a block of source data
+
+						if (!mVoice[i]->hasEnded())
+						{
+							mVoice[i]->getAudio(mVoice[i]->mResampleData[0]->mBuffer, SAMPLE_GRANULARITY);
+						}
+
+
+						// If we go past zero, crop to zero (a bit of a kludge)
+						if (mVoice[i]->mSrcOffset < SAMPLE_GRANULARITY * FIXPOINT_FRAC_MUL)
+						{
+							mVoice[i]->mSrcOffset = 0;
+						}
+						else
+						{
+							// We have new block of data, move pointer backwards
+							mVoice[i]->mSrcOffset -= SAMPLE_GRANULARITY * FIXPOINT_FRAC_MUL;
+						}
+
+						// Skip filters
+					}
+					else
+					{
+						mVoice[i]->mLeftoverSamples = 0;
+					}
+
+					// Figure out how many samples we can generate from this source data.
+					// The value may be zero.
+
+					unsigned int writesamples = 0;
+
+					if (mVoice[i]->mSrcOffset < SAMPLE_GRANULARITY * FIXPOINT_FRAC_MUL)
+					{
+						writesamples = ((SAMPLE_GRANULARITY * FIXPOINT_FRAC_MUL) - mVoice[i]->mSrcOffset) / step_fixed + 1;
+
+						// avoid reading past the current buffer..
+						if (((writesamples * step_fixed + mVoice[i]->mSrcOffset) >> FIXPOINT_FRAC_BITS) >= SAMPLE_GRANULARITY)
+							writesamples--;
+					}
+
+
+					// If this is too much for our output buffer, don't write that many:
+					if (writesamples + outofs > aSamples)
+					{
+						mVoice[i]->mLeftoverSamples = (writesamples + outofs) - aSamples;
+						writesamples = aSamples - outofs;
+					}
+
+					// Skip resampler
+
+					// Keep track of how many samples we've written so far
+					outofs += writesamples;
+
+					// Move source pointer onwards (writesamples may be zero)
+					mVoice[i]->mSrcOffset += writesamples * step_fixed;
+				}
 
 				// clear voice if the sound is over
 				if (!(mVoice[i]->mFlags & AudioSourceInstance::LOOPING) && mVoice[i]->hasEnded())

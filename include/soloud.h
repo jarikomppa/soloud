@@ -49,7 +49,7 @@ freely, subject to the following restrictions:
 #define SAMPLE_GRANULARITY 512
 
 // Maximum number of concurrent voices (hard limit is 4095)
-#define VOICE_COUNT 64
+#define VOICE_COUNT 1024
 
 // Use linear resampler
 #define RESAMPLER_LINEAR
@@ -196,7 +196,11 @@ namespace SoLoud
 		float getPostClipScaler() const;
 		// Get current global volume
 		float getGlobalVolume() const;
+		// Get current maximum active voice setting
+		unsigned int getMaxActiveVoiceCount() const;
 
+		// Set current maximum active voice setting
+		result setMaxActiveVoiceCount(unsigned int aVoiceCount);
 		// Set the global volume
 		void setGlobalVolume(float aVolume);
 		// Set the post clip scaler value
@@ -312,6 +316,10 @@ namespace SoLoud
 
 		// Perform mixing for a specific bus
 		void mixBus(float *aBuffer, unsigned int aSamples, float *aScratch, unsigned int aBus, float aSamplerate);
+		// Max. number of active voices. Busses and tickable inaudibles also count against this.
+		unsigned int mMaxActiveVoices;
+		// Highest voice in use so far
+		unsigned int mHighestVoice;
 		// Scratch buffer, used for resampling.
 		float *mScratch;
 		// Current size of the scratch, in samples.

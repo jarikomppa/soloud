@@ -102,7 +102,8 @@ namespace SoLoud
 		m3dVelocity[1] = 0;
 		m3dVelocity[2] = 0;		
 		m3dSoundSpeed = 343.3f;
-
+		mMaxActiveVoices = 64;
+		mHighestVoice = 0;
 	}
 
 	Soloud::~Soloud()
@@ -544,7 +545,7 @@ namespace SoLoud
 		}
 
 		// Accumulate sound sources
-		for (i = 0; i < VOICE_COUNT; i++)
+		for (i = 0; i < mHighestVoice; i++)
 		{
 			if (mVoice[i] && 
 				mVoice[i]->mBusHandle == aBus && 
@@ -849,7 +850,7 @@ namespace SoLoud
 
 		// Process faders. May change scratch size.
 		int i;
-		for (i = 0; i < VOICE_COUNT; i++)
+		for (i = 0; i < (signed)mHighestVoice; i++)
 		{
 			if (mVoice[i] && !(mVoice[i]->mFlags & AudioSourceInstance::PAUSED))
 			{

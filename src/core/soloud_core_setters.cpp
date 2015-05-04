@@ -64,11 +64,21 @@ namespace SoLoud
 		FOR_ALL_VOICES_POST
 	}
 
+	result Soloud::setMaxActiveVoiceCount(unsigned int aVoiceCount)
+	{
+		if (aVoiceCount == 0 || aVoiceCount >= VOICE_COUNT)
+			return INVALID_PARAMETER;
+		if (mLockMutexFunc) mLockMutexFunc(mMutex);
+		mMaxActiveVoices = aVoiceCount;
+		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+		return SO_NO_ERROR;
+	}
+
 	void Soloud::setPauseAll(bool aPause)
 	{
 		if (mLockMutexFunc) mLockMutexFunc(mMutex);
 		int ch;
-		for (ch = 0; ch < VOICE_COUNT; ch++)
+		for (ch = 0; ch < (signed)mHighestVoice; ch++)
 		{
 			setVoicePause(ch, aPause);
 		}

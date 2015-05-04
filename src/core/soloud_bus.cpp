@@ -89,7 +89,7 @@ namespace SoLoud
 	{
 		Soloud *s = mParent->mSoloud;
 		int i;
-		for (i = 0; i < VOICE_COUNT; i++)
+		for (i = 0; i < (signed)s->mHighestVoice; i++)
 		{
 			if (s->mVoice[i] && s->mVoice[i]->mBusHandle == mParent->mChannelHandle)
 			{
@@ -125,7 +125,7 @@ namespace SoLoud
 		{
 			// Find the channel the bus is playing on to calculate handle..
 			int i;
-			for (i = 0; mChannelHandle == 0 && i < VOICE_COUNT; i++)
+			for (i = 0; mChannelHandle == 0 && i < (signed)mSoloud->mHighestVoice; i++)
 			{
 				if (mSoloud->mVoice[i] == mInstance)
 				{

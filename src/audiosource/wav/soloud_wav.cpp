@@ -118,6 +118,7 @@ namespace SoLoud
 	
 	Wav::~Wav()
 	{
+		stop();
 		delete[] mData;
 	}
 

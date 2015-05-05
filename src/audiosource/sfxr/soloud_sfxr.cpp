@@ -583,6 +583,11 @@ namespace SoLoud
 		return 0;
 	}
 
+	Sfxr::~Sfxr()
+	{
+		stop();
+	}
+
 	Sfxr::Sfxr()
 	{
 		resetParams();

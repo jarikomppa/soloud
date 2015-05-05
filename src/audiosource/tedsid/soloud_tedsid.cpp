@@ -126,6 +126,7 @@ namespace SoLoud
 
 	TedSid::~TedSid()
 	{
+		stop();
 		if (mFileOwned)
 			delete mFile;
 	}

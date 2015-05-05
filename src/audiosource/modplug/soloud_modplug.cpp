@@ -175,6 +175,7 @@ namespace SoLoud
 
 	Modplug::~Modplug()
 	{
+		stop();
 #ifdef WITH_MODPLUG
 		delete[] mData;
 		mData = 0;

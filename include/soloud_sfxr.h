@@ -155,6 +155,7 @@ namespace SoLoud
 		Prg mRand;
 		
 		Sfxr();
+		virtual ~Sfxr();
 		void resetParams();
 		result loadParams(const char* aFilename);
 		result loadParamsMem(unsigned char *aMem, unsigned int aLength, bool aCopy = false, bool aTakeOwnership = true);

@@ -377,6 +377,7 @@ namespace SoLoud
 
 	Monotone::~Monotone()
 	{
+		stop();
 		clear();
 	}
 

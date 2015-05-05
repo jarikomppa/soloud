@@ -88,6 +88,11 @@ namespace SoLoud
 		mWaveform = SQUARE;
 	}
 
+	Basicwave::~Basicwave()
+	{
+		stop();
+	}
+
 	void Basicwave::setSamplerate(float aSamplerate)
 	{
 		mBaseSamplerate = aSamplerate;

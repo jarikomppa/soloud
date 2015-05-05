@@ -138,6 +138,7 @@ namespace SoLoud
 
 	Speech::~Speech()
 	{
+		stop();
 	}
 
 	AudioSourceInstance *Speech::createInstance()

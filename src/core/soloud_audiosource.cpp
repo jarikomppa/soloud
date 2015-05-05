@@ -190,10 +190,7 @@ namespace SoLoud
 
 	AudioSource::~AudioSource() 
 	{
-		if (mSoloud)
-		{
-			mSoloud->stopAudioSource(*this);
-		}
+		stop();
 	}
 
 	void AudioSource::setLooping(bool aLoop)

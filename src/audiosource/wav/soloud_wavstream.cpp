@@ -293,6 +293,7 @@ namespace SoLoud
 	
 	WavStream::~WavStream()
 	{
+		stop();
 		delete[] mFilename;
 	}
 	

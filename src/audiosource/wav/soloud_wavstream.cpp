@@ -398,7 +398,7 @@ namespace SoLoud
 		if (res != SO_NO_ERROR)
 			return res;
 		
-		int len = strlen(aFilename);
+		int len = (int)strlen(aFilename);
 		mFilename = new char[len+1];		
 		memcpy(mFilename, aFilename, len);
 		mFilename[len] = 0;

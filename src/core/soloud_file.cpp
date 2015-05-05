@@ -22,6 +22,9 @@ misrepresented as being the original software.
 distribution.
 */
 
+#undef _CRT_SECURE_NO_WARNINGS
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <stdio.h>
 #include <string.h>
 #include "soloud.h"
@@ -53,7 +56,7 @@ namespace SoLoud
 
 	unsigned int DiskFile::read(unsigned char *aDst, unsigned int aBytes)
 	{
-		return fread(aDst, 1, aBytes, mFileHandle);
+		return (unsigned int)fread(aDst, 1, aBytes, mFileHandle);
 	}
 
 	unsigned int DiskFile::length()

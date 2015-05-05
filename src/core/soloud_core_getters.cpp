@@ -108,6 +108,21 @@ namespace SoLoud
 		return 0;
 	}
 
+
+	bool Soloud::getLooping(handle aVoiceHandle) const
+	{
+		if (mLockMutexFunc) mLockMutexFunc(mMutex);
+		int ch = getVoiceFromHandle(aVoiceHandle);
+		if (ch == -1)
+		{
+			if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+			return 0;
+		}
+		bool v = (mVoice[ch]->mFlags & AudioSourceInstance::LOOPING) != 0;
+		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+		return v;
+	}
+
 	float Soloud::getInfo(handle aVoiceHandle, unsigned int mInfoKey)
 	{
 		if (mLockMutexFunc) mLockMutexFunc(mMutex);

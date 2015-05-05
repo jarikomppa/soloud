@@ -43,24 +43,24 @@ namespace SoLoud
 	{
 		result retVal = 0;
 		FOR_ALL_VOICES_PRE
-		mVoice[ch]->mRelativePlaySpeedFader.mActive = 0;
-		retVal = setVoiceRelativePlaySpeed(ch, aSpeed);
-		FOR_ALL_VOICES_POST
+			mVoice[ch]->mRelativePlaySpeedFader.mActive = 0;
+			retVal = setVoiceRelativePlaySpeed(ch, aSpeed);
+			FOR_ALL_VOICES_POST
 		return retVal;
 	}
 
 	void Soloud::setSamplerate(handle aVoiceHandle, float aSamplerate)
 	{
 		FOR_ALL_VOICES_PRE
-		mVoice[ch]->mBaseSamplerate = aSamplerate;
-		mVoice[ch]->mSamplerate = mVoice[ch]->mBaseSamplerate * mVoice[ch]->mRelativePlaySpeed;
+			mVoice[ch]->mBaseSamplerate = aSamplerate;
+			mVoice[ch]->mSamplerate = mVoice[ch]->mBaseSamplerate * mVoice[ch]->mRelativePlaySpeed;
 		FOR_ALL_VOICES_POST
 	}
 
 	void Soloud::setPause(handle aVoiceHandle, bool aPause)
 	{
 		FOR_ALL_VOICES_PRE
-		setVoicePause(ch, aPause);
+			setVoicePause(ch, aPause);
 		FOR_ALL_VOICES_POST
 	}
 
@@ -88,45 +88,60 @@ namespace SoLoud
 	void Soloud::setProtectVoice(handle aVoiceHandle, bool aProtect)
 	{
 		FOR_ALL_VOICES_PRE
-		if (aProtect)
-		{
-			mVoice[ch]->mFlags |= AudioSourceInstance::PROTECTED;
-		}
-		else
-		{
-			mVoice[ch]->mFlags &= ~AudioSourceInstance::PROTECTED;
-		}
+			if (aProtect)
+			{
+				mVoice[ch]->mFlags |= AudioSourceInstance::PROTECTED;
+			}
+			else
+			{
+				mVoice[ch]->mFlags &= ~AudioSourceInstance::PROTECTED;
+			}
 		FOR_ALL_VOICES_POST
 	}
 
 	void Soloud::setPan(handle aVoiceHandle, float aPan)
 	{		
 		FOR_ALL_VOICES_PRE
-		setVoicePan(ch, aPan);
+			setVoicePan(ch, aPan);
 		FOR_ALL_VOICES_POST
 	}
 
 	void Soloud::setPanAbsolute(handle aVoiceHandle, float aLVolume, float aRVolume)
 	{
 		FOR_ALL_VOICES_PRE
-		mVoice[ch]->mPanFader.mActive = 0;
-		mVoice[ch]->mChannelVolume[0] = aLVolume;
-		mVoice[ch]->mChannelVolume[1] = aRVolume;
+			mVoice[ch]->mPanFader.mActive = 0;
+			mVoice[ch]->mChannelVolume[0] = aLVolume;
+			mVoice[ch]->mChannelVolume[1] = aRVolume;
 		FOR_ALL_VOICES_POST
 	}
+
+	void Soloud::setLooping(handle aVoiceHandle, bool aLooping)
+	{
+		FOR_ALL_VOICES_PRE
+			if (aLooping)
+			{
+				mVoice[ch]->mFlags |= AudioSourceInstance::LOOPING;
+			}
+			else
+			{
+				mVoice[ch]->mFlags &= ~AudioSourceInstance::LOOPING;
+			}
+		FOR_ALL_VOICES_POST
+	}
+
 
 	void Soloud::setVolume(handle aVoiceHandle, float aVolume)
 	{
 		FOR_ALL_VOICES_PRE
-		mVoice[ch]->mVolumeFader.mActive = 0;
-		setVoiceVolume(ch, aVolume);
+			mVoice[ch]->mVolumeFader.mActive = 0;
+			setVoiceVolume(ch, aVolume);
 		FOR_ALL_VOICES_POST
 	}
 
 	void Soloud::setDelaySamples(handle aVoiceHandle, unsigned int aSamples)
 	{
 		FOR_ALL_VOICES_PRE
-		mVoice[ch]->mDelaySamples = aSamples;
+			mVoice[ch]->mDelaySamples = aSamples;
 		FOR_ALL_VOICES_POST
 	}
 

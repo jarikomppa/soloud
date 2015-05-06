@@ -204,22 +204,30 @@ namespace SoLoud
 		}
 
 		float dist = pos.mag();
-								
+
 		// attenuation
-		switch (mVoice[aVoice]->m3dAttenuationModel)
+
+		if (v->mAttenuator)
 		{
-		case AudioSource::INVERSE_DISTANCE:
-			vol = attenuateInvDistance(dist, v->m3dMinDistance, v->m3dMaxDistance, v->m3dAttenuationRolloff);
-			break;
-		case AudioSource::LINEAR_DISTANCE:
-			vol = attenuateLinearDistance(dist, v->m3dMinDistance, v->m3dMaxDistance, v->m3dAttenuationRolloff);
-			break;
-		case AudioSource::EXPONENTIAL_DISTANCE:
-			vol = attenuateExponentialDistance(dist, v->m3dMinDistance, v->m3dMaxDistance, v->m3dAttenuationRolloff);
-			break;
-		default:
-		//case AudioSource::NO_ATTENUATION:
-			break;
+			vol = v->mAttenuator->attenuate(dist, v->m3dMinDistance, v->m3dMaxDistance, v->m3dAttenuationRolloff);
+		}
+		else
+		{
+			switch (mVoice[aVoice]->m3dAttenuationModel)
+			{
+			case AudioSource::INVERSE_DISTANCE:
+				vol = attenuateInvDistance(dist, v->m3dMinDistance, v->m3dMaxDistance, v->m3dAttenuationRolloff);
+				break;
+			case AudioSource::LINEAR_DISTANCE:
+				vol = attenuateLinearDistance(dist, v->m3dMinDistance, v->m3dMaxDistance, v->m3dAttenuationRolloff);
+				break;
+			case AudioSource::EXPONENTIAL_DISTANCE:
+				vol = attenuateExponentialDistance(dist, v->m3dMinDistance, v->m3dMaxDistance, v->m3dAttenuationRolloff);
+				break;
+			default:
+				//case AudioSource::NO_ATTENUATION:
+				break;
+			}
 		}
 
 		// cone

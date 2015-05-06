@@ -48,6 +48,12 @@ namespace SoLoud
 		virtual float collide(Soloud *aSoloud, AudioSourceInstance *aAudioInstance,	int aUserData) = 0;
 	};
 
+	class AudioAttenuator
+	{
+	public:
+		virtual float attenuate(float aDistance, float aMinDistance, float aMaxDistance, float aRolloffFactor) = 0;
+	};
+
 	// Base class for audio instances
 	class AudioSourceInstance
 	{
@@ -153,6 +159,8 @@ namespace SoLoud
 		float m3dDopplerFactor;
 		// Pointer to a custom audio collider object
 		AudioCollider *mCollider;
+		// POinter to a custom audio attenuator object
+		AudioAttenuator *mAttenuator;			 
 		// User data related to audio collider
 		int mColliderData;
 		// Get N samples from the stream to the buffer
@@ -230,6 +238,8 @@ namespace SoLoud
 		Soloud *mSoloud;
 		// Pointer to a custom audio collider object
 		AudioCollider *mCollider;
+		// Pointer to custom attenuator object
+		AudioAttenuator *mAttenuator;
 		// User data related to audio collider
 		int mColliderData;
 
@@ -257,6 +267,8 @@ namespace SoLoud
 
 		// Set a custom 3d audio collider. Set to NULL to disable.
 		void set3dCollider(AudioCollider *aCollider, int aUserData = 0);
+		// Set a custom attenuator. Set to NULL to disable.
+		void setAttenuator(AudioAttenuator *aAttenuator);
 
 		// Set filter. Set to NULL to clear the filter.
 		virtual void setFilter(unsigned int aFilterId, Filter *aFilter);

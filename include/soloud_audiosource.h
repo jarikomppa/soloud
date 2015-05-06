@@ -208,6 +208,8 @@ namespace SoLoud
 		unsigned int mFlags;
 		// Base sample rate, used to initialize instances
 		float mBaseSamplerate;
+		// Default volume for created instances
+		float mVolume;
 		// Number of channels this audio source produces
 		unsigned int mChannels;
 		// Sound source ID. Assigned by SoLoud the first time it's played.
@@ -233,6 +235,8 @@ namespace SoLoud
 
 		// CTor
 		AudioSource();
+		// Set default volume for instances
+		void setVolume(float aVolume);
 		// Set the looping of the instances created from this audio source
 		void setLooping(bool aLoop);
 		// Set whether only one instance of this sound should ever be playing at the same time

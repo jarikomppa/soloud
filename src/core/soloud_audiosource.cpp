@@ -186,11 +186,17 @@ namespace SoLoud
 		m3dDopplerFactor = 1.0f;
 		mCollider = 0;
 		mColliderData = 0;
+		mVolume = 1;
 	}
 
 	AudioSource::~AudioSource() 
 	{
 		stop();
+	}
+
+	void AudioSource::setVolume(float aVolume)
+	{
+		mVolume = aVolume;
 	}
 
 	void AudioSource::setLooping(bool aLoop)

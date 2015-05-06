@@ -74,7 +74,14 @@ namespace SoLoud
 		}
 
 		setVoicePan(ch, aPan);
-		setVoiceVolume(ch, aVolume);
+		if (aVolume < 0)
+		{
+			setVoiceVolume(ch, aSound.mVolume);
+		}
+		else
+		{
+			setVoiceVolume(ch, aVolume);
+		}
 		setVoiceRelativePlaySpeed(ch, 1);
 
 		int i;

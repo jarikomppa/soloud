@@ -147,10 +147,10 @@ namespace SoLoud
 		// Returns current backend buffer size
 		unsigned int getBackendBufferSize();
 
-		// Start playing a sound. Returns voice handle, which can be ignored or used to alter the playing sound's parameters.
-		handle play(AudioSource &aSound, float aVolume = 1.0f, float aPan = 0.0f, bool aPaused = 0, unsigned int aBus = 0);
-		// Start playing a sound delayed in relation to other sounds called via this function.
-		handle playClocked(time aSoundTime, AudioSource &aSound, float aVolume = 1.0f, float aPan = 0.0f, unsigned int aBus = 0);
+		// Start playing a sound. Returns voice handle, which can be ignored or used to alter the playing sound's parameters. Negative volume means to use default.
+		handle play(AudioSource &aSound, float aVolume = -1.0f, float aPan = 0.0f, bool aPaused = 0, unsigned int aBus = 0);
+		// Start playing a sound delayed in relation to other sounds called via this function. Negative volume means to use default.
+		handle playClocked(time aSoundTime, AudioSource &aSound, float aVolume = -1.0f, float aPan = 0.0f, unsigned int aBus = 0);
 		// Start playing a 3d audio source
 		handle play3d(AudioSource &aSound, float aPosX, float aPosY, float aPosZ, float aVelX = 0.0f, float aVelY = 0.0f, float aVelZ = 0.0f, float aVolume = 1.0f, bool aPaused = 0, unsigned int aBus = 0);
 		// Start playing a 3d audio source, delayed in relation to other sounds called via this function.

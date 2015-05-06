@@ -33,6 +33,13 @@ namespace SoLoud
 	{
 		float mX, mY, mZ;
 
+		void neg()
+		{
+			mX = -mX;
+			mY = -mY;
+			mZ = -mZ;
+		}
+
 		float mag()
 		{
 			return sqrt(mX * mX + mY * mY + mZ * mZ);
@@ -92,8 +99,21 @@ namespace SoLoud
 			return r;
 		}
 
-		void lookat(vec3 at, vec3 up)
+		void lookatRH(vec3 at, vec3 up)
 		{
+			vec3 z = at;
+			z.normalize();
+			vec3 x = up.cross(z);
+			x.normalize();
+			vec3 y = z.cross(x);
+			m[0] = x;
+			m[1] = y;
+			m[2] = z;
+		}
+
+		void lookatLH(vec3 at, vec3 up)
+		{
+			at.neg();
 			vec3 z = at;
 			z.normalize();
 			vec3 x = up.cross(z);
@@ -177,7 +197,14 @@ namespace SoLoud
 		lvel.mY = m3dVelocity[1];
 		lvel.mZ = m3dVelocity[2];
 		mat3 m;
-		m.lookat(at, up);
+		if (mFlags & LEFT_HANDED_3D)
+		{
+			m.lookatLH(at, up);
+		}
+		else
+		{
+			m.lookatRH(at, up);
+		}
 
 		// Optimization: everything above this can be done once per listener update
 
@@ -209,20 +236,20 @@ namespace SoLoud
 
 		if (v->mAttenuator)
 		{
-			vol = v->mAttenuator->attenuate(dist, v->m3dMinDistance, v->m3dMaxDistance, v->m3dAttenuationRolloff);
+			vol *= v->mAttenuator->attenuate(dist, v->m3dMinDistance, v->m3dMaxDistance, v->m3dAttenuationRolloff);
 		}
 		else
 		{
 			switch (mVoice[aVoice]->m3dAttenuationModel)
 			{
 			case AudioSource::INVERSE_DISTANCE:
-				vol = attenuateInvDistance(dist, v->m3dMinDistance, v->m3dMaxDistance, v->m3dAttenuationRolloff);
+				vol *= attenuateInvDistance(dist, v->m3dMinDistance, v->m3dMaxDistance, v->m3dAttenuationRolloff);
 				break;
 			case AudioSource::LINEAR_DISTANCE:
-				vol = attenuateLinearDistance(dist, v->m3dMinDistance, v->m3dMaxDistance, v->m3dAttenuationRolloff);
+				vol *= attenuateLinearDistance(dist, v->m3dMinDistance, v->m3dMaxDistance, v->m3dAttenuationRolloff);
 				break;
 			case AudioSource::EXPONENTIAL_DISTANCE:
-				vol = attenuateExponentialDistance(dist, v->m3dMinDistance, v->m3dMaxDistance, v->m3dAttenuationRolloff);
+				vol *= attenuateExponentialDistance(dist, v->m3dMinDistance, v->m3dMaxDistance, v->m3dAttenuationRolloff);
 				break;
 			default:
 				//case AudioSource::NO_ATTENUATION:
@@ -268,7 +295,6 @@ namespace SoLoud
 		{
 			v->mFlags &= ~AudioSourceInstance::INAUDIBLE;
 		}
-
 	}
 
 	void Soloud::update3dAudio()

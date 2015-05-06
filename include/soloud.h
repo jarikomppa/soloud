@@ -122,6 +122,7 @@ namespace SoLoud
 			// Use round-off clipper
 			CLIP_ROUNDOFF = 1,
 			ENABLE_VISUALIZATION = 2,
+			LEFT_HANDED_3D = 4
 		};
 
 		// Initialize SoLoud. Must be called before SoLoud can be used.

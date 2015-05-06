@@ -79,6 +79,14 @@ namespace SoLoud
 	unsigned int Soloud::getActiveVoiceCount() const
 	{
 		if (mLockMutexFunc) mLockMutexFunc(mMutex);
+		unsigned int c = mActiveVoiceCount;
+		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+		return c;
+	}
+
+	unsigned int Soloud::getVoiceCount() const
+	{
+		if (mLockMutexFunc) mLockMutexFunc(mMutex);
 		int i;
 		int c = 0;
 		for (i = 0; i < (signed)mHighestVoice; i++)

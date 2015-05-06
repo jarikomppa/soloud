@@ -46,6 +46,7 @@ namespace SoLoud
 
 	void Soloud::setVoicePause(unsigned int aVoice, int aPause)
 	{
+		mActiveVoiceDirty = true;
 		if (mVoice[aVoice])
 		{
 			mVoice[aVoice]->mPauseScheduler.mActive = 0;
@@ -73,6 +74,7 @@ namespace SoLoud
 
 	void Soloud::setVoiceVolume(unsigned int aVoice, float aVolume)
 	{
+		mActiveVoiceDirty = true;
 		if (mVoice[aVoice])
 		{
 			mVoice[aVoice]->mVolume = aVolume;
@@ -81,6 +83,7 @@ namespace SoLoud
 
 	void Soloud::stopVoice(unsigned int aVoice)
 	{
+		mActiveVoiceDirty = true;
 		if (mVoice[aVoice])
 		{
 			// Delete via temporary variable to avoid recursion

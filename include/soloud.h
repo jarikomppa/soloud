@@ -189,6 +189,8 @@ namespace SoLoud
 		bool getProtectVoice(handle aVoiceHandle) const;
 		// Get the current number of busy voices.
 		unsigned int getActiveVoiceCount() const; 
+		// Get the current number of voices in SoLoud
+		unsigned int getVoiceCount() const;
 		// Check if the handle is still valid, or if the sound has stopped.
 		bool isValidVoiceHandle(handle aVoiceHandle) const;
 		// Get current relative play speed.
@@ -319,6 +321,8 @@ namespace SoLoud
 		// Handle rest of initialization (called from backend)
 		void postinit(unsigned int aSamplerate, unsigned int aBufferSize, unsigned int aFlags);
 
+		// Update list of active voices
+		void calcActiveVoices();
 		// Perform mixing for a specific bus
 		void mixBus(float *aBuffer, unsigned int aSamples, float *aScratch, unsigned int aBus, float aSamplerate);
 		// Max. number of active voices. Busses and tickable inaudibles also count against this.
@@ -404,6 +408,13 @@ namespace SoLoud
 		// For each voice group, first int is number of ints alocated.
 		unsigned int **mVoiceGroup;
 		unsigned int mVoiceGroupCount;
+
+		// List of currently active voices
+		unsigned int mActiveVoice[VOICE_COUNT];
+		// Number of currently active voices
+		unsigned int mActiveVoiceCount;
+		// Active voices list needs to be recalculated
+		bool mActiveVoiceDirty;
 
 		// Remove all non-active voices from group
 		void trimVoiceGroup(handle aVoiceGroupHandle);

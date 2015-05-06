@@ -858,7 +858,7 @@ namespace SoLoud
 		unsigned int j;
 		for (i = 0; i < mActiveVoiceCount; i++)
 		{
-			for (j = mHighestVoice - 2; j >= i; j--)
+			for (j = mHighestVoice - 2; j > i; j--)
 			{
 				if (mVoice[mActiveVoice[j + 1]]->mFlags & (AudioSourceInstance::INAUDIBLE_TICK | AudioSourceInstance::PROTECTED) ||
 					mVoice[mActiveVoice[j + 1]]->mVolume > mVoice[mActiveVoice[j]]->mVolume)

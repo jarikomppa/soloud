@@ -281,6 +281,8 @@ namespace SoLoud
 			v->mChannelVolume[i] = vol * speakervol;
 		}
 
+		v->mVolume = vol;
+		
 		if (vol < 0.01f)
 		{
 			// Inaudible.
@@ -300,7 +302,7 @@ namespace SoLoud
 	void Soloud::update3dAudio()
 	{
 		if (mLockMutexFunc) mLockMutexFunc(mMutex);
-
+		mActiveVoiceDirty = true;
 		int i;
 		for (i = 0; i < (signed)mHighestVoice; i++)
 		{
@@ -317,6 +319,7 @@ namespace SoLoud
 	handle Soloud::play3d(AudioSource &aSound, float aPosX, float aPosY, float aPosZ, float aVelX, float aVelY, float aVelZ, float aVolume, bool aPaused, unsigned int aBus)
 	{
 		handle h = play(aSound, aVolume, 0, 1, aBus);
+		set3dSourceParameters(h, aPosX, aPosY, aPosZ, aVelX, aVelY, aVelZ);
 		if (mLockMutexFunc) mLockMutexFunc(mMutex);
 		int v = getVoiceFromHandle(h);
 		if (v < 0) 
@@ -327,15 +330,16 @@ namespace SoLoud
 		mVoice[v]->mFlags |= AudioSourceInstance::PROCESS_3D;
 		update3dVoice(v);
 
-		vec3 pos;
-		pos.mX = aPosX;
-		pos.mY = aPosY;
-		pos.mZ = aPosZ;
 		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 
 		int samples = 0;
 		if (aSound.mFlags & AudioSource::DISTANCE_DELAY)
 		{
+			vec3 pos;
+			pos.mX = aPosX;
+			pos.mY = aPosY;
+			pos.mZ = aPosZ;
+			// TODO: calculate distance to listener if not listener relative pos
 			float dist = pos.mag();
 			samples += (int)floor((dist / m3dSoundSpeed) * mSamplerate);
 		}

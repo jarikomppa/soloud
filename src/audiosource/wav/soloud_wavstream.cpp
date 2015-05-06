@@ -289,12 +289,14 @@ namespace SoLoud
 		mDataOffset = 0;
 		mBits = 0;
 		mChannels = 0;
+		mMemFile = 0;
 	}
 	
 	WavStream::~WavStream()
 	{
 		stop();
 		delete[] mFilename;
+		delete mMemFile;
 	}
 	
 #define MAKEDWORD(a,b,c,d) (((d) << 24) | ((c) << 16) | ((b) << 8) | (a))

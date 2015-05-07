@@ -406,7 +406,7 @@ namespace SoLoud
 	
 	void Soloud::set3dListenerParameters(float aPosX, float aPosY, float aPosZ, float aAtX, float aAtY, float aAtZ, float aUpX, float aUpY, float aUpZ, float aVelocityX, float aVelocityY, float aVelocityZ)
 	{
-		if (mLockMutexFunc) mUnlockMutexFunc(mMutex);
+		if (mLockMutexFunc) mLockMutexFunc(mMutex);
 		m3dPosition[0] = aPosX;
 		m3dPosition[1] = aPosY;
 		m3dPosition[2] = aPosZ;
@@ -425,7 +425,7 @@ namespace SoLoud
 	
 	void Soloud::set3dListenerPosition(float aPosX, float aPosY, float aPosZ)
 	{
-		if (mLockMutexFunc) mUnlockMutexFunc(mMutex);
+		if (mLockMutexFunc) mLockMutexFunc(mMutex);
 		m3dPosition[0] = aPosX;
 		m3dPosition[1] = aPosY;
 		m3dPosition[2] = aPosZ;
@@ -435,7 +435,7 @@ namespace SoLoud
 	
 	void Soloud::set3dListenerAt(float aAtX, float aAtY, float aAtZ)
 	{
-		if (mLockMutexFunc) mUnlockMutexFunc(mMutex);
+		if (mLockMutexFunc) mLockMutexFunc(mMutex);
 		m3dAt[0] = aAtX;
 		m3dAt[1] = aAtY;
 		m3dAt[2] = aAtZ;
@@ -445,7 +445,7 @@ namespace SoLoud
 	
 	void Soloud::set3dListenerUp(float aUpX, float aUpY, float aUpZ)
 	{
-		if (mLockMutexFunc) mUnlockMutexFunc(mMutex);
+		if (mLockMutexFunc) mLockMutexFunc(mMutex);
 		m3dUp[0] = aUpX;
 		m3dUp[1] = aUpY;
 		m3dUp[2] = aUpZ;
@@ -455,7 +455,7 @@ namespace SoLoud
 	
 	void Soloud::set3dListenerVelocity(float aVelocityX, float aVelocityY, float aVelocityZ)
 	{
-		if (mLockMutexFunc) mUnlockMutexFunc(mMutex);
+		if (mLockMutexFunc) mLockMutexFunc(mMutex);
 		m3dVelocity[0] = aVelocityX;
 		m3dVelocity[1] = aVelocityY;
 		m3dVelocity[2] = aVelocityZ;

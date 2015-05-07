@@ -169,8 +169,9 @@ namespace SoLoud
 
 	void Soloud::update3dVoice(int aVoice)
 	{
-		AudioSourceInstance * v = mVoice[aVoice];
-		if (!v) return;
+		AudioSourceInstance3dData * v = &m3dData[aVoice];
+		AudioSourceInstance * vi = mVoice[aVoice];
+		if (!vi) return;
 
 		vec3 speaker[MAX_CHANNELS];
 
@@ -225,7 +226,7 @@ namespace SoLoud
 		vel.mY = v->m3dVelocity[1];
 		vel.mZ = v->m3dVelocity[2];
 
-		if (!(v->mFlags & AudioSourceInstance::LISTENER_RELATIVE))
+		if (!(vi->mFlags & AudioSourceInstance::LISTENER_RELATIVE))
 		{
 			pos = pos.sub(lpos);
 		}
@@ -240,7 +241,7 @@ namespace SoLoud
 		}
 		else
 		{
-			switch (mVoice[aVoice]->m3dAttenuationModel)
+			switch (v->m3dAttenuationModel)
 			{
 			case AudioSource::INVERSE_DISTANCE:
 				vol *= attenuateInvDistance(dist, v->m3dMinDistance, v->m3dMaxDistance, v->m3dAttenuationRolloff);
@@ -263,8 +264,8 @@ namespace SoLoud
 								
 		// doppler
 
-		v->mRelativePlaySpeed = doppler(pos, vel, lvel, v->m3dDopplerFactor, m3dSoundSpeed);
-		v->mSamplerate = v->mBaseSamplerate * v->mRelativePlaySpeed;
+		vi->mRelativePlaySpeed = doppler(pos, vel, lvel, v->m3dDopplerFactor, m3dSoundSpeed);
+		vi->mSamplerate = vi->mBaseSamplerate * vi->mRelativePlaySpeed;
 
 		// panning
 		pos = m.mul(pos);
@@ -278,24 +279,24 @@ namespace SoLoud
 			// Different speaker "focus" calculations to try, if the default "bleeds" too much..
 			//speakervol = (speakervol * speakervol + speakervol) / 2;
 			//speakervol = speakervol * speakervol;
-			v->mChannelVolume[i] = vol * speakervol;
+			vi->mChannelVolume[i] = vol * speakervol;
 		}
 
-		v->mVolume = vol;
+		vi->mVolume = vol;
 		
 		if (vol < 0.01f)
 		{
 			// Inaudible.
-			v->mFlags |= AudioSourceInstance::INAUDIBLE;
+			vi->mFlags |= AudioSourceInstance::INAUDIBLE;
 
-			if (v->mFlags & AudioSourceInstance::INAUDIBLE_KILL)
+			if (vi->mFlags & AudioSourceInstance::INAUDIBLE_KILL)
 			{
 				stopVoice(aVoice);
 			}
 		}
 		else
 		{
-			v->mFlags &= ~AudioSourceInstance::INAUDIBLE;
+			vi->mFlags &= ~AudioSourceInstance::INAUDIBLE;
 		}
 	}
 
@@ -465,12 +466,12 @@ namespace SoLoud
 	void Soloud::set3dSourceParameters(handle aVoiceHandle, float aPosX, float aPosY, float aPosZ, float aVelocityX, float aVelocityY, float aVelocityZ)
 	{
 		FOR_ALL_VOICES_PRE
-		mVoice[ch]->m3dPosition[0] = aPosX;
-		mVoice[ch]->m3dPosition[1] = aPosY;
-		mVoice[ch]->m3dPosition[2] = aPosZ;
-		mVoice[ch]->m3dVelocity[0] = aVelocityX;
-		mVoice[ch]->m3dVelocity[1] = aVelocityY;
-		mVoice[ch]->m3dVelocity[2] = aVelocityZ;
+			m3dData[ch].m3dPosition[0] = aPosX;
+			m3dData[ch].m3dPosition[1] = aPosY;
+			m3dData[ch].m3dPosition[2] = aPosZ;
+			m3dData[ch].m3dVelocity[0] = aVelocityX;
+			m3dData[ch].m3dVelocity[1] = aVelocityY;
+			m3dData[ch].m3dVelocity[2] = aVelocityZ;
 		FOR_ALL_VOICES_POST
 	}
 
@@ -478,9 +479,9 @@ namespace SoLoud
 	void Soloud::set3dSourcePosition(handle aVoiceHandle, float aPosX, float aPosY, float aPosZ)
 	{
 		FOR_ALL_VOICES_PRE
-		mVoice[ch]->m3dPosition[0] = aPosX;
-		mVoice[ch]->m3dPosition[1] = aPosY;
-		mVoice[ch]->m3dPosition[2] = aPosZ;
+			m3dData[ch].m3dPosition[0] = aPosX;
+			m3dData[ch].m3dPosition[1] = aPosY;
+			m3dData[ch].m3dPosition[2] = aPosZ;
 		FOR_ALL_VOICES_POST
 	}
 
@@ -488,9 +489,9 @@ namespace SoLoud
 	void Soloud::set3dSourceVelocity(handle aVoiceHandle, float aVelocityX, float aVelocityY, float aVelocityZ)
 	{
 		FOR_ALL_VOICES_PRE
-		mVoice[ch]->m3dVelocity[0] = aVelocityX;
-		mVoice[ch]->m3dVelocity[1] = aVelocityY;
-		mVoice[ch]->m3dVelocity[2] = aVelocityZ;
+			m3dData[ch].m3dVelocity[0] = aVelocityX;
+			m3dData[ch].m3dVelocity[1] = aVelocityY;
+			m3dData[ch].m3dVelocity[2] = aVelocityZ;
 		FOR_ALL_VOICES_POST
 	}
 
@@ -498,8 +499,8 @@ namespace SoLoud
 	void Soloud::set3dSourceMinMaxDistance(handle aVoiceHandle, float aMinDistance, float aMaxDistance)
 	{
 		FOR_ALL_VOICES_PRE
-		mVoice[ch]->m3dMinDistance = aMinDistance;
-		mVoice[ch]->m3dMaxDistance = aMaxDistance;
+			m3dData[ch].m3dMinDistance = aMinDistance;
+			m3dData[ch].m3dMaxDistance = aMaxDistance;
 		FOR_ALL_VOICES_POST
 	}
 
@@ -507,8 +508,8 @@ namespace SoLoud
 	void Soloud::set3dSourceAttenuation(handle aVoiceHandle, unsigned int aAttenuationModel, float aAttenuationRolloffFactor)
 	{
 		FOR_ALL_VOICES_PRE
-		mVoice[ch]->m3dAttenuationModel = aAttenuationModel;
-		mVoice[ch]->m3dAttenuationRolloff = aAttenuationRolloffFactor;
+			m3dData[ch].m3dAttenuationModel = aAttenuationModel;
+			m3dData[ch].m3dAttenuationRolloff = aAttenuationRolloffFactor;
 		FOR_ALL_VOICES_POST
 	}
 
@@ -516,7 +517,7 @@ namespace SoLoud
 	void Soloud::set3dSourceDopplerFactor(handle aVoiceHandle, float aDopplerFactor)
 	{
 		FOR_ALL_VOICES_PRE
-		mVoice[ch]->m3dDopplerFactor = aDopplerFactor;
+			m3dData[ch].m3dDopplerFactor = aDopplerFactor;
 		FOR_ALL_VOICES_POST
 	}
 };

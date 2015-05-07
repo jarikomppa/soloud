@@ -27,6 +27,36 @@ freely, subject to the following restrictions:
 namespace SoLoud
 {
 
+	AudioSourceInstance3dData::AudioSourceInstance3dData()
+	{
+		m3dAttenuationModel = 0;
+		m3dAttenuationRolloff = 1;
+		m3dDopplerFactor = 1.0;
+		m3dMaxDistance = 1000000.0f;
+		m3dMinDistance = 0.0f;
+		m3dPosition[0] = 0;
+		m3dPosition[1] = 0;
+		m3dPosition[2] = 0;
+		m3dVelocity[0] = 0;
+		m3dVelocity[1] = 0;
+		m3dVelocity[2] = 0;
+		mCollider = 0;
+		mColliderData = 0;
+		mAttenuator = 0;
+	}
+
+	void AudioSourceInstance3dData::init(AudioSource &aSource)
+	{
+		m3dAttenuationModel = aSource.m3dAttenuationModel;
+		m3dAttenuationRolloff = aSource.m3dAttenuationRolloff;
+		m3dDopplerFactor = aSource.m3dDopplerFactor;
+		m3dMaxDistance = aSource.m3dMaxDistance;
+		m3dMinDistance = aSource.m3dMinDistance;
+		mCollider = aSource.mCollider;
+		mColliderData = aSource.mColliderData;
+		mAttenuator = aSource.mAttenuator;
+	}
+
 	AudioSourceResampleData::AudioSourceResampleData()
 	{
 		mBuffer = 0;
@@ -68,20 +98,7 @@ namespace SoLoud
 		mSrcOffset = 0;
 		mLeftoverSamples = 0;
 		mDelaySamples = 0;
-		m3dAttenuationModel = 0;
-		m3dAttenuationRolloff = 1;
-		m3dDopplerFactor = 1.0;
-		m3dMaxDistance = 1000000.0f;
-		m3dMinDistance = 0.0f;
-		m3dPosition[0] = 0;
-		m3dPosition[1] = 0;
-		m3dPosition[2] = 0;
-		m3dVelocity[0] = 0;
-		m3dVelocity[1] = 0;
-		m3dVelocity[2] = 0;		
-		mCollider = 0;
-		mColliderData = 0;
-		mAttenuator = 0;
+
 	}
 
 	AudioSourceInstance::~AudioSourceInstance()
@@ -105,11 +122,6 @@ namespace SoLoud
 		mSamplerate = mBaseSamplerate;
 		mChannels = aSource.mChannels;
 		mStreamTime = 0.0f;
-		m3dAttenuationModel = aSource.m3dAttenuationModel;
-		m3dAttenuationRolloff = aSource.m3dAttenuationRolloff;
-		m3dDopplerFactor = aSource.m3dDopplerFactor;
-		m3dMaxDistance = aSource.m3dMaxDistance;
-		m3dMinDistance = aSource.m3dMinDistance;		
 
 		if (aSource.mFlags & AudioSource::SHOULD_LOOP)
 		{
@@ -131,10 +143,6 @@ namespace SoLoud
 		{
 			mFlags |= AudioSourceInstance::INAUDIBLE_TICK;
 		}
-
-		mCollider = aSource.mCollider;
-		mColliderData = aSource.mColliderData;
-		mAttenuator = aSource.mAttenuator;
 	}
 
 	result AudioSourceInstance::rewind()

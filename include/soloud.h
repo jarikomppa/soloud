@@ -36,7 +36,7 @@ freely, subject to the following restrictions:
 #define WINDOWS_VERSION
 #endif
 
-#define SOLOUD_VERSION 102
+#define SOLOUD_VERSION 103
 
 /////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////
@@ -404,6 +404,9 @@ namespace SoLoud
 		float m3dVelocity[3];
 		// 3d speed of sound (for doppler)
 		float m3dSoundSpeed;
+
+		// Data related to 3d processing, separate from AudioSource so we can do 3d calculations without audio mutex.
+		AudioSourceInstance3dData m3dData[VOICE_COUNT];
 		
 		// For each voice group, first int is number of ints alocated.
 		unsigned int **mVoiceGroup;

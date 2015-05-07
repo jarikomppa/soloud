@@ -33,6 +33,7 @@ namespace SoLoud
 {
 	class AudioSource;	
 	class AudioSourceInstance;
+	class AudioSourceInstance3dData;
 
 	struct AudioSourceResampleData
 	{
@@ -45,13 +46,52 @@ namespace SoLoud
 	{
 	public:
 		// Calculate volume multiplier. Assumed to return value between 0 and 1.
-		virtual float collide(Soloud *aSoloud, AudioSourceInstance *aAudioInstance,	int aUserData) = 0;
+		virtual float collide(Soloud *aSoloud, AudioSourceInstance3dData *aAudioInstance3dData,	int aUserData) = 0;
 	};
 
 	class AudioAttenuator
 	{
 	public:
 		virtual float attenuate(float aDistance, float aMinDistance, float aMaxDistance, float aRolloffFactor) = 0;
+	};
+
+	class AudioSourceInstance3dData
+	{
+	public:
+		// ctor
+		AudioSourceInstance3dData();
+		// Set settings from audiosource
+		void init(AudioSource &aSource);
+		// 3d position
+		float m3dPosition[3];
+		// 3d velocity
+		float m3dVelocity[3];
+		// 3d cone direction
+		/*
+		float m3dConeDirection[3];
+		// 3d cone inner angle
+		float m3dConeInnerAngle;
+		// 3d cone outer angle
+		float m3dConeOuterAngle;
+		// 3d cone outer volume multiplier
+		float m3dConeOuterVolume;
+		*/
+		// 3d min distance
+		float m3dMinDistance;
+		// 3d max distance
+		float m3dMaxDistance;
+		// 3d attenuation rolloff factor
+		float m3dAttenuationRolloff;
+		// 3d attenuation model
+		unsigned int m3dAttenuationModel;
+		// 3d doppler factor
+		float m3dDopplerFactor;
+		// Pointer to a custom audio collider object
+		AudioCollider *mCollider;
+		// POinter to a custom audio attenuator object
+		AudioAttenuator *mAttenuator;
+		// User data related to audio collider
+		int mColliderData;
 	};
 
 	// Base class for audio instances
@@ -133,36 +173,7 @@ namespace SoLoud
 		unsigned int mLeftoverSamples;
 		// Number of samples to delay streaming
 		unsigned int mDelaySamples;
-		// 3d position
-		float m3dPosition[3];
-		// 3d velocity
-		float m3dVelocity[3];
-		// 3d cone direction
-		/*
-		float m3dConeDirection[3];
-		// 3d cone inner angle
-		float m3dConeInnerAngle;
-		// 3d cone outer angle
-		float m3dConeOuterAngle;
-		// 3d cone outer volume multiplier
-		float m3dConeOuterVolume;
-		*/
-		// 3d min distance
-		float m3dMinDistance;
-		// 3d max distance
-		float m3dMaxDistance;
-		// 3d attenuation rolloff factor
-		float m3dAttenuationRolloff;
-		// 3d attenuation model
-		unsigned int m3dAttenuationModel;
-		// 3d doppler factor
-		float m3dDopplerFactor;
-		// Pointer to a custom audio collider object
-		AudioCollider *mCollider;
-		// POinter to a custom audio attenuator object
-		AudioAttenuator *mAttenuator;			 
-		// User data related to audio collider
-		int mColliderData;
+
 		// Get N samples from the stream to the buffer
 		virtual void getAudio(float *aBuffer, unsigned int aSamples) = 0;
 		// Has the stream ended?

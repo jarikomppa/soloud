@@ -93,19 +93,6 @@ int main(int argc, char *argv[])
 			}
 		}
 
-
-		/*
-		DemoTriangle(
-			5 + 400 + mousex, 5 + 200 + mousez - 10,
-			5 + 400 + mousex - 10, 5 + 200 + mousez + 10,
-			5 + 400 + mousex + 10, 5 + 200 + mousez + 10,
-			0x77000000);
-		DemoTriangle(
-			400 + mousex, 200 + mousez - 10,
-			400 + mousex - 10, 200 + mousez + 10,
-			400 + mousex + 10, 200 + mousez + 10,
-			0xff00ffff);
-			*/
 		float *buf = gSoloud.getWave();
 		float *fft = gSoloud.calcFFT();
 
@@ -114,6 +101,8 @@ int main(int argc, char *argv[])
 		ImGui::PlotLines("##Wave", buf, 256, 0, "Wave", -1, 1, ImVec2(264, 80));
 		ImGui::PlotHistogram("##FFT", fft, 256 / 2, 0, "FFT", 0, 10, ImVec2(264, 80), 8);
 		ImGui::Text("Active voices    : %d", gSoloud.getActiveVoiceCount());
+		ImGui::Text("Total voices     : %d", gSoloud.getVoiceCount());
+		ImGui::Text("Maximum voices   : %d", VOICE_COUNT);
 		ImGui::End();
 
 		DemoUpdateEnd();

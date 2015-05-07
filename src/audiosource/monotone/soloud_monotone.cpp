@@ -383,7 +383,7 @@ namespace SoLoud
 
 	static char * mystrdup(const char *src)
 	{
-		int len = strlen(src);
+		int len = (int)strlen(src);
 		char * res = new char[len + 1];
 		memcpy(res, src, len);
 		res[len] = 0;

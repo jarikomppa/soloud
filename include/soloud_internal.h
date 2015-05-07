@@ -87,4 +87,20 @@ namespace SoLoud
 		} \
 		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 
+#define FOR_ALL_VOICES_PRE_3D \
+		handle *h_ = NULL; \
+		handle th_[2] = { aVoiceHandle, 0 }; \
+		h_ = voiceGroupHandleToArray(aVoiceHandle); \
+		if (h_ == NULL) h_ = th_; \
+				while (*h_) \
+						{ \
+			int ch = (*h_ & 0xfff) - 1; \
+			if (ch != -1 && m3dData[ch].mHandle == *h_)  \
+						{
+
+#define FOR_ALL_VOICES_POST_3D \
+						} \
+			h_++; \
+						} 
+
 #endif

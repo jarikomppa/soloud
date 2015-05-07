@@ -92,6 +92,17 @@ namespace SoLoud
 		AudioAttenuator *mAttenuator;
 		// User data related to audio collider
 		int mColliderData;
+
+		// Doppler sample rate multiplier
+		float mDopplerValue;
+		// Overall volume
+		float mVolume;
+		// Channel volume
+		float mChannelVolume[MAX_CHANNELS];
+		// Copy of flags
+		unsigned int mFlags;
+		// Latest handle for this voice
+		handle mHandle;
 	};
 
 	// Base class for audio instances

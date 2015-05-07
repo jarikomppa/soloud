@@ -383,8 +383,6 @@ namespace SoLoud
 		void setVoiceVolume(unsigned int aVoice, float aVolume);
 		// Set voice (not handle) pause state.
 		void setVoicePause(unsigned int aVoice, int aPause);
-		// Update 3d parameters for a single voice (not handle)
-		void update3dVoice(int aVoice);
 		// Clip the samples in the buffer
 		void clip(float *aBuffer, float *aDestBuffer, unsigned int aSamples, float aVolume0, float aVolume1);
 		// Mono-mixed wave data for visualization and for visualization FFT input

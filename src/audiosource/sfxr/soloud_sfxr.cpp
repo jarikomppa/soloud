@@ -145,12 +145,27 @@ namespace SoLoud
 					}
 				}
 			}
-			if(env_stage==0)
-				env_vol=(float)env_time/env_length[0];
-			if(env_stage==1)
-				env_vol=1.0f+pow(1.0f-(float)env_time/env_length[1], 1.0f)*2.0f*mParams.p_env_punch;
-			if(env_stage==2)
-				env_vol=1.0f-(float)env_time/env_length[2];
+			if (env_stage == 0)
+			{
+				if (env_length[0])
+					env_vol = (float)env_time / env_length[0];
+				else
+					env_vol = 0;
+			}
+			if (env_stage == 1)
+			{
+				if (env_length[1])
+					env_vol = 1.0f + pow(1.0f - (float)env_time / env_length[1], 1.0f)*2.0f*mParams.p_env_punch;
+				else
+					env_vol = 0;
+			}
+			if (env_stage == 2)
+			{
+				if (env_length[2])
+					env_vol = 1.0f - (float)env_time / env_length[2];
+				else
+					env_vol = 0;
+			}
 
 			// phaser step
 			fphase+=fdphase;

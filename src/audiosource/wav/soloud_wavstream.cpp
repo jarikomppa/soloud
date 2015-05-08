@@ -110,13 +110,13 @@ namespace SoLoud
 				{
 					if (j == 0)
 					{
-						aBuffer[i] = aFile->read8() / (float)0x80;
+						aBuffer[i] = ((signed char)aFile->read8()) / (float)0x80;
 					}
 					else
 					{
 						if (aChannels > 1 && j == 1)
 						{
-							aBuffer[i + aPitch] = aFile->read8() / (float)0x80;
+							aBuffer[i + aPitch] = ((signed char)aFile->read8()) / (float)0x80;
 						}
 						else
 						{
@@ -135,13 +135,13 @@ namespace SoLoud
 				{
 					if (j == 0)
 					{
-						aBuffer[i] = aFile->read16() / (float)0x8000;
+						aBuffer[i] = ((signed short)aFile->read16()) / (float)0x8000;
 					}
 					else
 					{
 						if (aChannels > 1 && j == 1)
 						{
-							aBuffer[i + aPitch] = aFile->read16() / (float)0x8000;
+							aBuffer[i + aPitch] = ((signed short)aFile->read16()) / (float)0x8000;
 						}
 						else
 						{

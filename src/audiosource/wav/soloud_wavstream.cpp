@@ -304,7 +304,7 @@ namespace SoLoud
 
 	result WavStream::loadwav(File * fp)
 	{
-		fp->seek(0);
+		fp->seek(4);
 		int wavsize = fp->read32();
 		if (fp->read32() != MAKEDWORD('W', 'A', 'V', 'E'))
 		{

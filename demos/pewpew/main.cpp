@@ -35,10 +35,12 @@ freely, subject to the following restrictions:
 SoLoud::Soloud gSoloud;
 SoLoud::Sfxr gSfx;
 
-#define MAX_BULLETS 16
+#define MAX_BULLETS 64
 int bulletidx = 0;
-float bulletx[MAX_BULLETS];
-float bullety[MAX_BULLETS];
+float bulletx[MAX_BULLETS]; // bullet x coordinate
+float bullety[MAX_BULLETS]; // bullet y coordinate
+float bulletv[MAX_BULLETS]; // bullet y velocity
+int bulletc[MAX_BULLETS];   // bullet spawned via 'clocked'
 
 // Entry point
 int main(int argc, char *argv[])
@@ -64,7 +66,8 @@ int main(int argc, char *argv[])
 	while (1)
 	{
 		int tick = DemoTick();
-
+		x = (gMouseX - 400.0f) / 200.0f;
+		
 		if (lasttick >= tick)
 		{
 			DemoYield();
@@ -73,27 +76,32 @@ int main(int argc, char *argv[])
 		{
 			while (lasttick < tick)
 			{
-				x = (float)sin(lasttick * 0.01f) * 0.75f;
+				if (x < -1) x = -1;
+				if (x > 1) x = 1;
 				gSfx.loadPreset(SoLoud::Sfxr::LASER, 3);
 				if (fire1)
 				{
 					gSoloud.playClocked(lasttick / 1000.0f, gSfx, 1, x);
+					bulletc[bulletidx] = 1;
 				}
 
 				if (fire2)
 				{
 					gSoloud.play(gSfx, 1, x);
+					bulletc[bulletidx] = 0;
 				}
 
 				if (fire3)
 				{
 					gSoloud.playClocked(lasttick / 1000.0f, gSfx, 1, x);
+					bulletc[bulletidx] = 1;
 				}
 
 				if (fire1 || fire2 || fire3)
 				{
 					bullety[bulletidx] = 350;
 					bulletx[bulletidx] = x;
+					bulletv[bulletidx] = -25;
 					bulletidx = (bulletidx + 1) % MAX_BULLETS;
 				}
 
@@ -103,31 +111,38 @@ int main(int argc, char *argv[])
 				{
 					if (bullety[i])
 					{
-						bullety[i] -= 20;
+						bullety[i] += bulletv[i];
+						bulletv[i] += 1;
+					}
+					if (bullety[i] > 400)
+					{
+						bullety[i] = 0;
+						int v;
+						if (bulletc[i])
+							v = gSoloud.playClocked(lasttick / 1000.0f, gSfx, 1, bulletx[i]);
+						else
+							v = gSoloud.play(gSfx, 1, bulletx[i]);
+						gSoloud.setRelativePlaySpeed(v, 0.5f);
 					}
 				}
 
 				lasttick += 40;
 			}
 
-			// Recalculate here for smoother visuals
-			x = (float)sin(tick * 0.01f) * 0.75f;
-
 			DemoUpdateStart();
-			DemoTriangle(400 + x * 100, 350,
-				375 + x * 100, 400,
-				425 + x * 100, 400,
+			DemoTriangle(400 + x * 200, 350,
+				375 + x * 200, 400,
+				425 + x * 200, 400,
 				0xff3399ff);
 
 			for (i = 0; i < MAX_BULLETS; i++)
 			{
 				if (bullety[i] != 0)
 				{
-					DemoTriangle(400 + bulletx[i] * 100, bullety[i],
-						400 - 2.5f + bulletx[i] * 100, 10 + bullety[i],
-						400 + 2.5f + bulletx[i] * 100, 10 + bullety[i],
+					DemoTriangle(400 + bulletx[i] * 200, bullety[i],
+						400 - 2.5f + bulletx[i] * 200, 10 + bullety[i],
+						400 + 2.5f + bulletx[i] * 200, 10 + bullety[i],
 						0xff773333);
-
 				}
 			}
 

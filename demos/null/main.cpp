@@ -53,7 +53,21 @@ int main(int argc, char *argv[])
 		soloud.mix(buf, 256);
 		int i;
 		for (i = 0; i < 256; i++)
-			printf("%*c\n", (int)(buf[i * 2 + 0] * 30 + 30), '*');
+		{
+			int d = (int)(buf[i * 2 + 0] * 30 + 30);
+			int j;
+			putchar('|');
+			for (j = 0; j < 60; j++)
+				if (j == d)
+					putchar('o');
+				else
+				if ((d < 30 && j < 30 && j > d) || (d >= 30 && j >= 30 && j < d))
+					putchar('-');
+				else
+					putchar(' ');
+			putchar('|');
+			putchar('\n');
+		}
 	}
 
 	// Clean up SoLoud

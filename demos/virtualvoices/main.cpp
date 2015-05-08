@@ -62,7 +62,7 @@ int main(int argc, char *argv[])
 	{
 		for (j = 0; j < VOICEGRID; j++)
 		{
-			gSndHandle[i * VOICEGRID + j] = gSoloud.play3d(gSfx[i * VOICEGRID + j], i * 15 + 20, 0, j * 15 + 20);
+			gSndHandle[i * VOICEGRID + j] = gSoloud.play3d(gSfx[i * VOICEGRID + j], i * 15 + 20.0f, 0, j * 15 + 20.0f);
 		}
 	}
 
@@ -74,8 +74,8 @@ int main(int argc, char *argv[])
 		float tick = DemoTick() / 1000.0f;
 
 		gSoloud.set3dListenerParameters(
-			gMouseX, 0, gMouseY,
-			0, 0, 1, 
+			(float)gMouseX, 0, (float)gMouseY,
+			0, 0, 0, 
 			0, 1, 0);
 
 		gSoloud.update3dAudio();
@@ -86,9 +86,9 @@ int main(int argc, char *argv[])
 			{
 				float v = gSoloud.getVolume(gSndHandle[i * VOICEGRID + j]);
 				DemoTriangle(
-					i * 15 + 20, j * 15 + 20,
-					i * 15 + 20 - 5, j * 15 + 20 + 5,
-					i * 15 + 20 + 5, j * 15 + 20 + 5,
+					i * 15 + 20.0f, j * 15 + 20.0f,
+					i * 15 + 20.0f - 5, j * 15 + 20.0f + 5,
+					i * 15 + 20.0f + 5, j * 15 + 20.0f + 5,
 					0xff000000 | (int)(v * 0xff) * 0x010101);
 			}
 		}

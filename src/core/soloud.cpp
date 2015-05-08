@@ -848,27 +848,46 @@ namespace SoLoud
 
 		// Nothing to it, have to sort the voices to find the most audible.
 
-		// TODO: figure out what to do with faders.
-
-		// TODO: optimize. Current implementation is partial bubble sort,
-		// doing about mActiveVoiceCount*mHighestVoice comparisons.
-		// Bubble guarantees that the top slots are filled with correct data.
-		// Partial quicksort would beat this easily, as we don't need the 
-		// top slots to be in correct order.
-		unsigned int j;
-		for (i = 0; i < mActiveVoiceCount; i++)
-		{
-			for (j = mHighestVoice - 2; j > i; j--)
-			{
-				if (mVoice[mActiveVoice[j + 1]]->mFlags & (AudioSourceInstance::INAUDIBLE_TICK | AudioSourceInstance::PROTECTED) ||
-					mVoice[mActiveVoice[j + 1]]->mVolume > mVoice[mActiveVoice[j]]->mVolume)
+		// Iterative partial quicksort:
+		// Todo: collect inaudible_tick/protected stuff to the start of the list while 
+		// gathering above, and skip sorting them.
+		int left = 0, stack[24], pos = 0, right;
+		int len = mHighestVoice;
+		int k = mActiveVoiceCount;
+		for (;;) 
+		{                                 
+			for (; left + 1 < len; len++) 
+			{                
+				if (pos == 24) len = stack[pos = 0]; 
+				int pivot = mActiveVoice[left];
+				float pivotvol = mVoice[pivot]->mVolume;
+				int pivotinf = (mVoice[pivot]->mFlags & (AudioSourceInstance::INAUDIBLE_TICK | AudioSourceInstance::PROTECTED)) != 0;
+				stack[pos++] = len;      
+				for (right = left - 1;;) 
 				{
-					unsigned int t = mActiveVoice[j];
-					mActiveVoice[j] = mActiveVoice[j + 1];
-					mActiveVoice[j + 1] = t;
-				}
+					do 
+					{
+						right++;
+					} 
+					while (((mVoice[mActiveVoice[right]]->mFlags & (AudioSourceInstance::INAUDIBLE_TICK | AudioSourceInstance::PROTECTED)) != 0) > pivotinf | 
+					         mVoice[mActiveVoice[right]]->mVolume > pivotvol);
+					do
+					{
+						len--;
+					}
+					while (pivotinf > ((mVoice[mActiveVoice[len]]->mFlags & (AudioSourceInstance::INAUDIBLE_TICK | AudioSourceInstance::PROTECTED)) != 0) ||
+					       pivotvol > mVoice[mActiveVoice[len]]->mVolume);
+					if (right >= len) break;       
+					int temp = mActiveVoice[right];
+					mActiveVoice[right] = mActiveVoice[len];
+					mActiveVoice[len] = temp;
+				}                        
 			}
-		}	
+			if (pos == 0) break;         
+			if (left >= k) break;
+			left = len;                  
+			len = stack[--pos];          
+		}		
 	}
 
 	void Soloud::mix(float *aBuffer, unsigned int aSamples)

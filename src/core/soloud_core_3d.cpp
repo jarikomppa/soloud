@@ -113,12 +113,12 @@ namespace SoLoud
 
 		void lookatLH(vec3 at, vec3 up)
 		{
-			at.neg();
 			vec3 z = at;
 			z.normalize();
 			vec3 x = up.cross(z);
 			x.normalize();
 			vec3 y = z.cross(x);
+			x.neg();  // flip x
 			m[0] = x;
 			m[1] = y;
 			m[2] = z;

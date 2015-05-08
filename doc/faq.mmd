@@ -10,7 +10,8 @@ limited feature set of said formats, so you may experience some issues
 with strange files.
 
 Additionally, SoLoud comes with a speech synthesizer and a retro sound
-effect synthesizer Sfxr.
+effect synthesizer Sfxr, replayer for Monotone PC-speaker tracker music,
+replayer for C64 SID and Commodore plus/4 TED music.
 
 Finally, SoLoud includes libmodplug, through which it can play 669, abc, 
 amf, ams, dbm, dmf, dsm, far, it, j2b, mdl, med, mid, mod, mt2, mtm, okt, 
@@ -24,19 +25,22 @@ noise generators, as well as audio filters, can be made.
 An example sin/saw/triangle/square generator is also available, as part
 of the "piano" example.
 
+All of the above can also be fed through series of filters for additional
+fun.
+
 What dependencies does it have?
 -------------------------------
 
 There's no external library dependencies (apart from stdlib). However,
 to get audio out of your speakers, a back-end is needed. Back-ends that
-currently exist include SDL, windows multimedia, oss and portaudio, and
-SoLoud has been designed so that making new back-ends would be as
+currently exist include SDL, windows multimedia, oss, alsa and portaudio, 
+and SoLoud has been designed so that making new back-ends would be as
 painless as possible.
 
 Is there a DLL / C-Interface?
 -----------------------------
 
-Yes! This DLL can be used from non-c++ environments through the "C" interface. SoLoud comes with wrappers for Python, Ruby, c# and BlitzMax.
+Yes! This DLL can be used from non-c++ environments through the "C" interface. SoLoud comes with wrappers for Python, Ruby, c#, BlitzMax and others.
 
 What's the animal in the logo?
 ------------------------------
@@ -56,7 +60,9 @@ Finally, there's #soloud on ircnet, if you want to pop by.
 No doxygen docs?
 ----------------
 
-No, instead you get documentation written by an actual human being. Granted, some function descriptions may be a bit terse or repetitive, but that's what you would have gotten from doxygen too..
+No, instead you get documentation written by an actual human being. Granted, 
+some function descriptions may be a bit terse or repetitive, but that's what 
+you would have gotten from doxygen too..
 
 Why not use this superior fork of libmodplug?
 ---------------------------------------------

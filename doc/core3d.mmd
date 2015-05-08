@@ -1,6 +1,11 @@
 Core: 3d audio
 ==============
 
+Most of the 3d audio calls are not thread safe, and it is best not to 
+call them from several threads at the same time. The good side is that
+the 3d audio calls won't disturb the audio thread mutex, and will thus
+be much more performant.
+
 Soloud.update3dAudio()
 ----------------------
 

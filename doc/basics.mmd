@@ -91,6 +91,13 @@ Apart from the delayed start, the playClocked() works exactly like
 the play() function, except that there's no way to start them in a
 paused state.
 
+The time parameter should be your game's "physics time", in seconds.
+SoLoud will then use that time (as well as the time you previously
+used) to calculate the delay between two sound effects. If a output
+sound buffer threshold is passed between the two sounds, SoLoud will
+adjust the delay accordingly.
+
+
 Soloud.seek()
 -------------
 

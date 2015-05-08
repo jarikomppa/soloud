@@ -1,6 +1,25 @@
 Concepts
 ========
 
+
+![Audio sources, instances, voices, mix busses.](images/concepts)
+
+Audio Source and Instance
+-------------------------
+
+SoLoud uses two kinds of classes for the sounds. Audio sources contain
+all the information related to the sound in question, such as wave
+sample data, while audio instances contain information about an
+"instance" of the sound.
+
+As an analogue, if you think of an old vinyl record, the audio source is
+the record, and you can put as many playheads - the instances - on the
+record. All of the playheads can also move at different speeds, output
+to a different pan position and volume, as well as different filter 
+settings.
+
+![Audio sources and back-ends.](images/source_backend)
+
 Back end
 --------
 
@@ -184,20 +203,6 @@ the operation is quietly discarded (or if you're requesting information,
 some kind of generic value is returned). You can also query the validity
 of a handle.
 
-Sound Source and Instance
--------------------------
-
-SoLoud uses two kinds of classes for the sounds. Sound sources contain
-all the information related to the sound in question, such as wave
-sample data, while sound instances contain information about an
-"instance" of the sound.
-
-As an analogue, if you think of an old vinyl record, the sound source is
-the record, and you can put as many playheads - the instances - on the
-record. All of the playheads can also move at different speeds, output
-to a different pan position and volume, as well as different filter 
-settings.
-
 Latency
 -------
 
@@ -259,3 +264,18 @@ panning (or, eventually, 3d position) of the mixing bus.
 Additional feature of the mixing busses in SoLoud is that you can
 request visualization data from a bus, instead of just from the global
 scope.
+
+Virtual Voices
+--------------
+SoLoud lets you play way more voices than will actually be played
+to the user. This can be useful if you, for instance, populate a
+3d world with hundreds of audio sources.
+
+SoLoud will sort the voices based on their current volume level
+and only mixes the most audible sounds. The number of active
+voices can be set at runtime.
+
+The maximum number of virtual voices is currently 1024, but can
+be increased up to a hard limit of 4095 by editing soloud.h and
+recompiling. Higher virtual voice counts than that will require 
+some refactoring.

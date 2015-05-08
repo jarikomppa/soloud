@@ -342,7 +342,6 @@ namespace SoLoud
 	handle Soloud::play3d(AudioSource &aSound, float aPosX, float aPosY, float aPosZ, float aVelX, float aVelY, float aVelZ, float aVolume, bool aPaused, unsigned int aBus)
 	{
 		handle h = play(aSound, aVolume, 0, 1, aBus);
-		set3dSourceParameters(h, aPosX, aPosY, aPosZ, aVelX, aVelY, aVelZ);
 		if (mLockMutexFunc) mLockMutexFunc(mMutex);
 		int v = getVoiceFromHandle(h);
 		if (v < 0) 
@@ -352,6 +351,7 @@ namespace SoLoud
 		}
 		m3dData[v].mHandle = h;
 		mVoice[v]->mFlags |= AudioSourceInstance::PROCESS_3D;
+		set3dSourceParameters(h, aPosX, aPosY, aPosZ, aVelX, aVelY, aVelZ);
 
 		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 
@@ -384,6 +384,7 @@ namespace SoLoud
 		}
 		m3dData[v].mHandle = h;
 		mVoice[v]->mFlags |= AudioSourceInstance::PROCESS_3D;
+		set3dSourceParameters(h, aPosX, aPosY, aPosZ, aVelX, aVelY, aVelZ);
 		time lasttime = mLastClockedTime;
 		if (lasttime == 0) 
 			mLastClockedTime = aSoundTime;

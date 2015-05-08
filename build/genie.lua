@@ -1,6 +1,6 @@
 local WITH_SDL = 0
-local WITH_SDL_NONDYN = 0
-local WITH_SDL2_NONDYN = 0
+local WITH_SDL_STATIC = 0
+local WITH_SDL2_STATIC = 0
 local WITH_PORTAUDIO = 0
 local WITH_OPENAL = 0
 local WITH_XAUDIO2 = 0
@@ -95,7 +95,7 @@ newoption {
 }
 
 newoption {
-	trigger		  = "with-sdlnondyn-only",
+	trigger		  = "with-sdlstatic-only",
 	description = "Only include sdl that doesn't use dyndll in build"
 }
 
@@ -105,7 +105,7 @@ newoption {
 }
 
 newoption {
-	trigger		  = "with-sdl2nondyn-only",
+	trigger		  = "with-sdl2static-only",
 	description = "Only include sdl2 that doesn't use dyndll in build"
 }
 
@@ -126,8 +126,8 @@ newoption {
 
 if _OPTIONS["soloud-devel"] then
     WITH_SDL = 1
-    WITH_SDL_NONDYN = 0
-    WITH_SDL2_NONDYN = 0
+    WITH_SDL_STATIC = 0
+    WITH_SDL2_STATIC = 0
     WITH_PORTAUDIO = 1
     WITH_OPENAL = 1
     WITH_XAUDIO2 = 0
@@ -147,8 +147,8 @@ end
 
 if _OPTIONS["with-common-backends"] then
     WITH_SDL = 1
-    WITH_SDL_NONDYN = 0
-    WITH_SDL2_NONDYN = 0
+    WITH_SDL_STATIC = 0
+    WITH_SDL2_STATIC = 0
     WITH_PORTAUDIO = 1
     WITH_OPENAL = 1
     WITH_XAUDIO2 = 0
@@ -190,8 +190,8 @@ end
 
 if _OPTIONS["with-sdl-only"] then
 	WITH_SDL = 1
-	WITH_SDL_NONDYN = 0
-	WITH_SDL2_NONDYN = 0
+	WITH_SDL_STATIC = 0
+	WITH_SDL2_STATIC = 0
 	WITH_PORTAUDIO = 0
 	WITH_OPENAL = 0
 	WITH_XAUDIO2 = 0
@@ -202,8 +202,8 @@ end
 
 if _OPTIONS["with-sdl2-only"] then
 	WITH_SDL = 1
-	WITH_SDL_NONDYN = 0
-	WITH_SDL2_NONDYN = 0
+	WITH_SDL_STATIC = 0
+	WITH_SDL2_STATIC = 0
 	WITH_PORTAUDIO = 0
 	WITH_OPENAL = 0
 	WITH_XAUDIO2 = 0
@@ -212,9 +212,9 @@ if _OPTIONS["with-sdl2-only"] then
 	WITH_OSS = 0
 end
 
-if _OPTIONS["with-sdlnondyn-only"] then
+if _OPTIONS["with-sdlstatic-only"] then
 	WITH_SDL = 0
-	WITH_SDL_NONDYN = 1
+	WITH_SDL_STATIC = 1
 	WITH_PORTAUDIO = 0
 	WITH_OPENAL = 0
 	WITH_XAUDIO2 = 0
@@ -223,10 +223,10 @@ if _OPTIONS["with-sdlnondyn-only"] then
 	WITH_OSS = 0
 end
 
-if _OPTIONS["with-sdl2nondyn-only"] then
+if _OPTIONS["with-sdl2static-only"] then
 	WITH_SDL = 0
-	WITH_SDL_NONDYN = 0
-	WITH_SDL2_NONDYN = 1
+	WITH_SDL_STATIC = 0
+	WITH_SDL2_STATIC = 1
 	WITH_PORTAUDIO = 0
 	WITH_OPENAL = 0
 	WITH_XAUDIO2 = 0
@@ -235,10 +235,10 @@ if _OPTIONS["with-sdl2nondyn-only"] then
 	WITH_OSS = 0
 end
 
-if _OPTIONS["with-sdl2nondyn-only"] then
+if _OPTIONS["with-sdl2static-only"] then
 	WITH_SDL = 0
-	WITH_SDL_NONDYN = 0
-	WITH_SDL2_NONDYN = 1
+	WITH_SDL_STATIC = 0
+	WITH_SDL2_STATIC = 1
 	WITH_PORTAUDIO = 0
 	WITH_OPENAL = 0
 	WITH_XAUDIO2 = 0
@@ -249,8 +249,8 @@ end
 
 if _OPTIONS["with-native-only"] then
 	WITH_SDL = 0
-	WITH_SDL_NONDYN = 0
-	WITH_SDL2_NONDYN = 0
+	WITH_SDL_STATIC = 0
+	WITH_SDL2_STATIC = 0
 	WITH_PORTAUDIO = 0
 	WITH_OPENAL = 0
 	WITH_XAUDIO2 = 0
@@ -565,10 +565,10 @@ if (WITH_SDL == 1) then
 	}
 end
 
-if (WITH_SDL_NONDYN == 1) then
-		defines { "WITH_SDL_NONDYN" }
+if (WITH_SDL_STATIC == 1) then
+		defines { "WITH_SDL_STATIC" }
 	files {
-	  "../src/backend/sdl_nondyn/**.c*"
+	  "../src/backend/sdl_static/**.c*"
 	  }
 	includedirs {
 	  "../include",
@@ -576,10 +576,10 @@ if (WITH_SDL_NONDYN == 1) then
 	}
 end
 
-if (WITH_SDL2_NONDYN == 1) then
-		defines { "WITH_SDL2_NONDYN" }
+if (WITH_SDL2_STATIC == 1) then
+		defines { "WITH_SDL2_STATIC" }
 	files {
-	  "../src/backend/sdl2_nondyn/**.c*"
+	  "../src/backend/sdl2_static/**.c*"
 	  }
 	includedirs {
 	  "../include",

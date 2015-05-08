@@ -34,7 +34,7 @@ freely, subject to the following restrictions:
 #include <float.h>
 #endif
 
-#if !defined(WITH_SDL2) && !defined(WITH_SDL) && !defined(WITH_PORTAUDIO) && !defined(WITH_OPENAL) && !defined(WITH_XAUDIO2) && !defined(WITH_WINMM) && !defined(WITH_WASAPI) && !defined(WITH_OSS) && !defined(WITH_SDL_NONDYN) && !defined(WITH_SDL2_NONDYN) && !defined(WITH_ALSA)
+#if !defined(WITH_SDL2) && !defined(WITH_SDL) && !defined(WITH_PORTAUDIO) && !defined(WITH_OPENAL) && !defined(WITH_XAUDIO2) && !defined(WITH_WINMM) && !defined(WITH_WASAPI) && !defined(WITH_OSS) && !defined(WITH_SDL_STATIC) && !defined(WITH_SDL2_STATIC) && !defined(WITH_ALSA)
 #error It appears you haven't enabled any of the back-ends. Please #define one or more of the WITH_ defines (or use premake) '
 #endif
 
@@ -149,13 +149,13 @@ namespace SoLoud
 		if (aSamplerate != Soloud::AUTO) samplerate = aSamplerate;
 		if (aBufferSize != Soloud::AUTO) buffersize = aBufferSize;
 
-#if defined(WITH_SDL_NONDYN)
+#if defined(WITH_SDL_STATIC)
 		if (aBackend == Soloud::SDL || 
 			aBackend == Soloud::AUTO)
 		{
 			if (aBufferSize == Soloud::AUTO) buffersize = 2048;
 
-			int ret = sdlnondyn_init(this, aFlags, samplerate, buffersize);
+			int ret = sdlstatic_init(this, aFlags, samplerate, buffersize);
 			if (ret == 0)
 			{
 				inited = 1;
@@ -167,13 +167,13 @@ namespace SoLoud
 		}
 #endif
 
-#if defined(WITH_SDL2_NONDYN)
+#if defined(WITH_SDL2_STATIC)
 		if (aBackend == Soloud::SDL2 ||
 			aBackend == Soloud::AUTO)
 		{
 			if (aBufferSize == Soloud::AUTO) buffersize = 2048;
 
-			int ret = sdl2nondyn_init(this, aFlags, samplerate, buffersize);
+			int ret = sdl2static_init(this, aFlags, samplerate, buffersize);
 			if (ret == 0)
 			{
 				inited = 1;

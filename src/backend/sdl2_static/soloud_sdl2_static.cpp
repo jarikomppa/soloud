@@ -25,11 +25,11 @@ freely, subject to the following restrictions:
 
 #include "soloud.h"
 
-#if !defined(WITH_SDL2_NONDYN)
+#if !defined(WITH_SDL2_STATIC)
 
 namespace SoLoud
 {
-	result sdl2nondyn_init(SoLoud::Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer)
+	result sdl2static_init(SoLoud::Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer)
 	{
 		return NOT_IMPLEMENTED;
 	}
@@ -47,7 +47,7 @@ namespace SoLoud
 
 namespace SoLoud
 {
-	void soloud_sdl2nondyn_audiomixer(void *userdata, Uint8 *stream, int len)
+	void soloud_sdl2static_audiomixer(void *userdata, Uint8 *stream, int len)
 	{
 		int samples = len / 4;
 		short *buf = (short*)stream;
@@ -62,24 +62,24 @@ namespace SoLoud
 		}
 	}
 
-	void soloud_sdl2nondyn_lockmutex(void *aMutexPtr)
+	void soloud_sdl2static_lockmutex(void *aMutexPtr)
 	{
 		SDL_LockMutex((SDL_mutex*)aMutexPtr);	
 	}
 
-	void soloud_sdl2nondyn_unlockmutex(void *aMutexPtr)
+	void soloud_sdl2static_unlockmutex(void *aMutexPtr)
 	{
 		SDL_UnlockMutex((SDL_mutex*)aMutexPtr);
 	}
 
-	static void soloud_sdl2nondyn_deinit(SoLoud::Soloud *aSoloud)
+	static void soloud_sdl2static_deinit(SoLoud::Soloud *aSoloud)
 	{
 		SDL_CloseAudio();
 		delete[] (float*)aSoloud->mBackendData;
 		SDL_DestroyMutex((SDL_mutex*)aSoloud->mMutex);
 	}
 
-	result sdl2nondyn_init(SoLoud::Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer)
+	result sdl2static_init(SoLoud::Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer)
 	{
 		aSoloud->mMutex = SDL_CreateMutex();
 		SDL_AudioSpec as;
@@ -87,7 +87,7 @@ namespace SoLoud
 		as.format = AUDIO_S16;
 		as.channels = 2;
 		as.samples = aBuffer;
-		as.callback = soloud_sdl2nondyn_audiomixer;
+		as.callback = soloud_sdl2static_audiomixer;
 		as.userdata = (void*)aSoloud;
 
 		SDL_AudioSpec as2;
@@ -99,9 +99,9 @@ namespace SoLoud
 
 		aSoloud->postinit(as2.freq, as2.samples * 2, aFlags);
 
-		aSoloud->mLockMutexFunc = soloud_sdl2nondyn_lockmutex;
-		aSoloud->mUnlockMutexFunc = soloud_sdl2nondyn_unlockmutex;
-		aSoloud->mBackendCleanupFunc = soloud_sdl2nondyn_deinit;
+		aSoloud->mLockMutexFunc = soloud_sdl2static_lockmutex;
+		aSoloud->mUnlockMutexFunc = soloud_sdl2static_unlockmutex;
+		aSoloud->mBackendCleanupFunc = soloud_sdl2static_deinit;
 
 		SDL_PauseAudio(0);
         aSoloud->mBackendString = "SDL2 (static)";

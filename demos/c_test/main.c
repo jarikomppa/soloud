@@ -27,7 +27,7 @@ freely, subject to the following restrictions:
 
 int main(int parc, char ** pars)
 {
-	int i = 0;
+	int i = 0, spin = 0;
 	Soloud *soloud = Soloud_create();
 	Speech *speech = Speech_create();
 
@@ -43,15 +43,14 @@ int main(int parc, char ** pars)
 	while (Soloud_getActiveVoiceCount(soloud) > 0)
 	{
 		float * v = Soloud_calcFFT(soloud);
+		printf("\r%c ", (int)("|\\-/"[spin & 3]));
+		spin++;
 		int p = (int)(v[10] * 30);
 		if (p > 59) p = 59;
 		for (i = 0; i < p; i++)
 			printf("=");
 		for (i = p; i < 60; i++)
 			printf(" ");
-		printf("\r");
-		printf("%c\r", (int)("|\\-/"[i&3]));
-		i++;
 	}
 	printf("\nFinished.\n");
 

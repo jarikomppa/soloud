@@ -290,6 +290,7 @@ namespace SoLoud
 		mBits = 0;
 		mChannels = 0;
 		mMemFile = 0;
+		mStreamFile = 0;
 	}
 	
 	WavStream::~WavStream()

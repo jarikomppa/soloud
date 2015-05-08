@@ -85,13 +85,14 @@ int main(int argc, char *argv[])
 			int h = gSpeechbus.play(gSpeech[speechcount % 10], (rand() % 200) / 50.0f + 2, (rand() % 20) / 10.0f - 1);
 			speechcount++;
 			gSoloud.setRelativePlaySpeed(h, (rand() % 100) / 200.0f + 0.75f);
+			gSoloud.fadePan(h, (rand() % 20) / 10.0f - 1, 2);
 			speechtick = DemoTick() + 4000;
 		}
 
 		float *buf = gSoloud.getWave();
 		float *fft = gSoloud.calcFFT();
 
-		ONCE(ImGui::SetNextWindowPos(ImVec2(400, 20)));
+		ONCE(ImGui::SetNextWindowPos(ImVec2(500, 20)));
 		ImGui::Begin("Output");
 		ImGui::PlotLines("##Wave", buf, 256, 0, "Wave", -1, 1, ImVec2(264, 80));
 		ImGui::PlotHistogram("##FFT", fft, 256 / 2, 0, "FFT", 0, 10, ImVec2(264, 80), 8);

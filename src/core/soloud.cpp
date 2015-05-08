@@ -23,7 +23,7 @@ freely, subject to the following restrictions:
 */
 
 #include <string.h>
-#include <stdlib.h> // rand
+#include <stdlib.h>
 #include <math.h> // sin
 #include "soloud_internal.h"
 #include "soloud_fft.h"
@@ -852,7 +852,7 @@ namespace SoLoud
 		// Todo: collect inaudible_tick/protected stuff to the start of the list while 
 		// gathering above, and skip sorting them.
 		int left = 0, stack[24], pos = 0, right;
-		int len = mHighestVoice;
+		int len = v;
 		int k = mActiveVoiceCount;
 		for (;;) 
 		{                                 

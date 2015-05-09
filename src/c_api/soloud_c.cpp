@@ -5,7 +5,7 @@
 
 /*
 SoLoud audio engine
-Copyright (c) 2013-2015 Jari Komppa
+Copyright (c) 2013-2014 Jari Komppa
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -807,6 +807,12 @@ void Bus_setAttenuator(void * aClassPtr, AudioAttenuator * aAttenuator)
 	cl->setAttenuator(aAttenuator);
 }
 
+void Bus_setInaudibleBehavior(void * aClassPtr, int aMustTick, int aKill)
+{
+	Bus * cl = (Bus *)aClassPtr;
+	cl->setInaudibleBehavior(!!aMustTick, !!aKill);
+}
+
 void Bus_stop(void * aClassPtr)
 {
 	Bus * cl = (Bus *)aClassPtr;
@@ -927,6 +933,12 @@ void Speech_setAttenuator(void * aClassPtr, AudioAttenuator * aAttenuator)
 	cl->setAttenuator(aAttenuator);
 }
 
+void Speech_setInaudibleBehavior(void * aClassPtr, int aMustTick, int aKill)
+{
+	Speech * cl = (Speech *)aClassPtr;
+	cl->setInaudibleBehavior(!!aMustTick, !!aKill);
+}
+
 void Speech_setFilter(void * aClassPtr, unsigned int aFilterId, Filter * aFilter)
 {
 	Speech * cl = (Speech *)aClassPtr;
@@ -1043,6 +1055,12 @@ void Wav_setAttenuator(void * aClassPtr, AudioAttenuator * aAttenuator)
 {
 	Wav * cl = (Wav *)aClassPtr;
 	cl->setAttenuator(aAttenuator);
+}
+
+void Wav_setInaudibleBehavior(void * aClassPtr, int aMustTick, int aKill)
+{
+	Wav * cl = (Wav *)aClassPtr;
+	cl->setInaudibleBehavior(!!aMustTick, !!aKill);
 }
 
 void Wav_setFilter(void * aClassPtr, unsigned int aFilterId, Filter * aFilter)
@@ -1173,6 +1191,12 @@ void WavStream_setAttenuator(void * aClassPtr, AudioAttenuator * aAttenuator)
 {
 	WavStream * cl = (WavStream *)aClassPtr;
 	cl->setAttenuator(aAttenuator);
+}
+
+void WavStream_setInaudibleBehavior(void * aClassPtr, int aMustTick, int aKill)
+{
+	WavStream * cl = (WavStream *)aClassPtr;
+	cl->setInaudibleBehavior(!!aMustTick, !!aKill);
 }
 
 void WavStream_setFilter(void * aClassPtr, unsigned int aFilterId, Filter * aFilter)
@@ -1319,6 +1343,12 @@ void Sfxr_setAttenuator(void * aClassPtr, AudioAttenuator * aAttenuator)
 {
 	Sfxr * cl = (Sfxr *)aClassPtr;
 	cl->setAttenuator(aAttenuator);
+}
+
+void Sfxr_setInaudibleBehavior(void * aClassPtr, int aMustTick, int aKill)
+{
+	Sfxr * cl = (Sfxr *)aClassPtr;
+	cl->setInaudibleBehavior(!!aMustTick, !!aKill);
 }
 
 void Sfxr_setFilter(void * aClassPtr, unsigned int aFilterId, Filter * aFilter)
@@ -1471,6 +1501,12 @@ void Modplug_setAttenuator(void * aClassPtr, AudioAttenuator * aAttenuator)
 	cl->setAttenuator(aAttenuator);
 }
 
+void Modplug_setInaudibleBehavior(void * aClassPtr, int aMustTick, int aKill)
+{
+	Modplug * cl = (Modplug *)aClassPtr;
+	cl->setInaudibleBehavior(!!aMustTick, !!aKill);
+}
+
 void Modplug_setFilter(void * aClassPtr, unsigned int aFilterId, Filter * aFilter)
 {
 	Modplug * cl = (Modplug *)aClassPtr;
@@ -1595,6 +1631,12 @@ void Monotone_setAttenuator(void * aClassPtr, AudioAttenuator * aAttenuator)
 	cl->setAttenuator(aAttenuator);
 }
 
+void Monotone_setInaudibleBehavior(void * aClassPtr, int aMustTick, int aKill)
+{
+	Monotone * cl = (Monotone *)aClassPtr;
+	cl->setInaudibleBehavior(!!aMustTick, !!aKill);
+}
+
 void Monotone_setFilter(void * aClassPtr, unsigned int aFilterId, Filter * aFilter)
 {
 	Monotone * cl = (Monotone *)aClassPtr;
@@ -1717,6 +1759,12 @@ void TedSid_setAttenuator(void * aClassPtr, AudioAttenuator * aAttenuator)
 {
 	TedSid * cl = (TedSid *)aClassPtr;
 	cl->setAttenuator(aAttenuator);
+}
+
+void TedSid_setInaudibleBehavior(void * aClassPtr, int aMustTick, int aKill)
+{
+	TedSid * cl = (TedSid *)aClassPtr;
+	cl->setInaudibleBehavior(!!aMustTick, !!aKill);
 }
 
 void TedSid_setFilter(void * aClassPtr, unsigned int aFilterId, Filter * aFilter)

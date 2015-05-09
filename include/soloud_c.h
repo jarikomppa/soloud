@@ -5,7 +5,7 @@
 
 /*
 SoLoud audio engine
-Copyright (c) 2013-2015 Jari Komppa
+Copyright (c) 2013-2014 Jari Komppa
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -250,6 +250,7 @@ void Bus_set3dDistanceDelay(Bus * aBus, int aDistanceDelay);
 void Bus_set3dCollider(Bus * aBus, AudioCollider * aCollider);
 void Bus_set3dColliderEx(Bus * aBus, AudioCollider * aCollider, int aUserData /* = 0 */);
 void Bus_setAttenuator(Bus * aBus, AudioAttenuator * aAttenuator);
+void Bus_setInaudibleBehavior(Bus * aBus, int aMustTick, int aKill);
 void Bus_stop(Bus * aBus);
 
 /*
@@ -283,6 +284,7 @@ void Speech_set3dDistanceDelay(Speech * aSpeech, int aDistanceDelay);
 void Speech_set3dCollider(Speech * aSpeech, AudioCollider * aCollider);
 void Speech_set3dColliderEx(Speech * aSpeech, AudioCollider * aCollider, int aUserData /* = 0 */);
 void Speech_setAttenuator(Speech * aSpeech, AudioAttenuator * aAttenuator);
+void Speech_setInaudibleBehavior(Speech * aSpeech, int aMustTick, int aKill);
 void Speech_setFilter(Speech * aSpeech, unsigned int aFilterId, Filter * aFilter);
 void Speech_stop(Speech * aSpeech);
 
@@ -307,6 +309,7 @@ void Wav_set3dDistanceDelay(Wav * aWav, int aDistanceDelay);
 void Wav_set3dCollider(Wav * aWav, AudioCollider * aCollider);
 void Wav_set3dColliderEx(Wav * aWav, AudioCollider * aCollider, int aUserData /* = 0 */);
 void Wav_setAttenuator(Wav * aWav, AudioAttenuator * aAttenuator);
+void Wav_setInaudibleBehavior(Wav * aWav, int aMustTick, int aKill);
 void Wav_setFilter(Wav * aWav, unsigned int aFilterId, Filter * aFilter);
 void Wav_stop(Wav * aWav);
 
@@ -333,6 +336,7 @@ void WavStream_set3dDistanceDelay(WavStream * aWavStream, int aDistanceDelay);
 void WavStream_set3dCollider(WavStream * aWavStream, AudioCollider * aCollider);
 void WavStream_set3dColliderEx(WavStream * aWavStream, AudioCollider * aCollider, int aUserData /* = 0 */);
 void WavStream_setAttenuator(WavStream * aWavStream, AudioAttenuator * aAttenuator);
+void WavStream_setInaudibleBehavior(WavStream * aWavStream, int aMustTick, int aKill);
 void WavStream_setFilter(WavStream * aWavStream, unsigned int aFilterId, Filter * aFilter);
 void WavStream_stop(WavStream * aWavStream);
 
@@ -366,6 +370,7 @@ void Sfxr_set3dDistanceDelay(Sfxr * aSfxr, int aDistanceDelay);
 void Sfxr_set3dCollider(Sfxr * aSfxr, AudioCollider * aCollider);
 void Sfxr_set3dColliderEx(Sfxr * aSfxr, AudioCollider * aCollider, int aUserData /* = 0 */);
 void Sfxr_setAttenuator(Sfxr * aSfxr, AudioAttenuator * aAttenuator);
+void Sfxr_setInaudibleBehavior(Sfxr * aSfxr, int aMustTick, int aKill);
 void Sfxr_setFilter(Sfxr * aSfxr, unsigned int aFilterId, Filter * aFilter);
 void Sfxr_stop(Sfxr * aSfxr);
 
@@ -404,6 +409,7 @@ void Modplug_set3dDistanceDelay(Modplug * aModplug, int aDistanceDelay);
 void Modplug_set3dCollider(Modplug * aModplug, AudioCollider * aCollider);
 void Modplug_set3dColliderEx(Modplug * aModplug, AudioCollider * aCollider, int aUserData /* = 0 */);
 void Modplug_setAttenuator(Modplug * aModplug, AudioAttenuator * aAttenuator);
+void Modplug_setInaudibleBehavior(Modplug * aModplug, int aMustTick, int aKill);
 void Modplug_setFilter(Modplug * aModplug, unsigned int aFilterId, Filter * aFilter);
 void Modplug_stop(Modplug * aModplug);
 
@@ -429,6 +435,7 @@ void Monotone_set3dDistanceDelay(Monotone * aMonotone, int aDistanceDelay);
 void Monotone_set3dCollider(Monotone * aMonotone, AudioCollider * aCollider);
 void Monotone_set3dColliderEx(Monotone * aMonotone, AudioCollider * aCollider, int aUserData /* = 0 */);
 void Monotone_setAttenuator(Monotone * aMonotone, AudioAttenuator * aAttenuator);
+void Monotone_setInaudibleBehavior(Monotone * aMonotone, int aMustTick, int aKill);
 void Monotone_setFilter(Monotone * aMonotone, unsigned int aFilterId, Filter * aFilter);
 void Monotone_stop(Monotone * aMonotone);
 
@@ -454,6 +461,7 @@ void TedSid_set3dDistanceDelay(TedSid * aTedSid, int aDistanceDelay);
 void TedSid_set3dCollider(TedSid * aTedSid, AudioCollider * aCollider);
 void TedSid_set3dColliderEx(TedSid * aTedSid, AudioCollider * aCollider, int aUserData /* = 0 */);
 void TedSid_setAttenuator(TedSid * aTedSid, AudioAttenuator * aAttenuator);
+void TedSid_setInaudibleBehavior(TedSid * aTedSid, int aMustTick, int aKill);
 void TedSid_setFilter(TedSid * aTedSid, unsigned int aFilterId, Filter * aFilter);
 void TedSid_stop(TedSid * aTedSid);
 #ifdef  __cplusplus

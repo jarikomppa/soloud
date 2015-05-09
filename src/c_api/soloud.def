@@ -126,6 +126,7 @@ EXPORTS
 	Bus_set3dCollider
 	Bus_set3dColliderEx
 	Bus_setAttenuator
+	Bus_setInaudibleBehavior
 	Bus_stop
 	EchoFilter_destroy
 	EchoFilter_create
@@ -147,6 +148,7 @@ EXPORTS
 	Speech_set3dCollider
 	Speech_set3dColliderEx
 	Speech_setAttenuator
+	Speech_setInaudibleBehavior
 	Speech_setFilter
 	Speech_stop
 	Wav_destroy
@@ -167,6 +169,7 @@ EXPORTS
 	Wav_set3dCollider
 	Wav_set3dColliderEx
 	Wav_setAttenuator
+	Wav_setInaudibleBehavior
 	Wav_setFilter
 	Wav_stop
 	WavStream_destroy
@@ -189,6 +192,7 @@ EXPORTS
 	WavStream_set3dCollider
 	WavStream_set3dColliderEx
 	WavStream_setAttenuator
+	WavStream_setInaudibleBehavior
 	WavStream_setFilter
 	WavStream_stop
 	Prg_destroy
@@ -214,6 +218,7 @@ EXPORTS
 	Sfxr_set3dCollider
 	Sfxr_set3dColliderEx
 	Sfxr_setAttenuator
+	Sfxr_setInaudibleBehavior
 	Sfxr_setFilter
 	Sfxr_stop
 	FlangerFilter_destroy
@@ -240,6 +245,7 @@ EXPORTS
 	Modplug_set3dCollider
 	Modplug_set3dColliderEx
 	Modplug_setAttenuator
+	Modplug_setInaudibleBehavior
 	Modplug_setFilter
 	Modplug_stop
 	Monotone_destroy
@@ -261,6 +267,7 @@ EXPORTS
 	Monotone_set3dCollider
 	Monotone_set3dColliderEx
 	Monotone_setAttenuator
+	Monotone_setInaudibleBehavior
 	Monotone_setFilter
 	Monotone_stop
 	TedSid_destroy
@@ -282,5 +289,6 @@ EXPORTS
 	TedSid_set3dCollider
 	TedSid_set3dColliderEx
 	TedSid_setAttenuator
+	TedSid_setInaudibleBehavior
 	TedSid_setFilter
 	TedSid_stop

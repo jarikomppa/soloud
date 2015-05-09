@@ -314,10 +314,25 @@ namespace SoLoud
 		mAttenuator = aAttenuator;
 	}
 
+	void AudioSource::setInaudibleBehavior(bool aMustTick, bool aKill)
+	{
+		mFlags &= ~(AudioSource::INAUDIBLE_KILL | AudioSource::INAUDIBLE_TICK);
+		if (aMustTick)
+		{
+			mFlags |= AudioSource::INAUDIBLE_TICK;
+		}
+		if (aKill)
+		{
+			mFlags |= AudioSource::INAUDIBLE_KILL;
+		}
+	}
+
+
 	float AudioSourceInstance::getInfo(unsigned int aInfoKey)
 	{
 	    return 0;
 	}
+
 
 };
 

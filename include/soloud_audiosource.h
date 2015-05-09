@@ -292,6 +292,9 @@ namespace SoLoud
 		// Set a custom attenuator. Set to NULL to disable.
 		void setAttenuator(AudioAttenuator *aAttenuator);
 
+		// Set behavior for inaudible sounds
+		void setInaudibleBehavior(bool aMustTick, bool aKill);
+
 		// Set filter. Set to NULL to clear the filter.
 		virtual void setFilter(unsigned int aFilterId, Filter *aFilter);
 		// DTor

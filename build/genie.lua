@@ -317,7 +317,7 @@ if (WITH_ALSA == 1) then
 	links {"asound"}
 end
 
-		links {"StaticLib"}
+		links {"SoloudStatic"}
 		if (not os.is("windows")) then
 		  links { "pthread" }
 		end
@@ -355,7 +355,7 @@ if (WITH_ALSA == 1) then
 	links {"asound"}
 end
 
-		links {"StaticLib"}
+		links {"SoloudStatic"}
 		if (not os.is("windows")) then
 		  links { "pthread" }
 		end
@@ -393,7 +393,7 @@ if (WITH_ALSA == 1) then
 	links {"asound"}
 end
 
-		links {"StaticLib"}
+		links {"SoloudStatic"}
 		if (not os.is("windows")) then
 		  links { "pthread" }
 		end
@@ -428,7 +428,7 @@ if (WITH_ALSA == 1) then
 	links {"asound"}
 end
 
-		links {"StaticLib"}
+		links {"SoloudStatic"}
 		if (not os.is("windows")) then
 		  links { "pthread" }
 		end
@@ -488,8 +488,43 @@ if (WITH_LIBMODPLUG == 1) then
 end
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
+if (WITH_SDL == 1) then
 
-	project "StaticLib"
+	project "SoloudDemoCommon"
+		kind "StaticLib"
+		targetdir "../lib"
+		language "C++"
+
+	files {
+	  "../demos/common/**.c*",
+	  "../demos/common/imgui/**.c*",
+	  "../demos/common/glew/GL/**.c*"
+	  }
+	includedirs {
+	  "../include",
+	  "../demos/common",
+	  "../demos/common/imgui",
+	  "../demos/common/glew",
+	  sdl_include
+	}
+
+		configuration "Debug"
+			defines { "DEBUG", "GLEW_STATIC"}
+			flags {"Symbols" }
+			objdir (buildroot .. "/debug")
+			targetname "solouddemocommon_d"
+			flags { "Symbols" }
+
+		configuration "Release"
+			defines { "NDEBUG", "GLEW_STATIC" }
+			flags {"Optimize"}
+			objdir (buildroot .. "/release")
+			targetname "solouddemocommon"
+			flags { "EnableSSE2", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
+end
+-- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
+
+	project "SoloudStatic"
 		kind "StaticLib"
 		targetdir "../lib"
 		language "C++"
@@ -762,7 +797,7 @@ end
 	  "../include"
 	}
 
-		links {"StaticLib"}
+		links {"SoloudStatic"}
 		if (not os.is("windows")) then
 		  links { "pthread" }
 		end
@@ -791,7 +826,7 @@ end
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 
-	project "SharedLib"
+	project "SoloudDynamic"
 		kind "SharedLib"
 		targetdir "../lib"
 		language "C++"
@@ -806,7 +841,7 @@ end
 		  "../include"
 		}
 
-		links {"StaticLib"}
+		links {"SoloudStatic"}
 if (WITH_LIBMODPLUG == 1) then
 		links {"libmodplug"}
 end
@@ -847,10 +882,7 @@ function CommonDemo(_name)
 	kind "WindowedApp"
 	language "C++"
 	files {
-	  "../demos/" .. _name .. "/**.c*",
-	  "../demos/common/**.c*",
-	  "../demos/common/imgui/**.c*",
-	  "../demos/common/glew/GL/**.c*"
+	  "../demos/" .. _name .. "/**.c*"
 	  }
 	includedirs {
 	  "../include",
@@ -866,7 +898,7 @@ if (WITH_ALSA == 1) then
 	links {"asound"}
 end
 
-		links {"StaticLib", "sdlmain", "sdl", "opengl32"}
+		links {"SoloudStatic", "SoloudDemoCommon", "sdlmain", "sdl", "opengl32"}
 
 		configuration "Debug"
 			defines { "DEBUG", "GLEW_STATIC" }
@@ -919,7 +951,7 @@ if (WITH_ALSA == 1) then
 	links {"asound"}
 end
 
-		links {"StaticLib", "sdlmain", "sdl"}
+		links {"SoloudStatic", "sdlmain", "sdl"}
 if (WITH_LIBMODPLUG == 1) then
 		links {"libmodplug"}
 end
@@ -984,7 +1016,7 @@ end
 		links { "portmidi" }
 	end
 
-		links {"StaticLib", "sdlmain", "sdl", "opengl32"}
+		links {"SoloudStatic", "sdlmain", "sdl", "opengl32"}
 
 		configuration "Debug"
 			defines { "DEBUG", "GLEW_STATIC" }
@@ -1027,7 +1059,7 @@ if (WITH_ALSA == 1) then
 	links {"asound"}
 end
 
-		links {"StaticLib", "sdlmain", "sdl"}
+		links {"SoloudStatic", "sdlmain", "sdl"}
 
 		configuration "Debug"
 			defines { "DEBUG" }

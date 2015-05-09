@@ -6,6 +6,11 @@ EXPORTS
 	Soloud_deinit
 	Soloud_getVersion
 	Soloud_getErrorString
+	Soloud_getBackendId
+	Soloud_getBackendString
+	Soloud_getBackendChannels
+	Soloud_getBackendSamplerate
+	Soloud_getBackendBufferSize
 	Soloud_play
 	Soloud_playEx
 	Soloud_playClocked
@@ -29,10 +34,15 @@ EXPORTS
 	Soloud_getSamplerate
 	Soloud_getProtectVoice
 	Soloud_getActiveVoiceCount
+	Soloud_getVoiceCount
 	Soloud_isValidVoiceHandle
 	Soloud_getRelativePlaySpeed
 	Soloud_getPostClipScaler
 	Soloud_getGlobalVolume
+	Soloud_getMaxActiveVoiceCount
+	Soloud_getLooping
+	Soloud_setLooping
+	Soloud_setMaxActiveVoiceCount
 	Soloud_setGlobalVolume
 	Soloud_setPostClipScaler
 	Soloud_setPause
@@ -81,6 +91,9 @@ EXPORTS
 	Soloud_set3dSourceMinMaxDistance
 	Soloud_set3dSourceAttenuation
 	Soloud_set3dSourceDopplerFactor
+	Soloud_mix
+	AudioAttenuator_destroy
+	AudioAttenuator_attenuate
 	BiquadResonantFilter_destroy
 	BiquadResonantFilter_create
 	BiquadResonantFilter_setParams
@@ -101,6 +114,7 @@ EXPORTS
 	Bus_setVisualizationEnable
 	Bus_calcFFT
 	Bus_getWave
+	Bus_setVolume
 	Bus_setLooping
 	Bus_set3dMinMaxDistance
 	Bus_set3dAttenuation
@@ -110,6 +124,7 @@ EXPORTS
 	Bus_set3dDistanceDelay
 	Bus_set3dCollider
 	Bus_set3dColliderEx
+	Bus_setAttenuator
 	Bus_stop
 	EchoFilter_destroy
 	EchoFilter_create
@@ -120,6 +135,7 @@ EXPORTS
 	Speech_destroy
 	Speech_create
 	Speech_setText
+	Speech_setVolume
 	Speech_setLooping
 	Speech_set3dMinMaxDistance
 	Speech_set3dAttenuation
@@ -129,6 +145,7 @@ EXPORTS
 	Speech_set3dDistanceDelay
 	Speech_set3dCollider
 	Speech_set3dColliderEx
+	Speech_setAttenuator
 	Speech_setFilter
 	Speech_stop
 	Wav_destroy
@@ -138,6 +155,7 @@ EXPORTS
 	Wav_loadMemEx
 	Wav_loadFile
 	Wav_getLength
+	Wav_setVolume
 	Wav_setLooping
 	Wav_set3dMinMaxDistance
 	Wav_set3dAttenuation
@@ -147,6 +165,7 @@ EXPORTS
 	Wav_set3dDistanceDelay
 	Wav_set3dCollider
 	Wav_set3dColliderEx
+	Wav_setAttenuator
 	Wav_setFilter
 	Wav_stop
 	WavStream_destroy
@@ -158,6 +177,7 @@ EXPORTS
 	WavStream_loadFile
 	WavStream_loadFileToMem
 	WavStream_getLength
+	WavStream_setVolume
 	WavStream_setLooping
 	WavStream_set3dMinMaxDistance
 	WavStream_set3dAttenuation
@@ -167,6 +187,7 @@ EXPORTS
 	WavStream_set3dDistanceDelay
 	WavStream_set3dCollider
 	WavStream_set3dColliderEx
+	WavStream_setAttenuator
 	WavStream_setFilter
 	WavStream_stop
 	Prg_destroy
@@ -181,6 +202,7 @@ EXPORTS
 	Sfxr_loadParamsMemEx
 	Sfxr_loadParamsFile
 	Sfxr_loadPreset
+	Sfxr_setVolume
 	Sfxr_setLooping
 	Sfxr_set3dMinMaxDistance
 	Sfxr_set3dAttenuation
@@ -190,6 +212,7 @@ EXPORTS
 	Sfxr_set3dDistanceDelay
 	Sfxr_set3dCollider
 	Sfxr_set3dColliderEx
+	Sfxr_setAttenuator
 	Sfxr_setFilter
 	Sfxr_stop
 	FlangerFilter_destroy
@@ -205,6 +228,7 @@ EXPORTS
 	Modplug_loadMem
 	Modplug_loadMemEx
 	Modplug_loadFile
+	Modplug_setVolume
 	Modplug_setLooping
 	Modplug_set3dMinMaxDistance
 	Modplug_set3dAttenuation
@@ -214,6 +238,7 @@ EXPORTS
 	Modplug_set3dDistanceDelay
 	Modplug_set3dCollider
 	Modplug_set3dColliderEx
+	Modplug_setAttenuator
 	Modplug_setFilter
 	Modplug_stop
 	Monotone_destroy
@@ -224,6 +249,7 @@ EXPORTS
 	Monotone_loadMem
 	Monotone_loadMemEx
 	Monotone_loadFile
+	Monotone_setVolume
 	Monotone_setLooping
 	Monotone_set3dMinMaxDistance
 	Monotone_set3dAttenuation
@@ -233,6 +259,7 @@ EXPORTS
 	Monotone_set3dDistanceDelay
 	Monotone_set3dCollider
 	Monotone_set3dColliderEx
+	Monotone_setAttenuator
 	Monotone_setFilter
 	Monotone_stop
 	TedSid_destroy
@@ -243,6 +270,7 @@ EXPORTS
 	TedSid_loadMemEx
 	TedSid_loadFileToMem
 	TedSid_loadFile
+	TedSid_setVolume
 	TedSid_setLooping
 	TedSid_set3dMinMaxDistance
 	TedSid_set3dAttenuation
@@ -252,5 +280,6 @@ EXPORTS
 	TedSid_set3dDistanceDelay
 	TedSid_set3dCollider
 	TedSid_set3dColliderEx
+	TedSid_setAttenuator
 	TedSid_setFilter
 	TedSid_stop

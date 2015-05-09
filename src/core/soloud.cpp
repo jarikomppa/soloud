@@ -823,6 +823,10 @@ namespace SoLoud
 
 	void Soloud::calcActiveVoices()
 	{
+		// TODO: consider whether we need to re-evaluate the active voices all the time.
+		// It is a must when new voices are started, but otherwise we could get away
+		// with postponing it sometimes..
+
 		mActiveVoiceDirty = false;
 
 		// Populate
@@ -960,7 +964,7 @@ namespace SoLoud
 				{
 					mVoice[i]->mVolume = mVoice[i]->mVolumeFader.get(mVoice[i]->mStreamTime);
 					mVoice[i]->mActiveFader = 1;
-					mActiveVoiceDirty = true; // TODO: consider whether this is wise
+					mActiveVoiceDirty = true;
 				}
 				volume[1] = mVoice[i]->mVolume;
 

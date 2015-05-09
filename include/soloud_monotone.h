@@ -1,6 +1,6 @@
 /*
 MONOTONE module for SoLoud audio engine
-Copyright (c) 2015 Jari Komppa
+Copyright (c) 2013-2015 Jari Komppa
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages

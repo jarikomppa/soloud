@@ -362,7 +362,12 @@ namespace SoLoud
 			pos.mX = aPosX;
 			pos.mY = aPosY;
 			pos.mZ = aPosZ;
-			// TODO: calculate distance to listener if not listener relative pos
+			if (!(mVoice[v]->mFlags & AudioSource::LISTENER_RELATIVE))
+			{
+				pos.mX -= m3dPosition[0];
+				pos.mY -= m3dPosition[1];
+				pos.mZ -= m3dPosition[2];
+			}
 			float dist = pos.mag();
 			samples += (int)floor((dist / m3dSoundSpeed) * mSamplerate);
 		}

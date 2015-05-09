@@ -31,6 +31,11 @@
 \dottedcontents{subsection}[10.5em]{}{4.2em}{0.7pc}
 \renewcommand\chapternumberline[1]{\numberline{#1}}
 
+\usepackage[ ]{titlesec}  %
+\titleformat{\chapter}[display]
+  { \normalsize \huge  \color{black}}
+  {\flushright \normalsize \color{black} \MakeUppercase { \chaptertitlename } \hspace{1 ex} { \fontsize{60}{60}\selectfont \color{black} \sffamily  \thechapter }} {10 pt}{\huge}
+
 %%% BEGIN DOCUMENT
 \begin{document}
 	
@@ -47,16 +52,16 @@
 % All parts of the document are included as separate files.
 
 \include{temp/intro}
-\include{temp/legal}
 \include{temp/quickstart}
+\include{temp/faq}
 \include{temp/premake}
+\include{temp/legal}
+
 \include{temp/concepts}
 \include{temp/concepts3d}
-\include{temp/faq}
 \include{temp/examples}
 
 \include{temp/foreign_interface}
-\include{temp/codegen}
 \include{temp/c_api}
 \include{temp/python_api}
 \include{temp/ruby_api}
@@ -65,6 +70,7 @@
 \include{temp/gamemaker_api}
 \include{temp/cs_api}
 \include{temp/d_api}
+\include{temp/codegen}
 
 \include{temp/basics}
 \include{temp/attributes}
@@ -74,6 +80,7 @@
 \include{temp/core3d}
 
 \include{temp/audiosource}
+\include{temp/newsoundsources}
 \include{temp/wav}
 \include{temp/wavstream}
 \include{temp/speech}
@@ -81,9 +88,6 @@
 \include{temp/modplug}
 \include{temp/monotone}
 \include{temp/tedsid}
-\include{temp/newsoundsources}
-
-\include{temp/mixbus}
 
 \include{temp/filters}
 \include{temp/biquadfilter}
@@ -93,10 +97,12 @@
 \include{temp/flangerfilter}
 \include{temp/dcremovalfilter}
 
+\include{temp/mixbus}
+
 \include{temp/collider}
 
-\include{temp/backends}
-
 \include{temp/file}
+
+\include{temp/backends}
 
 \end{document}

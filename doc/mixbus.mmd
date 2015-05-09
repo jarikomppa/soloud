@@ -1,5 +1,6 @@
-SoLoud::Bus
-===========
+# Other Classes
+
+## SoLoud::Bus
 
 The mixing busses are a special case of an audio stream. They are a kind
 of audio stream that plays other audio streams. Mixing bus can also play
@@ -25,37 +26,35 @@ To play a stream through the mixing bus, use the bus play() command.
     int fxhandle = gBus.play(gSoundEffect); // Play sound effect through bus
     gSoloud.setVolume(fxhandle, 0.5f); // set sound effect volume
 
-Bus.play()
-----------
+### Bus.play()
 
 Equivalent of soloud.play(), but plays the sound source through the bus
 instead of at "global" scope.
 
-Bus.playClocked()
------------------
+### Bus.playClocked()
 
 Equivalent of soloud.playClocked(), but plays the sound sounce through the bus
 instead of at "global" scope.
 
-Bus.play3d()
-----------
+### Bus.play3d()
+
 
 Equivalent of soloud.play3d(), but plays the sound source through the bus
 instead of at "global" scope.
 
-Bus.play3dClocked()
------------------
+### Bus.play3dClocked()
+
 
 Equivalent of soloud.play3dClocked(), but plays the sound sounce through the bus
 instead of at "global" scope.
 
-Bus.setVisualizationEnable()
-----------------------------
+### Bus.setVisualizationEnable()
+
 
 Enable (or disable) gathering of visualization wave data from this bus.
 
-Bus.calcFFT()
--------------
+### Bus.calcFFT()
+
 
 Calculates FFT of the sound currently playing through this bus, and
 returns a pointer to the result.
@@ -78,8 +77,8 @@ For the FFT to work, you also need to enable visualization with
 the Bus.setVisualizationEnable() call. Otherwise the source data for the
 FFT calculation will not be gathered.
 
-Bus.getWave()
--------------
+### Bus.getWave()
+
 
 Gets 256 samples of the sound currently playing through this bus, and
 returns a pointer to the result.
@@ -97,27 +96,27 @@ For this function to work properly, you also need enable visualization with
 the Bus.setVisualizationEnable() call. Otherwise the source data
 will not be gathered, and the result is undefined (probably zero).
 
-Bus.setLooping()
-----------------
+### Bus.setLooping()
+
 
 Trying to change the looping state of a bus has no effect.
 
-Bus.stop()
-----------
+### Bus.stop()
+
 This is equivalent of calling soloud.stopAudioSource()
 with the sound source.
 
 
-Bus.setFilter()
----------------
+### Bus.setFilter()
+
 
 As with any other audio source, you can attach filters to 
 busses.
 
     gSfxBus.setFilter(0, &gEnvironment);
 
-Inherited 3d audio interfaces
------------------------------
+### Inherited 3d audio interfaces
+
 Like all other audio sources, the bus inherits the 3d audio interfaces. Please refer to the 3d audio chapter for details on:
 
 - Bus.set3dMinMaxDistance()

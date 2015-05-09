@@ -1,5 +1,4 @@
-SoLoud::WavStream
-=================
+## SoLoud::WavStream
 
 The SoLoud::WavStream class represents a wave sound effect that is
 streamed off disk while it's playing. The source files may be in 8 or 16
@@ -12,8 +11,7 @@ less memory.
 For short or often used samples, you may want to use SoLoud::Wav
 instead.
 
-WavStream.load()
-----------------
+### WavStream.load()
 
 The wav loader takes just one parameter, the file name:
 
@@ -27,14 +25,14 @@ If loading fails, the function will return an error code.
 If the loading function is called while there are instances playing, the
 result is undefined (most likely a crash).
 
-WavStream.loadFile()
---------------------
+### WavStream.loadFile()
+
 The loadFile() can be used to load audio from a SoLoud::File object. This
 is useful for integrating with virtual filesystems / packfiles, such as
 PhysFS.
 
-WavStream.loadMem()
--------------------
+### WavStream.loadMem()
+
 Alternate way of loading samples is to read from a memory buffer.
 
     result loadMem(unsigned char *aMem, int aLength, 
@@ -51,8 +49,8 @@ to tell SoLoud to take a copy of the data instead of using the pointers
 directly, and the aTakeOwnership parameter to tell SoLoud to free the
 pointer when the object is being destroyed.
 
-WavStream.loadToMem()
---------------------
+### WavStream.loadToMem()
+
 The loadToMem() tells SoLoud to load the whole file to a memory buffer
 and stream it from there. This is similar as to using the Wav object,
 except that the data is not decoded to raw samples on load.
@@ -61,13 +59,12 @@ This can be useful if you expect the media the data resides on to be
 slow or busy, but don't want to spend the memory for the completely
 decoded audio data.
 
-WavStream.loadFileToMem()
--------------------------
+### WavStream.loadFileToMem()
+
 The loadFileToMem() function performs the memory loading of loadToMem()
 using SoLoud::File objects, same way as loadFile() does.
 
-WavStream.setLooping()
-----------------------
+### WavStream.setLooping()
 
 This function can be used to set the wav stream to loop.
 
@@ -76,16 +73,16 @@ This function can be used to set the wav stream to loop.
 Calling this function will not affect "live" sound sources.
 
 
-WavStream.setFilter()
----------------------
+### WavStream.setFilter()
+
 
 As with any other audio source, you can attach filters to 
 wav stream audio sources.
 
     gHipster.setFilter(0, &gLofi);
 
-WavStream.stop()
-----------------
+### WavStream.stop()
+
 
 You can stop all instances of a wav stream sound source with
 stop(). This is equivalent of calling soloud.stopAudioSource()
@@ -93,16 +90,16 @@ with the sound source.
 
     gHammertime.stop();
 
-WavStream.getLength()
----------------------
+### WavStream.getLength()
+
 
 The length, in seconds, of this wav stream can be queried with this
 function.
 
     double t = gRecord.getLength();
     
-Inherited 3d audio interfaces
------------------------------
+### Inherited 3d audio interfaces
+
 Like all other audio sources, WavStream inherits the 3d audio interfaces. Please refer to the 3d audio chapter for details on:
 
 - WavStream.set3dMinMaxDistance()

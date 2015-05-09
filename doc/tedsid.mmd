@@ -1,5 +1,5 @@
-SoLoud::TedSid
-===============
+## SoLoud::TedSid
+
 
 The SoLoud::TedSid is a replayer for TED and SID soundchip register
 write dumps, based on tedplay (c) 2012 Attila Grosz, used under 
@@ -17,8 +17,8 @@ You can use the Soloud.getInfo() interface to query TED and SID
 register values while the song is playing. The SID registers are mapped
 to values 0-31 and the TED registers to 64-69.
 
-TedSid.load()
--------------
+### TedSid.load()
+
 
 You tell TedSid to load a file with the load function:
 
@@ -29,8 +29,8 @@ If loading fails, the function returns an error code.
     SoLoud::TedSid galway;
     galway.load("galway.sid.dump");
 
-TedSid.loadMem()
-----------------
+### TedSid.loadMem()
+
 Alternate way of loading the file is to read from a memory buffer.
 
     result loadMem(unsigned char *aMem, int aLength, 
@@ -42,40 +42,40 @@ to tell SoLoud to take a copy of the data instead of using the pointers
 directly, and the aTakeOwnership parameter to tell SoLoud to free the
 pointer when the object is being destroyed.
 
-TedSid.loadToMem()
-------------------
+### TedSid.loadToMem()
+
 The loadToMem() tells SoLoud to load the whole file to a memory buffer
 and stream it from there.
 
-TedSid.loadFileToMem()
-----------------------
+### TedSid.loadFileToMem()
+
 The loadFileToMem() function performs the memory loading of loadToMem()
 using SoLoud::File objects, same way as loadFile() does.
 
 
-TedSid.loadFile()
------------------
+### TedSid.loadFile()
+
 The loadFile() can be used to load audio from a SoLoud::File object. This
 is useful for integrating with virtual filesystems / packfiles, such as
 PhysFS.
 
 
-TedSid.setLooping()
--------------------
+### TedSid.setLooping()
+
 
 Adjusting the looping of a TedSid sound does not currently
 have any effect. All music is set to loop by default. 
 
-TedSid.setFilter()
-------------------
+### TedSid.setFilter()
+
 
 As with any other audio source, you can attach filters to 
 monotone audio sources.
 
     gMusic.setFilter(0, &gLofi);
 
-TedSid.stop()
--------------
+### TedSid.stop()
+
 
 You can stop all instances of a monotone sound source with
 stop(). This is equivalent of calling soloud.stopAudioSource()
@@ -83,8 +83,8 @@ with the sound source.
 
     gMusic.stop();
     
-tedsid2dump tool
-----------------
+### tedsid2dump tool
+
 The tedsid2dump tool can be used to dump audio chip register writes from plus/4 and c64 tunes.
 The tool actually runs the program code inside a limited commodore plus/4 emulator, and records
 the audio chip register writes as they happen, along with timestamp so they can be played back
@@ -111,10 +111,10 @@ If the tempo is right but some instrument sounds wrong, it's possible you're pla
 It is also possible to quantize the timestamps. This may affect the way the song sounds, as the register writes
 won't be even close to cycle-accurate anymore, but it will also dramatically shrink the dump file sizes.
 
-Dump file format
-----------------
+### Dump file format
 
-### Header
+
+#### Header
 
 Offset | Size | Information                             |
 ------ | ---- | -------------------------------------   |
@@ -122,7 +122,7 @@ Offset | Size | Information                             |
 5      |  1   | SID model
 6      |  2   | 2 reserved bytes (set to 0)
 
-### Timestamp
+#### Timestamp
 
 Pattern            | Information
 ------------------ | --------------------------------------------------------------
@@ -134,8 +134,8 @@ Since the data is stored in x86 big-endian format, the bytes are actually swappe
 To decode, read two bytes; if the highest bit of the second byte is on, this is a timestamp, otherwise it's a register write.
 The timestamp delta value says how many clocks to wait until the write should be executed.
 
-Inherited 3d audio interfaces
------------------------------
+### Inherited 3d audio interfaces
+
 Like all other audio sources, monotone inherits the 3d audio interfaces. Please refer to the 3d audio chapter for details on:
 
 - TedSid.set3dMinMaxDistance()

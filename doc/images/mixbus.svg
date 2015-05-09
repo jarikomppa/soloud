@@ -1,441 +1,188 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Created with Inkscape (http://www.inkscape.org/) -->
-
-<svg
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="744.09448819"
-   height="1052.3622047"
-   id="svg2"
-   version="1.1"
-   inkscape:version="0.48.4 r9939"
-   sodipodi:docname="mixbus.svg">
-  <defs
-     id="defs4">
-    <marker
-       inkscape:stockid="Arrow1Lend"
-       orient="auto"
-       refY="0.0"
-       refX="0.0"
-       id="Arrow1Lend"
-       style="overflow:visible;">
-      <path
-         id="path3818"
-         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
-         style="fill-rule:evenodd;stroke:#000000;stroke-width:1.0pt;"
-         transform="scale(0.8) rotate(180) translate(12.5,0)" />
-    </marker>
-  </defs>
-  <sodipodi:namedview
-     id="base"
-     pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1.0"
-     inkscape:pageopacity="0.0"
-     inkscape:pageshadow="2"
-     inkscape:zoom="0.7"
-     inkscape:cx="156.77664"
-     inkscape:cy="755.88698"
-     inkscape:document-units="px"
-     inkscape:current-layer="layer1"
-     showgrid="false"
-     inkscape:window-width="1058"
-     inkscape:window-height="655"
-     inkscape:window-x="531"
-     inkscape:window-y="257"
-     inkscape:window-maximized="0" />
-  <metadata
-     id="metadata7">
-    <rdf:RDF>
-      <cc:Work
-         rdf:about="">
-        <dc:format>image/svg+xml</dc:format>
-        <dc:type
-           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
-      </cc:Work>
-    </rdf:RDF>
-  </metadata>
-  <g
-     inkscape:label="Layer 1"
-     inkscape:groupmode="layer"
-     id="layer1">
-    <rect
-       style="fill:#7f97ec;fill-opacity:1;stroke:#000000;stroke-width:1.03766477;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
-       id="rect2985"
-       width="64.289581"
-       height="36.337589"
-       x="21.127684"
-       y="44.224506"
-       rx="8.794035"
-       ry="9.1940069"
-       inkscape:export-filename="E:\vcproj\soloud\doc\images\mixbus.png"
-       inkscape:export-xdpi="90"
-       inkscape:export-ydpi="90" />
-    <rect
-       ry="9.1940069"
-       rx="8.794035"
-       y="38.294991"
-       x="17.174675"
-       height="36.337589"
-       width="64.289581"
-       id="rect3755"
-       style="fill:#7f97ec;fill-opacity:1;stroke:#000000;stroke-width:1.03766477;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
-       inkscape:export-filename="E:\vcproj\soloud\doc\images\mixbus.png"
-       inkscape:export-xdpi="90"
-       inkscape:export-ydpi="90" />
-    <rect
-       style="fill:#7f97ec;fill-opacity:1;stroke:#000000;stroke-width:1.03766477;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
-       id="rect3757"
-       width="64.289581"
-       height="36.337589"
-       x="13.419316"
-       y="31.772526"
-       rx="8.794035"
-       ry="9.1940069"
-       inkscape:export-filename="E:\vcproj\soloud\doc\images\mixbus.png"
-       inkscape:export-xdpi="90"
-       inkscape:export-ydpi="90" />
-    <rect
-       ry="9.1940069"
-       rx="8.794035"
-       y="115.37866"
-       x="25.08069"
-       height="36.337589"
-       width="64.289581"
-       id="rect3759"
-       style="fill:#7f97ec;fill-opacity:1;stroke:#000000;stroke-width:1.03766477;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
-       inkscape:export-filename="E:\vcproj\soloud\doc\images\mixbus.png"
-       inkscape:export-xdpi="90"
-       inkscape:export-ydpi="90" />
-    <rect
-       style="fill:#7f97ec;fill-opacity:1;stroke:#000000;stroke-width:1.03766477;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
-       id="rect3761"
-       width="64.289581"
-       height="36.337589"
-       x="21.127684"
-       y="109.44915"
-       rx="8.794035"
-       ry="9.1940069"
-       inkscape:export-filename="E:\vcproj\soloud\doc\images\mixbus.png"
-       inkscape:export-xdpi="90"
-       inkscape:export-ydpi="90" />
-    <rect
-       ry="9.1940069"
-       rx="8.794035"
-       y="102.92668"
-       x="17.372324"
-       height="36.337589"
-       width="64.289581"
-       id="rect3763"
-       style="fill:#7f97ec;fill-opacity:1;stroke:#000000;stroke-width:1.03766477;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
-       inkscape:export-filename="E:\vcproj\soloud\doc\images\mixbus.png"
-       inkscape:export-xdpi="90"
-       inkscape:export-ydpi="90" />
-    <rect
-       style="fill:#7f97ec;fill-opacity:1;stroke:#000000;stroke-width:1.03766477;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
-       id="rect3765"
-       width="64.289581"
-       height="36.337589"
-       x="25.08069"
-       y="183.56805"
-       rx="8.794035"
-       ry="9.1940069"
-       inkscape:export-filename="E:\vcproj\soloud\doc\images\mixbus.png"
-       inkscape:export-xdpi="90"
-       inkscape:export-ydpi="90" />
-    <rect
-       ry="9.1940069"
-       rx="8.794035"
-       y="177.63855"
-       x="21.127684"
-       height="36.337589"
-       width="64.289581"
-       id="rect3767"
-       style="fill:#7f97ec;fill-opacity:1;stroke:#000000;stroke-width:1.03766477;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
-       inkscape:export-filename="E:\vcproj\soloud\doc\images\mixbus.png"
-       inkscape:export-xdpi="90"
-       inkscape:export-ydpi="90" />
-    <rect
-       style="fill:#7f97ec;fill-opacity:1;stroke:#000000;stroke-width:1.03766477;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
-       id="rect3769"
-       width="64.289581"
-       height="36.337589"
-       x="17.372324"
-       y="171.11609"
-       rx="8.794035"
-       ry="9.1940069"
-       inkscape:export-filename="E:\vcproj\soloud\doc\images\mixbus.png"
-       inkscape:export-xdpi="90"
-       inkscape:export-ydpi="90" />
-    <rect
-       ry="9.1940069"
-       rx="8.794035"
-       y="35.725536"
-       x="129.04482"
-       height="36.337589"
-       width="64.289581"
-       id="rect3771"
-       style="fill:#7f97ec;fill-opacity:1;stroke:#000000;stroke-width:1.03766477;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
-       inkscape:export-filename="E:\vcproj\soloud\doc\images\mixbus.png"
-       inkscape:export-xdpi="90"
-       inkscape:export-ydpi="90" />
-    <rect
-       style="fill:#7f97ec;fill-opacity:1;stroke:#000000;stroke-width:1.03766477;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
-       id="rect3773"
-       width="64.289581"
-       height="36.337589"
-       x="130.03307"
-       y="104.90319"
-       rx="8.794035"
-       ry="9.1940069"
-       inkscape:export-filename="E:\vcproj\soloud\doc\images\mixbus.png"
-       inkscape:export-xdpi="90"
-       inkscape:export-ydpi="90" />
-    <rect
-       ry="9.1940069"
-       rx="8.794035"
-       y="176.05734"
-       x="130.03307"
-       height="36.337589"
-       width="64.289581"
-       id="rect3775"
-       style="fill:#7f97ec;fill-opacity:1;stroke:#000000;stroke-width:1.03766477;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
-       inkscape:export-filename="E:\vcproj\soloud\doc\images\mixbus.png"
-       inkscape:export-xdpi="90"
-       inkscape:export-ydpi="90" />
-    <rect
-       ry="9.1940069"
-       rx="8.794035"
-       y="105.89145"
-       x="241.70557"
-       height="36.337589"
-       width="64.289581"
-       id="rect3777"
-       style="fill:#7f97ec;fill-opacity:1;stroke:#000000;stroke-width:1.03766477;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
-       inkscape:export-filename="E:\vcproj\soloud\doc\images\mixbus.png"
-       inkscape:export-xdpi="90"
-       inkscape:export-ydpi="90" />
-    <text
-       xml:space="preserve"
-       style="font-size:15.43655014px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-       x="18.75666"
-       y="53.749279"
-       id="text3779"
-       sodipodi:linespacing="125%"
-       inkscape:export-filename="E:\vcproj\soloud\doc\images\mixbus.png"
-       inkscape:export-xdpi="90"
-       inkscape:export-ydpi="90"><tspan
-         sodipodi:role="line"
-         id="tspan3781"
-         x="18.75666"
-         y="53.749279">Speech</tspan></text>
-    <text
-       sodipodi:linespacing="125%"
-       id="text3785"
-       y="127.86819"
-       x="145.84589"
-       style="font-size:15.43655014px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-       xml:space="preserve"
-       inkscape:export-filename="E:\vcproj\soloud\doc\images\mixbus.png"
-       inkscape:export-xdpi="90"
-       inkscape:export-ydpi="90"><tspan
-         y="127.86819"
-         x="145.84589"
-         id="tspan3787"
-         sodipodi:role="line">Bus</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-size:15.43655014px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-       x="23.30262"
-       y="195.06934"
-       id="text3789"
-       sodipodi:linespacing="125%"
-       inkscape:export-filename="E:\vcproj\soloud\doc\images\mixbus.png"
-       inkscape:export-xdpi="90"
-       inkscape:export-ydpi="90"><tspan
-         sodipodi:role="line"
-         id="tspan3791"
-         x="23.30262"
-         y="195.06934">Music</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-size:15.43655014px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-       x="145.84589"
-       y="58.690544"
-       id="text3793"
-       sodipodi:linespacing="125%"
-       inkscape:export-filename="E:\vcproj\soloud\doc\images\mixbus.png"
-       inkscape:export-xdpi="90"
-       inkscape:export-ydpi="90"><tspan
-         sodipodi:role="line"
-         id="tspan3795"
-         x="145.84589"
-         y="58.690544">Bus</tspan></text>
-    <text
-       sodipodi:linespacing="125%"
-       id="text3797"
-       y="200.0106"
-       x="145.84589"
-       style="font-size:15.43655014px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-       xml:space="preserve"
-       inkscape:export-filename="E:\vcproj\soloud\doc\images\mixbus.png"
-       inkscape:export-xdpi="90"
-       inkscape:export-ydpi="90"><tspan
-         y="200.0106"
-         x="145.84589"
-         id="tspan3799"
-         sodipodi:role="line">Bus</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-size:15.43655014px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-       x="32.196892"
-       y="126.87994"
-       id="text3801"
-       sodipodi:linespacing="125%"
-       inkscape:export-filename="E:\vcproj\soloud\doc\images\mixbus.png"
-       inkscape:export-xdpi="90"
-       inkscape:export-ydpi="90"><tspan
-         sodipodi:role="line"
-         id="tspan3803"
-         x="32.196892"
-         y="126.87994">Sfx</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-size:15.43655014px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-       x="250.60062"
-       y="129.8447"
-       id="text3805"
-       sodipodi:linespacing="125%"
-       inkscape:export-filename="E:\vcproj\soloud\doc\images\mixbus.png"
-       inkscape:export-xdpi="90"
-       inkscape:export-ydpi="90"><tspan
-         sodipodi:role="line"
-         id="tspan3807"
-         x="250.60062"
-         y="129.8447">Global</tspan></text>
-    <path
-       style="fill:none;stroke:#000000;stroke-width:0.69177651px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Lend)"
-       d="m 192.7324,68.58585 c 47.4361,40.51834 47.4361,40.51834 47.4361,40.51834"
-       id="path3809"
-       inkscape:connector-curvature="0"
-       inkscape:export-filename="E:\vcproj\soloud\doc\images\mixbus.png"
-       inkscape:export-xdpi="90"
-       inkscape:export-ydpi="90" />
-    <path
-       inkscape:connector-curvature="0"
-       id="path4255"
-       d="m 193.74316,181.52056 c 47.39108,-46.00753 47.39108,-46.00753 47.39108,-46.00753"
-       style="fill:none;stroke:#000000;stroke-width:0.69177651;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-end:url(#Arrow1Lend)"
-       inkscape:export-filename="E:\vcproj\soloud\doc\images\mixbus.png"
-       inkscape:export-xdpi="90"
-       inkscape:export-ydpi="90" />
-    <path
-       style="fill:none;stroke:#000000;stroke-width:0.69177651px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Lend)"
-       d="m 194.70891,122.93972 c 44.47134,0 44.47134,0.98826 44.47134,0.98826 l 0,0"
-       id="path4257"
-       inkscape:connector-curvature="0"
-       inkscape:export-filename="E:\vcproj\soloud\doc\images\mixbus.png"
-       inkscape:export-xdpi="90"
-       inkscape:export-ydpi="90" />
-    <path
-       inkscape:connector-curvature="0"
-       id="path4441"
-       d="m 306.3814,123.92797 c 44.47135,0 44.47135,0.98826 44.47135,0.98826 l 0,0"
-       style="fill:none;stroke:#000000;stroke-width:0.69177651px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Lend)"
-       inkscape:export-filename="E:\vcproj\soloud\doc\images\mixbus.png"
-       inkscape:export-xdpi="90"
-       inkscape:export-ydpi="90" />
-    <text
-       xml:space="preserve"
-       style="font-size:20.68538666px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-       x="352.17871"
-       y="131.68608"
-       id="text4443"
-       sodipodi:linespacing="125%"
-       inkscape:export-filename="E:\vcproj\soloud\doc\images\mixbus.png"
-       inkscape:export-xdpi="90"
-       inkscape:export-ydpi="90"><tspan
-         sodipodi:role="line"
-         id="tspan4445"
-         x="352.17871"
-         y="131.68608">Out</tspan></text>
-    <path
-       style="fill:none;stroke:#000000;stroke-width:0.69177651px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Lend)"
-       d="M 78.095147,40.914789 126.5195,46.844303"
-       id="path4815"
-       inkscape:connector-curvature="0"
-       inkscape:export-filename="E:\vcproj\soloud\doc\images\mixbus.png"
-       inkscape:export-xdpi="90"
-       inkscape:export-ydpi="90" />
-    <path
-       style="fill:none;stroke:#000000;stroke-width:0.69177651px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Lend)"
-       d="M 82.048152,56.726824 125.53125,55.738572"
-       id="path4999"
-       inkscape:connector-curvature="0"
-       inkscape:export-filename="E:\vcproj\soloud\doc\images\mixbus.png"
-       inkscape:export-xdpi="90"
-       inkscape:export-ydpi="90" />
-    <path
-       style="fill:none;stroke:#000000;stroke-width:0.69177651px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Lend)"
-       d="M 86.989415,74.515364 125.53125,64.632841"
-       id="path5183"
-       inkscape:connector-curvature="0"
-       inkscape:export-filename="E:\vcproj\soloud\doc\images\mixbus.png"
-       inkscape:export-xdpi="90"
-       inkscape:export-ydpi="90" />
-    <path
-       style="fill:none;stroke:#000000;stroke-width:0.69177651px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Lend)"
-       d="m 83.036403,109.10419 42.494847,5.92951"
-       id="path5367"
-       inkscape:connector-curvature="0"
-       inkscape:export-filename="E:\vcproj\soloud\doc\images\mixbus.png"
-       inkscape:export-xdpi="90"
-       inkscape:export-ydpi="90" />
-    <path
-       style="fill:none;stroke:#000000;stroke-width:0.69177651px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Lend)"
-       d="m 85.012913,127.88098 41.506587,-1.9765"
-       id="path5551"
-       inkscape:connector-curvature="0"
-       inkscape:export-filename="E:\vcproj\soloud\doc\images\mixbus.png"
-       inkscape:export-xdpi="90"
-       inkscape:export-ydpi="90" />
-    <path
-       style="fill:none;stroke:#000000;stroke-width:0.69177651px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Lend)"
-       d="M 87.977666,143.69301 126.5195,131.83399"
-       id="path5735"
-       inkscape:connector-curvature="0"
-       inkscape:export-filename="E:\vcproj\soloud\doc\images\mixbus.png"
-       inkscape:export-xdpi="90"
-       inkscape:export-ydpi="90" />
-    <path
-       style="fill:none;stroke:#000000;stroke-width:0.69177651px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Lend)"
-       d="m 82.048152,178.28184 44.471348,7.90602"
-       id="path5919"
-       inkscape:connector-curvature="0"
-       inkscape:export-filename="E:\vcproj\soloud\doc\images\mixbus.png"
-       inkscape:export-xdpi="90"
-       inkscape:export-ydpi="90" />
-    <path
-       style="fill:none;stroke:#000000;stroke-width:0.69177651px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Lend)"
-       d="m 84.024661,197.05863 43.483099,-1.9765"
-       id="path6103"
-       inkscape:connector-curvature="0"
-       inkscape:export-filename="E:\vcproj\soloud\doc\images\mixbus.png"
-       inkscape:export-xdpi="90"
-       inkscape:export-ydpi="90" />
-    <path
-       style="fill:none;stroke:#000000;stroke-width:0.69177651px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Lend)"
-       d="M 90.942427,212.87067 126.5195,204.96465"
-       id="path6287"
-       inkscape:connector-curvature="0"
-       inkscape:export-filename="E:\vcproj\soloud\doc\images\mixbus.png"
-       inkscape:export-xdpi="90"
-       inkscape:export-ydpi="90" />
+<?xml version="1.0" encoding="UTF-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" fill-opacity="1" color-rendering="auto" color-interpolation="auto" text-rendering="auto" stroke="black" stroke-linecap="square" width="336" stroke-miterlimit="10" shape-rendering="auto" stroke-opacity="1" fill="black" stroke-dasharray="none" font-weight="normal" stroke-width="1" height="340" font-family="'Dialog'" font-style="normal" stroke-linejoin="miter" font-size="12" stroke-dashoffset="0" image-rendering="auto">
+  <!--Generated by ySVG 2.5-->
+  <defs id="genericDefs"/>
+  <g>
+    <defs id="defs1">
+      <linearGradient x1="0" gradientUnits="userSpaceOnUse" x2="2.7892" y1="-40" y2="-17.2559" id="linearGradient1" spreadMethod="pad">
+        <stop stop-opacity="0.8627" stop-color="rgb(255,255,255)" offset="0%"/>
+        <stop stop-opacity="0.1255" stop-color="rgb(255,255,255)" offset="100%"/>
+      </linearGradient>
+      <linearGradient x1="0" gradientUnits="userSpaceOnUse" x2="2.7892" y1="-110" y2="-87.2559" id="linearGradient2" spreadMethod="pad">
+        <stop stop-opacity="0.8627" stop-color="rgb(255,255,255)" offset="0%"/>
+        <stop stop-opacity="0.1255" stop-color="rgb(255,255,255)" offset="100%"/>
+      </linearGradient>
+      <linearGradient x1="112" gradientUnits="userSpaceOnUse" x2="114.7892" y1="-75" y2="-52.2559" id="linearGradient3" spreadMethod="pad">
+        <stop stop-opacity="0.8627" stop-color="rgb(255,255,255)" offset="0%"/>
+        <stop stop-opacity="0.1255" stop-color="rgb(255,255,255)" offset="100%"/>
+      </linearGradient>
+      <linearGradient x1="112" gradientUnits="userSpaceOnUse" x2="114.7892" y1="-180" y2="-157.2559" id="linearGradient4" spreadMethod="pad">
+        <stop stop-opacity="0.8627" stop-color="rgb(255,255,255)" offset="0%"/>
+        <stop stop-opacity="0.1255" stop-color="rgb(255,255,255)" offset="100%"/>
+      </linearGradient>
+      <linearGradient x1="112" gradientUnits="userSpaceOnUse" x2="114.7892" y1="-285" y2="-262.2559" id="linearGradient5" spreadMethod="pad">
+        <stop stop-opacity="0.8627" stop-color="rgb(255,255,255)" offset="0%"/>
+        <stop stop-opacity="0.1255" stop-color="rgb(255,255,255)" offset="100%"/>
+      </linearGradient>
+      <linearGradient x1="224" gradientUnits="userSpaceOnUse" x2="226.7892" y1="-180" y2="-157.2559" id="linearGradient6" spreadMethod="pad">
+        <stop stop-opacity="0.8627" stop-color="rgb(255,255,255)" offset="0%"/>
+        <stop stop-opacity="0.1255" stop-color="rgb(255,255,255)" offset="100%"/>
+      </linearGradient>
+      <linearGradient x1="0" gradientUnits="userSpaceOnUse" x2="2.7892" y1="-75" y2="-52.2559" id="linearGradient7" spreadMethod="pad">
+        <stop stop-opacity="0.8627" stop-color="rgb(255,255,255)" offset="0%"/>
+        <stop stop-opacity="0.1255" stop-color="rgb(255,255,255)" offset="100%"/>
+      </linearGradient>
+      <linearGradient x1="0" gradientUnits="userSpaceOnUse" x2="2.7892" y1="-180" y2="-157.2559" id="linearGradient8" spreadMethod="pad">
+        <stop stop-opacity="0.8627" stop-color="rgb(255,255,255)" offset="0%"/>
+        <stop stop-opacity="0.1255" stop-color="rgb(255,255,255)" offset="100%"/>
+      </linearGradient>
+      <linearGradient x1="0" gradientUnits="userSpaceOnUse" x2="2.7892" y1="-215" y2="-192.2559" id="linearGradient9" spreadMethod="pad">
+        <stop stop-opacity="0.8627" stop-color="rgb(255,255,255)" offset="0%"/>
+        <stop stop-opacity="0.1255" stop-color="rgb(255,255,255)" offset="100%"/>
+      </linearGradient>
+      <linearGradient x1="0" gradientUnits="userSpaceOnUse" x2="2.7892" y1="-145" y2="-122.2559" id="linearGradient10" spreadMethod="pad">
+        <stop stop-opacity="0.8627" stop-color="rgb(255,255,255)" offset="0%"/>
+        <stop stop-opacity="0.1255" stop-color="rgb(255,255,255)" offset="100%"/>
+      </linearGradient>
+      <linearGradient x1="0" gradientUnits="userSpaceOnUse" x2="2.7892" y1="-320" y2="-297.2559" id="linearGradient11" spreadMethod="pad">
+        <stop stop-opacity="0.8627" stop-color="rgb(255,255,255)" offset="0%"/>
+        <stop stop-opacity="0.1255" stop-color="rgb(255,255,255)" offset="100%"/>
+      </linearGradient>
+      <linearGradient x1="0" gradientUnits="userSpaceOnUse" x2="2.7892" y1="-285" y2="-262.2559" id="linearGradient12" spreadMethod="pad">
+        <stop stop-opacity="0.8627" stop-color="rgb(255,255,255)" offset="0%"/>
+        <stop stop-opacity="0.1255" stop-color="rgb(255,255,255)" offset="100%"/>
+      </linearGradient>
+      <linearGradient x1="0" gradientUnits="userSpaceOnUse" x2="2.7892" y1="-250" y2="-227.2559" id="linearGradient13" spreadMethod="pad">
+        <stop stop-opacity="0.8627" stop-color="rgb(255,255,255)" offset="0%"/>
+        <stop stop-opacity="0.1255" stop-color="rgb(255,255,255)" offset="100%"/>
+      </linearGradient>
+      <clipPath clipPathUnits="userSpaceOnUse" id="clipPath1">
+        <path d="M0 0 L336 0 L336 340 L0 340 L0 0 Z"/>
+      </clipPath>
+      <clipPath clipPathUnits="userSpaceOnUse" id="clipPath2">
+        <path d="M-15 -335 L321 -335 L321 5 L-15 5 L-15 -335 Z"/>
+      </clipPath>
+    </defs>
+    <g fill="white" text-rendering="geometricPrecision" shape-rendering="geometricPrecision" transform="translate(15,335)" stroke="white">
+      <rect x="-15" width="336" height="340" y="-335" clip-path="url(#clipPath2)" stroke="none"/>
+    </g>
+    <g fill="rgb(255,153,0)" text-rendering="geometricPrecision" shape-rendering="geometricPrecision" transform="matrix(1,0,0,1,15,335)" stroke="rgb(255,153,0)">
+      <rect x="0" y="-40" clip-path="url(#clipPath2)" width="82" rx="5" ry="5" height="30" stroke="none"/>
+      <path fill="url(#linearGradient1)" d="M2.5 -30 Q2.5 -37.5 10 -37.5 L43.3 -37.5 Q50.8 -37.5 50.8 -30 Q50.8 -22.5 34.15 -20.5 Q17.5 -18.5 10 -18.5 Q2.5 -18.5 2.5 -26 Z" clip-path="url(#clipPath2)" stroke="none"/>
+    </g>
+    <g text-rendering="geometricPrecision" stroke-miterlimit="1.45" shape-rendering="geometricPrecision" font-family="sans-serif" transform="matrix(1,0,0,1,15,335)" stroke-linecap="butt">
+      <text x="20.6504" xml:space="preserve" y="-20.2861" clip-path="url(#clipPath2)" stroke="none">Speech</text>
+    </g>
+    <g fill="rgb(255,153,0)" text-rendering="geometricPrecision" shape-rendering="geometricPrecision" transform="matrix(1,0,0,1,15,335)" stroke="rgb(255,153,0)">
+      <rect x="0" y="-110" clip-path="url(#clipPath2)" width="82" rx="5" ry="5" height="30" stroke="none"/>
+      <path fill="url(#linearGradient2)" d="M2.5 -100 Q2.5 -107.5 10 -107.5 L43.3 -107.5 Q50.8 -107.5 50.8 -100 Q50.8 -92.5 34.15 -90.5 Q17.5 -88.5 10 -88.5 Q2.5 -88.5 2.5 -96 Z" clip-path="url(#clipPath2)" stroke="none"/>
+    </g>
+    <g text-rendering="geometricPrecision" stroke-miterlimit="1.45" shape-rendering="geometricPrecision" font-family="sans-serif" transform="matrix(1,0,0,1,15,335)" stroke-linecap="butt">
+      <text x="20.6504" xml:space="preserve" y="-90.2861" clip-path="url(#clipPath2)" stroke="none">Speech</text>
+    </g>
+    <g fill="rgb(255,153,0)" text-rendering="geometricPrecision" shape-rendering="geometricPrecision" transform="matrix(1,0,0,1,15,335)" stroke="rgb(255,153,0)">
+      <rect x="112" y="-75" clip-path="url(#clipPath2)" width="82" rx="5" ry="5" height="30" stroke="none"/>
+      <path fill="url(#linearGradient3)" d="M114.5 -65 Q114.5 -72.5 122 -72.5 L155.3 -72.5 Q162.8 -72.5 162.8 -65 Q162.8 -57.5 146.15 -55.5 Q129.5 -53.5 122 -53.5 Q114.5 -53.5 114.5 -61 Z" clip-path="url(#clipPath2)" stroke="none"/>
+    </g>
+    <g text-rendering="geometricPrecision" stroke-miterlimit="1.45" shape-rendering="geometricPrecision" font-family="sans-serif" transform="matrix(1,0,0,1,15,335)" stroke-linecap="butt">
+      <text x="124.3213" xml:space="preserve" y="-55.2861" clip-path="url(#clipPath2)" stroke="none">Mixing bus</text>
+    </g>
+    <g fill="rgb(255,153,0)" text-rendering="geometricPrecision" shape-rendering="geometricPrecision" transform="matrix(1,0,0,1,15,335)" stroke="rgb(255,153,0)">
+      <rect x="112" y="-180" clip-path="url(#clipPath2)" width="82" rx="5" ry="5" height="30" stroke="none"/>
+      <path fill="url(#linearGradient4)" d="M114.5 -170 Q114.5 -177.5 122 -177.5 L155.3 -177.5 Q162.8 -177.5 162.8 -170 Q162.8 -162.5 146.15 -160.5 Q129.5 -158.5 122 -158.5 Q114.5 -158.5 114.5 -166 Z" clip-path="url(#clipPath2)" stroke="none"/>
+    </g>
+    <g text-rendering="geometricPrecision" stroke-miterlimit="1.45" shape-rendering="geometricPrecision" font-family="sans-serif" transform="matrix(1,0,0,1,15,335)" stroke-linecap="butt">
+      <text x="124.3213" xml:space="preserve" y="-160.2861" clip-path="url(#clipPath2)" stroke="none">Mixing bus</text>
+    </g>
+    <g fill="rgb(255,153,0)" text-rendering="geometricPrecision" shape-rendering="geometricPrecision" transform="matrix(1,0,0,1,15,335)" stroke="rgb(255,153,0)">
+      <rect x="112" y="-285" clip-path="url(#clipPath2)" width="82" rx="5" ry="5" height="30" stroke="none"/>
+      <path fill="url(#linearGradient5)" d="M114.5 -275 Q114.5 -282.5 122 -282.5 L155.3 -282.5 Q162.8 -282.5 162.8 -275 Q162.8 -267.5 146.15 -265.5 Q129.5 -263.5 122 -263.5 Q114.5 -263.5 114.5 -271 Z" clip-path="url(#clipPath2)" stroke="none"/>
+    </g>
+    <g text-rendering="geometricPrecision" stroke-miterlimit="1.45" shape-rendering="geometricPrecision" font-family="sans-serif" transform="matrix(1,0,0,1,15,335)" stroke-linecap="butt">
+      <text x="124.3213" xml:space="preserve" y="-265.2861" clip-path="url(#clipPath2)" stroke="none">Mixing bus</text>
+    </g>
+    <g fill="rgb(255,153,0)" text-rendering="geometricPrecision" shape-rendering="geometricPrecision" transform="matrix(1,0,0,1,15,335)" stroke="rgb(255,153,0)">
+      <rect x="224" y="-180" clip-path="url(#clipPath2)" width="82" rx="5" ry="5" height="30" stroke="none"/>
+      <path fill="url(#linearGradient6)" d="M226.5 -170 Q226.5 -177.5 234 -177.5 L267.3 -177.5 Q274.8 -177.5 274.8 -170 Q274.8 -162.5 258.15 -160.5 Q241.5 -158.5 234 -158.5 Q226.5 -158.5 226.5 -166 Z" clip-path="url(#clipPath2)" stroke="none"/>
+    </g>
+    <g text-rendering="geometricPrecision" stroke-miterlimit="1.45" shape-rendering="geometricPrecision" font-family="sans-serif" transform="matrix(1,0,0,1,15,335)" stroke-linecap="butt">
+      <text x="240.9971" xml:space="preserve" y="-160.2861" clip-path="url(#clipPath2)" stroke="none">Final mix</text>
+    </g>
+    <g fill="rgb(255,153,0)" text-rendering="geometricPrecision" shape-rendering="geometricPrecision" transform="matrix(1,0,0,1,15,335)" stroke="rgb(255,153,0)">
+      <rect x="0" y="-75" clip-path="url(#clipPath2)" width="82" rx="5" ry="5" height="30" stroke="none"/>
+      <path fill="url(#linearGradient7)" d="M2.5 -65 Q2.5 -72.5 10 -72.5 L43.3 -72.5 Q50.8 -72.5 50.8 -65 Q50.8 -57.5 34.15 -55.5 Q17.5 -53.5 10 -53.5 Q2.5 -53.5 2.5 -61 Z" clip-path="url(#clipPath2)" stroke="none"/>
+    </g>
+    <g text-rendering="geometricPrecision" stroke-miterlimit="1.45" shape-rendering="geometricPrecision" font-family="sans-serif" transform="matrix(1,0,0,1,15,335)" stroke-linecap="butt">
+      <text x="20.6504" xml:space="preserve" y="-55.2861" clip-path="url(#clipPath2)" stroke="none">Speech</text>
+    </g>
+    <g fill="rgb(255,153,0)" text-rendering="geometricPrecision" shape-rendering="geometricPrecision" transform="matrix(1,0,0,1,15,335)" stroke="rgb(255,153,0)">
+      <rect x="0" y="-180" clip-path="url(#clipPath2)" width="82" rx="5" ry="5" height="30" stroke="none"/>
+      <path fill="url(#linearGradient8)" d="M2.5 -170 Q2.5 -177.5 10 -177.5 L43.3 -177.5 Q50.8 -177.5 50.8 -170 Q50.8 -162.5 34.15 -160.5 Q17.5 -158.5 10 -158.5 Q2.5 -158.5 2.5 -166 Z" clip-path="url(#clipPath2)" stroke="none"/>
+    </g>
+    <g text-rendering="geometricPrecision" stroke-miterlimit="1.45" shape-rendering="geometricPrecision" font-family="sans-serif" transform="matrix(1,0,0,1,15,335)" stroke-linecap="butt">
+      <text x="32.3311" xml:space="preserve" y="-160.2861" clip-path="url(#clipPath2)" stroke="none">Sfx</text>
+    </g>
+    <g fill="rgb(255,153,0)" text-rendering="geometricPrecision" shape-rendering="geometricPrecision" transform="matrix(1,0,0,1,15,335)" stroke="rgb(255,153,0)">
+      <rect x="0" y="-215" clip-path="url(#clipPath2)" width="82" rx="5" ry="5" height="30" stroke="none"/>
+      <path fill="url(#linearGradient9)" d="M2.5 -205 Q2.5 -212.5 10 -212.5 L43.3 -212.5 Q50.8 -212.5 50.8 -205 Q50.8 -197.5 34.15 -195.5 Q17.5 -193.5 10 -193.5 Q2.5 -193.5 2.5 -201 Z" clip-path="url(#clipPath2)" stroke="none"/>
+    </g>
+    <g text-rendering="geometricPrecision" stroke-miterlimit="1.45" shape-rendering="geometricPrecision" font-family="sans-serif" transform="matrix(1,0,0,1,15,335)" stroke-linecap="butt">
+      <text x="32.3311" xml:space="preserve" y="-195.2861" clip-path="url(#clipPath2)" stroke="none">Sfx</text>
+    </g>
+    <g fill="rgb(255,153,0)" text-rendering="geometricPrecision" shape-rendering="geometricPrecision" transform="matrix(1,0,0,1,15,335)" stroke="rgb(255,153,0)">
+      <rect x="0" y="-145" clip-path="url(#clipPath2)" width="82" rx="5" ry="5" height="30" stroke="none"/>
+      <path fill="url(#linearGradient10)" d="M2.5 -135 Q2.5 -142.5 10 -142.5 L43.3 -142.5 Q50.8 -142.5 50.8 -135 Q50.8 -127.5 34.15 -125.5 Q17.5 -123.5 10 -123.5 Q2.5 -123.5 2.5 -131 Z" clip-path="url(#clipPath2)" stroke="none"/>
+    </g>
+    <g text-rendering="geometricPrecision" stroke-miterlimit="1.45" shape-rendering="geometricPrecision" font-family="sans-serif" transform="matrix(1,0,0,1,15,335)" stroke-linecap="butt">
+      <text x="32.3311" xml:space="preserve" y="-125.2861" clip-path="url(#clipPath2)" stroke="none">Sfx</text>
+    </g>
+    <g fill="rgb(255,153,0)" text-rendering="geometricPrecision" shape-rendering="geometricPrecision" transform="matrix(1,0,0,1,15,335)" stroke="rgb(255,153,0)">
+      <rect x="0" y="-320" clip-path="url(#clipPath2)" width="82" rx="5" ry="5" height="30" stroke="none"/>
+      <path fill="url(#linearGradient11)" d="M2.5 -310 Q2.5 -317.5 10 -317.5 L43.3 -317.5 Q50.8 -317.5 50.8 -310 Q50.8 -302.5 34.15 -300.5 Q17.5 -298.5 10 -298.5 Q2.5 -298.5 2.5 -306 Z" clip-path="url(#clipPath2)" stroke="none"/>
+    </g>
+    <g text-rendering="geometricPrecision" stroke-miterlimit="1.45" shape-rendering="geometricPrecision" font-family="sans-serif" transform="matrix(1,0,0,1,15,335)" stroke-linecap="butt">
+      <text x="25.332" xml:space="preserve" y="-300.2861" clip-path="url(#clipPath2)" stroke="none">Music</text>
+    </g>
+    <g fill="rgb(255,153,0)" text-rendering="geometricPrecision" shape-rendering="geometricPrecision" transform="matrix(1,0,0,1,15,335)" stroke="rgb(255,153,0)">
+      <rect x="0" y="-285" clip-path="url(#clipPath2)" width="82" rx="5" ry="5" height="30" stroke="none"/>
+      <path fill="url(#linearGradient12)" d="M2.5 -275 Q2.5 -282.5 10 -282.5 L43.3 -282.5 Q50.8 -282.5 50.8 -275 Q50.8 -267.5 34.15 -265.5 Q17.5 -263.5 10 -263.5 Q2.5 -263.5 2.5 -271 Z" clip-path="url(#clipPath2)" stroke="none"/>
+    </g>
+    <g text-rendering="geometricPrecision" stroke-miterlimit="1.45" shape-rendering="geometricPrecision" font-family="sans-serif" transform="matrix(1,0,0,1,15,335)" stroke-linecap="butt">
+      <text x="25.332" xml:space="preserve" y="-265.2861" clip-path="url(#clipPath2)" stroke="none">Music</text>
+    </g>
+    <g fill="rgb(255,153,0)" text-rendering="geometricPrecision" shape-rendering="geometricPrecision" transform="matrix(1,0,0,1,15,335)" stroke="rgb(255,153,0)">
+      <rect x="0" y="-250" clip-path="url(#clipPath2)" width="82" rx="5" ry="5" height="30" stroke="none"/>
+      <path fill="url(#linearGradient13)" d="M2.5 -240 Q2.5 -247.5 10 -247.5 L43.3 -247.5 Q50.8 -247.5 50.8 -240 Q50.8 -232.5 34.15 -230.5 Q17.5 -228.5 10 -228.5 Q2.5 -228.5 2.5 -236 Z" clip-path="url(#clipPath2)" stroke="none"/>
+    </g>
+    <g text-rendering="geometricPrecision" stroke-miterlimit="1.45" shape-rendering="geometricPrecision" font-family="sans-serif" transform="matrix(1,0,0,1,15,335)" stroke-linecap="butt">
+      <text x="25.332" xml:space="preserve" y="-230.2861" clip-path="url(#clipPath2)" stroke="none">Music</text>
+    </g>
+    <g text-rendering="geometricPrecision" stroke-miterlimit="1.45" shape-rendering="geometricPrecision" transform="matrix(1,0,0,1,15,335)" stroke-linecap="butt">
+      <path fill="none" d="M82 -25 L97 -25 L97 -50 L103.9707 -50" clip-path="url(#clipPath2)"/>
+    </g>
+    <g text-rendering="geometricPrecision" stroke-miterlimit="1.45" shape-rendering="geometricPrecision" transform="matrix(1,0,0,1,15,335)" stroke-linecap="butt">
+      <path d="M111.9707 -50 L99.9707 -55 L102.9707 -50 L99.9707 -45 Z" stroke="none" clip-path="url(#clipPath2)"/>
+      <path fill="none" d="M82 -95 L97 -95 L97 -70 L103.9707 -70" clip-path="url(#clipPath2)"/>
+      <path d="M111.9707 -70 L99.9707 -75 L102.9707 -70 L99.9707 -65 Z" clip-path="url(#clipPath2)" stroke="none"/>
+      <path fill="none" d="M194 -60 L209 -60 L209 -155 L215.9707 -155" clip-path="url(#clipPath2)"/>
+      <path d="M223.9707 -155 L211.9707 -160 L214.9707 -155 L211.9707 -150 Z" clip-path="url(#clipPath2)" stroke="none"/>
+      <path fill="none" d="M194 -165 L215.9707 -165" clip-path="url(#clipPath2)"/>
+      <path d="M223.9707 -165 L211.9707 -170 L214.9707 -165 L211.9707 -160 Z" clip-path="url(#clipPath2)" stroke="none"/>
+      <path fill="none" d="M194 -270 L209 -270 L209 -175 L215.9707 -175" clip-path="url(#clipPath2)"/>
+      <path d="M223.9707 -175 L211.9707 -180 L214.9707 -175 L211.9707 -170 Z" clip-path="url(#clipPath2)" stroke="none"/>
+      <path fill="none" d="M82 -60 L103.9707 -60" clip-path="url(#clipPath2)"/>
+      <path d="M111.9707 -60 L99.9707 -65 L102.9707 -60 L99.9707 -55 Z" clip-path="url(#clipPath2)" stroke="none"/>
+      <path fill="none" d="M82 -165 L103.9707 -165" clip-path="url(#clipPath2)"/>
+      <path d="M111.9707 -165 L99.9707 -170 L102.9707 -165 L99.9707 -160 Z" clip-path="url(#clipPath2)" stroke="none"/>
+      <path fill="none" d="M82 -200 L97 -200 L97 -175 L103.9707 -175" clip-path="url(#clipPath2)"/>
+      <path d="M111.9707 -175 L99.9707 -180 L102.9707 -175 L99.9707 -170 Z" clip-path="url(#clipPath2)" stroke="none"/>
+      <path fill="none" d="M82 -130 L97 -130 L97 -155 L103.9707 -155" clip-path="url(#clipPath2)"/>
+      <path d="M111.9707 -155 L99.9707 -160 L102.9707 -155 L99.9707 -150 Z" clip-path="url(#clipPath2)" stroke="none"/>
+      <path fill="none" d="M82 -305 L97 -305 L97 -280 L103.9707 -280" clip-path="url(#clipPath2)"/>
+      <path d="M111.9707 -280 L99.9707 -285 L102.9707 -280 L99.9707 -275 Z" clip-path="url(#clipPath2)" stroke="none"/>
+      <path fill="none" d="M82 -270 L103.9707 -270" clip-path="url(#clipPath2)"/>
+      <path d="M111.9707 -270 L99.9707 -275 L102.9707 -270 L99.9707 -265 Z" clip-path="url(#clipPath2)" stroke="none"/>
+      <path fill="none" d="M82 -235 L97 -235 L97 -260 L103.9707 -260" clip-path="url(#clipPath2)"/>
+      <path d="M111.9707 -260 L99.9707 -265 L102.9707 -260 L99.9707 -255 Z" clip-path="url(#clipPath2)" stroke="none"/>
+    </g>
   </g>
 </svg>

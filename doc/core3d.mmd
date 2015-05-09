@@ -1,21 +1,21 @@
-Core: 3d audio
-==============
+## 3d Audio
+
 
 Most of the 3d audio calls are not thread safe, and it is best not to 
 call them from several threads at the same time. The good side is that
 the 3d audio calls won't disturb the audio thread mutex, and will thus
 be much more performant.
 
-Soloud.update3dAudio()
-----------------------
+### Soloud.update3dAudio()
+
 
 Update the 3d parameters for the 3d voices. No positional effect occurs unless this function is called periodically.
 
     gSoloud.set3dSourceVelocity(h, -1, 0, 0); // go west
     gSoloud.update3dAudio(); // apply change to voices    
 
-Soloud.play3d()
----------------
+### Soloud.play3d()
+
 
 play3d() is the 3d version of the play() call.
 
@@ -38,8 +38,8 @@ The play3d can also add the "distance delay" to the sound, if enabled.
     gSoloud.set3dSourceVelocity(h, -1, 0, 0); // go west
     
 
-Soloud.play3dClocked()
-----------------------
+### Soloud.play3dClocked()
+
 
 play3dClocked() is the 3d version of the playClocked() call.
 
@@ -60,8 +60,8 @@ The play3dClocked can also add the "distance delay" to the sound, if enabled.
 
     gSoloud.play3dClocked(physicstime, boom, bx, by, bz); // trigger boom at specific coords
    
-Soloud.set3dSoundSpeed() / Soloud.get3dSoundSpeed()
----------------------------------------------------
+### Soloud.set3dSoundSpeed() / Soloud.get3dSoundSpeed()
+
 
 You can set and get the current value of the speed of sound witht the get3dSoundSpeed() and set3dSoundSpeed() functions. The speed of sound is used to calculate doppler effects in addition to the distance delay.
 
@@ -71,8 +71,8 @@ Since SoLoud has no knowledge of the scale of your coordinates, you may need to 
     gSoloud.set3dSoundSpeed(speed / 2); // Halve it
 
 
-Soloud.set3dListenerParameters()
---------------------------------
+### Soloud.set3dListenerParameters()
+
 
 You can set the position, at-vector, up-vector and velocity parameters of the 3d audio listener with one call using the set3dListenerParameters.
 
@@ -91,8 +91,8 @@ You can set the position, at-vector, up-vector and velocity parameters of the 3d
 
 The changes to these parameters are only evaluated when the update3dAudio() function is called.
 
-Soloud.set3dListenerPosition()
--------------------------
+### Soloud.set3dListenerPosition()
+
 
 You can set the position parameter of the 3d audio listener via set3dListenerPosition()
 
@@ -102,8 +102,8 @@ You can set the position parameter of the 3d audio listener via set3dListenerPos
 
 The changes to these parameters are only evaluated when the update3dAudio() function is called.
 
-Soloud.set3dListenerAt()
-------------------------
+### Soloud.set3dListenerAt()
+
 
 You can set the "at" vector parameter of the 3d audio listener via set3dListenerAt()
 
@@ -115,8 +115,8 @@ The "at" vector means the direction the listener is facing. The vector does not 
                          
 The changes to these parameters are only evaluated when the update3dAudio() function is called.
 
-Soloud.set3dListenerUp()
-------------------------
+### Soloud.set3dListenerUp()
+
 
 You can set the "up" vector parameter of the 3d audio listener via set3dListenerUp()
 
@@ -128,8 +128,8 @@ The "up" vector means the direction upwards from the listener. The vector does n
 
 The changes to these parameters are only evaluated when the update3dAudio() function is called.
 
-Soloud.set3dListenerVelocity()
-------------------------------
+### Soloud.set3dListenerVelocity()
+
 
 You can set the listener's velocity vector parameter via set3dListenerVelocity()
 
@@ -140,8 +140,8 @@ You can set the listener's velocity vector parameter via set3dListenerVelocity()
 The changes to these parameters are only evaluated when the update3dAudio() function is called.
 
 
-Soloud.set3dSourceParameters()
-------------------------------
+### Soloud.set3dSourceParameters()
+
 
 You can set the position and velocity parameters of a live 3d audio source with one call using the set3dSourceParameters().
 
@@ -155,8 +155,8 @@ You can set the position and velocity parameters of a live 3d audio source with 
                                
 The changes to these parameters are only evaluated when the update3dAudio() function is called.
 
-Soloud.set3dSourcePosition()
-----------------------------
+### Soloud.set3dSourcePosition()
+
 
 You can set the position parameters of a live 3d audio source with the set3dSourcePosition() function.
 
@@ -167,8 +167,8 @@ You can set the position parameters of a live 3d audio source with the set3dSour
 
 The changes to these parameters are only evaluated when the update3dAudio() function is called.
 
-Soloud.set3dSourceVelocity()
-----------------------------
+### Soloud.set3dSourceVelocity()
+
 
 You can set the velocity parameters of a live 3d audio source with the set3dSourceVelocity() function.
 
@@ -179,8 +179,8 @@ You can set the velocity parameters of a live 3d audio source with the set3dSour
 
 The changes to these parameters are only evaluated when the update3dAudio() function is called.
 
-Soloud.set3dSourceMinMaxDistance()
-----------------------------------
+### Soloud.set3dSourceMinMaxDistance()
+
 
 You can set the minimum and maximum distance parameters of a live 3d audio source with set3dSourceMinMaxDistance().
 
@@ -190,8 +190,8 @@ You can set the minimum and maximum distance parameters of a live 3d audio sourc
 
 The changes to these parameters are only evaluated when the update3dAudio() function is called.
 
-Soloud.set3dSourceAttenuation()
--------------------------------
+### Soloud.set3dSourceAttenuation()
+
 
 You can change the attenuation model and rolloff factor parameters of a live 3d audio source with set3dSourceAttenuation().
 
@@ -203,8 +203,8 @@ See AudioSource.set3dAttenuation() below for a list of attenuation models.
 
 The changes to these parameters are only evaluated when the update3dAudio() function is called.
 
-Soloud.set3dSourceDopplerFactor()
----------------------------------
+### Soloud.set3dSourceDopplerFactor()
+
 
 You can change the doppler factor of a live 3d audio source with set3dSourceDopplerFactor(). 
 
@@ -213,87 +213,3 @@ You can change the doppler factor of a live 3d audio source with set3dSourceDopp
 
 The changes to these parameters are only evaluated when the update3dAudio() function is called.
 
-AudioSource.set3dMinMaxDistance()
----------------------------------
-
-Set the minimum and maximum distances for the audio source with set3dMinMaxDistance()
-
-    void set3dMinMaxDistance(float aMinDistance, 
-                             float aMaxDistance)
-
-Default values are 1 and 1000000.
-
-See the 3d audio concepts chapter for the meaning of these parameters.
-
-AudioSource.set3dAttenuation()
-------------------------------
-
-Set the attenuation model and rolloff factor with set3dAttenuation()
-
-    void set3dAttenuation(unsigned int aAttenuationModel, 
-                          float aAttenuationRolloffFactor)
-
-The default values are NO_ATTENUATION and 1.
-
-Constant              Model
---------              --------
-NO_ATTENUATION        No attenuation
-INVERSE_DISTANCE      Inverse distance attenuation model
-LINEAR_DISTANCE       Linear distance attenuation model
-EXPONENTIAL_DISTANCE  Exponential distance attenuation model
-
-See the 3d audio concepts chapter for the meaning of the models and the rolloff parameter.
-
-AudioSource.set3dDopplerFactor()
---------------------------------
-
-Set the doppler factor with set3dDopplerFactor(). 
-
-    void set3dDopplerFactor(float aDopplerFactor)
-    
-The default value is 1.
-    
-AudioSource.set3dProcessing()
------------------------------
-
-Enable or disable 3d processing of an audio source. If play3d() or play3dClocked() are used, this call is not required, and the sounds are marked as 3d.
-
-    void set3dProcessing(bool aDo3dProcessing)
-    
-Default is disabled.
-
-    snd.set3dProcessing(1);
-    gSoloud.play(snd); // plays as 3d sound
-    
-It is preferable to use the play3d() calls, as that lets you set the 3d position of the sound at startup.
-
-AudioSource.set3dListenerRelative()
------------------------------------
-
-Enable or disable listener relativity for a 3d audio source. If a sound is listener-relative, the listener's coordinates are assumed to be (0,0,0) in calculations.
-
-    void set3dListenerRelative(bool aListenerRelative)
-    
-Default is disabled. Some custom colliders will depend on this flag to be enabled.
-    
-
-AudioSource.set3dDistanceDelay()
---------------------------------
-
-Enable or disable the distance delay effect for a 3d audio source. Since speed of sound is way slower than speed of light, in reality we might see an explosion before we hear it. 
-
-    void set3dDistanceDelay(bool aDistanceDelay)
-
-Default is disabled, as this may be seen as a glitch since most games do not bother simulating this.
-
-Note that this will only affect the start time of the sound.
-
-AudioSource.set3dCollider()
----------------------------
-
-Set or clear the custom audio collider and collider's user data for a 3d audio source.
-
-    void set3dCollider(AudioCollider *aCollider, 
-                       int aUserData)
-                       
-SoLoud expects the collider to be there until all instances of the sound have stopped. Application is responsible for cleaning up the collider. Several sound sources may use the same collider.

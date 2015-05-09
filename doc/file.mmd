@@ -1,5 +1,4 @@
-SoLoud::File
-==============
+## SoLoud::File
 
 SoLoud has a unified file i/o interface. All of the audio sources in SoLoud that require files
 use the File class internally and support loading through a File class.
@@ -14,8 +13,7 @@ and MemoryFile which uses an in-memory buffer.
 
 The File class only supports loading.
 
-File class
-----------
+### File class
 
 The File class is abstract, and provides some helper functions.
 
@@ -34,48 +32,52 @@ The File class is abstract, and provides some helper functions.
 		virtual unsigned char * getMemPtr() { return 0; }
 	};
 
-File.read8(), File.read16(), File.read32()
-------------------------------------------
+### File.read8(), File.read16(), File.read32()
+
 Helper functions reading 8, 16 and 32 bits from the file stream.
 
     unsigned char  foo = myfile.read8();
     unsigned short bar = myfile.read16();
     unsigned int   baz = myfile.read32();
 
-File.getFilePtr()
------------------
+Note that the output of these helpers are unsigned, which may cause problems
+unless you remember to cast to signed when handling signed data, such as
+samples.
+
+### File.getFilePtr()
+
 Returns FILE pointer if avaiable, 0 if not. Useful to check if we're using
 DiskFile (or compatible), and avoids casting between File class subtypes
 if access to the FILE pointer is needed.
 
-File.getMemPtr()
-----------------
+### File.getMemPtr()
+
 Returns memory pointer if avaiable, 0 if not. Useful to check if we're using
 MemoryFile (or compatible), and avoids casting between File class subtypes
 if access to the memory pointer is needed.
 
-File.eof()
-----------
+### File.eof()
+
 Returns non-zero if the stream is at end of file, zero otherwise.
 
-File.read()
------------
+### File.read()
+
 Read up to aBytes worth of bytes from stream. Return number of bytes actually read.
 
-File.length()
--------------
+### File.length()
+
 Return length of the file in bytes.
 
-File.seek()
------------
+### File.seek()
+
 Seek to byte offset from beginning of stream.
 
-File.pos()
-----------
+### File.pos()
+
 Return current byte position in stream.
 
-Typical File Interfaces
------------------------
+### Typical File Interfaces
+
 Using the File interface we easily support the following kind of interfaces:
 
 
@@ -109,8 +111,8 @@ Some interfaces don't supply all of the above, because they either don't need to
 keep the file data around, or if they are always storing the data in a memory
 buffer.
 
-soloud_file_hack_on.h / soloud_file_hack_off.h
-----------------------------------------------
+### soloud_file_hack_on.h / soloud_file_hack_off.h
+
 SoLoud comes with a pair of headers you can use to fool code which uses the FILE*
 interface to use File* instead. 
 

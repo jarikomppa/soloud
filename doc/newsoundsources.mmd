@@ -1,5 +1,5 @@
-Creating New Audio Sources
-==========================
+## Creating New Audio Sources
+
 
 SoLoud is relatively easy to extend by creating new sound sources. Each
 sound source consists of two parts: an audio source class, and an audio
@@ -8,8 +8,8 @@ instance class.
 Studying the existing audio sources' source code, in addition to this
 chapter, will be helpful in creating new ones.
 
-AudioSource class
------------------
+### AudioSource class
+
 
     class Example : public AudioSource
     {
@@ -32,15 +32,15 @@ The audio source is also responsible for setting the mChannels and
 mBaseSamplerate values. These values get copied to all of the instances
 of this audio source.
 
-AudioSource.createInstance()
-----------------------------
+### AudioSource.createInstance()
+
 
 The createInstance function typically creates and returns its
 counterpart, the audio instance. Usually it also gives a pointer to
 itself to the audio instance.
 
-AudioSourceInstance class
--------------------------
+### AudioSourceInstance class
+
 
     class ExampleInstance : public AudioSourceInstance
     {
@@ -58,8 +58,8 @@ The audio instance is meant as the "play head" for a sound source. Most
 of the data should be in the audio source, while audio instance may
 contain more logic.
 
-AudioSourceInstance.getAudio()
-------------------------------
+### AudioSourceInstance.getAudio()
+
 
 SoLoud requests samples from the sound instance using the getAudio
 function. If the instance generates more than one channel (i.e, stereo
@@ -77,32 +77,32 @@ sources for more details.
 If the audio source runs out of data, the rest of the buffer should be
 set to zero.
 
-AudioSourceInstance.hasEnded()
-------------------------------
+### AudioSourceInstance.hasEnded()
+
 
 After mixing, SoLoud asks all audio instances whether they have ended,
 and if they have, it will free the object and free the channel.
 Supporting looping will likely affect the implementation of this
 function.
 
-AudioSourceInstance.seek()
---------------------------
+### AudioSourceInstance.seek()
+
 
 Optionally, you can implement a seek function. The base implementation
 will simply request (and discard) samples from the sound source until
 the desired position has been reached; for many sound sources, a smarter
 way exists.
 
-AudioSourceInstance.rewind()
-----------------------------
+### AudioSourceInstance.rewind()
+
 
 To enable the base implementation of seek to seek backwards from the
 current play position, sound source may implement the rewind function.
 In most cases the rewind is easier to implement than actual smart
 seeking.
 
-AudioSourceInstance.getInfo()
------------------------------
+### AudioSourceInstance.getInfo()
+
 
 Optionally, you can provide the getInfo() interface to let the application
 query real-time information about your audio source. This information

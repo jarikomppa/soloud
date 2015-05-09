@@ -1,5 +1,5 @@
-SoLoud::Modplug
-===============
+## SoLoud::Modplug
+
 
 The SoLoud::Modplug is a module-playing engine, capable of
 replaying wide variety of multichannel music (669, abc, 
@@ -15,8 +15,8 @@ available. One free set can be downloaded from the SoLoud downloads page. By def
 the patches are loaded from pat/ directory.
 
 
-Modplug.load()
---------------
+### Modplug.load()
+
 
 You tell modplug to load a file with the load function:
 
@@ -27,14 +27,14 @@ If loading fails, the function returns an error code.
     SoLoud::Modplug spacedeb;
     spacedeb.load("spacedeb.mod");
 
-Modplug.loadFile()
-------------------
+### Modplug.loadFile()
+
 The loadFile() can be used to load audio from a SoLoud::File object. This
 is useful for integrating with virtual filesystems / packfiles, such as
 PhysFS.
 
-Modplug.loadMem()
------------------
+### Modplug.loadMem()
+
 Alternate way of loading the file is to read from a memory buffer.
 
     result loadMem(unsigned char *aMem, int aLength, 
@@ -45,22 +45,22 @@ once it's done with it. The aCopy parameter is here for compatibility with
 the other loadMem functions.
 
 
-Modplug.setLooping()
---------------------
+### Modplug.setLooping()
+
 
 Adjusting the looping of a modplug sound does not currently
 have any effect. All music is set to loop by default. 
 
-Modplug.setFilter()
--------------------
+### Modplug.setFilter()
+
 
 As with any other audio source, you can attach filters to 
 Modplug audio sources.
 
     gMusic.setFilter(0, &gLofi);
 
-Modplug.stop()
---------------
+### Modplug.stop()
+
 
 You can stop all instances of a modplug sound source with
 stop(). This is equivalent of calling soloud.stopAudioSource()
@@ -68,8 +68,8 @@ with the sound source.
 
     gMusic.stop();
     
-Inherited 3d audio interfaces
------------------------------
+### Inherited 3d audio interfaces
+
 Like all other audio sources, Modplug inherits the 3d audio interfaces. Please refer to the 3d audio chapter for details on:
 
 - Modplug.set3dMinMaxDistance()

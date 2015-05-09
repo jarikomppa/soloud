@@ -32,25 +32,26 @@ ga('send', 'pageview');
 		<div class="menu">
 		
 <a href="index.html">Welcome</a><br>
-<a href="legal.html">License</a><br>
 <a href="downloads.html">Downloads</a><br>
 <a href="quickstart.html">Quick Start</a><br>
+<a href="faq.html">FAQ</a><br>
 <a href="premake.html">Premake</a><br>
+<a href="legal.html">License</a><br>
+<br>
 <a href="concepts.html">Concepts</a><br>
 <a href="concepts3d.html">3D Audio Concepts</a><br>
-<a href="faq.html">FAQ</a><br>
 <a href="examples.html">Examples</a><br>
 <br>
 <a href="foreign_interface.html">Foreign Interfaces</a><br>
-<a href="codegen.html">Codegen</a><br>
 <a href="c_api.html">"C"-api / DLL</a><br>
 <a href="python_api.html">Python-api</a><br>
 <a href="ruby_api.html">Ruby-api</a><br>
 <a href="rpgmaker_api.html">RPGMaker-api</a><br>
 <a href="bmx_api.html">BlitzMax-api</a><br>
-<a href="gamemaker_api.html">GameMaker:Studio-api</a><br>
-<a href="d_api.html">D-api</a><br>
+<a href="gamemaker_api.html">GameMaker:Studio..</a><br>
 <a href="cs_api.html">C#-api</a><br>
+<a href="d_api.html">D-api</a><br>
+<a href="codegen.html">Codegen</a><br>
 <br>
 <a href="basics.html">Core: Basics</a><br>
 <a href="attributes.html">Core: Attributes</a><br>
@@ -59,9 +60,8 @@ ga('send', 'pageview');
 <a href="coremisc.html">Core: Misc</a><br>
 <a href="core3d.html">Core: 3d Audio</a><br>
 <br>
-<a href="mixbus.html">SoLoud::Bus</a><br>
-<br>
 <a href="audiosource.html">SoLoud::AudioSource</a><br>
+<a href="newsoundsources.html">New Audio Sources</a><br>
 <a href="wav.html">SoLoud::Wav</a><br>
 <a href="wavstream.html">SoLoud::WavStream</a><br>
 <a href="speech.html">SoLoud::Speech</a><br>
@@ -69,21 +69,21 @@ ga('send', 'pageview');
 <a href="modplug.html">SoLoud::Modplug</a><br>
 <a href="monotone.html">SoLoud::Monotone</a><br>
 <a href="tedsid.html">SoLoud::TedSid</a><br>
-<a href="newsoundsources.html">New Audio Sources</a><br>
 <br>
 <a href="filters.html">SoLoud::Filter</a><br>
 <a href="biquadfilter.html">SoLoud::BiquadReso..</a><br>
 <a href="echofilter.html">SoLoud::EchoFilter</a><br>
-<a href="fftfilter.html">SoLoud::FFTFilter</a><br>
 <a href="lofifilter.html">SoLoud::LofiFilter</a><br>
 <a href="flangerfilter.html">SoLoud::FlangerFilter</a><br>
-<a href="dcremovalfilter.html">SoLoud::DCRemovalFilter</a><br>
+<a href="dcremovalfilter.html">SoLoud::DCRemovalF..</a><br>
+<a href="fftfilter.html">SoLoud::FFTFilter</a><br>
 <br>
+<a href="mixbus.html">SoLoud::Bus</a><br>
 <a href="collider.html">SoLoud::AudioCollider</a><br>
+<a href="file.html">SoLoud::File</a><br>
 <br>
 <a href="backends.html">Back-ends</a><br>
 <br>
-<a href="file.html">SoLoud::File</a><br>
 <hr>
 <a href="http://iki.fi/sol/">Author's site</a>
 </div>		  

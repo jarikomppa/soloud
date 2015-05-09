@@ -24,6 +24,12 @@
 \author{Jari Komppa}
 %\date{August 2012} % Delete this line to display the current date
 
+\usepackage{titletoc}
+\titlecontents{chapter}[3em]{\addvspace{10pt}\bfseries}
+    {\contentslabel{2.5em}}{\hspace{-2.5em}}{\hfill\contentspage}
+\dottedcontents{section}[6.3em]{}{3.3em}{0.7pc}
+\dottedcontents{subsection}[10.5em]{}{4.2em}{0.7pc}
+\renewcommand\chapternumberline[1]{\numberline{#1}}
 
 %%% BEGIN DOCUMENT
 \begin{document}

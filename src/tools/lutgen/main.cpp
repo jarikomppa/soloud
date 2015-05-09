@@ -117,7 +117,7 @@ void gen_triglut(FILE * f, int bits)
 	for (int level = 3; level < bits; ++level)
 	{
 		const int		level_len = 1L << (level - 1);
-		float * const	level_ptr = const_cast<float *> (_ptr + (1L << (level - 1)) - 4);
+		float * const	level_ptr = const_cast<float *> (_ptr + (int)(1 << (level - 1)) - 4);
 		
 		const double	mul = PI / (level_len << 1);
 

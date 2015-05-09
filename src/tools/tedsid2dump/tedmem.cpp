@@ -227,7 +227,7 @@ void TED::loadhiromfromfile(int nr, char fname[512])
 
 void TED::injectCodeToRAM(unsigned int address, unsigned char *from, size_t len)
 {
-	unsigned int bytes = (address + len > 0xffff) ? 0xffff - address : len;
+	unsigned int bytes = (int)((address + len > 0xffff) ? 0xffff - address : len);
 	memcpy(actram + (address & 0xffff), from, bytes);
 }
 

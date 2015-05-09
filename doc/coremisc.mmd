@@ -40,7 +40,21 @@ Returns the number of concurrent sounds that are playing at the moment.
 
     if (soloud.getActiveVoiceCount() == 0) enjoy_the_silence();
 
-If the handle is invalid, the getActiveVoiceCount will return 0.
+### Soloud.getVoiceCount()
+
+Returns the number of voices the application has told SoLoud to play.
+
+    if (soloud.getVoiceCount() > 1000) lots_of_voices();
+
+### Soloud.setMaxActiveVoiceCount() / Soloud.getMaxActiveVoiceCount()
+
+Get or set the current maximum active voice count. If voice count is
+higher than the maximum active voice count, SoLoud will pick the
+ones with the highest volume to actually play.
+
+    int voices = gSoloud.getMaxActiveVoiceCount();
+    if (fps < 60 && voices > 16)
+        gSoloud.setMaxActiveVoiceCount(voices / 2);
 
 ### Soloud.setGlobalFilter()
 
@@ -145,3 +159,43 @@ Some sound sources let you get real-time information from the active voice.
     float reg10 = soloud.getInfo(c64song, 10);
     
 If the call is not supported, or the handle is invalid, the function returns 0.
+
+### Soloud.getBackendId()
+
+Get the current backend ID. This is typically the same as the Soloud::BACKENDS
+enumeration, but for AUTO it will be set to whatever the auto-selected backend
+was, or in case of SDL2 dynamic linking, it will return SDL, as those two share
+the same backend.
+
+    printf("Current backend id: %d", gSoloud.getBackendId());
+
+### Soloud.getBackendString()
+
+Get a printable asciiz string naming the current back-end. May return NULL.
+
+    if (gSoloud.getBackendString())
+      printf("Current backend: %s", gSoloud.getBackendString());
+
+### Soloud.getBackendChannels()
+
+Get the number of channels the currently active backend plays.
+
+    printf("Current backend channels: %d", gSoloud.getBackendChannels());
+
+1 for mono, 2 for stereo, various others for surround speaker setups.
+
+### Soloud.getBackendSamplerate()
+
+Get the samplerate, in Hz, of the currently active backend. This may
+differ from the one requested.
+
+    printf("Current backend rate: %d", gSoloud.getBackendSamplerate());
+
+### Soloud.getBackendBufferSize()
+
+Get the current backend's buffer size. May differ from the one requested.
+Some backends (such as PortAudio) may lie about this and use smaller
+buffer in reality.
+
+    printf("Current backend buffer: %d", gSoloud.getBackendBufferSize());
+

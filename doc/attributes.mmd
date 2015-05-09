@@ -130,3 +130,21 @@ support changing of live parameters; otherwise this call returns zero.
 
     float v = soloud.getFilterParameter(h,3,FILTER::CUTOFF); 
     // get h's 3rd filter's "cutoff" value
+
+### Soloud.getLooping() / Soloud.setLooping()
+
+Get or set the looping behavior of a live sound.
+
+    bool l = soloud.getLooping(h);
+    soloud.setLooping(h, !l); // anti-loop
+    
+### Soloud.setInaudibleBehavior()
+
+Set the inaudible behavior of a live sound. By default, if a sound is
+inaudible, it's paused, and will resume when it becomes audible again.
+With this function you can tell SoLoud to either kill the sound if
+it becomes inaudible, or to keep ticking the sound even if it's 
+inaudible.
+
+    // The dictator's speech must go on even if not heard
+    soloud.setInaudibleBehavior(h, true, false);

@@ -68,6 +68,32 @@ with the sound source.
 
     gMusic.stop();
     
+    
+### Modplug.setInaudibleBehavior()
+
+Set the inaudible behavior of the sound. By default, if a sound is
+inaudible, it's paused, and will resume when it becomes audible again.
+With this function you can tell SoLoud to either kill the sound if
+it becomes inaudible, or to keep ticking the sound even if it's 
+inaudible.
+
+	// Keep on talking even if I'm not around
+	gSpeech.setInaudibleBehavior(true, false);
+
+### Modplug.setVolume()
+
+Set the default volume of the instances created from this audio source.
+
+    gTinyVoice.setVolume(0.1);
+    
+### Modplug.setAttenuator()
+
+Set a custom attenuator for the instances created from this audio source.
+use NULL to disable.
+
+    // No attenuator needed anymore
+    gFoo.setAttenuator(NULL);
+    
 ### Inherited 3d audio interfaces
 
 Like all other audio sources, Modplug inherits the 3d audio interfaces. Please refer to the 3d audio chapter for details on:

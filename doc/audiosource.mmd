@@ -122,3 +122,28 @@ Set or clear the custom audio collider and collider's user data for a 3d audio s
                        int aUserData)
                        
 SoLoud expects the collider to be there until all instances of the sound have stopped. Application is responsible for cleaning up the collider. Several sound sources may use the same collider.
+
+### AudioSource.setInaudibleBehavior()
+
+Set the inaudible behavior of the sound. By default, if a sound is
+inaudible, it's paused, and will resume when it becomes audible again.
+With this function you can tell SoLoud to either kill the sound if
+it becomes inaudible, or to keep ticking the sound even if it's 
+inaudible.
+
+	void setInaudibleBehavior(bool aMustTick, 
+	                          bool aKill)
+
+### AudioSource.setVolume()
+
+Set the default volume of the instances created from this audio source.
+
+    void setVolume(float aVolume)
+    
+### AudioSource.setAttenuator()
+
+Set a custom attenuator for the instances created from this audio source.
+use NULL to disable.
+
+    void setAttenuator(AudioAttenuator *aAttenuator)
+    

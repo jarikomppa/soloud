@@ -18,6 +18,7 @@ src = [
     "legal.mmd",
     "concepts.mmd",
     "concepts3d.mmd",
+    "voicemanagement.mmd",
     "examples.mmd",
     "foreign_interface.mmd",
     "c_api.mmd",
@@ -53,6 +54,7 @@ src = [
     "fftfilter.mmd",
     "mixbus.mmd",
     "collider.mmd",
+    "attenuator.mmd",
     "file.mmd",
     "backends.mmd"
     ]

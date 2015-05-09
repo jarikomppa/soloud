@@ -115,6 +115,29 @@ busses.
 
     gSfxBus.setFilter(0, &gEnvironment);
 
+### Bus.setInaudibleBehavior()
+
+Set the inaudible behavior of the sound. By default, if a sound is
+inaudible, it's paused, and will resume when it becomes audible again.
+With this function you can tell SoLoud to either kill the sound if
+it becomes inaudible, or to keep ticking the sound even if it's 
+inaudible.
+
+    // Kill off the sfx if they're not heard.
+	gSfxBus.setInaudibleBehavior(false, true);
+
+### Bus.setVolume()
+
+Set the default volume of the bus.
+
+    gMusicBus.setVolume(11);
+    
+### Bus.setAttenuator()
+
+Set a custom attenuator for this bus. use NULL to disable.
+
+    gGhostBus.setAttenuator(&slimer);
+
 ### Inherited 3d audio interfaces
 
 Like all other audio sources, the bus inherits the 3d audio interfaces. Please refer to the 3d audio chapter for details on:

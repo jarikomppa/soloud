@@ -826,42 +826,57 @@ namespace SoLoud
 		mActiveVoiceDirty = false;
 
 		// Populate
-		unsigned int i, v;
-		v = 0;
+		unsigned int i, candidates, mustlive;
+		candidates = 0;
+		mustlive = 0;
 		for (i = 0; i < mHighestVoice; i++)
 		{
 			if (mVoice[i] && (!(mVoice[i]->mFlags & (AudioSourceInstance::INAUDIBLE | AudioSourceInstance::PAUSED)) || (mVoice[i]->mFlags & AudioSourceInstance::INAUDIBLE_TICK)))
 			{
-				mActiveVoice[v] = i;
-				v++;
+				mActiveVoice[candidates] = i;
+				candidates++;
+				if (mVoice[i]->mFlags & (AudioSourceInstance::INAUDIBLE_TICK | AudioSourceInstance::PROTECTED))
+				{
+					mActiveVoice[candidates - 1] = mActiveVoice[mustlive];
+					mActiveVoice[mustlive] = i;
+					mustlive++;
+				}
 			}
 		}
 
 		// Check for early out
-		if (v <= mMaxActiveVoices)
+		if (candidates <= mMaxActiveVoices)
 		{
 			// everything is audible, early out
-			mActiveVoiceCount = v;
+			mActiveVoiceCount = candidates;
 			return;
 		}
+
 		mActiveVoiceCount = mMaxActiveVoices;
 
-		// Nothing to it, have to sort the voices to find the most audible.
+		if (mustlive >= mMaxActiveVoices)
+		{
+			// Oopsie. Well, nothing to sort, since the "must live" voices already
+			// ate all our active voice slots.
+			// This is a potentially an error situation, but we have no way to report
+			// error from here. And asserting could be bad, too.
+			return;
+		}
+
+		// If we get this far, there's nothing to it: we'll have to sort the voices to find the most audible.
 
 		// Iterative partial quicksort:
-		// Todo: collect inaudible_tick/protected stuff to the start of the list while 
-		// gathering above, and skip sorting them.
 		int left = 0, stack[24], pos = 0, right;
-		int len = v;
+		int len = candidates - mustlive;
+		unsigned int *data = mActiveVoice + mustlive;
 		int k = mActiveVoiceCount;
 		for (;;) 
 		{                                 
 			for (; left + 1 < len; len++) 
 			{                
 				if (pos == 24) len = stack[pos = 0]; 
-				int pivot = mActiveVoice[left];
+				int pivot = data[left];
 				float pivotvol = mVoice[pivot]->mVolume;
-				int pivotinf = (mVoice[pivot]->mFlags & (AudioSourceInstance::INAUDIBLE_TICK | AudioSourceInstance::PROTECTED)) != 0;
 				stack[pos++] = len;      
 				for (right = left - 1;;) 
 				{
@@ -869,18 +884,16 @@ namespace SoLoud
 					{
 						right++;
 					} 
-					while (((mVoice[mActiveVoice[right]]->mFlags & (AudioSourceInstance::INAUDIBLE_TICK | AudioSourceInstance::PROTECTED)) != 0) > pivotinf | 
-					         mVoice[mActiveVoice[right]]->mVolume > pivotvol);
+					while (mVoice[data[right]]->mVolume > pivotvol);
 					do
 					{
 						len--;
 					}
-					while (pivotinf > ((mVoice[mActiveVoice[len]]->mFlags & (AudioSourceInstance::INAUDIBLE_TICK | AudioSourceInstance::PROTECTED)) != 0) ||
-					       pivotvol > mVoice[mActiveVoice[len]]->mVolume);
+					while (pivotvol > mVoice[data[len]]->mVolume);
 					if (right >= len) break;       
-					int temp = mActiveVoice[right];
-					mActiveVoice[right] = mActiveVoice[len];
-					mActiveVoice[len] = temp;
+					int temp = data[right];
+					data[right] = data[len];
+					data[len] = temp;
 				}                        
 			}
 			if (pos == 0) break;         

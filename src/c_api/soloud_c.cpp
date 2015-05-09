@@ -94,6 +94,36 @@ const char * Soloud_getErrorString(void * aClassPtr, int aErrorCode)
 	return cl->getErrorString(aErrorCode);
 }
 
+unsigned int Soloud_getBackendId(void * aClassPtr)
+{
+	Soloud * cl = (Soloud *)aClassPtr;
+	return cl->getBackendId();
+}
+
+const char * Soloud_getBackendString(void * aClassPtr)
+{
+	Soloud * cl = (Soloud *)aClassPtr;
+	return cl->getBackendString();
+}
+
+unsigned int Soloud_getBackendChannels(void * aClassPtr)
+{
+	Soloud * cl = (Soloud *)aClassPtr;
+	return cl->getBackendChannels();
+}
+
+unsigned int Soloud_getBackendSamplerate(void * aClassPtr)
+{
+	Soloud * cl = (Soloud *)aClassPtr;
+	return cl->getBackendSamplerate();
+}
+
+unsigned int Soloud_getBackendBufferSize(void * aClassPtr)
+{
+	Soloud * cl = (Soloud *)aClassPtr;
+	return cl->getBackendBufferSize();
+}
+
 unsigned int Soloud_play(void * aClassPtr, AudioSource * aSound)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
@@ -232,6 +262,12 @@ unsigned int Soloud_getActiveVoiceCount(void * aClassPtr)
 	return cl->getActiveVoiceCount();
 }
 
+unsigned int Soloud_getVoiceCount(void * aClassPtr)
+{
+	Soloud * cl = (Soloud *)aClassPtr;
+	return cl->getVoiceCount();
+}
+
 int Soloud_isValidVoiceHandle(void * aClassPtr, unsigned int aVoiceHandle)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
@@ -254,6 +290,30 @@ float Soloud_getGlobalVolume(void * aClassPtr)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
 	return cl->getGlobalVolume();
+}
+
+unsigned int Soloud_getMaxActiveVoiceCount(void * aClassPtr)
+{
+	Soloud * cl = (Soloud *)aClassPtr;
+	return cl->getMaxActiveVoiceCount();
+}
+
+int Soloud_getLooping(void * aClassPtr, unsigned int aVoiceHandle)
+{
+	Soloud * cl = (Soloud *)aClassPtr;
+	return cl->getLooping(aVoiceHandle);
+}
+
+void Soloud_setLooping(void * aClassPtr, unsigned int aVoiceHandle, int aLooping)
+{
+	Soloud * cl = (Soloud *)aClassPtr;
+	cl->setLooping(aVoiceHandle, !!aLooping);
+}
+
+int Soloud_setMaxActiveVoiceCount(void * aClassPtr, unsigned int aVoiceCount)
+{
+	Soloud * cl = (Soloud *)aClassPtr;
+	return cl->setMaxActiveVoiceCount(aVoiceCount);
 }
 
 void Soloud_setGlobalVolume(void * aClassPtr, float aVolume)
@@ -544,6 +604,23 @@ void Soloud_set3dSourceDopplerFactor(void * aClassPtr, unsigned int aVoiceHandle
 	cl->set3dSourceDopplerFactor(aVoiceHandle, aDopplerFactor);
 }
 
+void Soloud_mix(void * aClassPtr, float * aBuffer, unsigned int aSamples)
+{
+	Soloud * cl = (Soloud *)aClassPtr;
+	cl->mix(aBuffer, aSamples);
+}
+
+void AudioAttenuator_destroy(void * aClassPtr)
+{
+  delete (AudioAttenuator *)aClassPtr;
+}
+
+float AudioAttenuator_attenuate(void * aClassPtr, float aDistance, float aMinDistance, float aMaxDistance, float aRolloffFactor)
+{
+	AudioAttenuator * cl = (AudioAttenuator *)aClassPtr;
+	return cl->attenuate(aDistance, aMinDistance, aMaxDistance, aRolloffFactor);
+}
+
 void BiquadResonantFilter_destroy(void * aClassPtr)
 {
   delete (BiquadResonantFilter *)aClassPtr;
@@ -658,6 +735,12 @@ float * Bus_getWave(void * aClassPtr)
 	return cl->getWave();
 }
 
+void Bus_setVolume(void * aClassPtr, float aVolume)
+{
+	Bus * cl = (Bus *)aClassPtr;
+	cl->setVolume(aVolume);
+}
+
 void Bus_setLooping(void * aClassPtr, int aLoop)
 {
 	Bus * cl = (Bus *)aClassPtr;
@@ -710,6 +793,12 @@ void Bus_set3dColliderEx(void * aClassPtr, AudioCollider * aCollider, int aUserD
 {
 	Bus * cl = (Bus *)aClassPtr;
 	cl->set3dCollider(aCollider, aUserData);
+}
+
+void Bus_setAttenuator(void * aClassPtr, AudioAttenuator * aAttenuator)
+{
+	Bus * cl = (Bus *)aClassPtr;
+	cl->setAttenuator(aAttenuator);
 }
 
 void Bus_stop(void * aClassPtr)
@@ -766,6 +855,12 @@ int Speech_setText(void * aClassPtr, const char * aText)
 	return cl->setText(aText);
 }
 
+void Speech_setVolume(void * aClassPtr, float aVolume)
+{
+	Speech * cl = (Speech *)aClassPtr;
+	cl->setVolume(aVolume);
+}
+
 void Speech_setLooping(void * aClassPtr, int aLoop)
 {
 	Speech * cl = (Speech *)aClassPtr;
@@ -820,6 +915,12 @@ void Speech_set3dColliderEx(void * aClassPtr, AudioCollider * aCollider, int aUs
 	cl->set3dCollider(aCollider, aUserData);
 }
 
+void Speech_setAttenuator(void * aClassPtr, AudioAttenuator * aAttenuator)
+{
+	Speech * cl = (Speech *)aClassPtr;
+	cl->setAttenuator(aAttenuator);
+}
+
 void Speech_setFilter(void * aClassPtr, unsigned int aFilterId, Filter * aFilter)
 {
 	Speech * cl = (Speech *)aClassPtr;
@@ -870,6 +971,12 @@ double Wav_getLength(void * aClassPtr)
 {
 	Wav * cl = (Wav *)aClassPtr;
 	return cl->getLength();
+}
+
+void Wav_setVolume(void * aClassPtr, float aVolume)
+{
+	Wav * cl = (Wav *)aClassPtr;
+	cl->setVolume(aVolume);
 }
 
 void Wav_setLooping(void * aClassPtr, int aLoop)
@@ -924,6 +1031,12 @@ void Wav_set3dColliderEx(void * aClassPtr, AudioCollider * aCollider, int aUserD
 {
 	Wav * cl = (Wav *)aClassPtr;
 	cl->set3dCollider(aCollider, aUserData);
+}
+
+void Wav_setAttenuator(void * aClassPtr, AudioAttenuator * aAttenuator)
+{
+	Wav * cl = (Wav *)aClassPtr;
+	cl->setAttenuator(aAttenuator);
 }
 
 void Wav_setFilter(void * aClassPtr, unsigned int aFilterId, Filter * aFilter)
@@ -990,6 +1103,12 @@ double WavStream_getLength(void * aClassPtr)
 	return cl->getLength();
 }
 
+void WavStream_setVolume(void * aClassPtr, float aVolume)
+{
+	WavStream * cl = (WavStream *)aClassPtr;
+	cl->setVolume(aVolume);
+}
+
 void WavStream_setLooping(void * aClassPtr, int aLoop)
 {
 	WavStream * cl = (WavStream *)aClassPtr;
@@ -1042,6 +1161,12 @@ void WavStream_set3dColliderEx(void * aClassPtr, AudioCollider * aCollider, int 
 {
 	WavStream * cl = (WavStream *)aClassPtr;
 	cl->set3dCollider(aCollider, aUserData);
+}
+
+void WavStream_setAttenuator(void * aClassPtr, AudioAttenuator * aAttenuator)
+{
+	WavStream * cl = (WavStream *)aClassPtr;
+	cl->setAttenuator(aAttenuator);
 }
 
 void WavStream_setFilter(void * aClassPtr, unsigned int aFilterId, Filter * aFilter)
@@ -1124,6 +1249,12 @@ int Sfxr_loadPreset(void * aClassPtr, int aPresetNo, int aRandSeed)
 	return cl->loadPreset(aPresetNo, aRandSeed);
 }
 
+void Sfxr_setVolume(void * aClassPtr, float aVolume)
+{
+	Sfxr * cl = (Sfxr *)aClassPtr;
+	cl->setVolume(aVolume);
+}
+
 void Sfxr_setLooping(void * aClassPtr, int aLoop)
 {
 	Sfxr * cl = (Sfxr *)aClassPtr;
@@ -1176,6 +1307,12 @@ void Sfxr_set3dColliderEx(void * aClassPtr, AudioCollider * aCollider, int aUser
 {
 	Sfxr * cl = (Sfxr *)aClassPtr;
 	cl->set3dCollider(aCollider, aUserData);
+}
+
+void Sfxr_setAttenuator(void * aClassPtr, AudioAttenuator * aAttenuator)
+{
+	Sfxr * cl = (Sfxr *)aClassPtr;
+	cl->setAttenuator(aAttenuator);
 }
 
 void Sfxr_setFilter(void * aClassPtr, unsigned int aFilterId, Filter * aFilter)
@@ -1262,6 +1399,12 @@ int Modplug_loadFile(void * aClassPtr, File * aFile)
 	return cl->loadFile(aFile);
 }
 
+void Modplug_setVolume(void * aClassPtr, float aVolume)
+{
+	Modplug * cl = (Modplug *)aClassPtr;
+	cl->setVolume(aVolume);
+}
+
 void Modplug_setLooping(void * aClassPtr, int aLoop)
 {
 	Modplug * cl = (Modplug *)aClassPtr;
@@ -1314,6 +1457,12 @@ void Modplug_set3dColliderEx(void * aClassPtr, AudioCollider * aCollider, int aU
 {
 	Modplug * cl = (Modplug *)aClassPtr;
 	cl->set3dCollider(aCollider, aUserData);
+}
+
+void Modplug_setAttenuator(void * aClassPtr, AudioAttenuator * aAttenuator)
+{
+	Modplug * cl = (Modplug *)aClassPtr;
+	cl->setAttenuator(aAttenuator);
 }
 
 void Modplug_setFilter(void * aClassPtr, unsigned int aFilterId, Filter * aFilter)
@@ -1374,6 +1523,12 @@ int Monotone_loadFile(void * aClassPtr, File * aFile)
 	return cl->loadFile(aFile);
 }
 
+void Monotone_setVolume(void * aClassPtr, float aVolume)
+{
+	Monotone * cl = (Monotone *)aClassPtr;
+	cl->setVolume(aVolume);
+}
+
 void Monotone_setLooping(void * aClassPtr, int aLoop)
 {
 	Monotone * cl = (Monotone *)aClassPtr;
@@ -1426,6 +1581,12 @@ void Monotone_set3dColliderEx(void * aClassPtr, AudioCollider * aCollider, int a
 {
 	Monotone * cl = (Monotone *)aClassPtr;
 	cl->set3dCollider(aCollider, aUserData);
+}
+
+void Monotone_setAttenuator(void * aClassPtr, AudioAttenuator * aAttenuator)
+{
+	Monotone * cl = (Monotone *)aClassPtr;
+	cl->setAttenuator(aAttenuator);
 }
 
 void Monotone_setFilter(void * aClassPtr, unsigned int aFilterId, Filter * aFilter)
@@ -1486,6 +1647,12 @@ int TedSid_loadFile(void * aClassPtr, File * aFile)
 	return cl->loadFile(aFile);
 }
 
+void TedSid_setVolume(void * aClassPtr, float aVolume)
+{
+	TedSid * cl = (TedSid *)aClassPtr;
+	cl->setVolume(aVolume);
+}
+
 void TedSid_setLooping(void * aClassPtr, int aLoop)
 {
 	TedSid * cl = (TedSid *)aClassPtr;
@@ -1538,6 +1705,12 @@ void TedSid_set3dColliderEx(void * aClassPtr, AudioCollider * aCollider, int aUs
 {
 	TedSid * cl = (TedSid *)aClassPtr;
 	cl->set3dCollider(aCollider, aUserData);
+}
+
+void TedSid_setAttenuator(void * aClassPtr, AudioAttenuator * aAttenuator)
+{
+	TedSid * cl = (TedSid *)aClassPtr;
+	cl->setAttenuator(aAttenuator);
 }
 
 void TedSid_setFilter(void * aClassPtr, unsigned int aFilterId, Filter * aFilter)

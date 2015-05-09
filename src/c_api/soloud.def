@@ -43,6 +43,7 @@ EXPORTS
 	Soloud_getLooping
 	Soloud_setLooping
 	Soloud_setMaxActiveVoiceCount
+	Soloud_setInaudibleBehavior
 	Soloud_setGlobalVolume
 	Soloud_setPostClipScaler
 	Soloud_setPause

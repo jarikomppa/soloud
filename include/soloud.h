@@ -1,6 +1,6 @@
 /*
 SoLoud audio engine
-Copyright (c) 2013-2014 Jari Komppa
+Copyright (c) 2013-2015 Jari Komppa
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -36,7 +36,7 @@ freely, subject to the following restrictions:
 #define WINDOWS_VERSION
 #endif
 
-#define SOLOUD_VERSION 103
+#define SOLOUD_VERSION 110
 
 /////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////
@@ -208,6 +208,8 @@ namespace SoLoud
 		void setLooping(handle aVoiceHandle, bool aLooping);
 		// Set current maximum active voice setting
 		result setMaxActiveVoiceCount(unsigned int aVoiceCount);
+		// Set behavior for inaudible sounds
+		void setInaudibleBehavior(handle aVoiceHandle, bool aMustTick, bool aKill);
 		// Set the global volume
 		void setGlobalVolume(float aVolume);
 		// Set the post clip scaler value

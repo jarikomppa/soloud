@@ -5,7 +5,7 @@
 
 /*
 SoLoud audio engine
-Copyright (c) 2013-2014 Jari Komppa
+Copyright (c) 2013-2015 Jari Komppa
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -151,6 +151,7 @@ unsigned int Soloud_getMaxActiveVoiceCount(Soloud * aSoloud);
 int Soloud_getLooping(Soloud * aSoloud, unsigned int aVoiceHandle);
 void Soloud_setLooping(Soloud * aSoloud, unsigned int aVoiceHandle, int aLooping);
 int Soloud_setMaxActiveVoiceCount(Soloud * aSoloud, unsigned int aVoiceCount);
+void Soloud_setInaudibleBehavior(Soloud * aSoloud, unsigned int aVoiceHandle, int aMustTick, int aKill);
 void Soloud_setGlobalVolume(Soloud * aSoloud, float aVolume);
 void Soloud_setPostClipScaler(Soloud * aSoloud, float aScaler);
 void Soloud_setPause(Soloud * aSoloud, unsigned int aVoiceHandle, int aPause);

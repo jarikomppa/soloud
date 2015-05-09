@@ -1,6 +1,6 @@
 /*
 SoLoud audio engine
-Copyright (c) 2013-2014 Jari Komppa
+Copyright (c) 2013-2015 Jari Komppa
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -112,6 +112,21 @@ namespace SoLoud
 			mVoice[ch]->mPanFader.mActive = 0;
 			mVoice[ch]->mChannelVolume[0] = aLVolume;
 			mVoice[ch]->mChannelVolume[1] = aRVolume;
+		FOR_ALL_VOICES_POST
+	}
+
+	void Soloud::setInaudibleBehavior(handle aVoiceHandle, bool aMustTick, bool aKill)
+	{
+		FOR_ALL_VOICES_PRE
+			mVoice[ch]->mFlags &= ~(AudioSourceInstance::INAUDIBLE_KILL | AudioSourceInstance::INAUDIBLE_TICK);
+			if (aMustTick)
+			{
+				mVoice[ch]->mFlags |= AudioSourceInstance::INAUDIBLE_TICK;
+			}
+			if (aKill)
+			{
+				mVoice[ch]->mFlags |= AudioSourceInstance::INAUDIBLE_KILL;
+			}
 		FOR_ALL_VOICES_POST
 	}
 

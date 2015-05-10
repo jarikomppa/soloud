@@ -82,7 +82,7 @@ ga('send', 'pageview');
 <br>
 <a href="mixbus.html">SoLoud::Bus</a><br>
 <a href="collider.html">SoLoud::AudioCollider</a><br>
-<a href="attenuator.html">SoLoud::AudioAttenuator</a><br>
+<a href="attenuator.html">SoLoud::AudioAttenuat..</a><br>
 <a href="file.html">SoLoud::File</a><br>
 <br>
 <a href="backends.html">Back-ends</a><br>

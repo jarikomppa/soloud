@@ -32,7 +32,7 @@ namespace SoLoud
 		mParent = aParent;
 		mScratch = 0;
 		mScratchSize = 0;
-		mFlags |= PROTECTED;
+		mFlags |= PROTECTED | INAUDIBLE_TICK;
 	}
 	
 	void BusInstance::getAudio(float *aBuffer, unsigned int aSamples)

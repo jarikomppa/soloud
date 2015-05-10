@@ -839,7 +839,7 @@ namespace SoLoud
 			{
 				mActiveVoice[candidates] = i;
 				candidates++;
-				if (mVoice[i]->mFlags & (AudioSourceInstance::INAUDIBLE_TICK | AudioSourceInstance::PROTECTED))
+				if (mVoice[i]->mFlags & AudioSourceInstance::INAUDIBLE_TICK)
 				{
 					mActiveVoice[candidates - 1] = mActiveVoice[mustlive];
 					mActiveVoice[mustlive] = i;

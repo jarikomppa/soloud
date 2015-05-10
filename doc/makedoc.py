@@ -115,7 +115,11 @@ print "- -- --- -- - Generating LaTex"
 
 for x in src:
     if x not in website_only:
-        subprocess.call(["pandoc", "--listings", "--default-image-extension=pdf", "--chapters", x, "-o", "temp/" + x[:len(x)-3]+"tex"])
+        subprocess.call(["pandoc", "-t", "latex", "--listings", "--default-image-extension=pdf", "--chapters", x, "-o", "temp/" + x[:len(x)-3]+"tex.orig"])
+        with open("temp/" + x[:len(x)-3]+"tex", "w") as file_out:
+            with open("temp/" + x[:len(x)-3]+"tex.orig", "r") as file_in:
+                for line in file_in:
+                    file_out.write(line.replace('\\begin{longtable}[c]{@{}ll@{}}', '\\begin{tabulary}{\\textwidth}{lJ}').replace('\\begin{longtable}[c]{@{}lll@{}}', '\\begin{tabulary}{\\textwidth}{lJJ}').replace('\\begin{longtable}[c]{@{}llll@{}}', '\\begin{tabulary}{\\textwidth}{lJJJ}').replace('\\endhead','').replace('\\end{longtable}','\\end{tabulary}'))
 
 print "- -- --- -- - Generating pdf (xelatex_output.txt)"
 

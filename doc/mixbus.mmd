@@ -16,7 +16,9 @@ While a mixing bus doesn't generate audio by itself, playing it counts
 against the maximum number of concurrent streams.
 
 Mixing busses are protected by default (i.e, won't stop playing if
-maximum number of concurrent streams is reached).
+maximum number of concurrent streams is reached), and also marked
+as "must tick" (i.e, will always be present in the active voices
+list).
 
 To play a stream through the mixing bus, use the bus play() command.
 

@@ -102,7 +102,7 @@ namespace SoLoud
 		m3dVelocity[1] = 0;
 		m3dVelocity[2] = 0;		
 		m3dSoundSpeed = 343.3f;
-		mMaxActiveVoices = 64;
+		mMaxActiveVoices = 16;
 		mHighestVoice = 0;
 		mActiveVoiceDirty = true;
 	}

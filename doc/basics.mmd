@@ -26,6 +26,59 @@ cleanup function manually.
 
 ## Basics
 
+### Soloud.init()
+
+Initializes the SoLoud object. The function has several optional parameters
+you can use to adjust SoLoud's behavior. The default values should work for
+most cases.
+
+    result init(unsigned int aFlags = Soloud::CLIP_ROUNDOFF, 
+                unsigned int aBackend = Soloud::AUTO, 
+                unsigned int aSamplerate = Soloud::AUTO, 
+                unsigned int aBufferSize = Soloud::AUTO);
+
+By default SoLoud is initializes with the roundoff clipping enabled, and
+the rest of the parameters set to auto. SoLoud will then pick the backend
+it prefers, and its default parameters.
+
+Currently, you can select from these flags:
+
+Flag                 | Description
+-------------------- | -----------
+CLIP_ROUNDOFF        | Use roundoff clipper. Without this flag the clipper defaults to "hard" clipping to -1/+1
+ENABLE_VISUALIZATION | Enable gathering of visualization data. Can be changed at runtime with setVisualizationEnable()
+LEFT_HANDED_3D       | Use left-handed (direct3d) 3d coordinates. Default is right-handed (opengl) coordinates.
+
+Current set of back-ends is:
+
+Backend     | Description
+----------- | ------------
+AUTO        | Select backend automatically
+SDL         | SDL or SDL2 dynamic linking
+SDL2        | SDL2 static linking (dynamic will use SDL backend)
+PORTAUDIO   | PortAudio
+WINMM       | Windows MultiMedia
+XAUDIO2     | XAudio2
+WASAPI      | Windows Audio Session API
+ALSA        | Advanced Linux Sound Architecture
+OSS         | Open Sound System
+OPENAL      | OpenAL (high latency)
+NULLDRIVER  | Null driver
+
+### Soloud.deinit()
+
+Shut down the SoLoud object. 
+
+    void deinit();
+    
+Should be called before shutting down. While the shutdown probably will
+work out fine without calling this function, it is recommended that
+applications call the deinit function explicitly. 
+
+If the cleanup is left for the executable teardown, it is possible that 
+the backend gets shut down first, and then SoLoud's audio thread may try
+to call it afterwards, leading to undefined behavior. 
+
 ### Soloud.play()
 
 The play function can be used to start playing a sound source. The

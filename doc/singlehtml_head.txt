@@ -1,44 +1,8 @@
+ <style>
+
 html {
 	font-family:"Palatino Linotype", "Book Antiqua", Palatino, serif;
 	color:#000000;				
-}
-
-body {
-	background-image: url(logo.png);
-	background-repeat: no-repeat;
-	background-color: #ffffff;
-}
-
-.logo {
-	position:absolute;
-	left:0px;
-	top:0px;
-	width:190px;
-	height:130px;
-}
-
-.divider {
-	position:absolute;
-	top:130px;
-	left:0px;
-	width:100%;
-	overflow:hidden;
-	background:#c57917;
-	height:1px;
-}
-
-.content {
-	position:absolute;
-	top:140px;
-	left:200px;
-	width:600px;
-}
-
-.menu {
-	position:absolute;
-	top:140px;
-	left:8px;
-	width:170px;
 }
 
 h1, h2
@@ -63,7 +27,7 @@ a:hover
 	text-decoration:underline;
 }
 
-.code
+.code, pre
 {
 	font-family: Consolas, "Lucida Console", "Bitstream Vera Sans Mono", Monaco, monospace;
 	font-size: 12px;
@@ -81,17 +45,9 @@ a:hover
 	margin-right: auto;
 }
 
-
-
 table { border-collapse: collapse; border-top: 1px solid #c57917; border-bottom: 1px solid #c57917; }
 table th { border-bottom: 1px solid #c57917; }
 table th, table td { padding: 1px 6px; }
 
-.content h1:first-child, .content h2:first-child {
-	font-size: 60px;
-	position: absolute;
-	left:-10px;
-	top:-114px;
-	width:610px;
-	text-align:right;
-}
+
+</style>

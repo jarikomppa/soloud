@@ -108,8 +108,11 @@ namespace SoLoud
         WASAPIData *data = static_cast<WASAPIData*>(aSoloud->mBackendData);
         SetEvent(data->audioProcessingDoneEvent);
         SetEvent(data->bufferEndEvent);
-        Thread::wait(data->thread);
-        Thread::release(data->thread);
+		if (data->thread)
+		{
+			Thread::wait(data->thread);
+			Thread::release(data->thread);
+		}
         CloseHandle(data->bufferEndEvent);
         CloseHandle(data->audioProcessingDoneEvent);
         if (0 != data->audioClient)
@@ -124,10 +127,11 @@ namespace SoLoud
         {
             delete[] data->buffer;
         }
-        Thread::destroyMutex(data->soloud->mMutex);
-        data->soloud->mMutex = 0;
-        data->soloud->mLockMutexFunc = 0;
-        data->soloud->mUnlockMutexFunc = 0;
+		if (aSoloud->mMutex)
+			Thread::destroyMutex(aSoloud->mMutex);
+		aSoloud->mMutex = 0;
+		aSoloud->mLockMutexFunc = 0;
+		aSoloud->mUnlockMutexFunc = 0;
         delete data;
         aSoloud->mBackendData = 0;
         CoUninitialize();
@@ -179,9 +183,10 @@ namespace SoLoud
         format.nAvgBytesPerSec = format.nSamplesPerSec*format.nBlockAlign;
         REFERENCE_TIME dur = static_cast<REFERENCE_TIME>(static_cast<double>(aBuffer)
                                            / (static_cast<double>(aSamplerate)*(1.0/10000000.0)));
-        if (FAILED(data->audioClient->Initialize(AUDCLNT_SHAREMODE_SHARED, 
-                                                 AUDCLNT_STREAMFLAGS_EVENTCALLBACK, 
-                                                 dur, 0, &format, 0))) 
+		HRESULT res = data->audioClient->Initialize(AUDCLNT_SHAREMODE_SHARED,
+			AUDCLNT_STREAMFLAGS_EVENTCALLBACK,
+			dur, 0, &format, 0);
+		if (FAILED(res)) 
         {
             return UNKNOWN_ERROR;
         }
@@ -211,6 +216,7 @@ namespace SoLoud
         {
             return UNKNOWN_ERROR;
         }
+        aSoloud->mBackendString = "WASAPI";
         return 0;
     }
 };

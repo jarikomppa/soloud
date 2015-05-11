@@ -1,0 +1,27 @@
+## SoLoud::AudioAttenuator
+
+3d sound sources may have custom audio attenuators attached to them. Sometimes the default options provided by SoLoud are not
+enough.
+
+Custom attenuators are used by creating the object and passing it to an audio source via set3dAttenuator call:
+
+    MyCustomAttenuator ca;
+    gSound.set3dAttenuator(&ca);
+    gSoloud.play(gSound);
+
+The attenuator pointer is copied to audio instances, so if you wish to launch several instances of a sound source with different attenuator, simply call the set3dAttenuator() before any play() calls. Disabling the attenuator can be done by giving the call a NULL pointer.
+
+### AudioAttenuator.attenuate()
+
+To create a custom attenuator, extend the AudioAttenuator class. The class defines only one function:
+
+    virtual float attenuate(float aDistance, 
+                            float aMinDistance, 
+                            float aMaxDistance, 
+                            float aRolloffFactor)
+                          
+The return value is expected to be in the 0..1 range, and gives the general volume level. 
+
+The custom attenuators are called while processing the 3d audio in the update3dAudio() call, before any panning is calculated.
+
+Note that calling any SoLoud functions (even to set the position of a 3d audio source) from the attenuate function will most likely cause the application - or at least the audio thread - to freeze due to mutex locks.

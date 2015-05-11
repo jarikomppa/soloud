@@ -177,6 +177,7 @@ namespace SoLoud
         {
             return UNKNOWN_ERROR;
         }
+        aSoloud->mBackendString = "WinMM";
         return 0;
     }
 };

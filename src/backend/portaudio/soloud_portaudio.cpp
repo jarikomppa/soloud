@@ -112,6 +112,7 @@ namespace SoLoud
 		dll_Pa_Initialize();
 		dll_Pa_OpenDefaultStream(&gStream, 0, 2, paFloat32, aSamplerate, paFramesPerBufferUnspecified, portaudio_callback, (void*)aSoloud);
 		dll_Pa_StartStream(gStream);
+        aSoloud->mBackendString = "PortAudio";
 		return 0;
 	}
 	

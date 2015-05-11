@@ -1,6 +1,6 @@
 ﻿/*
 SoLoud audio engine
-Copyright (c) 2013-2014 Jari Komppa
+Copyright (c) 2013-2015 Jari Komppa
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -28,17 +28,45 @@ freely, subject to the following restrictions:
 #include <vector>
 #include <string>
 
-#define VERSION "SoLoud C-Api Code Generator (c)2013-2014 Jari Komppa http://iki.fi/sol/"
+#define VERSION "SoLoud C-Api Code Generator (c)2013-2015 Jari Komppa http://iki.fi/sol/"
 
 #define OUTDIR "../src/c_api/"
-#define PYOUTDIR "../glue/"
+#define PYOUTDIR "../scripts/"
 
 using namespace std;
+
+char *gIncludeFile[] =
+{
+	"../include/soloud.h",
+	"../include/soloud_audiosource.h",
+	"../include/soloud_biquadresonantfilter.h",
+	"../include/soloud_lofifilter.h",
+	"../include/soloud_bus.h",
+	"../include/soloud_echofilter.h",
+	"../include/soloud_fader.h",
+	"../include/soloud_fftfilter.h",
+	"../include/soloud_filter.h",
+	"../include/soloud_speech.h",
+	"../include/soloud_thread.h",
+	"../include/soloud_wav.h",
+	"../include/soloud_wavstream.h",
+	"../include/soloud_sfxr.h",
+	"../include/soloud_flangerfilter.h",
+	"../include/soloud_dcremovalfilter.h",
+#if defined(WITH_MODPLUG)
+	"../include/soloud_modplug.h",
+#endif
+	"../include/soloud_monotone.h",
+	"../include/soloud_tedsid.h"
+};
+
+int gIncludeFileCount = sizeof(gIncludeFile) / sizeof(char*);
 
 struct Method
 {
 	string mRetType;
 	string mFuncName;
+	vector<string> mOrigParmCast;
 	vector<string> mParmType;
 	vector<string> mParmName;
 	vector<string> mParmValue;
@@ -220,6 +248,11 @@ void parse_params(Method *m, char *b, int &ofs)
 		if (s == ",") NEXTTOKEN;
 
 		m->mParmName.push_back(pn);
+		// Add !! as "cast" to bools to avoid "performance warning" in msvc
+		if (pt == "bool")
+			m->mOrigParmCast.push_back("!!");
+		else
+			m->mOrigParmCast.push_back("");
 		m->mParmType.push_back(subs_str(pt));
 		m->mParmValue.push_back(pv);
 		m->mRef.push_back(ref);
@@ -534,7 +567,7 @@ void fileheader(FILE * f)
 		"\n"
 		"/*\n"
 		"SoLoud audio engine\n"
-		"Copyright (c) 2013-2014 Jari Komppa\n"
+		"Copyright (c) 2013-2015 Jari Komppa\n"
 		"\n"
 		"This software is provided 'as-is', without any express or implied\n"
 		"warranty. In no event will the authors be held liable for any damages\n"
@@ -563,26 +596,11 @@ void fileheader(FILE * f)
 
 void emit_cppstart(FILE * f)
 {
-	fprintf(f,		
-		"#include \"../include/soloud.h\"\n"
-		"#include \"../include/soloud_audiosource.h\"\n"
-		"#include \"../include/soloud_biquadresonantfilter.h\"\n"
-		"#include \"../include/soloud_lofifilter.h\"\n"
-		"#include \"../include/soloud_bus.h\"\n"
-		"#include \"../include/soloud_echofilter.h\"\n"
-		"#include \"../include/soloud_fader.h\"\n"
-		"#include \"../include/soloud_fftfilter.h\"\n"
-		"#include \"../include/soloud_filter.h\"\n"
-		"#include \"../include/soloud_speech.h\"\n"
-		"#include \"../include/soloud_thread.h\"\n"
-		"#include \"../include/soloud_wav.h\"\n"
-		"#include \"../include/soloud_wavstream.h\"\n"
-		"#include \"../include/soloud_sfxr.h\"\n"
-		"#include \"../include/soloud_flangerfilter.h\"\n"
-#if defined(WITH_MODPLUG)
-		"#include \"../include/soloud_modplug.h\"\n"
-#endif
+	int i;
+	for (i = 0; i < gIncludeFileCount; i++)
+		fprintf(f, "#include \"%s\"\n", gIncludeFile[i]);
 
+	fprintf(f,		
 		"\n"
 		"using namespace SoLoud;\n"
 		"\n"
@@ -701,7 +719,8 @@ void emit_func(FILE * f, int aClass, int aMethod)
 			if (m->mRef[i])
 				fprintf(f, "*");
 			fprintf(f, 
-				"%s",				
+				"%s%s",				
+				m->mOrigParmCast[i].c_str(),
 				m->mParmName[i].c_str());
 		}
 	}
@@ -767,7 +786,8 @@ void emit_func(FILE * f, int aClass, int aMethod)
 			if (m->mRef[i])
 				fprintf(f, "*");
 			fprintf(f, 
-				"%s",				
+				"%s%s",				
+				m->mOrigParmCast[i].c_str(),
 				m->mParmName[i].c_str());
 		}
 		fprintf(f,
@@ -865,6 +885,7 @@ void generate()
 			fprintf(pyff, "%s'%s'", (i!=0)?",\n":"", gClass[i]->mName.c_str());
 		}
 	}
+	fprintf(f, "typedef void * File;\n");
 
 	fprintf(pyff, "\n]\n\n");
 
@@ -1077,24 +1098,10 @@ int main(int parc, char ** pars)
 		return 0;
 	}
 
-	parse("../include/soloud.h");
-	parse("../include/soloud_audiosource.h");
-	parse("../include/soloud_biquadresonantfilter.h");
-	parse("../include/soloud_bus.h");
-	parse("../include/soloud_echofilter.h");
-	parse("../include/soloud_fader.h");
-	parse("../include/soloud_fftfilter.h");
-	parse("../include/soloud_filter.h");
-	parse("../include/soloud_flangerfilter.h");
-	parse("../include/soloud_lofifilter.h");
-#if defined(WITH_MODPLUG)
-	parse("../include/soloud_modplug.h");
-#endif
-	parse("../include/soloud_sfxr.h");
-	parse("../include/soloud_speech.h");
-	parse("../include/soloud_thread.h");
-	parse("../include/soloud_wav.h");
-	parse("../include/soloud_wavstream.h");
+	int i;
+	for (i = 0; i < gIncludeFileCount; i++)
+		parse(gIncludeFile[i]);
+
 	printf("Handling inheritance..\n");
 	inherit_stuff();
 

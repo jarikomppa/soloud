@@ -1,6 +1,6 @@
 /*
 SoLoud audio engine
-Copyright (c) 2013-2014 Jari Komppa
+Copyright (c) 2013-2015 Jari Komppa
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -34,12 +34,13 @@ struct stb_vorbis;
 namespace SoLoud
 {
 	class WavStream;
+	class File;
 
 	class WavStreamInstance : public AudioSourceInstance
 	{
 		WavStream *mParent;
 		unsigned int mOffset;
-		FILE *mFile;
+		File *mFile;
 		stb_vorbis *mOgg;
 		unsigned int mOggFrameSize;
 		unsigned int mOggFrameOffset;
@@ -54,11 +55,13 @@ namespace SoLoud
 
 	class WavStream : public AudioSource
 	{
-		result loadwav(FILE * fp);
-		result loadogg(FILE * fp);
+		result loadwav(File * fp);
+		result loadogg(File * fp);
 	public:
 		int mOgg;
 		char *mFilename;
+		File *mMemFile;
+		File *mStreamFile;
 		unsigned int mDataOffset;
 		unsigned int mBits;
 		unsigned int mChannels;
@@ -67,8 +70,14 @@ namespace SoLoud
 		WavStream();
 		virtual ~WavStream();
 		result load(const char *aFilename);
+		result loadMem(unsigned char *aData, unsigned int aDataLen, bool aCopy = false, bool aTakeOwnership = true);
+		result loadToMem(const char *aFilename);
+		result loadFile(File *aFile);
+		result loadFileToMem(File *aFile);		
 		virtual AudioSourceInstance *createInstance();
 		time getLength();
+	public:
+		result parse(File *aFile);
 	};
 };
 

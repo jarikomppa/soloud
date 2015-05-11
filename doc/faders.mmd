@@ -1,8 +1,6 @@
-Core: Faders
-============
+## Faders
 
-Overview
---------
+### Overview
 
 Faders are a convenient way of performing some common audio tasks
 without having to add complex code into your application.
@@ -32,8 +30,7 @@ interpolated on per-sample basis to avoid artifacts.
 
 The starting value for most faders is the current value.
 
-Soloud.fadeVolume()
--------------------
+### Soloud.fadeVolume()
 
 Smoothly change a channel's volume over specified time.
 
@@ -42,8 +39,7 @@ Smoothly change a channel's volume over specified time.
 The fader is disabled if you change the channel's volume with
 setVolume()
 
-Soloud.fadePan()
-----------------
+### Soloud.fadePan()
 
 Smoothly change a channel's pan setting over specified time.
 
@@ -53,8 +49,7 @@ Smoothly change a channel's pan setting over specified time.
 The fader is disabled if you change the channel's panning with setPan()
 or setPanAbsolute()
 
-Soloud.fadeRelativePlaySpeed()
-------------------------------
+### Soloud.fadeRelativePlaySpeed()
 
 Smoothly change a channel's relative play speed over specified time.
 
@@ -63,8 +58,7 @@ Smoothly change a channel's relative play speed over specified time.
 The fader is disabled if you change the channel's play speed with
 setRelativePlaySpeed()
 
-Soloud.fadeGlobalVolume()
--------------------------
+### Soloud.fadeGlobalVolume()
 
 Smoothly change the global volume over specified time.
 
@@ -73,8 +67,7 @@ Smoothly change the global volume over specified time.
 The fader is disabled if you change the global volume with
 setGlobalVolume()
 
-Soloud.schedulePause()
-----------------------
+### Soloud.schedulePause()
 
 After specified time, pause the channel
 
@@ -84,8 +77,7 @@ After specified time, pause the channel
 The scheduler is disabled if you set the pause state with setPause() or
 setPauseAll().
 
-Soloud.scheduleStop()
----------------------
+### Soloud.scheduleStop()
 
 After specified time, stop the channel
 
@@ -94,8 +86,7 @@ After specified time, stop the channel
 
 There's no way (currently) to disable this scheduler.
 
-Soloud.oscillateVolume()
-------------------------
+### Soloud.oscillateVolume()
 
 Set fader to oscillate the volume at specified frequency.
 
@@ -104,8 +95,7 @@ Set fader to oscillate the volume at specified frequency.
 The fader is disabled if you change the channel's volume with
 setVolume()
 
-Soloud.oscillatePan()
----------------------
+### Soloud.oscillatePan()
 
 Set fader to oscillate the panning at specified frequency.
 
@@ -114,8 +104,7 @@ Set fader to oscillate the panning at specified frequency.
 The fader is disabled if you change the channel's panning with setPan()
 or setPanAbsolute()
 
-Soloud.oscillateRelativePlaySpeed()
------------------------------------
+### Soloud.oscillateRelativePlaySpeed()
 
 Set fader to oscillate the relative play speed at specified frequency.
 
@@ -124,8 +113,7 @@ Set fader to oscillate the relative play speed at specified frequency.
 The fader is disabled if you change the channel's play speed with
 setRelativePlaySpeed()
 
-Soloud.oscillateGlobalVolume()
-------------------------------
+### Soloud.oscillateGlobalVolume()
 
 Set fader to oscillate the global volume at specified frequency.
 
@@ -134,8 +122,7 @@ Set fader to oscillate the global volume at specified frequency.
 The fader is disabled if you change the global volume with
 setGlobalVolume()
 
-Soloud.fadeFilterParameter()
-----------------------------
+### Soloud.fadeFilterParameter()
 
 Fades a parameter on a live instance of a filter. The filter must
 support changing of live parameters; otherwise this call does nothing.
@@ -143,8 +130,7 @@ support changing of live parameters; otherwise this call does nothing.
     soloud.fadeFilterParameter(h,3,FILTER::CUTOFF,1000,1); 
     // Fades h's 3rd filter CUTOFF to 1000 in 1 second
 
-Soloud.oscillateFilterParameter()
----------------------------------
+### Soloud.oscillateFilterParameter()
 
 Oscillates a parameter on a live instance of a filter. The filter must
 support changing of live parameters; otherwise this call does nothing.

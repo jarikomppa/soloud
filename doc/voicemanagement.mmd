@@ -1,0 +1,63 @@
+## Voice Management
+
+SoLoud supports virtual voices, meaning that you can call play() on
+many more voices than will be actually audible. SoLoud will then 
+sort the voices by their set volume and play the ones that are
+potentially most audible.
+
+The default behavior for the inaudible voices is to pause, and
+resume when audible again. This is fine for ambience loops, for
+instance, but is not suitable for some sounds.
+
+If you, for instance, have a gun that shoots every five seconds,
+having its output end up in the inaudible list will eat up the
+virtual sounds, and when the sounds become audible (by the player
+moving near the audio source, for example), the sounds will become
+active at once, which is probably not the desired outcome.
+
+    bang.setInaudibleBehavior(false, true);
+
+There are also some sounds that need to keep playing even if they
+should not be audible, because their timing is critical (say,
+a speech).
+
+    classof74.setInaudibleBehavior(true, false);
+
+You can alter the behavior of a sound source by calling
+setInaudibleBehavior(), either on an audio source or through
+the Soloud object for live sounds. Setting both of the flags
+on is legal, but the sound will just get killed when inaudible.
+
+![Active voice selection.](images/virtualvoices)
+
+When gathering the sounds, all voices flagged as "must tick" are
+selected first. All busses are marked as "must tick" by default.
+If a lot of voices have the flag on, it may become difficult or
+even impossible for SoLoud to pick the loudest voices.
+
+You can set the maximum number of active voices via SoLoud's
+setMaxActiveVoiceCount call:
+
+    soloud.setMaxActiveVoiceCount(32);
+    
+The higher the number, the more processing power SoLoud will
+require, but the more concurrent audio streams the user can
+hear.
+
+To check how many voices are active, you can use the
+getActiveVoiceCount() function:
+
+    unsigned int cacophony = soloud.getActiveVoiceCount();
+    
+If the active voice count is constantly at your maximum active
+voice count, you may have a problem.
+
+Finally, you can check the number of virtual voices in use
+via getVoiceCount():
+
+    unsigned int ghosts = soloud.getVoiceCount();
+    
+By default, SoLoud is configured to handle up to 1024 virtual
+voices. This can be upped to 4095 by editing soloud.h and 
+rebuilding. If even more virtual voices are needed, some
+refactoring is required.

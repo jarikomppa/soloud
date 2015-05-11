@@ -1,6 +1,6 @@
 /*
 SoLoud audio engine
-Copyright (c) 2013-2014 Jari Komppa
+Copyright (c) 2013-2015 Jari Komppa
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -36,20 +36,20 @@ freely, subject to the following restrictions:
 #define WINDOWS_VERSION
 #endif
 
-#define SOLOUD_VERSION 101
+#define SOLOUD_VERSION 110
 
 /////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////
 // Configuration defines
 
 // Maximum number of filters per stream
-#define FILTERS_PER_STREAM 4
+#define FILTERS_PER_STREAM 8
 
 // Number of samples to process on one go
 #define SAMPLE_GRANULARITY 512
 
 // Maximum number of concurrent voices (hard limit is 4095)
-#define VOICE_COUNT 64
+#define VOICE_COUNT 1024
 
 // Use linear resampler
 #define RESAMPLER_LINEAR
@@ -110,8 +110,10 @@ namespace SoLoud
 			WINMM,
 			XAUDIO2,
 			WASAPI,
+			ALSA,
 			OSS,
 			OPENAL,
+			NULLDRIVER,
 			BACKEND_MAX,
 		};
 
@@ -120,6 +122,7 @@ namespace SoLoud
 			// Use round-off clipper
 			CLIP_ROUNDOFF = 1,
 			ENABLE_VISUALIZATION = 2,
+			LEFT_HANDED_3D = 4
 		};
 
 		// Initialize SoLoud. Must be called before SoLoud can be used.
@@ -134,10 +137,21 @@ namespace SoLoud
 		// Translate error number to an asciiz string
 		const char * getErrorString(result aErrorCode) const;
 
-		// Start playing a sound. Returns voice handle, which can be ignored or used to alter the playing sound's parameters.
-		handle play(AudioSource &aSound, float aVolume = 1.0f, float aPan = 0.0f, bool aPaused = 0, unsigned int aBus = 0);
-		// Start playing a sound delayed in relation to other sounds called via this function.
-		handle playClocked(time aSoundTime, AudioSource &aSound, float aVolume = 1.0f, float aPan = 0.0f, unsigned int aBus = 0);
+		// Returns current backend ID (BACKENDS enum)
+		unsigned int getBackendId();
+		// Returns current backend string. May be NULL.
+		const char * getBackendString();
+		// Returns current backend channel count (1 mono, 2 stereo, etc)
+		unsigned int getBackendChannels();
+		// Returns current backend sample rate
+		unsigned int getBackendSamplerate();
+		// Returns current backend buffer size
+		unsigned int getBackendBufferSize();
+
+		// Start playing a sound. Returns voice handle, which can be ignored or used to alter the playing sound's parameters. Negative volume means to use default.
+		handle play(AudioSource &aSound, float aVolume = -1.0f, float aPan = 0.0f, bool aPaused = 0, unsigned int aBus = 0);
+		// Start playing a sound delayed in relation to other sounds called via this function. Negative volume means to use default.
+		handle playClocked(time aSoundTime, AudioSource &aSound, float aVolume = -1.0f, float aPan = 0.0f, unsigned int aBus = 0);
 		// Start playing a 3d audio source
 		handle play3d(AudioSource &aSound, float aPosX, float aPosY, float aPosZ, float aVelX = 0.0f, float aVelY = 0.0f, float aVelZ = 0.0f, float aVolume = 1.0f, bool aPaused = 0, unsigned int aBus = 0);
 		// Start playing a 3d audio source, delayed in relation to other sounds called via this function.
@@ -175,6 +189,8 @@ namespace SoLoud
 		bool getProtectVoice(handle aVoiceHandle) const;
 		// Get the current number of busy voices.
 		unsigned int getActiveVoiceCount() const; 
+		// Get the current number of voices in SoLoud
+		unsigned int getVoiceCount() const;
 		// Check if the handle is still valid, or if the sound has stopped.
 		bool isValidVoiceHandle(handle aVoiceHandle) const;
 		// Get current relative play speed.
@@ -183,7 +199,17 @@ namespace SoLoud
 		float getPostClipScaler() const;
 		// Get current global volume
 		float getGlobalVolume() const;
-
+		// Get current maximum active voice setting
+		unsigned int getMaxActiveVoiceCount() const;
+		// Query whether a voice is set to loop.
+		bool getLooping(handle aVoiceHandle) const;
+		
+		// Set voice's loop state
+		void setLooping(handle aVoiceHandle, bool aLooping);
+		// Set current maximum active voice setting
+		result setMaxActiveVoiceCount(unsigned int aVoiceCount);
+		// Set behavior for inaudible sounds
+		void setInaudibleBehavior(handle aVoiceHandle, bool aMustTick, bool aKill);
 		// Set the global volume
 		void setGlobalVolume(float aVolume);
 		// Set the post clip scaler value
@@ -243,6 +269,9 @@ namespace SoLoud
 
 		// Get current loop count. Returns 0 if handle is not valid. (All audio sources may not update loop count)
 		unsigned int getLoopCount(handle aVoiceHandle);
+		
+		// Get audiosource-specific information from a voice. 
+		float getInfo(handle aVoiceHandle, unsigned int aInfoKey);
 
 		// Create a voice group. Returns 0 if unable (out of voice groups / out of memory)
 		handle createVoiceGroup();
@@ -287,14 +316,21 @@ namespace SoLoud
 		void set3dSourceDopplerFactor(handle aVoiceHandle, float aDopplerFactor);
 
 		// Rest of the stuff is used internally.
-	public:
-		// Mix and return N stereo samples in the buffer. Called by the back-end.
+
+		// Mix and return N stereo samples in the buffer. Called by the back-end, or user with null driver.
 		void mix(float *aBuffer, unsigned int aSamples);
+	public:
 		// Handle rest of initialization (called from backend)
 		void postinit(unsigned int aSamplerate, unsigned int aBufferSize, unsigned int aFlags);
 
+		// Update list of active voices
+		void calcActiveVoices();
 		// Perform mixing for a specific bus
 		void mixBus(float *aBuffer, unsigned int aSamples, float *aScratch, unsigned int aBus, float aSamplerate);
+		// Max. number of active voices. Busses and tickable inaudibles also count against this.
+		unsigned int mMaxActiveVoices;
+		// Highest voice in use so far
+		unsigned int mHighestVoice;
 		// Scratch buffer, used for resampling.
 		float *mScratch;
 		// Current size of the scratch, in samples.
@@ -307,6 +343,10 @@ namespace SoLoud
 		unsigned int mSamplerate;
 		// Output channel count
 		unsigned int mChannels;
+		// Current backend ID
+		unsigned int mBackendID;
+		// Current backend string
+		const char * mBackendString;
 		// Maximum size of output buffer; used to calculate needed scratch.
 		unsigned int mBufferSize;
 		// Flags; see Soloud::FLAGS
@@ -345,8 +385,6 @@ namespace SoLoud
 		void setVoiceVolume(unsigned int aVoice, float aVolume);
 		// Set voice (not handle) pause state.
 		void setVoicePause(unsigned int aVoice, int aPause);
-		// Update 3d parameters for a single voice (not handle)
-		void update3dVoice(int aVoice);
 		// Clip the samples in the buffer
 		void clip(float *aBuffer, float *aDestBuffer, unsigned int aSamples, float aVolume0, float aVolume1);
 		// Mono-mixed wave data for visualization and for visualization FFT input
@@ -366,10 +404,20 @@ namespace SoLoud
 		float m3dVelocity[3];
 		// 3d speed of sound (for doppler)
 		float m3dSoundSpeed;
+
+		// Data related to 3d processing, separate from AudioSource so we can do 3d calculations without audio mutex.
+		AudioSourceInstance3dData m3dData[VOICE_COUNT];
 		
 		// For each voice group, first int is number of ints alocated.
 		unsigned int **mVoiceGroup;
 		unsigned int mVoiceGroupCount;
+
+		// List of currently active voices
+		unsigned int mActiveVoice[VOICE_COUNT];
+		// Number of currently active voices
+		unsigned int mActiveVoiceCount;
+		// Active voices list needs to be recalculated
+		bool mActiveVoiceDirty;
 
 		// Remove all non-active voices from group
 		void trimVoiceGroup(handle aVoiceGroupHandle);

@@ -1,5 +1,5 @@
-SoLoud::Speech
-==============
+## SoLoud::Speech
+
 
 The SoLoud::Speech class implements a simple Klatt-style formant speech
 synthesizer. It's barely legible, not really human-like, but it's free,
@@ -15,8 +15,8 @@ sound.
 
 For legal notes, please see the license page.
 
-Speech.setText()
-----------------
+### Speech.setText()
+
 
 The setText function can be used to set the text to be spoken.
 
@@ -28,8 +28,8 @@ any playing instances to avoid crashing.
 
 Trying to set the text to NULL will return an error code.
 
-Speech.setLooping()
--------------------
+### Speech.setLooping()
+
 
 This function can be used to set the speech to loop.
 
@@ -38,16 +38,16 @@ This function can be used to set the speech to loop.
 Calling this function will not affect "live" sound sources.
 
 
-Speech.setFilter()
-------------------
+### Speech.setFilter()
+
 
 As with any other audio source, you can attach filters to 
 speech audio sources.
 
     gRobot.setFilter(0, &gRobotize);
 
-Speech.stop()
--------------
+### Speech.stop()
+
 
 You can stop all instances of a speech sound source with
 stop(). This is equivalent of calling soloud.stopAudioSource()
@@ -55,8 +55,33 @@ with the sound source.
 
     gHeyListen.stop(); // shut up already!
 
-Inherited 3d audio interfaces
------------------------------
+### Speech.setInaudibleBehavior()
+
+Set the inaudible behavior of the sound. By default, if a sound is
+inaudible, it's paused, and will resume when it becomes audible again.
+With this function you can tell SoLoud to either kill the sound if
+it becomes inaudible, or to keep ticking the sound even if it's 
+inaudible.
+
+	// Keep on talking even if I'm not around
+	gSpeech.setInaudibleBehavior(true, false);
+
+### Speech.setVolume()
+
+Set the default volume of the instances created from this audio source.
+
+    gTinyVoice.setVolume(0.1);
+    
+### Speech.setAttenuator()
+
+Set a custom attenuator for the instances created from this audio source.
+use NULL to disable.
+
+    // No attenuator needed anymore
+    gFoo.setAttenuator(NULL);
+
+### Inherited 3d audio interfaces
+
 Like all other audio sources, Speech inherits the 3d audio interfaces. Please refer to the 3d audio chapter for details on:
 
 - Speech.set3dMinMaxDistance()

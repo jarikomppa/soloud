@@ -1,6 +1,6 @@
 /*
 SoLoud audio engine
-Copyright (c) 2013-2014 Jari Komppa
+Copyright (c) 2013-2015 Jari Komppa
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -71,12 +71,25 @@ namespace SoLoud
 		return -1;		
 	}
 
+	unsigned int Soloud::getMaxActiveVoiceCount() const
+	{
+		return mMaxActiveVoices;
+	}
+
 	unsigned int Soloud::getActiveVoiceCount() const
+	{
+		if (mLockMutexFunc) mLockMutexFunc(mMutex);
+		unsigned int c = mActiveVoiceCount;
+		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+		return c;
+	}
+
+	unsigned int Soloud::getVoiceCount() const
 	{
 		if (mLockMutexFunc) mLockMutexFunc(mMutex);
 		int i;
 		int c = 0;
-		for (i = 0; i < VOICE_COUNT; i++)
+		for (i = 0; i < (signed)mHighestVoice; i++)
 		{
 			if (mVoice[i]) 
 			{
@@ -103,6 +116,34 @@ namespace SoLoud
 		return 0;
 	}
 
+
+	bool Soloud::getLooping(handle aVoiceHandle) const
+	{
+		if (mLockMutexFunc) mLockMutexFunc(mMutex);
+		int ch = getVoiceFromHandle(aVoiceHandle);
+		if (ch == -1)
+		{
+			if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+			return 0;
+		}
+		bool v = (mVoice[ch]->mFlags & AudioSourceInstance::LOOPING) != 0;
+		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+		return v;
+	}
+
+	float Soloud::getInfo(handle aVoiceHandle, unsigned int mInfoKey)
+	{
+		if (mLockMutexFunc) mLockMutexFunc(mMutex);
+		int ch = getVoiceFromHandle(aVoiceHandle);
+		if (ch == -1)
+		{
+			if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+			return 0;
+		}
+		float v = mVoice[ch]->getInfo(mInfoKey);
+		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+		return v;
+	}
 
 	float Soloud::getVolume(handle aVoiceHandle) const
 	{
@@ -207,10 +248,19 @@ namespace SoLoud
 		int i;
 		unsigned int lowest_play_index_value = 0xffffffff;
 		int lowest_play_index = -1;
+		
+		// (slowly) drag the highest active voice index down
+		if (mHighestVoice > 0 && mVoice[mHighestVoice - 1] == NULL)
+			mHighestVoice--;
+		
 		for (i = 0; i < VOICE_COUNT; i++)
 		{
 			if (mVoice[i] == NULL)
 			{
+				if (i+1 > (signed)mHighestVoice)
+				{
+					mHighestVoice = i + 1;
+				}
 				return i;
 			}
 			if (((mVoice[i]->mFlags & AudioSourceInstance::PROTECTED) == 0) && 
@@ -237,4 +287,36 @@ namespace SoLoud
 		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 		return v;
 	}
+
+	// Returns current backend ID
+	unsigned int Soloud::getBackendId()
+	{
+		return mBackendID;
+
+	}
+
+	// Returns current backend string
+	const char * Soloud::getBackendString()
+	{
+		return mBackendString;
+	}
+
+	// Returns current backend channel count (1 mono, 2 stereo, etc)
+	unsigned int Soloud::getBackendChannels()
+	{
+		return mChannels;
+	}
+
+	// Returns current backend sample rate
+	unsigned int Soloud::getBackendSamplerate()
+	{
+		return mSamplerate;
+	}
+
+	// Returns current backend buffer size
+	unsigned int Soloud::getBackendBufferSize()
+	{
+		return mBufferSize;
+	}
+
 }

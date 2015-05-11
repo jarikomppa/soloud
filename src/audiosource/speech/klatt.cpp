@@ -1082,7 +1082,7 @@ int klatt::synth(int aSampleCount, short *aSamplePointer)
 
 	mLastElement = currentElement;
 
-	return (samp - aSamplePointer);
+	return (int)(samp - aSamplePointer);
 }
 
 

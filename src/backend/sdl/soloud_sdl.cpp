@@ -120,6 +120,7 @@ namespace SoLoud
 		aSoloud->mBackendCleanupFunc = soloud_sdl_deinit;
 
 		dll_SDL_PauseAudio(0);
+        aSoloud->mBackendString = "SDL (dynamic)";
 		return 0;
 	}
 	

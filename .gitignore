@@ -26,3 +26,8 @@ out/
 *.exp
 doc/xelatex_output.txt
 doc/kindlegen_output.txt
+*.idb
+doc/20*
+glue/soloud*
+scripts/soloud_codegen.py
+glue/rpgmaker_soloud.rb

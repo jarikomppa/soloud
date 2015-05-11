@@ -52,6 +52,7 @@ src = [
     "flangerfilter.mmd",
     "dcremovalfilter.mmd",
     "fftfilter.mmd",
+    "bassboostfilter.mmd",
     "mixbus.mmd",
     "collider.mmd",
     "attenuator.mmd",

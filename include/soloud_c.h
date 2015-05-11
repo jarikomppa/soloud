@@ -5,7 +5,7 @@
 
 /*
 SoLoud audio engine
-Copyright (c) 2013-2014 Jari Komppa
+Copyright (c) 2013-2015 Jari Komppa
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -64,6 +64,8 @@ enum SOLOUD_ENUMS
 	LOFIFILTER_WET = 0,
 	LOFIFILTER_SAMPLERATE = 1,
 	LOFIFILTER_BITDEPTH = 2,
+	BASSBOOSTFILTER_WET = 0,
+	BASSBOOSTFILTER_BOOST = 1,
 	SFXR_COIN = 0,
 	SFXR_LASER = 1,
 	SFXR_EXPLOSION = 2,
@@ -91,6 +93,7 @@ typedef void * Bus;
 typedef void * EchoFilter;
 typedef void * Fader;
 typedef void * FFTFilter;
+typedef void * BassboostFilter;
 typedef void * Filter;
 typedef void * Speech;
 typedef void * Wav;
@@ -266,6 +269,13 @@ int EchoFilter_setParamsEx(EchoFilter * aEchoFilter, float aDelay, float aDecay 
  */
 void FFTFilter_destroy(FFTFilter * aFFTFilter);
 FFTFilter * FFTFilter_create();
+
+/*
+ * BassboostFilter
+ */
+void BassboostFilter_destroy(BassboostFilter * aBassboostFilter);
+int BassboostFilter_setParams(BassboostFilter * aBassboostFilter, float aBoost);
+BassboostFilter * BassboostFilter_create();
 
 /*
  * Speech

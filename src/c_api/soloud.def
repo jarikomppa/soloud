@@ -134,6 +134,9 @@ EXPORTS
 	EchoFilter_setParamsEx
 	FFTFilter_destroy
 	FFTFilter_create
+	BassboostFilter_destroy
+	BassboostFilter_setParams
+	BassboostFilter_create
 	Speech_destroy
 	Speech_create
 	Speech_setText

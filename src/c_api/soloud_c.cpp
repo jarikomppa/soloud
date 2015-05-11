@@ -5,7 +5,7 @@
 
 /*
 SoLoud audio engine
-Copyright (c) 2013-2014 Jari Komppa
+Copyright (c) 2013-2015 Jari Komppa
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -37,6 +37,7 @@ freely, subject to the following restrictions:
 #include "../include/soloud_echofilter.h"
 #include "../include/soloud_fader.h"
 #include "../include/soloud_fftfilter.h"
+#include "../include/soloud_bassboostfilter.h"
 #include "../include/soloud_filter.h"
 #include "../include/soloud_speech.h"
 #include "../include/soloud_thread.h"
@@ -849,6 +850,22 @@ void FFTFilter_destroy(void * aClassPtr)
 void * FFTFilter_create()
 {
   return (void *)new FFTFilter;
+}
+
+void BassboostFilter_destroy(void * aClassPtr)
+{
+  delete (BassboostFilter *)aClassPtr;
+}
+
+int BassboostFilter_setParams(void * aClassPtr, float aBoost)
+{
+	BassboostFilter * cl = (BassboostFilter *)aClassPtr;
+	return cl->setParams(aBoost);
+}
+
+void * BassboostFilter_create()
+{
+  return (void *)new BassboostFilter;
 }
 
 void Speech_destroy(void * aClassPtr)

@@ -30,6 +30,7 @@ freely, subject to the following restrictions:
 
 namespace SoLoud
 {
+	class File;
 
 	class Prg
 	{
@@ -154,8 +155,12 @@ namespace SoLoud
 		Prg mRand;
 		
 		Sfxr();
+		virtual ~Sfxr();
 		void resetParams();
-		result loadParams(const char* aFilename);		
+		result loadParams(const char* aFilename);
+		result loadParamsMem(unsigned char *aMem, unsigned int aLength, bool aCopy = false, bool aTakeOwnership = true);
+		result loadParamsFile(File *aFile);
+
 		result loadPreset(int aPresetNo, int aRandSeed);
 		virtual AudioSourceInstance *createInstance();
 	};

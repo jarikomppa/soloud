@@ -1,6 +1,6 @@
 /*
 SoLoud audio engine
-Copyright (c) 2013-2014 Jari Komppa
+Copyright (c) 2013-2015 Jari Komppa
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -59,6 +59,7 @@ namespace SoLoud
 		mVoice[ch]->mAudioSourceID = aSound.mAudioSourceID;
 		mVoice[ch]->mBusHandle = aBus;
 		mVoice[ch]->init(aSound, mPlayIndex);
+		m3dData[ch].init(aSound);
 
 		mPlayIndex++;
 
@@ -74,7 +75,14 @@ namespace SoLoud
 		}
 
 		setVoicePan(ch, aPan);
-		setVoiceVolume(ch, aVolume);
+		if (aVolume < 0)
+		{
+			setVoiceVolume(ch, aSound.mVolume);
+		}
+		else
+		{
+			setVoiceVolume(ch, aVolume);
+		}
 		setVoiceRelativePlaySpeed(ch, 1);
 
 		int i;
@@ -141,7 +149,7 @@ namespace SoLoud
 			if (mLockMutexFunc) mLockMutexFunc(mMutex);
 			
 			int i;
-			for (i = 0; i < VOICE_COUNT; i++)
+			for (i = 0; i < (signed)mHighestVoice; i++)
 			{
 				if (mVoice && mVoice[i] && mVoice[i]->mAudioSourceID == aSound.mAudioSourceID)
 				{
@@ -156,7 +164,7 @@ namespace SoLoud
 	{
 		int i;
 		if (mLockMutexFunc) mLockMutexFunc(mMutex);
-		for (i = 0; i < VOICE_COUNT; i++)
+		for (i = 0; i < (signed)mHighestVoice; i++)
 		{
 			stopVoice(i);
 		}

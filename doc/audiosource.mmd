@@ -1,5 +1,4 @@
-SoLoud::AudioSource
-===================
+# SoLoud::AudioSource
 
 All audio sources share some common functions. Some of the functionality
 depends on the audio source itself; it may be that some parameter does
@@ -9,8 +8,10 @@ been implemented for other reasons.
 For example, if you stream a live radio station, looping does not make
 much sense.
 
-AudioSource.setLooping()
-------------------------
+## AudioSource class
+
+### AudioSource.setLooping()
+
 
 This function can be used to set a sample to play on repeat, instead of
 just playing once.
@@ -19,8 +20,8 @@ just playing once.
 
 Note that some audio sources may not implement this behavior.
 
-AudioSource.setFilter()
------------------------
+### AudioSource.setFilter()
+
 
 This function can be used to set or clear the filters that should be
 applied to the sounds generated via this audio source.
@@ -31,22 +32,118 @@ Setting the filter to NULL will clear the filter. This will not affect
 already playing sounds. By default, up to four filters can be applied.
 This value can be changed through a constant in the soloud.h file.
 
-AudioSource.setSingleInstance()
--------------------------------
+### AudioSource.setSingleInstance()
+
 
 This function can be used to tell SoLoud that only one instance of this
 sound may be played at the same time.
 
     menuselect.setSingleInstance(1); // Only play it once, Sam
 
-3d audio interfaces
------------------------------
-All audio sources also have the 3d audio interfaces. Please refer to the 3d audio chapter for details on:
+### AudioSource.set3dMinMaxDistance()
 
-- AudioSource.set3dMinMaxDistance()
-- AudioSource.set3dAttenuation()
-- AudioSource.set3dDopplerFactor()
-- AudioSource.set3dProcessing()
-- AudioSource.set3dListenerRelative()
-- AudioSource.set3dDistanceDelay()
-- AudioSource.set3dCollider()
+Set the minimum and maximum distances for the audio source with set3dMinMaxDistance()
+
+    void set3dMinMaxDistance(float aMinDistance, 
+                             float aMaxDistance)
+
+Default values are 1 and 1000000.
+
+See the 3d audio concepts chapter for the meaning of these parameters.
+
+### AudioSource.set3dAttenuation()
+
+Set the attenuation model and rolloff factor with set3dAttenuation()
+
+    void set3dAttenuation(unsigned int aAttenuationModel, 
+                          float aAttenuationRolloffFactor)
+
+The default values are NO_ATTENUATION and 1.
+
+Constant              Model
+--------              --------
+NO_ATTENUATION        No attenuation
+INVERSE_DISTANCE      Inverse distance attenuation model
+LINEAR_DISTANCE       Linear distance attenuation model
+EXPONENTIAL_DISTANCE  Exponential distance attenuation model
+
+See the 3d audio concepts chapter for the meaning of the models and the rolloff parameter.
+
+### AudioSource.set3dDopplerFactor()
+
+
+Set the doppler factor with set3dDopplerFactor(). 
+
+    void set3dDopplerFactor(float aDopplerFactor)
+    
+The default value is 1.
+    
+### AudioSource.set3dProcessing()
+
+
+Enable or disable 3d processing of an audio source. If play3d() or play3dClocked() are used, this call is not required, and the sounds are marked as 3d.
+
+    void set3dProcessing(bool aDo3dProcessing)
+    
+Default is disabled.
+
+    snd.set3dProcessing(1);
+    gSoloud.play(snd); // plays as 3d sound
+    
+It is preferable to use the play3d() calls, as that lets you set the 3d position of the sound at startup.
+
+### AudioSource.set3dListenerRelative()
+
+
+Enable or disable listener relativity for a 3d audio source. If a sound is listener-relative, the listener's coordinates are assumed to be (0,0,0) in calculations.
+
+    void set3dListenerRelative(bool aListenerRelative)
+    
+Default is disabled. Some custom colliders will depend on this flag to be enabled.
+    
+
+### AudioSource.set3dDistanceDelay()
+
+
+Enable or disable the distance delay effect for a 3d audio source. Since speed of sound is way slower than speed of light, in reality we might see an explosion before we hear it. 
+
+    void set3dDistanceDelay(bool aDistanceDelay)
+
+Default is disabled, as this may be seen as a glitch since most games do not bother simulating this.
+
+Note that this will only affect the start time of the sound.
+
+### AudioSource.set3dCollider()
+
+
+Set or clear the custom audio collider and collider's user data for a 3d audio source.
+
+    void set3dCollider(AudioCollider *aCollider, 
+                       int aUserData)
+                       
+SoLoud expects the collider to be there until all instances of the sound have stopped. Application is responsible for cleaning up the collider. Several sound sources may use the same collider.
+
+### AudioSource.setInaudibleBehavior()
+
+Set the inaudible behavior of the sound. By default, if a sound is
+inaudible, it's paused, and will resume when it becomes audible again.
+With this function you can tell SoLoud to either kill the sound if
+it becomes inaudible, or to keep ticking the sound even if it's 
+inaudible.
+
+	void setInaudibleBehavior(bool aMustTick, 
+	                          bool aKill)
+
+### AudioSource.setVolume()
+
+Set the default volume of the instances created from this audio source.
+
+    void setVolume(float aVolume)
+    
+### AudioSource.setAttenuator()
+
+Set a custom attenuator for the instances created from this audio source.
+use NULL to disable.
+
+    void setAttenuator(AudioAttenuator *aAttenuator)
+    

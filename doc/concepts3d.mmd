@@ -1,4 +1,4 @@
-# 3D Audio Concepts
+## 3D Audio Concepts
 
 SoLoud can perform 3d audio calculations. If you do not need 3d (or "positional") audio, you can skip this chapter.
 
@@ -20,7 +20,7 @@ In order to use the 3d audio, use the 3d versions of the play commands, adjust t
     // ...    
     gSoloud.update3dAudio();
 
-## Custom Colliders
+### Custom Colliders
 
 Sound sources may have a custom collider applied to them. This can be useful in many cases. For instance, if you have a river and want a water flow ambience to play when the player is near the water, you can either have a bunch of audio sources along the river (wasting a lot of voices) or you could have one audio source with a custom collider that checks if the player is near the river and adjusts volume accordingly.
 
@@ -32,13 +32,13 @@ Custom colliders are created by extending the AudioCollider class, which only ha
 
 The collide() call is made from update3dAudio() before directional panning is calculated, so it is possible to update the positions from inside your collide() function. That way you could figure out the general direction the sound should be coming from (thinking again of the river example), instead of just having a general volume fade.
 
-## Attenuation
+### Attenuation
 
 Attenuation, or how audio volume decreases on distance, can be calculated in several ways. SoLoud supports three different modes (in addition to "no attenuation"): inverse distance, linear distance and exponential distance. These are calculated using the "clamped" models of OpenAL formulas.
 
 All of the formulas take three parameters: rolloff factor, minimum and maximum distance. How these parameters affect the curves can be seen in the graphs below.
 
-### Inverse Distance
+#### Inverse Distance
     distance = CLAMP(distance, min_distance, max_distance)
     result = min_distance / (min_distance + 
              rolloff_factor * (distance - min_distance))
@@ -52,7 +52,7 @@ Increasing the minimum distance pushes the start of the attenuation further. It 
 ![Inverse distance, varying max](images/att_inv_max)
 The maximum distance simply cuts the attenuation at the volume level it has reached at that point.
 
-### Linear Distance
+#### Linear Distance
     distance = CLAMP(distance, min_distance, max_distance)
     result = 1 - rolloff_factor * 
              (distance - min_distance) / (max_distance - min_distance)
@@ -66,7 +66,7 @@ The minimum distance works as one might expect. Minimum distance must be less or
 ![Linear distance, varying max](images/att_lin_max)
 The maximum distance works as one might expect. Minimum distance must be less or equal to maximum distance.
 
-### Exponential Distance
+#### Exponential Distance
     distance = CLAMP(distance, min_distance, max_distance)
     result = pow(distance / min_distance, -rolloff_factor)
     
@@ -79,7 +79,7 @@ Increasing the minimum distance pushes the start of the attenuation further. It 
 ![Exponential distance, varying max](images/att_exp_max)
 The maximum distance simply cuts the attenuation at the volume level it has reached at that point.
 
-## Doppler
+### Doppler
 "Doppler effect" is the physical phenomenon that causes sound sources (like an ambulance) to sound higher-pitched when they're coming towards you and lower-pitched when going away. 
 
 ![Doppler effect](images/doppler)
@@ -93,12 +93,12 @@ In addition to velocities, the doppler depends on the proper value of speed of s
     
 For a bit of artistic control, you can also set the doppler factor on a per-audio source basis to increase or decrease the strength of the effect. The default value is 1.0.
 
-## Distance Delay
+### Distance Delay
 SoLoud can also delay the start of the effects by their distance. This uses the sound speed value and the distance between the listener and the sound source. Since this may be seen as a glitch as most games do not bother simulating this, it is disabled by default. To enable, use the set3dDistanceDelay() function on your sound sources.
 
     snipershot.set3dDistanceDelay(1);
     
-## Speaker Output
+### Speaker Output
 Speakers are defined as 3d vectors, and the volume at which each speaker plays is calculated like:
 
     volume = (dot(speaker_vector, sound_vector) + 1) / 2

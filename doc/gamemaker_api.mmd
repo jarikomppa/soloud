@@ -1,0 +1,66 @@
+## GameMaker: Studio API
+
+
+Using the GameMaker: Studio extension, SoLoud can be used from GameMaker: Studio.
+
+Most of the existing interfaces can be used via the GameMaker: Studio API.
+Features that require extending SoLoud are not available. Additionally, the 
+GameMaker:Studio limits extensions to only two variable types: doubles and 
+strings. This means that anything more complex, such as wave and FFT data,
+cannot be used.
+
+
+
+### Using the GameMaker: Studio API
+
+The extension soloud.gmez can be found under the "glue" directory.
+
+To use SoLoud with GameMaker: Studio, you can import the soloud.gmez extension
+to your project. As of this writing, only windows target is supported.
+
+
+### GameMaker: Studio API Example
+
+The GameMaker: Studio API mirrors the c++ API.
+
+If the c++ API functions have default parameters, two functions
+are generated: one without the default parameters, and one with. 
+The one where you can change the default parameters is post-fixed Ex, 
+such as Soloud_init and Soloud_initEx.
+
+As an example, here's a simple example in the C++ api:
+
+    SoLoud::Soloud soloud;
+    SoLoud::Speech speech;
+
+    speech.setText("Hello c++ api");
+
+    soloud.init(SoLoud::Soloud::CLIP_ROUNDOFF | 
+                SoLoud::Soloud::ENABLE_VISUALIZATION)
+
+    soloud.setGlobalVolume(4);
+    soloud.play(speech);
+
+    // ...
+
+    soloud.deinit();
+        
+Converted to the GameMaker: Studio API, this becomes:
+
+    soloud = Soloud_create();
+    speech = Speech_create();
+
+    Speech_setText(speech, "Hello from GameMaker: Studio");
+
+    Soloud_initEx(soloud, SOLOUD_CLIP_ROUNDOFF + SOLOUD_ENABLE_VISUALIZATION, 
+                  SOLOUD_AUTO, SOLOUD_AUTO, SOLOUD_AUTO);
+
+    Soloud_setGlobalVolume(soloud, 4);
+    Soloud_play(soloud, speech);
+
+    // ...
+
+    Soloud_deinit(soloud);
+    
+    Speech_destroy(speech);
+    Soloud_destroy(soloud);

@@ -1,12 +1,33 @@
-Concepts
-========
+# Concepts
 
-Back end
---------
+## Generic Audio Concepts
+
+![Audio sources, instances, voices, mix busses.](images/concepts)
+
+### Audio Source and Instance
+
+
+SoLoud uses two kinds of classes for the sounds. Audio sources contain
+all the information related to the sound in question, such as wave
+sample data, while audio instances contain information about an
+"instance" of the sound.
+
+As an analogue, if you think of an old vinyl record, the audio source is
+the record, and you can put as many playheads - the instances - on the
+record. All of the playheads can also move at different speeds, output
+to a different pan position and volume, as well as different filter 
+settings.
+
+![Audio sources and back-ends.](images/source_backend)
+
+### Back end
+
 
 SoLoud itself "only" performs audio mixing and some resource handling.
 For it to be useful, it needs one or more sound source and a back end.
-Some other audio systems use the term 'sink' for the back-ends. 
+Some other audio systems use the term 'sink' for the back-ends (as in
+audio source and audio sink).
+
 Examples of back-ends would be winmm, oss, portaudio, wasapi and SDL audio. 
 SoLoud comes with several back-ends, and is designed to make back-ends 
 relatively easy to implement.
@@ -14,8 +35,8 @@ relatively easy to implement.
 Different back-ends have different characteristics, such as how much
 latency they introduce.
 
-Channel
--------
+### Channel
+
 
 One audio stream can contain one or more channels. Typical audio sources
 are either mono (containing one channel) or stereo (containing two
@@ -26,8 +47,7 @@ In module music (such as mod, s3m, xm, it), "channel" means one of the
 concurrent sounds played, regardless of speaker configuration. Confusing,
 yes.
 
-Voice
-------
+### Voice
 
 SoLoud can play audio from several sound sources at once (or, in fact,
 several times from the same sound source at the same time). Each of
@@ -47,8 +67,8 @@ sound to play, SoLoud finds the oldest voice and kills it. Since this
 may be your background music, you can protect channels from being killed
 by using the soloud.setProtect() call.
 
-Voice Group
------------
+### Voice Group
+
 
 Sometimes it is important to be able to command several voices at the
 same time so that they are synchronized; for instance, when cross-fading
@@ -66,8 +86,8 @@ the same way as single voices, but instead of affecting just one voice,
 SoLoud performs the command on all of the voices in the group in one
 atomic operation.
 
-Clipping
---------
+### Clipping
+
 
 Audio hardware always has a limited dynamic range. If you think of a
 signed 16-bit variable, for instance, you can only store values from
@@ -89,8 +109,8 @@ the sound. A more proper way of doing things would be to use the basic
 clipper and adjust the global volume to avoid clipping. The roundoff
 clipper is, however, easier to use.
 
-Sample
-------
+### Sample
+
 
 The real world has continuous signals, which would require infinite
 amount of storage to store (unless you can figure out some kind of
@@ -110,8 +130,8 @@ this a feasible approach. Nothing stops the audio sources from keeping
 data in a more "compressed" format and performing on-the-fly conversion
 to float, if memory requirements are a concern.
 
-Sample Rate
------------
+### Sample Rate
+
 
 The sample rate represents the number of samples used, per second.
 Typical sample rates are 8000Hz, 22050Hz, 44100Hz and 48000Hz. Higher
@@ -122,15 +142,15 @@ Due to limitations in human hearing, 44100Hz is generally considered
 sufficient. Some audiophiles disagree, but then again, some audiophiles
 buy gold-plated USB cables.
 
-Hz
---
+### Hz
+
 
 Hertz, SI unit of frequency. 0.1Hz means "once per 10 seconds", 1Hz means 
 "once per second", 10Hz means "10 times per second", and 192kHz means 
 "192000 times per second".
 
-Play Speed
-----------
+### Play Speed
+
 
 In addition to a base sample rate, which represents the "normal" playing
 speed, SoLoud includes a "relative play speed" option. This simply
@@ -139,15 +159,15 @@ something that has a different "base" sample rate, using the relative
 play speed will retain the effect of playing the sound slower (and
 lower) or faster (and higher).
 
-Relative Play Speed
--------------------
+### Relative Play Speed
+
 
 SoLoud lets you change the relative play speed of samples. Please note
 that asking for a higher relative play speed is always more expensive 
 than a lower one.
 
-Resampling
-----------
+### Resampling
+
 
 SoLoud has to perform resampling when mixing. In an ideal case, all of
 the sources and the destination sample rate are the same, and no
@@ -163,8 +183,8 @@ Picking the resampler is done by editing the soloud.h file.
 
 Higher quality resamplers are planned.
 
-Pan
----
+### Pan
+
 
 Where the sound is coming from in the stereo sound, ranging from left
 speaker only to right speaker only. SoLoud uses an algorithm to
@@ -172,8 +192,8 @@ calculate the left/right channel volume so that the overall volume is
 retained across the field. You can also set the left/right volumes
 directly, if needed.
 
-Handle
-------
+### Handle
+
 
 SoLoud uses throwaway handles to control sounds. The handle is an
 integer, and internally tracks the channel and sound id, as well as an
@@ -184,22 +204,8 @@ the operation is quietly discarded (or if you're requesting information,
 some kind of generic value is returned). You can also query the validity
 of a handle.
 
-Sound Source and Instance
--------------------------
+### Latency
 
-SoLoud uses two kinds of classes for the sounds. Sound sources contain
-all the information related to the sound in question, such as wave
-sample data, while sound instances contain information about an
-"instance" of the sound.
-
-As an analogue, if you think of an old vinyl record, the sound source is
-the record, and you can put as many playheads - the instances - on the
-record. All of the playheads can also move at different speeds, output
-to a different pan position and volume, as well as different filter 
-settings.
-
-Latency
--------
 
 Audio latency generally means the time it takes from triggering a sound
 to the sound actually coming out of the speakers. The smaller the
@@ -217,8 +223,8 @@ is), with 2048 sample buffer and 44100Hz playback, the latency is around
 46 milliseconds, which is tolerable in most cases. A 100ms latency is
 already easily noticeable.
 
-Filter
-------
+### Filter
+
 
 Audio streams can also be modified on the fly for various effects.
 Typical uses are different environmental effects such as echoes or
@@ -232,8 +238,8 @@ as to the global audio output. By default, you can use up to four filters,
 but this can be easily changed by editing SoLoud.h file and rebuilding
 the library.
 
-Mixing Bus
-----------
+### Mixing Bus
+
 
 In addition to mixing audio streams together at the "global" level,
 SoLoud includes mixing busses which let you mix together groups of audio
@@ -259,3 +265,18 @@ panning (or, eventually, 3d position) of the mixing bus.
 Additional feature of the mixing busses in SoLoud is that you can
 request visualization data from a bus, instead of just from the global
 scope.
+
+### Virtual Voices
+
+SoLoud lets you play way more voices than will actually be played
+to the user. This can be useful if you, for instance, populate a
+3d world with hundreds of audio sources.
+
+SoLoud will sort the voices based on their current volume level
+and only mixes the most audible sounds. The number of active
+voices can be set at runtime.
+
+The maximum number of virtual voices is currently 1024, but can
+be increased up to a hard limit of 4095 by editing soloud.h and
+recompiling. Higher virtual voice counts than that will require 
+some refactoring.

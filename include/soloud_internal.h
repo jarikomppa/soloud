@@ -1,6 +1,6 @@
 /*
 SoLoud audio engine
-Copyright (c) 2013-2014 Jari Komppa
+Copyright (c) 2013-2015 Jari Komppa
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -33,7 +33,10 @@ namespace SoLoud
 	result sdl_init(SoLoud::Soloud *aSoloud, unsigned int aFlags = Soloud::CLIP_ROUNDOFF, unsigned int aSamplerate = 44100, unsigned int aBuffer = 2048);
 
 	// SDL "non-dynamic" back-end initialization call
-	result sdlnondyn_init(SoLoud::Soloud *aSoloud, unsigned int aFlags = Soloud::CLIP_ROUNDOFF, unsigned int aSamplerate = 44100, unsigned int aBuffer = 2048);
+	result sdlstatic_init(SoLoud::Soloud *aSoloud, unsigned int aFlags = Soloud::CLIP_ROUNDOFF, unsigned int aSamplerate = 44100, unsigned int aBuffer = 2048);
+
+	// SDL2 "non-dynamic" back-end initialization call
+	result sdl2static_init(SoLoud::Soloud *aSoloud, unsigned int aFlags = Soloud::CLIP_ROUNDOFF, unsigned int aSamplerate = 44100, unsigned int aBuffer = 2048);
 
 	// OpenAL back-end initialization call
 	result openal_init(SoLoud::Soloud *aSoloud, unsigned int aFlags = Soloud::CLIP_ROUNDOFF, unsigned int aSamplerate = 44100, unsigned int aBuffer = 2048);
@@ -52,6 +55,12 @@ namespace SoLoud
 
 	// OSS back-end initialization call
 	result oss_init(SoLoud::Soloud *aSoloud, unsigned int aFlags = Soloud::CLIP_ROUNDOFF, unsigned int aSamplerate = 44100, unsigned int aBuffer = 2048);
+
+	// ALSA back-end initialization call
+	result alsa_init(SoLoud::Soloud *aSoloud, unsigned int aFlags = Soloud::CLIP_ROUNDOFF, unsigned int aSamplerate = 44100, unsigned int aBuffer = 2048);
+
+	// null driver back-end initialization call
+	result null_init(SoLoud::Soloud *aSoloud, unsigned int aFlags = Soloud::CLIP_ROUNDOFF, unsigned int aSamplerate = 44100, unsigned int aBuffer = 2048);
 
 	// Deinterlace samples in a buffer. From 12121212 to 11112222
 	void deinterlace_samples(const float *aSourceBuffer, float *aDestBuffer, unsigned int aSamples, unsigned int aChannels);
@@ -77,5 +86,21 @@ namespace SoLoud
 			h_++; \
 		} \
 		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+
+#define FOR_ALL_VOICES_PRE_3D \
+		handle *h_ = NULL; \
+		handle th_[2] = { aVoiceHandle, 0 }; \
+		h_ = voiceGroupHandleToArray(aVoiceHandle); \
+		if (h_ == NULL) h_ = th_; \
+				while (*h_) \
+						{ \
+			int ch = (*h_ & 0xfff) - 1; \
+			if (ch != -1 && m3dData[ch].mHandle == *h_)  \
+						{
+
+#define FOR_ALL_VOICES_POST_3D \
+						} \
+			h_++; \
+						} 
 
 #endif

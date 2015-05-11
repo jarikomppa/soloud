@@ -1,5 +1,5 @@
-SoLoud::Filter
-==============
+# SoLoud::Filter
+
 
 Filters can be used to modify the sound some way. Typical uses for a
 filter are to create environmental effects, like echo, or to modify the
@@ -9,8 +9,8 @@ Like audio sources, filters are implemented with two classes; Filter and
 FilterInstance. These are, however, typically much simpler than those
 derived from the AudioSource and AudioInstance classes.
 
-Filter class
-------------
+## Filter class
+
 
     class Example : public Filter
     {
@@ -21,8 +21,8 @@ Filter class
 As with audio sources, the only required function is the
 createInstance().
 
-FilterInstance class
---------------------
+## FilterInstance class
+
 
     class ExampleInstance : public FilterInstance
     {
@@ -60,16 +60,16 @@ FilterInstance class
 The filter instance has no mandatory functions, but you may want to
 implement either filter() or filterChannel() to do some actual work.
 
-FilterInstance.initParams
--------------------------
+### FilterInstance.initParams
+
 
 You should call this in the constructor of your filter instance, with
 the number of parameters your filter has. By convention, the first
 parameter should be the wet/dry parameter, where value 1 outputs fully
 filtered and 0 completely original sound.
 
-FilterInstance.updateParams
----------------------------
+### FilterInstance.updateParams
+
 
 You should call this function in your filter or filterChannel functions
 to update fader values.
@@ -87,8 +87,8 @@ instance, you could do:
 Finally, mParam array contains the parameter values, and mParamFader
 array contains the faders for the parameters.
 
-FilterInstance.filter()
------------------------
+### FilterInstance.filter()
+
 
 The filter() function is the main workhorse of a filter. It gets a
 buffer of samples, channel count, samplerate and current stream time,
@@ -104,16 +104,16 @@ the first channel, followed by aSamples floats for the second channel.
 The default implementation calls filterChannel for every channel in the
 buffer.
 
-FilterInstance.filterChannel()
-------------------------------
+### FilterInstance.filterChannel()
+
 
 Most filters are simpler to write on a channel-by-channel basis, so that
 they only deal with mono samples. In this case, you may want to use the
 filterChannel() function instead. The default implementation of filter()
 calls the filterChannel() for every channel in the source.
 
-FilterInstance.getFilterParameter()
------------------------------------
+### FilterInstance.getFilterParameter()
+
 
 This function is needed to support the changing of live filter
 parameters. The default implementation uses the mParam array.
@@ -121,8 +121,8 @@ parameters. The default implementation uses the mParam array.
 Unless you do something unexpected, you shouldn't need to touch
 this function.
 
-FilterInstance.setFilterParameter()
------------------------------------
+### FilterInstance.setFilterParameter()
+
 
 This function is needed to support the changing of live filter
 parameters. The default implementation uses the mParam array.
@@ -130,8 +130,8 @@ parameters. The default implementation uses the mParam array.
 Unless you do something unexpected, you shouldn't need to touch
 this function.
 
-FilterInstance.fadeFilterParameter()
-------------------------------------
+### FilterInstance.fadeFilterParameter()
+
 
 This function is needed to support the changing of live filter
 parameters. The default implementation uses the mParamFader array.
@@ -139,8 +139,8 @@ parameters. The default implementation uses the mParamFader array.
 Unless you do something unexpected, you shouldn't need to touch
 this function.
 
-FilterInstance.oscillateFilterParameter()
------------------------------------------
+### FilterInstance.oscillateFilterParameter()
+
 
 This function is needed to support the changing of live filter
 parameters. The default implementation uses the mParamFader array.

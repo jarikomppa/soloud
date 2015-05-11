@@ -1,6 +1,6 @@
 /*
 SoLoud audio engine
-Copyright (c) 2013-2014 Jari Komppa
+Copyright (c) 2013-2015 Jari Komppa
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -25,100 +25,32 @@ freely, subject to the following restrictions:
 #include <string.h>
 #include "soloud.h"
 #include "soloud_fftfilter.h"
+#include "soloud_fft.h"
+
 
 namespace SoLoud
 {
+	FFTFilterInstance::FFTFilterInstance()
+	{
+		mParent = 0;
+		mInputBuffer = 0;
+		mMixBuffer = 0;
+		mTemp = 0;
+		int i;
+		for (i = 0; i < MAX_CHANNELS; i++)
+			mOffset[i] = 0;
+	}
+
 	FFTFilterInstance::FFTFilterInstance(FFTFilter *aParent)
 	{
 		mParent = aParent;
-		mBuffer = 0;
+		mInputBuffer = 0;
+		mMixBuffer = 0;
+		mTemp = 0;
+		int i;
+		for (i = 0; i < MAX_CHANNELS; i++)
+			mOffset[i] = 0;
 		initParams(1);
-	}
-
-
-	static void smbFft(float *fftBuffer, int fftFrameSizeLog, int sign)
-	/* 
-	 * COPYRIGHT 1996 Stephan M. Bernsee <smb [AT] dspdimension [DOT] com>
-	 *
-	 * 						The Wide Open License (WOL)
-	 *
-	 * Permission to use, copy, modify, distribute and sell this software and its
-	 * documentation for any purpose is hereby granted without fee, provided that
-	 * the above copyright notice and this license appear in all source copies. 
-	 * THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT EXPRESS OR IMPLIED WARRANTY OF
-	 * ANY KIND. See http://www.dspguru.com/wol.htm for more information.
-	 *
-	 * Sign = -1 is FFT, 1 is iFFT (inverse)
-	 * Fills fftBuffer[0...2*fftFrameSize-1] with the Fourier transform of the
-	 * time domain data in fftBuffer[0...2*fftFrameSize-1]. 
-	 * The FFT array takes and returns the cosine and sine parts in an interleaved 
-	 * manner, ie.	fftBuffer[0] = cosPart[0], fftBuffer[1] = sinPart[0], asf. 
-	 * fftFrameSize	must be a power of 2. 
-	 * It expects a complex input signal (see footnote 2), ie. when working with 
-	 * 'common' audio signals our input signal has to be passed as 
-	 * {in[0],0.,in[1],0.,in[2],0.,...} asf. 
-	 * In that case, the transform of the frequencies of interest is in 
-	 * fftBuffer[0...fftFrameSize].
-	*/
-	{
-		float wr, wi, arg, *p1, *p2, temp;
-		float tr, ti, ur, ui, *p1r, *p1i, *p2r, *p2i;
-		int i, bitm, j, le, le2, k;
-		int fftFrameSize = 1 << fftFrameSizeLog;
-
-		for (i = 2; i < 2 * fftFrameSize - 2; i += 2) 
-		{
-			for (bitm = 2, j = 0; bitm < 2 * fftFrameSize; bitm <<= 1) 
-			{
-				if (i & bitm) j++;
-				j <<= 1;
-			}
-
-			if (i < j) 
-			{
-				p1 = fftBuffer+i; 
-				p2 = fftBuffer+j;
-				temp = *p1; 
-				*(p1++) = *p2;
-				*(p2++) = temp; 
-				temp = *p1;
-				*p1 = *p2; 
-				*p2 = temp;
-			}
-		}
-		for (k = 0, le = 2; k < fftFrameSizeLog; k++) 
-		{
-			le <<= 1;
-			le2 = le >> 1;
-			ur = 1.0;
-			ui = 0.0;
-			arg = (float)(M_PI / (le2 >> 1));
-			wr = cos(arg);
-			wi = sign * sin(arg);
-			for (j = 0; j < le2; j += 2) 
-			{
-				p1r = fftBuffer + j; 
-				p1i = p1r + 1;
-				p2r = p1r + le2; 
-				p2i = p2r + 1;
-				for (i = j; i < 2 * fftFrameSize; i += le) 
-				{
-					tr = *p2r * ur - *p2i * ui;
-					ti = *p2r * ui + *p2i * ur;
-					*p2r = *p1r - tr; 
-					*p2i = *p1i - ti;
-					*p1r += tr; 
-					*p1i += ti;
-					p1r += le; 
-					p1i += le;
-					p2r += le; 
-					p2i += le;
-				}
-				tr = ur * wr - ui * wi;
-				ui = ur * wi + ui * wr;
-				ur = tr;
-			}
-		}
 	}
 
 	void FFTFilterInstance::filterChannel(float *aBuffer, unsigned int aSamples, float aSamplerate, double aTime, unsigned int aChannel, unsigned int aChannels)
@@ -128,91 +60,84 @@ namespace SoLoud
 			updateParams(aTime);
 		}
 
-		if (mBuffer == 0)
+		if (mInputBuffer == 0)
 		{
-			mBuffer = new float[SAMPLE_GRANULARITY * 2];
+			mInputBuffer = new float[512 * aChannels];
+			mMixBuffer = new float[512 * aChannels];
+			mTemp = new float[256];
+			memset(mInputBuffer, 0x2f, sizeof(float) * 512 * aChannels);
+			memset(mMixBuffer, 0, sizeof(float) * 512 * aChannels);
 		}
 
-		float * b = mBuffer;
+		float * b = mTemp;
 
 		int i;
-		for (i = 0; i < SAMPLE_GRANULARITY; i++)
-		{
-			b[i*2+0] = aBuffer[i];
-			b[i*2+1] = 0;
-		}
-
-		static int l = (long)(log((float)SAMPLE_GRANULARITY)/log(2.)+.5);
-
-		smbFft(b,l,-1);
+		unsigned int ofs = 0;
+		unsigned int chofs = 512 * aChannel;
+		unsigned int bofs = mOffset[aChannel];
 		
-		float temp[SAMPLE_GRANULARITY * 2];
-		memcpy(temp, b, sizeof(float) * SAMPLE_GRANULARITY * 2);
-
-		for (i = 0; i < SAMPLE_GRANULARITY * 2; i++)
+		while (ofs < aSamples)
 		{
-			b[i] = temp[(i + SAMPLE_GRANULARITY * 2 + mParent->mShift) % (SAMPLE_GRANULARITY * 2)];
+			for (i = 0; i < 128; i++)
+			{
+				mInputBuffer[chofs + ((bofs + i + 128) & 511)] = aBuffer[ofs + i];
+				mMixBuffer[chofs + ((bofs + i + 128) & 511)] = 0;
+			}
+			
+			for (i = 0; i < 256; i++)
+			{
+				b[i] = mInputBuffer[chofs + ((bofs + i) & 511)];
+			}
+			FFT::fft256(b);
+
+			// do magic
+			fftFilterChannel(b, 128, aSamplerate, aTime, aChannel, aChannels);
+			
+			FFT::ifft256(b);
+
+			for (i = 0; i < 256; i++)
+			{
+				mMixBuffer[chofs + ((bofs + i) & 511)] += b[i] * (128 - abs(128 - i)) * (1.0f / 128.0f);
+			}			
+			
+			for (i = 0; i < 128; i++)
+			{
+				aBuffer[ofs + i] += (mMixBuffer[chofs + ((bofs + i) & 511)] - aBuffer[ofs + i]) * mParam[0];
+			}
+			ofs += 128;
+			bofs += 128;
 		}
+		mOffset[aChannel] = bofs;
+	}
 
-		smbFft(b,l,1);
-
-		float n = 0;
-
-		switch (mParent->mCombine)
+	void FFTFilterInstance::fftFilterChannel(float *aFFTBuffer, unsigned int aSamples, float aSamplerate, time aTime, unsigned int aChannel, unsigned int aChannels)
+	{
+		unsigned int i;
+		for (i = 4; i < aSamples; i++)
 		{
-		case FFTFilter::OVER:
-			for (i = 0; i < SAMPLE_GRANULARITY; i++)
-			{
-				n = aBuffer[i];
-				n = b[i*2+0] * mParent->mScale;
-				aBuffer[i] += (n - aBuffer[i]) * mParam[0];
-			}
-			break;
-		case FFTFilter::SUBTRACT:
-			for (i = 0; i < SAMPLE_GRANULARITY; i++)
-			{
-				n = aBuffer[i];
-				n -= b[i*2+0] * mParent->mScale;
-				aBuffer[i] += (n - aBuffer[i]) * mParam[0];
-			}
-			break;
-		case FFTFilter::MULTIPLY:
-			for (i = 0; i < SAMPLE_GRANULARITY; i++)
-			{
-				n = aBuffer[i];
-				n *= b[i*2+0] * mParent->mScale;
-				aBuffer[i] += (n - aBuffer[i]) * mParam[0];
-			}
-			break;
+			aFFTBuffer[i - 4] = aFFTBuffer[i];
+			aFFTBuffer[i + aSamples - 4] = aFFTBuffer[i + aSamples];
+		}
+		for (i = 0; i < 4; i++)
+		{
+			aFFTBuffer[aSamples - 4 + i] = 0;
+			aFFTBuffer[aSamples + aSamples - 4 + i] = 0;
 		}
 	}
 
 	FFTFilterInstance::~FFTFilterInstance()
 	{
-		delete[] mBuffer;
+		delete[] mTemp;
+		delete[] mInputBuffer;
+		delete[] mMixBuffer;
 	}
 
 	FFTFilter::FFTFilter()
 	{
-		mScale = 0.002f;
-		mCombine = SUBTRACT;
-		mShift = -15;
 	}
 
 	FilterInstance *FFTFilter::createInstance()
 	{
 		return new FFTFilterInstance(this);
-	}
-
-	result FFTFilter::setParameters(int aShift, int aCombine, float aScale)
-	{
-		if (aCombine < 0 || aCombine > 2)
-			return INVALID_PARAMETER;
-
-		mShift = aShift;
-		mCombine = aCombine;
-		mScale = aScale;
-
-		return 0;
 	}
 }

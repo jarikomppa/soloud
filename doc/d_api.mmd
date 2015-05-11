@@ -7,6 +7,8 @@ features that require extending SoLoud are not available.
 
 ### Using the D API
 
+The glue file soloud.d can be found under the "glue" directory.
+
 Include the soloud.d from the glue directory in your project, and
 make sure the SoLoud DLL is in the same directory as your
 executable files. You'll also want to link your executable against the
@@ -41,7 +43,7 @@ Converted to the D API, this becomes:
     Soloud soloud = Soloud.create();
     Speech speech = Speech.create();
 
-    speech.setText("Hello c sharp api");
+    speech.setText("Hello D api");
 
     soloud.init(Soloud.CLIP_ROUNDOFF |
                 Soloud.ENABLE_VISUALIZATION);

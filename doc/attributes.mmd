@@ -1,8 +1,6 @@
-Core: Attributes
-================
+## Attributes
 
-Soloud.getVolume() / Soloud.setVolume()
----------------------------------------
+### Soloud.getVolume() / Soloud.setVolume()
 
 These functions can be used to get and set a sound's current volume
 setting.
@@ -16,8 +14,7 @@ quiet than a scream, even if both are played at the same volume setting.
 
 If an invalid handle is given to getVolume, it will return 0.
 
-Soloud.getPan() / Soloud.setPan()
----------------------------------
+### Soloud.getPan() / Soloud.setPan()
 
 These functions can be used to get and set a sound's current pan
 setting.
@@ -34,8 +31,7 @@ volume; to set the volumes directly, use setPanAbsolute.
 
 If an invalid handle is given to getPan, it will return 0.
 
-Soloud.setPanAbsolute()
------------------------
+### Soloud.setPanAbsolute()
 
 These function can be used to set the left/right volumes directly.
 
@@ -45,8 +41,7 @@ Note that this does not affect the value returned by getPan.
 
 If an invalid handle is given to getPan, it will return 0.
 
-Soloud.getSamplerate() / Soloud.setSamplerate()
------------------------------------------------
+### Soloud.getSamplerate() / Soloud.setSamplerate()
 
 These functions can be used to get and set a sound's base sample rate.
 
@@ -60,8 +55,7 @@ setRelativePlaySpeed instead.
 
 If an invalid handle is given to getSamplerate, it will return 0.
 
-Soloud.getRelativePlaySpeed() / Soloud.setRelativePlaySpeed()
--------------------------------------------------------------
+### Soloud.getRelativePlaySpeed() / Soloud.setRelativePlaySpeed()
 
 These functions can be used to get and set a sound's relative play
 speed.
@@ -81,8 +75,7 @@ cheaper.
 
 If an invalid handle is given to getRelativePlaySpeed, it will return 1.
 
-Soloud.getProtectVoice() / Soloud.setProtectVoice()
--------------------------------------------------------
+### Soloud.getProtectVoice() / Soloud.setProtectVoice()
 
 These functions can be used to get and set a sound's protection state.
 
@@ -98,8 +91,7 @@ If all voices are protected, the result will be undefined.
 
 If an invalid handle is given to getProtectChannel, it will return 0.
 
-Soloud.getPause() / Soloud.setPause()
--------------------------------------
+### Soloud.getPause() / Soloud.setPause()
 
 The setPause function can be used to pause, or unpause, a sound.
 
@@ -112,8 +104,7 @@ anything.
 
 If the handle is invalid, the getPause will return 0.
 
-Soloud.setPauseAll()
---------------------
+### Soloud.setPauseAll()
 
 The setPauseAll function can be used to pause, or unpause, all sounds.
 
@@ -124,8 +115,7 @@ at once. If your game uses this to pause/unpause the sound while the
 game is paused, do note that it will also pause/unpause any sounds that
 you may have paused/unpaused separately.
 
-Soloud.setFilterParameter()
----------------------------
+### Soloud.setFilterParameter()
 
 Sets a parameter for a live instance of a filter. The filter must
 support changing of live parameters; otherwise this call does nothing.
@@ -133,11 +123,28 @@ support changing of live parameters; otherwise this call does nothing.
     soloud.setFilterParameter(h, 3, FILTER::CUTOFF, 1000); 
     // set h's 3rd filter's "cutoff" value to 1000
 
-Soloud.getFilterParameter()
----------------------------
+### Soloud.getFilterParameter()
 
 Gets a parameter from a live instance of a filter. The filter must
 support changing of live parameters; otherwise this call returns zero.
 
     float v = soloud.getFilterParameter(h,3,FILTER::CUTOFF); 
     // get h's 3rd filter's "cutoff" value
+
+### Soloud.getLooping() / Soloud.setLooping()
+
+Get or set the looping behavior of a live sound.
+
+    bool l = soloud.getLooping(h);
+    soloud.setLooping(h, !l); // anti-loop
+    
+### Soloud.setInaudibleBehavior()
+
+Set the inaudible behavior of a live sound. By default, if a sound is
+inaudible, it's paused, and will resume when it becomes audible again.
+With this function you can tell SoLoud to either kill the sound if
+it becomes inaudible, or to keep ticking the sound even if it's 
+inaudible.
+
+    // The dictator's speech must go on even if not heard
+    soloud.setInaudibleBehavior(h, true, false);

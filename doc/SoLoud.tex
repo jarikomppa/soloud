@@ -24,10 +24,31 @@
 \author{Jari Komppa}
 %\date{August 2012} % Delete this line to display the current date
 
+\usepackage{titletoc}
+\titlecontents{chapter}[3em]{\addvspace{10pt}\bfseries}
+    {\contentslabel{2.5em}}{\hspace{-2.5em}}{\hfill\contentspage}
+\dottedcontents{section}[6.3em]{}{3.3em}{0.7pc}
+\dottedcontents{subsection}[10.5em]{}{4.2em}{0.7pc}
+\renewcommand\chapternumberline[1]{\numberline{#1}}
+
+\usepackage[ ]{titlesec}  %
+\titleformat{\chapter}[display]
+  { \normalsize \huge  \color{black}}
+  {\flushright \normalsize \color{black} \MakeUppercase { \chaptertitlename } \hspace{1 ex} { \fontsize{60}{60}\selectfont \color{black} \sffamily  \thechapter }} {10 pt}{\huge}
 
 %%% BEGIN DOCUMENT
 \begin{document}
-	
+\lstset{
+    language=C++,
+    basicstyle=\small,
+    keywordstyle=\color{black},
+    identifierstyle=\color{black},
+    commentstyle=\color{myorange},
+    stringstyle=\ttfamily,
+    showstringspaces=false,
+    tabsize=2,
+    backgroundcolor=\color{mycyan}}
+
 \begin{titlingpage}
 \maketitle
 \end{titlingpage}
@@ -40,51 +61,59 @@
 %===============================================================================
 % All parts of the document are included as separate files.
 
-\include{intro}
-\include{legal}
-\include{quickstart}
-\include{premake}
-\include{concepts}
-\include{concepts3d}
-\include{faq}
-\include{examples}
+\include{temp/intro}
+\include{temp/quickstart}
+\include{temp/faq}
+\include{temp/premake}
+\include{temp/legal}
 
-\include{foreign_interface}
-\include{codegen}
-\include{c_api}
-\include{python_api}
-\include{ruby_api}
-\include{rpgmaker_api}
-\include{bmx_api}
-\include{cs_api}
+\include{temp/concepts}
+\include{temp/concepts3d}
+\include{temp/voicemanagement}
 
-\include{basics}
-\include{attributes}
-\include{faders}
-\include{voicegroups}
-\include{coremisc}
-\include{core3d}
+\include{temp/examples}
 
-\include{audiosource}
-\include{wav}
-\include{wavstream}
-\include{speech}
-\include{sfxr}
-\include{modplug}
-\include{newsoundsources}
+\include{temp/foreign_interface}
+\include{temp/c_api}
+\include{temp/python_api}
+\include{temp/ruby_api}
+\include{temp/rpgmaker_api}
+\include{temp/bmx_api}
+\include{temp/gamemaker_api}
+\include{temp/cs_api}
+\include{temp/d_api}
+\include{temp/codegen}
 
-\include{mixbus}
+\include{temp/basics}
+\include{temp/attributes}
+\include{temp/faders}
+\include{temp/voicegroups}
+\include{temp/coremisc}
+\include{temp/core3d}
 
-\include{filters}
-\include{biquadfilter}
-\include{echofilter}
-\include{fftfilter}
-\include{lofifilter}
-\include{flangerfilter}
+\include{temp/audiosource}
+\include{temp/newsoundsources}
+\include{temp/wav}
+\include{temp/wavstream}
+\include{temp/speech}
+\include{temp/sfxr}
+\include{temp/modplug}
+\include{temp/monotone}
+\include{temp/tedsid}
 
-\include{collider}
+\include{temp/filters}
+\include{temp/biquadfilter}
+\include{temp/echofilter}
+\include{temp/lofifilter}
+\include{temp/flangerfilter}
+\include{temp/dcremovalfilter}
+\include{temp/fftfilter}
 
-\include{backends}
+\include{temp/mixbus}
+\include{temp/collider}
+\include{temp/attenuator}
+\include{temp/file}
 
+\include{temp/backends}
 
 \end{document}

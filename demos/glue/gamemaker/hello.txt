@@ -1,0 +1,12 @@
+soloud = Soloud_create();
+speech = Speech_create();
+flanger = FlangerFilter_create();
+Soloud_init(soloud);
+Soloud_setGlobalVolume(soloud, 10);
+Speech_setText(speech, "Hello gamemaker studio world!");
+Speech_setFilter(speech, 0, flanger);
+Soloud_play(soloud, speech);
+
+show_message("We should hear something now");
+ 
+Soloud_destroy(soloud);

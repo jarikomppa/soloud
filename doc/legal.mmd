@@ -1,5 +1,4 @@
-Legal
-=====
+## Legal
 
 SoLoud, [like everything else](http://everythingisaremix.info/), stands on the shoulders of giants;
 however, care has been taken to only incorporate source code that is
@@ -10,14 +9,14 @@ nonsense.
 
 Any patches submitted to SoLoud must agree to be under compatible licenses.
 
-SoLoud Proper
--------------
+### SoLoud Proper
+
 
 SoLoud proper is licensed under the ZLib/LibPNG license. The code is a
 clean-room implementation with no outside sources used.
 
     SoLoud audio engine
-    Copyright (c) 2013 Jari Komppa
+    Copyright (c) 2013-2015 Jari Komppa
 
     This software is provided 'as-is', without any express or implied
     warranty. In no event will the authors be held liable for any damages
@@ -38,16 +37,16 @@ clean-room implementation with no outside sources used.
        3. This notice may not be removed or altered from any source
        distribution.
 
-OGG Support
------------
+### OGG Support
+
 
 The OGG support in the Wav and WavStream sound sources is based on
 stb_vorbis by Sean Barrett, and it's in the public domain. You can find
 more information (and latest version) at
 <http://nothings.org/stb_vorbis/>
 
-Speech Synthesizer
-------------------
+### Speech Synthesizer
+
 
 The speech synth is based on rsynth by the late Nick Ing-Simmons (et
 al). He described the legal status as:
@@ -75,24 +74,14 @@ acceptable for you, then CC0:
 The SoLoud interface files (soloud_speech.\*) are under the same
 ZLib/LibPNG license as the other SoLoud bits.
 
-Fast Fourier Transform (FFT)
-----------------------------
+### Fast Fourier Transform (FFT)
 
-FFT calculation is provided by a fairly simple implementation by
-Stephan M. Bernsee, under the Wide Open License:
 
-    COPYRIGHT 1996 Stephan M. Bernsee <smb [AT] dspdimension [DOT] com>
+FFT calculation is based on fftreal by Laurent de Soras, under WTFPL, which
+lets you do whatever you want with it.
 
-                            The Wide Open License (WOL)
+### Sfxr
 
-    Permission to use, copy, modify, distribute and sell this software and its
-    documentation for any purpose is hereby granted without fee, provided that
-    the above copyright notice and this license appear in all source copies. 
-    THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT EXPRESS OR IMPLIED WARRANTY OF
-    ANY KIND. See http://www.dspguru.com/wol.htm for more information.
-
-Sfxr
-----
 
 The sfxr sound effects synthesizer is by Tomas Pettersson, re-licensed under
 zlib/libpng license by permission.
@@ -119,8 +108,8 @@ zlib/libpng license by permission.
        3. This notice may not be removed or altered from any source
        distribution.
 
-Libmodplug
-----------
+### Libmodplug
+
 
 The branch of libmodplug that is used in SoLoud was declared public domain.
 Authors include:
@@ -135,8 +124,8 @@ Authors include:
 
 with some fixes modifications by Jari Komppa, to work with SoLoud.
 
-RPGMaker Wrapper Generator
---------------------------
+### RPGMaker Wrapper Generator
+
 The RPGMaker wrapper generator contains code copied from the Ruby standard
 library. This is permitted by the rule 4 of the Ruby license:
 
@@ -201,3 +190,35 @@ In any case, the RPGMaker wrapper does not claim to be Ruby or part of Ruby,
 and the wrapper generator and the wrapper itself is public and freely
 available, so that license should be covered many times over.
 
+
+### TED and SID support
+
+The TED and SID soundchip emulation as well as tool to generate the
+register write dumps is based on tedplay (c) 2012 Attila Grosz, used 
+under Unlicense:
+
+    This is free and unencumbered software released into the public domain.
+    
+    Anyone is free to copy, modify, publish, use, compile, sell, or
+    distribute this software, either in source code form or as a compiled
+    binary, for any purpose, commercial or non-commercial, and by any
+    means.
+    
+    In jurisdictions that recognize copyright laws, the author or authors
+    of this software dedicate any and all copyright interest in the
+    software to the public domain. We make this dedication for the benefit
+    of the public at large and to the detriment of our heirs and
+    successors. We intend this dedication to be an overt act of
+    relinquishment in perpetuity of all present and future rights to this
+    software under copyright law.
+    
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+    EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+    IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+    OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+    ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+    OTHER DEALINGS IN THE SOFTWARE.
+    
+    For more information, please refer to <http://unlicense.org/>
+    

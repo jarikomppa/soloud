@@ -107,13 +107,13 @@ namespace SoLoud
 
 		if (aChannel == 0)
 		{
-			mParamChanged = 0;
 			updateParams(aTime);
 
 			if (mParamChanged & ((1 << FREQUENCY) | (1 << RESONANCE) | (1 << SAMPLERATE)))
 			{
 				calcBQRParams();
 			}
+			mParamChanged = 0;
 		}
 
 		float x;

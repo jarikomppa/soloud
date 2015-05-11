@@ -179,6 +179,7 @@ namespace SoLoud
         {
             return UNKNOWN_ERROR;
         }
+        aSoloud->mBackendString = "OSS";
         return 0;
     }
 };

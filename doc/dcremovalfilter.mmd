@@ -1,0 +1,28 @@
+## SoLoud::DCRemovalFilter
+
+This filter tried to remove DC signal from the audio. In other words,
+it tries to center the waveform around 0. This can be useful if some
+of the input waveforms gets stuck on non-zero values for a long time.
+
+The filter does not support changing of parameters on the fly, nor does
+it take changing of relative play speed into account.
+
+The DC removal is performed by calculating the average sample value over
+a relatively long period of time, and subtracting this from the output.
+
+There is one parameter - how long the averaging buffer should be. The
+time is in seconds.
+
+    // Set up DC removal filter
+    gDCRemovalFilter.setParams(0.1f);  
+    // Set the filter as the first filter of the bus
+    gBus.setFilter(0, &gDCRemovalFilter); 
+
+### DCRemovalFilter.setParams()
+
+Set the parameters of the filter.
+
+    gDCRemovalFilter.setParams(0.1f);
+    
+Changing the parameters does not affect "live" sounds. If invalid pameters are
+given, the function will return error.

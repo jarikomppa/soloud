@@ -173,6 +173,7 @@ namespace SoLoud
 
 		Thread::createThread(openal_thread, (void*)aSoloud);
 
+        aSoloud->mBackendString = "OpenAL";
 		return 0;
 	}	
 };

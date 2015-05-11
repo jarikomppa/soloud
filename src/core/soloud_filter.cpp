@@ -46,6 +46,8 @@ namespace SoLoud
 	result FilterInstance::initParams(int aNumParams)
 	{		
 		mNumParams = aNumParams;
+		delete[] mParam;
+		delete[] mParamFader;
 		mParam = new float[mNumParams];
 		mParamFader = new Fader[mNumParams];
 
@@ -128,7 +130,7 @@ namespace SoLoud
 		unsigned int i;
 		for (i = 0; i < aChannels; i++)
 		{
-			filterChannel(aBuffer + i* aSamples, aSamples, aSamplerate, aTime, i, aChannels);
+			filterChannel(aBuffer + i * aSamples, aSamples, aSamplerate, aTime, i, aChannels);
 		}
 	}
 

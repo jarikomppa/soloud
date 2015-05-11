@@ -55,6 +55,7 @@ namespace SoLoud
 		float mFreq;
 		int mWaveform;
 		Basicwave();
+		virtual ~Basicwave();
 		void setSamplerate(float aSamplerate);
 		void setWaveform(int aWaveform);
 		virtual AudioSourceInstance *createInstance();

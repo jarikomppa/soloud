@@ -1,6 +1,6 @@
 /*
 SoLoud audio engine
-Copyright (c) 2013-2014 Jari Komppa
+Copyright (c) 2013-2015 Jari Komppa
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -23,14 +23,10 @@ freely, subject to the following restrictions:
 */
 
 #include <stdlib.h>
-#if defined(_MSC_VER)
-#include "SDL.h"
-#else
-#include "SDL/SDL.h"
-#endif
 #include <math.h>
 #include <stdio.h>
-
+#include "imgui.h"
+#include "soloud_demo_framework.h"
 
 #include "soloud.h"
 #include "soloud_wav.h"
@@ -40,6 +36,7 @@ freely, subject to the following restrictions:
 #include "soloud_fftfilter.h"
 #include "soloud_biquadresonantfilter.h"
 #include "soloud_lofifilter.h"
+#include "soloud_dcremovalfilter.h"
 
 #ifdef USE_PORTMIDI
 #include "portmidi.h"
@@ -56,162 +53,46 @@ SoLoud::Speech gSpeech;
 SoLoud::Soloud gSoloud;			// SoLoud engine core
 SoLoud::Basicwave gWave;		// Simple wave audio source
 SoLoud::Wav gLoadedWave;
-SoLoud::EchoFilter gFilter;		// Simple echo filter
+SoLoud::EchoFilter gEchoFilter;		// Simple echo filter
 SoLoud::BiquadResonantFilter gBQRFilter;   // BQR filter
 SoLoud::Bus gBus;
 SoLoud::FFTFilter gFftFilter;
 SoLoud::LofiFilter gLofiFilter;
+SoLoud::DCRemovalFilter gDCRemovalFilter;
 
 float gAttack = 0.02f;
 float gRelease = 0.5f;
 
 plonked gPlonked[128] = { 0 };
 int gWaveSelect = 2;
+int gFilterSelect = 0;
 int gEcho = 0;
 char *gInfo = "";
-
-SDL_Surface *screen;
-SDL_Surface *font;
 
 #ifdef USE_PORTMIDI
 PmStream *midi = NULL;
 #endif
-
-void putpixel(int x, int y, int color)
-{
-	if (y < 0 || y > 255 || x < 0 || x > 400) 
-		return;
-	unsigned int *ptr = (unsigned int*)screen->pixels;
-	int lineoffset = y * (screen->pitch / 4);
-	ptr[lineoffset + x] = color;
-}
-
-int drawchar(int ch, int x, int y)
-{
-	int i, j, maxx = 0;
-	for (i = 0; i < 16; i++)
-	{
-		for (j = 0; j < 16; j++)
-		{
-			if (((char*)font->pixels)[((ch-32)*16+i)*16+j])
-			{
-				putpixel(x+j,y+i,0xffffffff);
-				if (j > maxx) maxx = j;
-			}
-		}
-	}
-	return maxx + 1;
-}
-
-void drawstring(char * s, int x, int y)
-{
-	while (*s)
-	{
-		x += drawchar(*s, x, y);
-		if (*s == 32) x += 3;
-		s++;
-	}
-}
-
-
-void render()
-{   
-	// Lock surface if needed
-	if (SDL_MUSTLOCK(screen))
-		if (SDL_LockSurface(screen) < 0) 
-			return;
-
-	// Ask SDL for the time in milliseconds
-	int tick = SDL_GetTicks();
-
-	float *buf = gSoloud.getWave();
-	float *fft = gSoloud.calcFFT();
-
-
-	if (buf && fft)
-	{
-		int i, j;
-		for (i = 0; i < 256; i++)
-			for (j = 0; j < 400; j++)
-				putpixel(j, i, 0);
-
-		int last = 0;
-		for (i = 0; i < 256; i++)
-		{			
-			int v = 256-(int)floor(fft[i] * 127 * 0.1);
-			if (v < 0) v = 0;
-			if (v > 256) v = 256;
-			for (j = v; j < 256; j++)
-			{
-				putpixel(i,j,0x0000ff);
-			}
-
-			v = (int)floor(buf[i] * 127 + 128);
-			if (v < 0) v = 0;
-			if (v > 256) v = 256;
-			for (j = 0; j < 6; j++)
-			{
-				putpixel(i,j+v,0xff0000);
-			}
-
-			putpixel(200 + v,128+(v-last),0x00ff00);
-			last = v;
-		}
-	}
-
-
-	switch (gWaveSelect)
-	{
-	case 0:
-		drawstring("Sine wave", 0, 0);
-		break;
-	case 1:
-		drawstring("Triangle wave", 0, 0);
-		break;
-	case 2:
-		drawstring("Square wave", 0, 0);
-		break;
-	case 3:
-		drawstring("Saw wave", 0, 0);
-		break;
-	case 4:
-		drawstring("Looped sample", 0, 0);
-		break;
-	}
-
-	if (gEcho)
-		drawstring("Echo on", 0, 16);
-
-	drawstring(gInfo, 0, 256-16);
-
-	// Unlock if needed
-	if (SDL_MUSTLOCK(screen)) 
-		SDL_UnlockSurface(screen);
-
-	// Tell SDL to update the whole screen
-	SDL_UpdateRect(screen, 0, 0, 400, 256);    
-}
 
 void plonk(float rel, float vol = 0x50)
 {
 	int i = 0;
 	while (gPlonked[i].mHandle != 0 && i < 128) i++;
 	if (i == 128) return;
-	
+
 	vol = (vol + 10) / (float)(0x7f + 10);
 	vol *= vol;
-	float pan = (float)sin(SDL_GetTicks() * 0.0234) ;
+	float pan = (float)sin(DemoTick() * 0.0234);
 	int handle;
 	if (gWaveSelect < 4)
 	{
-		handle = gBus.play(gWave,0);
+		handle = gBus.play(gWave, 0);
 	}
 	else
 	{
-		handle = gBus.play(gLoadedWave,0);
+		handle = gBus.play(gLoadedWave, 0);
 	}
 	gSoloud.fadeVolume(handle, vol, gAttack);
-	gSoloud.setRelativePlaySpeed(handle, 2*rel);
+	gSoloud.setRelativePlaySpeed(handle, 2 * rel);
 	gPlonked[i].mHandle = handle;
 	gPlonked[i].mRel = rel;
 }
@@ -231,7 +112,7 @@ void replonk(float vol = 0x50)
 	int i = 0;
 	while (gPlonked[i].mHandle != 0 && i < 128) i++;
 	if (i == 128) return;
-	
+
 	vol = (vol + 10) / (float)(0x7f + 10);
 	vol *= vol;
 	for (i = 0; i < 128; i++)
@@ -243,7 +124,6 @@ void replonk(float vol = 0x50)
 	}
 }
 
-
 void say(char *text)
 {
 	gInfo = text;
@@ -253,16 +133,12 @@ void say(char *text)
 
 // Entry point
 int main(int argc, char *argv[])
-{	
+{
 #ifdef USE_PORTMIDI
 	PmEvent buffer[1];
 #endif
-	// Initialize SDL's subsystems - in this case, only video.
-	if ( SDL_Init(SDL_INIT_VIDEO) < 0 ) 
-	{
-		fprintf(stderr, "Unable to init SDL: %s\n", SDL_GetError());
-		exit(1);
-	}
+
+	DemoInit();
 
 #ifdef USE_PORTMIDI
 	Pm_OpenInput(&midi, Pm_GetDefaultInputDeviceID(), NULL, 100, NULL, NULL);
@@ -278,48 +154,40 @@ int main(int argc, char *argv[])
 	gSoloud.init(SoLoud::Soloud::CLIP_ROUNDOFF | SoLoud::Soloud::ENABLE_VISUALIZATION);
 	gSoloud.setGlobalVolume(0.75);
 	gSoloud.setPostClipScaler(0.75);
-//	gBus.setFilter(0, &gBQRFilter);
-//	gBus.setFilter(1, &gFilter);
-	gFilter.setParams(0.5f, 0.5f);
+	//	gBus.setFilter(0, &gBQRFilter);
+	//	gBus.setFilter(1, &gFilter);
+	gEchoFilter.setParams(0.5f, 0.5f);
 	int bushandle = gSoloud.play(gBus);
 
 	gSpeech.setFilter(1, &gFftFilter);
 
-	gSpeech.setText(". . . . . . . . . . . . . . . Use keyboard to play or adjust settings");
-	gInfo = "Use keyboard to play or adjust settings";
+	gSpeech.setText(". . . . . . . . . . . . . . . Use keyboard to play!");
+	gInfo = "Use keyboard to play!";
 	gSoloud.play(gSpeech, 4);
-
-
-	
-	gSoloud.setGlobalFilter(0,0);
-	gSoloud.setGlobalFilter(1,0);
-	gSoloud.setGlobalFilter(2,0);
-	gSoloud.setGlobalFilter(3,0);
 
 	gLoadedWave.load("audio/AKWF_c604_0024.wav");
 	gLoadedWave.setLooping(1);
 
-	// Register SDL_Quit to be called at exit; makes sure things are
-	// cleaned up when we quit.
-	atexit(SDL_Quit);	
+	gBus.setFilter(0, &gLofiFilter);
+	gBus.setFilter(1, &gEchoFilter);
+	gBus.setFilter(3, &gDCRemovalFilter);
 
-	// Attempt to create a 640x480 window with 32bit pixels.
-	screen = SDL_SetVideoMode(400, 256, 32, SDL_SWSURFACE);
-	font = SDL_LoadBMP("graphics/font.bmp");
-	// If we fail, return error.
-	if ( screen == NULL ) 
-	{
-		fprintf(stderr, "Unable to set 640x480 video: %s\n", SDL_GetError());
-		exit(1);
-	}
-
-
+	float filter_param0[4] = { 0, 0, 1, 1 };
+	float filter_param1[4] = { 8000, 0, 1000, 0 };
+	float filter_param2[4] = { 3, 0, 2, 0 };
 
 	// Main loop: loop forever.
 	while (1)
 	{
-		// Render stuff
-		render();
+		gSoloud.setFilterParameter(bushandle, 0, 0, filter_param0[0]);
+		gSoloud.setFilterParameter(bushandle, 1, 0, filter_param0[1]);
+		gSoloud.setFilterParameter(bushandle, 2, 0, filter_param0[2]);
+		gSoloud.setFilterParameter(bushandle, 3, 0, filter_param0[3]);
+
+		gSoloud.setFilterParameter(bushandle, 0, 1, filter_param1[0]);
+		gSoloud.setFilterParameter(bushandle, 0, 2, filter_param2[0]);
+
+
 #ifdef USE_PORTMIDI
 		if (midi)
 		{
@@ -337,7 +205,7 @@ int main(int argc, char *argv[])
 						// some keyboards send volume 0 play instead of note off..
 						if (Pm_MessageData2(buffer[0].message) != 0)
 						{
-							plonk(pow(0.943875f, 0x3c - Pm_MessageData1(buffer[0].message)),(float)Pm_MessageData2(buffer[0].message));
+							plonk(pow(0.943875f, 0x3c - Pm_MessageData1(buffer[0].message)), (float)Pm_MessageData2(buffer[0].message));
 						}
 						else
 						{
@@ -358,137 +226,146 @@ int main(int argc, char *argv[])
 			}
 		}
 #endif
-		// Poll for events, and handle the ones we care about.
-		SDL_Event event;
-		while (SDL_PollEvent(&event)) 
-		{
-			switch (event.type) 
-			{
-			case SDL_KEYDOWN:
-				switch (event.key.keysym.sym)
-				{
-				case SDLK_z: 
-					gBus.setFilter(0, 0); 
-					gBus.setFilter(1, 0); 
-					gBus.setFilter(2, 0); 
-					gBus.setFilter(3, 0); 
-					say("Filter clear");
-					gEcho = 0;
-					break;
-				case SDLK_x: 
-					gBus.setFilter(1, &gFilter); 
-					say("Echo filter");
-					gEcho = 1;
-					break;
-				case SDLK_c: 
-					gBQRFilter.setParams(SoLoud::BiquadResonantFilter::LOWPASS, 44100, 1000, 2);  
-					gBus.setFilter(2, &gBQRFilter); 
-					say("Low pass filter 1000 hz");
-					break;
-				case SDLK_v: 
-					gBQRFilter.setParams(SoLoud::BiquadResonantFilter::LOWPASS, 44100, 500, 8);   
-					gBus.setFilter(2, &gBQRFilter); 
-					say("Low pass filter 500 hz");
-					break;
-				case SDLK_b: 
-					gBQRFilter.setParams(SoLoud::BiquadResonantFilter::HIGHPASS, 44100, 1000, 8); 
-					gBus.setFilter(2, &gBQRFilter); 
-					say("High pass filter 1000 hz");
-					break;
-				case SDLK_n: 
-					gBQRFilter.setParams(SoLoud::BiquadResonantFilter::BANDPASS, 44100, 1000, 1); 
-					gBus.setFilter(2, &gBQRFilter); 
-					say("Band pass filter 1000 hz");
-					break;
-				case SDLK_m: 
-					gBQRFilter.setParams(SoLoud::BiquadResonantFilter::LOWPASS, 44100, 1000, 2);  
-					gBus.setFilter(2, &gBQRFilter); 
-					gSoloud.oscillateFilterParameter(bushandle, 2, SoLoud::BiquadResonantFilter::FREQUENCY, 500, 6000, 4);  
-					say("Oscillating low pass filter");
-					break;
-				case SDLK_l:
-					gLofiFilter.setParams(8000, 3);
-					gBus.setFilter(0, &gLofiFilter); 
-					say("Low-fidelity filter");
-					break;
-				case SDLK_a: 
-					gWaveSelect = 0;
-					gWave.setWaveform(SoLoud::Basicwave::SINE); 
-					say("Sine wave");
-					break;
-				case SDLK_s: 
-					gWaveSelect = 1;
-					gWave.setWaveform(SoLoud::Basicwave::TRIANGLE); 
-					say("Triangle wave");
-					break;
-				case SDLK_d: 
-					gWaveSelect = 2;
-					gWave.setWaveform(SoLoud::Basicwave::SQUARE); 
-					say("Square wave");
-					break;
-				case SDLK_f: 
-					gWaveSelect = 3;
-					gWave.setWaveform(SoLoud::Basicwave::SAW); 
-					say("Saw wave");
-					break;
-				case SDLK_g: 
-					gWaveSelect = 4;
-					say("Looping sample");
-					break;
+#define NOTEKEY(x, p)\
+		if (gPressed[x] && !gWasPressed[x]) { plonk(pow(0.943875f, p)); gWasPressed[x] = 1; } \
+		if (!gPressed[x] && gWasPressed[x]) { unplonk(pow(0.943875f, p)); gWasPressed[x] = 0; }
 
-				case SDLK_p: plonk(1); break;                  // C
-				case SDLK_o: plonk(pow(0.943875f, 1)); break;  // B
-				case SDLK_9: plonk(pow(0.943875f, 2)); break;  //  A#
-				case SDLK_i: plonk(pow(0.943875f, 3)); break;  // A
-				case SDLK_8: plonk(pow(0.943875f, 4)); break;  //  G#
-				case SDLK_u: plonk(pow(0.943875f, 5)); break;  // G
-				case SDLK_7: plonk(pow(0.943875f, 6)); break;  //  F#
-				case SDLK_y: plonk(pow(0.943875f, 7)); break;  // F
-				case SDLK_t: plonk(pow(0.943875f, 8)); break;  // E
-				case SDLK_5: plonk(pow(0.943875f, 9)); break;  //  D#
-				case SDLK_r: plonk(pow(0.943875f, 10)); break; // D
-				case SDLK_4: plonk(pow(0.943875f, 11)); break; //  C#
-				case SDLK_e: plonk(pow(0.943875f, 12)); break; // C
-				case SDLK_w: plonk(pow(0.943875f, 13)); break; // B
-				case SDLK_2: plonk(pow(0.943875f, 14)); break; //  A#
-				case SDLK_q: plonk(pow(0.943875f, 15)); break; // A
-				case SDLK_1: plonk(pow(0.943875f, 16)); break; //  G#
-				}
-				break;
-			case SDL_KEYUP:
-				// If escape is pressed, return (and thus, quit)
-				switch (event.key.keysym.sym)
-				{
-				case SDLK_ESCAPE:
-					{
-						gSoloud.deinit();
-						return 0;
-					}
-					break;
-				case SDLK_p: unplonk(1); break;                  // C
-				case SDLK_o: unplonk(pow(0.943875f, 1)); break;  // B
-				case SDLK_9: unplonk(pow(0.943875f, 2)); break;  //  A#
-				case SDLK_i: unplonk(pow(0.943875f, 3)); break;  // A
-				case SDLK_8: unplonk(pow(0.943875f, 4)); break;  //  G#
-				case SDLK_u: unplonk(pow(0.943875f, 5)); break;  // G
-				case SDLK_7: unplonk(pow(0.943875f, 6)); break;  //  F#
-				case SDLK_y: unplonk(pow(0.943875f, 7)); break;  // F
-				case SDLK_t: unplonk(pow(0.943875f, 8)); break;  // E
-				case SDLK_5: unplonk(pow(0.943875f, 9)); break;  //  D#
-				case SDLK_r: unplonk(pow(0.943875f, 10)); break; // D
-				case SDLK_4: unplonk(pow(0.943875f, 11)); break; //  C#
-				case SDLK_e: unplonk(pow(0.943875f, 12)); break; // C
-				case SDLK_w: unplonk(pow(0.943875f, 13)); break; // B
-				case SDLK_2: unplonk(pow(0.943875f, 14)); break; //  A#
-				case SDLK_q: unplonk(pow(0.943875f, 15)); break; // A
-				case SDLK_1: unplonk(pow(0.943875f, 16)); break; //  G#
-				}
-				break;
-			case SDL_QUIT:
-				gSoloud.deinit();
-				return(0);
+		NOTEKEY('1', 18); // F#
+		NOTEKEY('q', 17); // G
+		NOTEKEY('2', 16); // G#
+		NOTEKEY('w', 15); // A
+		NOTEKEY('3', 14); // A#
+		NOTEKEY('e', 13); // B
+		NOTEKEY('r', 12); // C
+		NOTEKEY('5', 11); // C#
+		NOTEKEY('t', 10); // D
+		NOTEKEY('6', 9); // D#
+		NOTEKEY('y', 8); // E
+		NOTEKEY('u', 7); // F
+		NOTEKEY('8', 6); // F#
+		NOTEKEY('i', 5); // G
+		NOTEKEY('9', 4); // G#
+		NOTEKEY('o', 3); // A
+		NOTEKEY('0', 2); // A#
+		NOTEKEY('p', 1); // B
+
+		DemoUpdateStart();
+
+		float *buf = gSoloud.getWave();
+		float *fft = gSoloud.calcFFT();
+
+		ONCE(ImGui::SetNextWindowPos(ImVec2(500, 20)));
+		ImGui::Begin("Output");
+		ImGui::PlotLines("##Wave", buf, 256, 0, "Wave", -1, 1, ImVec2(264, 80));
+		ImGui::PlotHistogram("##FFT", fft, 256 / 2, 0, "FFT", 0, 10, ImVec2(264, 80), 8);
+		ImGui::Text("Active voices     : %d", gSoloud.getActiveVoiceCount());
+		ImGui::Text("1 2 3   5 6   8 9 0");		
+		ImGui::Text(" Q W E R T Y U I O P");
+		ImGui::Text(gInfo);
+		ImGui::End();
+
+		ONCE(ImGui::SetNextWindowPos(ImVec2(20, 20)));
+		ONCE(ImGui::SetNextWindowSize(ImVec2(300, 350)));
+		ImGui::Begin("Control");
+
+		if (ImGui::CollapsingHeader("Waveform",0,true,true))
+		{
+			if (ImGui::RadioButton("Sine", gWaveSelect == 0))
+			{
+				gWaveSelect = 0;
+				gWave.setWaveform(SoLoud::Basicwave::SINE);
+				say("Sine wave");
+			}
+			if (ImGui::RadioButton("Triangle", gWaveSelect == 1))
+			{
+				gWaveSelect = 1;
+				gWave.setWaveform(SoLoud::Basicwave::TRIANGLE);
+				say("Triangle wave");
+			}
+			if (ImGui::RadioButton("Square", gWaveSelect == 2))
+			{
+				gWaveSelect = 2;
+				gWave.setWaveform(SoLoud::Basicwave::SQUARE);
+				say("Square wave");
+			}
+			if (ImGui::RadioButton("Saw", gWaveSelect == 3))
+			{
+				gWaveSelect = 3;
+				gWave.setWaveform(SoLoud::Basicwave::SAW);
+				say("Saw wave");
+			}
+			if (ImGui::RadioButton("Looping sample", gWaveSelect == 4))
+			{
+				gWaveSelect = 4;
+				say("Looping sample");
 			}
 		}
+		
+		if (ImGui::CollapsingHeader("BQRFilter",0,true,true))
+		{
+			if (ImGui::RadioButton("None", gFilterSelect == 0))
+			{
+				gFilterSelect = 0;
+				gBus.setFilter(2, 0);
+				say("Filter disabled");
+			}
+			if (ImGui::RadioButton("Lowpass", gFilterSelect == 1))
+			{
+				gFilterSelect = 1;
+				gBQRFilter.setParams(SoLoud::BiquadResonantFilter::LOWPASS, 44100, 1000, 2);
+				gBus.setFilter(2, &gBQRFilter);
+				say("Low pass filter");
+			}
+			if (ImGui::RadioButton("Highpass", gFilterSelect == 2))
+			{
+				gFilterSelect = 2;
+				gBQRFilter.setParams(SoLoud::BiquadResonantFilter::HIGHPASS, 44100, 1000, 2);
+				gBus.setFilter(2, &gBQRFilter);
+				say("High pass filter");
+			}
+			if (ImGui::RadioButton("Bandpass", gFilterSelect == 3))
+			{
+				gFilterSelect = 3;
+				gBQRFilter.setParams(SoLoud::BiquadResonantFilter::BANDPASS, 44100, 1000, 2);
+				gBus.setFilter(2, &gBQRFilter);
+				say("Band pass filter");
+			}
+			ImGui::SliderFloat("Wet##4", &filter_param0[2], 0, 1);
+			filter_param1[2] = gSoloud.getFilterParameter(bushandle, 2, 2);
+			if (ImGui::SliderFloat("Frequency##4", &filter_param1[2], 0, 8000))
+			{
+				gSoloud.setFilterParameter(bushandle, 2, 2, filter_param1[2]);
+			}
+			if (ImGui::SliderFloat("Resonance##4", &filter_param2[2], 1, 20))
+			{
+				gSoloud.setFilterParameter(bushandle, 2, 3, filter_param2[2]);
+			}
+			if (ImGui::Button("Oscillate +/- 1kHz"))
+			{
+				float from = filter_param1[2] - 500;
+				if (from < 0) from = 0;
+				gSoloud.oscillateFilterParameter(bushandle, 2, 2, from, from + 1000, 1);
+			}
+		}
+		if (ImGui::CollapsingHeader("Lofi filter", 0, true, true))
+		{
+			ImGui::SliderFloat("Wet##2", &filter_param0[0], 0, 1);
+			ImGui::SliderFloat("Rate##2", &filter_param1[0], 1000, 8000);
+			ImGui::SliderFloat("Bit depth##2", &filter_param2[0], 0, 8);
+		}
+		if (ImGui::CollapsingHeader("Echo filter", 0, true, true))
+		{
+			ImGui::SliderFloat("Wet##3", &filter_param0[1], 0, 1);
+		}
+		if (ImGui::CollapsingHeader("DC Removal filter", 0, true, true))
+		{
+			ImGui::SliderFloat("Wet##1", &filter_param0[3], 0, 1);
+		}
+
+
+		ImGui::End();
+
+		DemoUpdateEnd();
 	}
 	return 0;
 }

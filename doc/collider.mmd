@@ -1,5 +1,4 @@
-SoLoud::AudioCollider
-=====================
+## SoLoud::AudioCollider
 
 3d sound sources may have custom audio colliders attached to them. By default, audio sources are only defined by their position and maximum range, which makes the sound sources "point sources" and omnidirectional.
 
@@ -13,8 +12,7 @@ Custom colliders are used by creating the object and passing it to an audio sour
 
 The set3dCollider call also takes an optional aUserData parameter. The user data as well as the collider pointer are copied to audio instances, so if you wish to launch several instances of a sound source with different collider (or just different user data), simply call the set3dCollider() before any play() calls. Disabling the collider can be done by giving the call a NULL pointer.
 
-AudioCollider.collide()
------------------------
+### AudioCollider.collide()
 
 To create a custom collider, extend the AudioCollider class. The class defines only one function:
 

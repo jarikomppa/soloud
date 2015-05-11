@@ -1,4 +1,4 @@
-<p>Copyright&copy;2013-2014 <a href="http://iki.fi/sol/">Jari Komppa</a></p>
+<p>Copyright&copy;2013-2015 <a href="http://iki.fi/sol/">Jari Komppa</a></p>
 
 <div class="advert">
 <script type="text/javascript"><!--
@@ -12,12 +12,6 @@ google_ad_height = 60;
 <script type="text/javascript"
 src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 </script></div>
-<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
-</script>
-<script type="text/javascript">
-_uacct = "UA-255414-1";
-urchinTracker();
-</script>
 
 		</div>
 	</body>

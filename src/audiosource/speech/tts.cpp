@@ -862,7 +862,7 @@ static int leftmatch(
 	}
 
 	/* point to last character in pattern string */
-	count = strlen(pattern);
+	count = (int)strlen(pattern);
 
 	pat = pattern + (count - 1);
 
@@ -1271,14 +1271,14 @@ int xlate_string(const char *string, darray *phone)
 			while (isalpha(ch = *s) || ((ch == '\'' || ch == '-' || ch == '.') && isalpha(s[1])))
 				s++;
 
-			if (!ch || isspace(ch) || ispunct(ch) || (isdigit(ch) && !suspect_word(word, s - word)))
-				nph += xlate_word(word, s - word, phone);
+			if (!ch || isspace(ch) || ispunct(ch) || (isdigit(ch) && !suspect_word(word, (int)(s - word))))
+				nph += xlate_word(word, (int)(s - word), phone);
 			else
 			{
 				while ((ch = *s) && !isspace(ch) && !ispunct(ch))
 					s++;
 
-				nph += spell_out(word, s - word, phone);
+				nph += spell_out(word, (int)(s - word), phone);
 			}
 		}
 
@@ -1306,7 +1306,7 @@ int xlate_string(const char *string, darray *phone)
 					while (isdigit(ch = *s))
 						s++;
 
-					nph += spell_out(word, s - word, phone);
+					nph += spell_out(word, (int)(s - word), phone);
 				}
 
 				else
@@ -1325,7 +1325,7 @@ int xlate_string(const char *string, darray *phone)
 						/* nothing */
 						;
 
-					nph += xlate_word(word, s - word, phone);
+					nph += xlate_word(word, (int)(s - word), phone);
 				}
 
 				else
@@ -1389,7 +1389,7 @@ int xlate_string(const char *string, darray *phone)
 						while ((ch = *s) && !isspace(ch))
 							s++;
 
-						nph += spell_out(word, s - word, phone);
+						nph += spell_out(word, (int)(s - word), phone);
 					}
 
 					while (isspace(ch = *s))

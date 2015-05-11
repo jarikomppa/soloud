@@ -1,8 +1,6 @@
-Core: Misc
-==========
+## Miscellaneous
 
-Soloud.getStreamTime()
-----------------------
+### Soloud.getStreamTime()
 
 The getStreamTime function can be used to get the current play position,
 in seconds.
@@ -27,8 +25,7 @@ While not perfect, that's way better than using the stream time directly.
 ![Low-pass filtered time values](images/time)
 
 
-Soloud.isValidVoiceHandle()
------------------------------
+### Soloud.isValidVoiceHandle()
 
 The isValidVoiceHandle function can be used to check if a handle is
 still valid.
@@ -37,17 +34,29 @@ still valid.
 
 If the handle is invalid, the isValidVoiceHandle will return 0.
 
-Soloud.getActiveVoiceCount()
-----------------------------
+### Soloud.getActiveVoiceCount()
 
 Returns the number of concurrent sounds that are playing at the moment.
 
     if (soloud.getActiveVoiceCount() == 0) enjoy_the_silence();
 
-If the handle is invalid, the getActiveVoiceCount will return 0.
+### Soloud.getVoiceCount()
 
-Soloud.setGlobalFilter()
-------------------------
+Returns the number of voices the application has told SoLoud to play.
+
+    if (soloud.getVoiceCount() > 1000) lots_of_voices();
+
+### Soloud.setMaxActiveVoiceCount() / Soloud.getMaxActiveVoiceCount()
+
+Get or set the current maximum active voice count. If voice count is
+higher than the maximum active voice count, SoLoud will pick the
+ones with the highest volume to actually play.
+
+    int voices = gSoloud.getMaxActiveVoiceCount();
+    if (fps < 60 && voices > 16)
+        gSoloud.setMaxActiveVoiceCount(voices / 2);
+
+### Soloud.setGlobalFilter()
 
 Sets, or clears, the global filter.
 
@@ -57,8 +66,7 @@ Setting the global filter to NULL will clear the global filter. The
 default maximum number of global filters active is 4, but this can be
 changed in a global constant in soloud.h (and rebuilding SoLoud).
 
-Soloud.calcFFT()
-----------------
+### Soloud.calcFFT()
 
 Calculates FFT of the currently playing sound (post-clipping) and
 returns a pointer to the result.
@@ -82,8 +90,7 @@ Soloud::ENABLE\_VISUALIZATION flag, or by enabling visualization with
 the Soloud.setVisualizationEnable() call. Otherwise the source data for the
 FFT calculation will not be gathered.
 
-Soloud.getWave()
-----------------
+### Soloud.getWave()
 
 Gets 256 samples of the currently playing sound (post-clipping) and
 returns a pointer to the result.
@@ -102,8 +109,7 @@ with the Soloud::ENABLE\_VISUALIZATION flag or by enabling visualization with
 the Soloud.setVisualizationEnable() call. Otherwise the source data
 will not be gathered, and the result is undefined (probably zero).
 
-Soloud.getVersion()
--------------------
+### Soloud.getVersion()
 
 Returns the version of the SoLoud library. Same as SOLOUD_VERSION macro.
 Mostly useful when using the DLL, to check the DLL's library version.
@@ -111,16 +117,14 @@ Mostly useful when using the DLL, to check the DLL's library version.
     if (soloud.getVersion() != SOLOUD_VERSION)
         panic();
 
-Soloud.getErrorString()
------------------------
+### Soloud.getErrorString()
 
 Converts SoLoud's error values to printable zero-terminated ascii strings.
 
     int err = mod.load("foo.mod")
     printf("Mod load:%s", soloud.getErrorString(err));
     
-Soloud.setDelaySamples()
-------------------------
+### Soloud.setDelaySamples()
 
 Sets number of samples to delay before starting to play a sound. This is
 used internally by the playClocked() function. In the unlikely event that
@@ -135,8 +139,7 @@ start of the next audio buffer. Since this is rather unpredictable (as
 audio buffer sizes may vary), it's not recommended, even if it may be a
 rather funky effect..
 
-Soloud.getLoopCount()
----------------------
+### Soloud.getLoopCount()
 
 Some sound sources that support looping also keep count of the loop count.
 This can be useful at least to detect when some sound loops.
@@ -148,3 +151,51 @@ This can be useful at least to detect when some sound loops.
     
 Invalid handles and unsupported sound sources will cause the function to
 return 0.
+
+### Soloud.getInfo()
+
+Some sound sources let you get real-time information from the active voice.
+
+    float reg10 = soloud.getInfo(c64song, 10);
+    
+If the call is not supported, or the handle is invalid, the function returns 0.
+
+### Soloud.getBackendId()
+
+Get the current backend ID. This is typically the same as the Soloud::BACKENDS
+enumeration, but for AUTO it will be set to whatever the auto-selected backend
+was, or in case of SDL2 dynamic linking, it will return SDL, as those two share
+the same backend.
+
+    printf("Current backend id: %d", gSoloud.getBackendId());
+
+### Soloud.getBackendString()
+
+Get a printable asciiz string naming the current back-end. May return NULL.
+
+    if (gSoloud.getBackendString())
+      printf("Current backend: %s", gSoloud.getBackendString());
+
+### Soloud.getBackendChannels()
+
+Get the number of channels the currently active backend plays.
+
+    printf("Current backend channels: %d", gSoloud.getBackendChannels());
+
+1 for mono, 2 for stereo, various others for surround speaker setups.
+
+### Soloud.getBackendSamplerate()
+
+Get the samplerate, in Hz, of the currently active backend. This may
+differ from the one requested.
+
+    printf("Current backend rate: %d", gSoloud.getBackendSamplerate());
+
+### Soloud.getBackendBufferSize()
+
+Get the current backend's buffer size. May differ from the one requested.
+Some backends (such as PortAudio) may lie about this and use smaller
+buffer in reality.
+
+    printf("Current backend buffer: %d", gSoloud.getBackendBufferSize());
+

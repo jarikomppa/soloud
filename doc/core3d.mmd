@@ -1,6 +1,6 @@
 ## 3d Audio
 
-By default SoLoud's coordiante system is right handed (OpenGL). If you
+By default SoLoud's coordinate system is right handed (OpenGL). If you
 wish SoLoud to use left handed (Direct3d) coordinate system instead,
 initialize SoLoud with the LEFT_HANDED_3D flag.
 
@@ -66,9 +66,9 @@ The play3dClocked can also add the "distance delay" to the sound, if enabled.
 ### Soloud.set3dSoundSpeed() / Soloud.get3dSoundSpeed()
 
 
-You can set and get the current value of the speed of sound witht the get3dSoundSpeed() and set3dSoundSpeed() functions. The speed of sound is used to calculate doppler effects in addition to the distance delay.
+You can set and get the current value of the speed of sound width the get3dSoundSpeed() and set3dSoundSpeed() functions. The speed of sound is used to calculate doppler effects in addition to the distance delay.
 
-Since SoLoud has no knowledge of the scale of your coordinates, you may need to adjust the speed of sound for these effects to work correctly. The default value is 343, which assumes that your world coordinates are in meters (where 1 unit is 1 meter), and that the environment is dry air at around 20 degrees celsius.
+Since SoLoud has no knowledge of the scale of your coordinates, you may need to adjust the speed of sound for these effects to work correctly. The default value is 343, which assumes that your world coordinates are in meters (where 1 unit is 1 meter), and that the environment is dry air at around 20 degrees Celsius.
 
     int speed = gSoloud.get3dSoundSpeed(); // Get the current speed of sound
     gSoloud.set3dSoundSpeed(speed / 2); // Halve it

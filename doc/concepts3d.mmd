@@ -93,11 +93,11 @@ The maximum distance simply cuts the attenuation at the volume level it has reac
 
 ![Doppler effect](images/doppler)\ 
 
-A stationary sound (with a stationary listener) receives sound waves as you'd expect. When the sound source (or listener) are moving, the sound waves get "squashed" (for higher-pitch sould) or "stretched" (for lower-pitch sound) depending on whether the sound is approaching or receding from the listener.
+A stationary sound (with a stationary listener) receives sound waves as you'd expect. When the sound source (or listener) are moving, the sound waves get "squashed" (for higher-pitch sound) or "stretched" (for lower-pitch sound) depending on whether the sound is approaching or receding from the listener.
 
 SoLoud uses the OpenAL 1.1 formula for doppler calculation. The calculation depends on the listeners' and sound sources' velocities being properly calculated on the application's side. If you do not wish to use the doppler, simply leave all velocities at zero.
 
-In addition to velocities, the doppler depends on the proper value of speed of sound. The default value is set at 343, which assumes that your world coordinates are in meters (where 1 unit is 1 meter), and that the environment is dry air at around 20 degrees celsius. If those assumptions do not match your environment, change the speed with set3dSoundSpeed().
+In addition to velocities, the doppler depends on the proper value of speed of sound. The default value is set at 343, which assumes that your world coordinates are in meters (where 1 unit is 1 meter), and that the environment is dry air at around 20 degrees Celsius. If those assumptions do not match your environment, change the speed with set3dSoundSpeed().
 
     soloud.set3dSoundSpeed(1497); // we're in water
     

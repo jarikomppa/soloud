@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
 	gMusichandle2 = gSoloud.play(gMusic2, 0);
 
 	float filter_param0[4] = { 0, 0, 0, 0 };
-	float filter_param1[4] = { 1000, 0, 0, 0 };
+	float filter_param1[4] = { 1000, 2, 0, 0 };
 	float filter_param2[4] = { 2, 0,  0, 0 };
 	
 	float song1volume = 1;
@@ -79,12 +79,16 @@ int main(int argc, char *argv[])
 	while (1)
 	{
 		gSoloud.setFilterParameter(0, 0, 0, filter_param0[0]);
-		gSoloud.setFilterParameter(0, 1, 0, filter_param0[1]);
-		gSoloud.setFilterParameter(0, 2, 0, filter_param0[2]);
-		gSoloud.setFilterParameter(0, 3, 0, filter_param0[3]);
-
 		gSoloud.setFilterParameter(0, 0, 2, filter_param1[0]);
 		gSoloud.setFilterParameter(0, 0, 3, filter_param2[0]);
+
+		gSoloud.setFilterParameter(0, 1, 0, filter_param0[1]);
+		gSoloud.setFilterParameter(0, 1, 1, filter_param1[1]);
+
+		gSoloud.setFilterParameter(0, 2, 0, filter_param0[2]);
+
+		gSoloud.setFilterParameter(0, 3, 0, filter_param0[3]);
+
 
 		DemoUpdateStart();
 
@@ -130,6 +134,7 @@ int main(int argc, char *argv[])
 		ImGui::Separator();
 		ImGui::Text("Bassboost filter");
 		ImGui::SliderFloat("Wet##2", &filter_param0[1], 0, 1);
+		ImGui::SliderFloat("Boost##2", &filter_param1[1], 0, 11);
 		ImGui::Separator();
 		ImGui::Text("Echo filter");
 		ImGui::SliderFloat("Wet##3", &filter_param0[2], 0, 1);

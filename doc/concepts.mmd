@@ -2,7 +2,7 @@
 
 ## Generic Audio Concepts
 
-![Audio sources, instances, voices, mix busses.](images/concepts)
+![Audio sources, instances, voices, mix busses.](images/concepts)\ 
 
 ### Audio Source and Instance
 
@@ -18,7 +18,7 @@ record. All of the playheads can also move at different speeds, output
 to a different pan position and volume, as well as different filter 
 settings.
 
-![Audio sources and back-ends.](images/source_backend)
+![Audio sources and back-ends.](images/source_backend)\ 
 
 ### Back end
 
@@ -74,7 +74,7 @@ Sometimes it is important to be able to command several voices at the
 same time so that they are synchronized; for instance, when cross-fading
 between two versions of the same song.
 
-![Problem unpausing two voices. Delay may vary, 40ms used as an example.](images/voicegroups)
+![Problem unpausing two voices. Delay may vary, 40ms used as an example.](images/voicegroups)\ 
 
 Even if you try to unpause the two voices at the same time, it's possible,
 due to the multithreaded nature of audio, that the audio engine interrupts
@@ -94,7 +94,7 @@ signed 16-bit variable, for instance, you can only store values from
 -32k to +32k in it; if you try to put values outside this range in,
 things tend to break. Same goes for audio.
 
-![Results of different clippers.](images/clipping)
+![Results of different clippers.](images/clipping)\ 
 
 SoLoud handles all audio as floats, but performs clipping before passing
 the samples out, so all values are in the -1..1 range. There's two ways
@@ -173,7 +173,7 @@ SoLoud has to perform resampling when mixing. In an ideal case, all of
 the sources and the destination sample rate are the same, and no
 resampling is needed, but this is often not true. 
 
-![Different resamples (Point / linear / catmull-rom). Red is the ideal signal.](images/resampler)
+![Different resamples (Point / linear / catmull-rom). Red is the ideal signal.](images/resampler)\ 
 
 Currently, SoLoud supports "linear interpolation", which calculates linear 
 interpolation of samples, as well as "point sample" resampling, which 

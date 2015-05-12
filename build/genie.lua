@@ -475,7 +475,7 @@ if (WITH_LIBMODPLUG == 1) then
 			defines { "DEBUG" }
 			flags {"Symbols" }
 			objdir (buildroot .. "/debug")
-			targetname "libmodplug_d"
+			targetname "libmodplug_x86_d"
 			flags { "Symbols" }
 
 
@@ -483,7 +483,7 @@ if (WITH_LIBMODPLUG == 1) then
 			defines { "NDEBUG" }
 			flags {"Optimize"}
 			objdir (buildroot .. "/release")
-			targetname "libmodplug"
+			targetname "libmodplug_x86"
 			flags { "EnableSSE2", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
 end
 
@@ -512,14 +512,14 @@ if (WITH_SDL == 1) then
 			defines { "DEBUG", "GLEW_STATIC"}
 			flags {"Symbols" }
 			objdir (buildroot .. "/debug")
-			targetname "solouddemocommon_d"
+			targetname "solouddemocommon_x86_d"
 			flags { "Symbols" }
 
 		configuration "Release"
 			defines { "NDEBUG", "GLEW_STATIC" }
 			flags {"Optimize"}
 			objdir (buildroot .. "/release")
-			targetname "solouddemocommon"
+			targetname "solouddemocommon_x86"
 			flags { "EnableSSE2", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
 end
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
@@ -666,7 +666,7 @@ end
 			defines { "DEBUG" }
 			flags {"Symbols" }
 			objdir (buildroot .. "/debug")
-			targetname "soloud_x86_d"
+			targetname "soloud_x86_static_d"
 			flags { "Symbols" }
 
 
@@ -674,7 +674,7 @@ end
 			defines { "NDEBUG" }
 			flags {"Optimize"}
 			objdir (buildroot .. "/release")
-			targetname "soloud_x86"
+			targetname "soloud_x86_static"
 			flags { "EnableSSE2", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
@@ -856,7 +856,7 @@ end
 			objdir (buildroot .. "/debug")
 			targetname "soloud_x86_d"
 			implibdir("../lib")
-			implibname "soloud_dll_x86_d"
+			implibname "soloud_x86_d"
 			flags { "Symbols" }
 
 
@@ -866,7 +866,7 @@ end
 			objdir (buildroot .. "/release")
 			targetname "soloud_x86"
 			implibdir("../lib")
-			implibname("soloud_dll_x86")
+			implibname("soloud_x86")
 			flags { "EnableSSE2", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --

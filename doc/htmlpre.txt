@@ -34,6 +34,7 @@ ga('send', 'pageview');
 <a href="downloads.html">Downloads</a><br>
 <a href="quickstart.html">Quick Start</a><br>
 <a href="faq.html">FAQ</a><br>
+<a href="dirstruct.html">Directory structure</a><br>
 <a href="premake.html">Premake</a><br>
 <a href="legal.html">License</a><br>
 <br>

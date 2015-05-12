@@ -15,8 +15,8 @@
    viewBox="0 0 576 430"
    width="576pt"
    id="svg2985"
-   inkscape:version="0.48.4 r9939"
-   sodipodi:docname="speaker_dot.pdf">
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="speaker_dot.svg">
   <metadata
      id="metadata3700">
     <rdf:RDF>
@@ -25,7 +25,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -45,8 +45,8 @@
      inkscape:zoom="0.84166667"
      inkscape:cx="371.91959"
      inkscape:cy="307.64444"
-     inkscape:window-x="2102"
-     inkscape:window-y="158"
+     inkscape:window-x="247"
+     inkscape:window-y="63"
      inkscape:window-maximized="0"
      inkscape:current-layer="svg2985" />
   <defs
@@ -59,13 +59,13 @@
   </defs>
   <g
      id="figure_1"
-     transform="matrix(0.83889142,0,0,0.83889142,1.6,1.6)"
+     transform="matrix(0.52701023,0,0,0.52701023,1.6,1.6)"
      style="stroke-linecap:butt;stroke-linejoin:round">
     <g
        id="patch_1"
        style="stroke-linecap:butt;stroke-linejoin:round">
       <path
-         d="m 0,430.2 576,0 L 576,0 0,0 z"
+         d="m 0,430.2 576,0 L 576,0 0,0 Z"
          style="fill:#ffffff;stroke-linecap:butt;stroke-linejoin:round"
          id="path2993"
          inkscape:connector-curvature="0" />
@@ -197,7 +197,7 @@
          style="stroke-linecap:butt;stroke-linejoin:round">
         <path
            clip-path="url(#p8092a36277)"
-           d="M 308.326,72.7604 302.29,80.0771 301.323,79.4604 155.808,215.169 155.592,215.031 301.108,79.3233 300.14,78.7066 z"
+           d="M 308.326,72.7604 302.29,80.0771 301.323,79.4604 155.808,215.169 155.592,215.031 301.108,79.3233 300.14,78.7066 Z"
            style="stroke:#000000;stroke-linecap:butt;stroke-linejoin:round"
            id="path3033"
            inkscape:connector-curvature="0" />
@@ -1158,7 +1158,7 @@
                  inkscape:connector-curvature="0"
                  style="stroke-linecap:butt;stroke-linejoin:round" />
               <path
-                 d="M 10.6875,12.4062 21,12.4062 21,0 10.6875,0 z"
+                 d="M 10.6875,12.4062 21,12.4062 21,0 10.6875,0 Z"
                  id="BitstreamVeraSans-Roman-2e"
                  inkscape:connector-curvature="0"
                  style="stroke-linecap:butt;stroke-linejoin:round" />

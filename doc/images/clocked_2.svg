@@ -26,15 +26,15 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.35"
-     inkscape:cx="375"
-     inkscape:cy="520"
+     inkscape:zoom="0.98994949"
+     inkscape:cx="293.25537"
+     inkscape:cy="755.82638"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
      inkscape:window-width="1920"
-     inkscape:window-height="1018"
-     inkscape:window-x="-8"
+     inkscape:window-height="1058"
+     inkscape:window-x="1912"
      inkscape:window-y="-8"
      inkscape:window-maximized="1" />
   <metadata
@@ -45,7 +45,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -56,11 +56,11 @@
     <image
        sodipodi:absref="E:\vcproj\soloud\proj\doc\images\clocked_2.png"
        xlink:href="clocked_2.png"
-       y="0.13003977"
-       x="-0.71429008"
-       id="image3355"
+       width="379.5816"
+       height="68.535561"
        preserveAspectRatio="none"
-       height="74.027779"
-       width="410" />
+       id="image3355"
+       x="-0.71429008"
+       y="0.13003977" />
   </g>
 </svg>

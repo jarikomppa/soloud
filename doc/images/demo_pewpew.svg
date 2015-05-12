@@ -45,7 +45,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -56,11 +56,11 @@
     <image
        sodipodi:absref="E:\vcproj\soloud\proj\doc\images\demo_pewpew.png"
        xlink:href="demo_pewpew.png"
-       width="511.42856"
-       height="274.51682"
-       preserveAspectRatio="none"
-       id="image4008"
+       y="4.3264856"
        x="4.2857099"
-       y="4.3264856" />
+       id="image4008"
+       preserveAspectRatio="none"
+       height="203.9706"
+       width="380" />
   </g>
 </svg>

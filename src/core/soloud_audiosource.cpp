@@ -309,7 +309,7 @@ namespace SoLoud
 		mColliderData = aUserData;
 	}
 
-	void AudioSource::setAttenuator(AudioAttenuator *aAttenuator)
+	void AudioSource::set3dAttenuator(AudioAttenuator *aAttenuator)
 	{
 		mAttenuator = aAttenuator;
 	}

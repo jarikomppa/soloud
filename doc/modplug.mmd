@@ -85,15 +85,7 @@ inaudible.
 Set the default volume of the instances created from this audio source.
 
     gTinyVoice.setVolume(0.1);
-    
-### Modplug.setAttenuator()
-
-Set a custom attenuator for the instances created from this audio source.
-use NULL to disable.
-
-    // No attenuator needed anymore
-    gFoo.setAttenuator(NULL);
-    
+       
 ### Inherited 3d audio interfaces
 
 Like all other audio sources, Modplug inherits the 3d audio interfaces. Please refer to the 3d audio chapter for details on:
@@ -105,3 +97,4 @@ Like all other audio sources, Modplug inherits the 3d audio interfaces. Please r
 - Modplug.set3dListenerRelative()
 - Modplug.set3dDistanceDelay()
 - Modplug.set3dCollider()
+- Modplug.set3dAttenuator()

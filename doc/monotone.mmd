@@ -107,15 +107,7 @@ inaudible.
 Set the default volume of the instances created from this audio source.
 
     gTinyVoice.setVolume(0.1);
-    
-### Monotone.setAttenuator()
-
-Set a custom attenuator for the instances created from this audio source.
-use NULL to disable.
-
-    // No attenuator needed anymore
-    gFoo.setAttenuator(NULL);
-    
+       
 ### Inherited 3d audio interfaces
 
 Like all other audio sources, monotone inherits the 3d audio interfaces. Please refer to the 3d audio chapter for details on:
@@ -127,3 +119,4 @@ Like all other audio sources, monotone inherits the 3d audio interfaces. Please 
 - Monotone.set3dListenerRelative()
 - Monotone.set3dDistanceDelay()
 - Monotone.set3dCollider()
+- Monotone.set3dAttenuator()

@@ -802,10 +802,10 @@ void Bus_set3dColliderEx(void * aClassPtr, AudioCollider * aCollider, int aUserD
 	cl->set3dCollider(aCollider, aUserData);
 }
 
-void Bus_setAttenuator(void * aClassPtr, AudioAttenuator * aAttenuator)
+void Bus_set3dAttenuator(void * aClassPtr, AudioAttenuator * aAttenuator)
 {
 	Bus * cl = (Bus *)aClassPtr;
-	cl->setAttenuator(aAttenuator);
+	cl->set3dAttenuator(aAttenuator);
 }
 
 void Bus_setInaudibleBehavior(void * aClassPtr, int aMustTick, int aKill)
@@ -944,10 +944,10 @@ void Speech_set3dColliderEx(void * aClassPtr, AudioCollider * aCollider, int aUs
 	cl->set3dCollider(aCollider, aUserData);
 }
 
-void Speech_setAttenuator(void * aClassPtr, AudioAttenuator * aAttenuator)
+void Speech_set3dAttenuator(void * aClassPtr, AudioAttenuator * aAttenuator)
 {
 	Speech * cl = (Speech *)aClassPtr;
-	cl->setAttenuator(aAttenuator);
+	cl->set3dAttenuator(aAttenuator);
 }
 
 void Speech_setInaudibleBehavior(void * aClassPtr, int aMustTick, int aKill)
@@ -1068,10 +1068,10 @@ void Wav_set3dColliderEx(void * aClassPtr, AudioCollider * aCollider, int aUserD
 	cl->set3dCollider(aCollider, aUserData);
 }
 
-void Wav_setAttenuator(void * aClassPtr, AudioAttenuator * aAttenuator)
+void Wav_set3dAttenuator(void * aClassPtr, AudioAttenuator * aAttenuator)
 {
 	Wav * cl = (Wav *)aClassPtr;
-	cl->setAttenuator(aAttenuator);
+	cl->set3dAttenuator(aAttenuator);
 }
 
 void Wav_setInaudibleBehavior(void * aClassPtr, int aMustTick, int aKill)
@@ -1204,10 +1204,10 @@ void WavStream_set3dColliderEx(void * aClassPtr, AudioCollider * aCollider, int 
 	cl->set3dCollider(aCollider, aUserData);
 }
 
-void WavStream_setAttenuator(void * aClassPtr, AudioAttenuator * aAttenuator)
+void WavStream_set3dAttenuator(void * aClassPtr, AudioAttenuator * aAttenuator)
 {
 	WavStream * cl = (WavStream *)aClassPtr;
-	cl->setAttenuator(aAttenuator);
+	cl->set3dAttenuator(aAttenuator);
 }
 
 void WavStream_setInaudibleBehavior(void * aClassPtr, int aMustTick, int aKill)
@@ -1356,10 +1356,10 @@ void Sfxr_set3dColliderEx(void * aClassPtr, AudioCollider * aCollider, int aUser
 	cl->set3dCollider(aCollider, aUserData);
 }
 
-void Sfxr_setAttenuator(void * aClassPtr, AudioAttenuator * aAttenuator)
+void Sfxr_set3dAttenuator(void * aClassPtr, AudioAttenuator * aAttenuator)
 {
 	Sfxr * cl = (Sfxr *)aClassPtr;
-	cl->setAttenuator(aAttenuator);
+	cl->set3dAttenuator(aAttenuator);
 }
 
 void Sfxr_setInaudibleBehavior(void * aClassPtr, int aMustTick, int aKill)
@@ -1512,10 +1512,10 @@ void Modplug_set3dColliderEx(void * aClassPtr, AudioCollider * aCollider, int aU
 	cl->set3dCollider(aCollider, aUserData);
 }
 
-void Modplug_setAttenuator(void * aClassPtr, AudioAttenuator * aAttenuator)
+void Modplug_set3dAttenuator(void * aClassPtr, AudioAttenuator * aAttenuator)
 {
 	Modplug * cl = (Modplug *)aClassPtr;
-	cl->setAttenuator(aAttenuator);
+	cl->set3dAttenuator(aAttenuator);
 }
 
 void Modplug_setInaudibleBehavior(void * aClassPtr, int aMustTick, int aKill)
@@ -1642,10 +1642,10 @@ void Monotone_set3dColliderEx(void * aClassPtr, AudioCollider * aCollider, int a
 	cl->set3dCollider(aCollider, aUserData);
 }
 
-void Monotone_setAttenuator(void * aClassPtr, AudioAttenuator * aAttenuator)
+void Monotone_set3dAttenuator(void * aClassPtr, AudioAttenuator * aAttenuator)
 {
 	Monotone * cl = (Monotone *)aClassPtr;
-	cl->setAttenuator(aAttenuator);
+	cl->set3dAttenuator(aAttenuator);
 }
 
 void Monotone_setInaudibleBehavior(void * aClassPtr, int aMustTick, int aKill)
@@ -1772,10 +1772,10 @@ void TedSid_set3dColliderEx(void * aClassPtr, AudioCollider * aCollider, int aUs
 	cl->set3dCollider(aCollider, aUserData);
 }
 
-void TedSid_setAttenuator(void * aClassPtr, AudioAttenuator * aAttenuator)
+void TedSid_set3dAttenuator(void * aClassPtr, AudioAttenuator * aAttenuator)
 {
 	TedSid * cl = (TedSid *)aClassPtr;
-	cl->setAttenuator(aAttenuator);
+	cl->set3dAttenuator(aAttenuator);
 }
 
 void TedSid_setInaudibleBehavior(void * aClassPtr, int aMustTick, int aKill)

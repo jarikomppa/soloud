@@ -123,6 +123,13 @@ Set or clear the custom audio collider and collider's user data for a 3d audio s
                        
 SoLoud expects the collider to be there until all instances of the sound have stopped. Application is responsible for cleaning up the collider. Several sound sources may use the same collider.
 
+### AudioSource.set3dAttenuator()
+
+Set a custom attenuator for the instances created from this audio source.
+use NULL to disable.
+
+    void set3dAttenuator(AudioAttenuator *aAttenuator)
+
 ### AudioSource.setInaudibleBehavior()
 
 Set the inaudible behavior of the sound. By default, if a sound is
@@ -140,10 +147,4 @@ Set the default volume of the instances created from this audio source.
 
     void setVolume(float aVolume)
     
-### AudioSource.setAttenuator()
-
-Set a custom attenuator for the instances created from this audio source.
-use NULL to disable.
-
-    void setAttenuator(AudioAttenuator *aAttenuator)
     

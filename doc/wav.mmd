@@ -100,14 +100,6 @@ Set the default volume of the instances created from this audio source.
 
     gTinyVoice.setVolume(0.1);
     
-### Wav.setAttenuator()
-
-Set a custom attenuator for the instances created from this audio source.
-use NULL to disable.
-
-    // No attenuator needed anymore
-    gFoo.setAttenuator(NULL);
-
 ### Inherited 3d audio interfaces
 
 Like all other audio sources, Wav inherits the 3d audio interfaces. Please refer to the 3d audio chapter for details on:
@@ -119,4 +111,5 @@ Like all other audio sources, Wav inherits the 3d audio interfaces. Please refer
 - Wav.set3dListenerRelative()
 - Wav.set3dDistanceDelay()
 - Wav.set3dCollider()
+- Wav.set3dAttenuator()
           

@@ -290,7 +290,7 @@ namespace SoLoud
 		// Set a custom 3d audio collider. Set to NULL to disable.
 		void set3dCollider(AudioCollider *aCollider, int aUserData = 0);
 		// Set a custom attenuator. Set to NULL to disable.
-		void setAttenuator(AudioAttenuator *aAttenuator);
+		void set3dAttenuator(AudioAttenuator *aAttenuator);
 
 		// Set behavior for inaudible sounds
 		void setInaudibleBehavior(bool aMustTick, bool aKill);

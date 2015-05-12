@@ -5,9 +5,9 @@ This page lists SoLoud downloads, as well as other relevant information.
 
 Latest stable release
 ---------------------
-[soloud_20150427.zip](soloud_20150427.zip) <<- Download here
+[soloud_20150512.zip](soloud_20150512.zip) <<- Download here
 
-Documentation: [PDF](soloud_20150427.pdf) | [EPUB](soloud_20150427.epub) | [MOBI](soloud_20150427.mobi) | [HTML](soloud_20150427.html) 
+Documentation: [PDF](soloud_20150512.pdf) | [EPUB](soloud_20150512.epub) | [MOBI](soloud_20150512.mobi) | [HTML](soloud_20150512.html) 
 
 Milestones
 ----------
@@ -47,6 +47,47 @@ Additional files
 
 Release history
 ---------------
+
+[soloud_20150512.zip](soloud_20150512.zip) 
+
+Documentation: [PDF](soloud_20150512.pdf) | [EPUB](soloud_20150512.epub) | [MOBI](soloud_20150512.mobi) | [HTML](soloud_20150512.html) 
+
+- SoLoud "VLF" release
+- Hilights:
+    - Virtual voices - play 1000 voices, SoLoud will figure out which ones you hear
+    - Major documentation update
+        - yEd graphs
+        - New web layout
+        - Many tweaks to PDF layout
+        - PDF doc is now 141 pages (ULF release had 94)
+        - Single-file HTML now contains images        
+    - New backend: ALSA for Linux
+    - New filter: bassboost
+    - New backend: Null driver 
+        - No audio device, call mix() to pull samples.
+    - New demo: virtualvoices
+    - New demo: null driver
+    - New demo: enumerate
+    - Added functions to query information on currently active back-end
+    - Added get/setLooping for live sounds
+    - Added default volume for audio sources
+    - Added custom 3d attenuator interface
+    - Added LEFT_HANDED_3D flag for left-handed 3d coordinate processing
+    - Added setInaudibleBehavior
+    - Split demo common code to a separate static lib
+    - Upped filter count to 8        
+    - Some x64 fixes
+    - "nondyn" naming removed, calling static libs static now
+    - Removed modf in monotone because Linux clib didn't like it
+    - Cleanup fix - call stop() from all audio source virtual dtors
+    - Memory file bugfixes
+    - Wav file loading was broken after move to File interface, fixed
+    - Some div by zeros fixed in Sfxr    
+    - 3d processing done largely outside audio mutex
+        - Plus side - 3d stuff is way more performant
+        - Minus side - 3d stuff isn't thread safe
+    - And a bunch of smaller bug fixes and tweaks
+    
 
 [soloud_20150427.zip](soloud_20150427.zip) 
 

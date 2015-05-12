@@ -40,7 +40,7 @@ int main(int parc, char ** pars)
 
 	printf("Playing..\n");
 
-	while (Soloud_getActiveVoiceCount(soloud) > 0)
+	while (Soloud_getVoiceCount(soloud) > 0)
 	{
 		float * v = Soloud_calcFFT(soloud);
 		printf("\r%c ", (int)("|\\-/"[spin & 3]));

@@ -32,6 +32,12 @@ The audio source is also responsible for setting the mChannels and
 mBaseSamplerate values. These values get copied to all of the instances
 of this audio source.
 
+The class should have a virtual destructor, and it should stop all
+the instances (by simply calling stop()). The base classes virtual
+destructor does so also, but due to the order the virtual destructors
+are called, it's possible that some data required by (still) live
+instances is deleted before the instances have stopped.
+
 ### AudioSource.createInstance()
 
 

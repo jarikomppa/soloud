@@ -558,7 +558,7 @@ namespace SoLoud
 				float step = voice->mSamplerate / aSamplerate;
 				int step_fixed = (int)floor(step * FIXPOINT_FRAC_MUL);
 				unsigned int outofs = 0;
-				
+			
 				if (voice->mDelaySamples)
 				{
 					if (voice->mDelaySamples > aSamples)
@@ -579,7 +579,7 @@ namespace SoLoud
 					}
 				}												
 
-				while (outofs < aSamples)
+				while (step_fixed != 0 && outofs < aSamples)
 				{
 					if (voice->mLeftoverSamples == 0)
 					{
@@ -746,7 +746,7 @@ namespace SoLoud
 					}
 				}
 
-				while (outofs < aSamples)
+				while (step_fixed != 0 && outofs < aSamples)
 				{
 					if (voice->mLeftoverSamples == 0)
 					{

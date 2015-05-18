@@ -37,8 +37,8 @@ namespace SoLoud
 
 		if (mVoice[aVoice])
 		{
-			mVoice[aVoice]->mRelativePlaySpeed = aSpeed;
-			mVoice[aVoice]->mSamplerate = mVoice[aVoice]->mBaseSamplerate * mVoice[aVoice]->mRelativePlaySpeed;
+			mVoice[aVoice]->mSetRelativePlaySpeed = aSpeed;
+			updateVoiceRelativePlaySpeed(aVoice);
 		}
 
 		return 0;
@@ -77,7 +77,8 @@ namespace SoLoud
 		mActiveVoiceDirty = true;
 		if (mVoice[aVoice])
 		{
-			mVoice[aVoice]->mVolume = aVolume;
+			mVoice[aVoice]->mSetVolume = aVolume;
+			updateVoiceVolume(aVoice);
 		}
 	}
 
@@ -93,5 +94,14 @@ namespace SoLoud
 		}
 	}
 
+	void Soloud::updateVoiceRelativePlaySpeed(unsigned int aVoice)
+	{
+		mVoice[aVoice]->mOverallRelativePlaySpeed = m3dData[aVoice].mDopplerValue * mVoice[aVoice]->mSetRelativePlaySpeed;
+		mVoice[aVoice]->mSamplerate = mVoice[aVoice]->mBaseSamplerate * mVoice[aVoice]->mOverallRelativePlaySpeed;
+	}
 
+	void Soloud::updateVoiceVolume(unsigned int aVoice)
+	{
+		mVoice[aVoice]->mOverallVolume = mVoice[aVoice]->mSetVolume * m3dData[aVoice].m3dVolume;
+	}
 }

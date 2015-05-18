@@ -154,7 +154,7 @@ namespace SoLoud
 			if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 			return 0;
 		}
-		float v = mVoice[ch]->mVolume;
+		float v = mVoice[ch]->mSetVolume;
 		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 		return v;
 	}
@@ -196,7 +196,7 @@ namespace SoLoud
 			if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 			return 1;
 		}
-		float v = mVoice[ch]->mRelativePlaySpeed;
+		float v = mVoice[ch]->mSetRelativePlaySpeed;
 		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
 		return v;
 	}

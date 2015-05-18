@@ -167,6 +167,17 @@ namespace SoLoud
 		return pow(distance / aMinDistance, -aRolloffFactor);
 	}
 
+	void Soloud::updateVoiceRelativePlaySpeed(unsigned int aVoice)
+	{
+		mVoice[aVoice]->mOverallRelativePlaySpeed = m3dData[aVoice].mDopplerValue * mVoice[aVoice]->mSetRelativePlaySpeed;
+		mVoice[aVoice]->mSamplerate = mVoice[aVoice]->mBaseSamplerate * mVoice[aVoice]->mOverallRelativePlaySpeed;
+	}
+
+	void Soloud::updateVoiceVolume(unsigned int aVoice)
+	{
+		mVoice[aVoice]->mOverallVolume = mVoice[aVoice]->mSetVolume * m3dData[aVoice].m3dVolume;
+	}
+
 	void Soloud::update3dAudio()
 	{
 		int voicecount = 0;
@@ -296,7 +307,7 @@ namespace SoLoud
 				v->mChannelVolume[j] = vol * speakervol;
 			}
 
-			v->mVolume = vol;
+			v->m3dVolume = vol;
 		}
 
 		if (mLockMutexFunc) mLockMutexFunc(mMutex);
@@ -308,16 +319,15 @@ namespace SoLoud
 			AudioSourceInstance * vi = mVoice[voices[i]];
 			if (vi)
 			{
-				vi->mRelativePlaySpeed = v->mDopplerValue;
-				vi->mSamplerate = vi->mBaseSamplerate * vi->mRelativePlaySpeed;
+				updateVoiceRelativePlaySpeed(i);
 				int j;
 				for (j = 0; j < MAX_CHANNELS; j++)
 				{
 					vi->mChannelVolume[j] = v->mChannelVolume[j];
 				}
 
-				vi->mVolume = v->mVolume;
-				if (vi->mVolume < 0.01f)
+				updateVoiceVolume(i);
+				if (vi->mOverallVolume < 0.01f)
 				{
 					// Inaudible.
 					vi->mFlags |= AudioSourceInstance::INAUDIBLE;

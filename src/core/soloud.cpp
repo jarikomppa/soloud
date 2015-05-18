@@ -686,8 +686,8 @@ namespace SoLoud
 				
 				float lpan = voice->mCurrentChannelVolume[0];
 				float rpan = voice->mCurrentChannelVolume[1];
-				float lpand = voice->mChannelVolume[0] * voice->mVolume;
-				float rpand = voice->mChannelVolume[1] * voice->mVolume;
+				float lpand = voice->mChannelVolume[0] * voice->mOverallVolume;
+				float rpand = voice->mChannelVolume[1] * voice->mOverallVolume;
 				float lpani = (lpand - lpan) / aSamples;
 				float rpani = (rpand - rpan) / aSamples;
 
@@ -880,7 +880,7 @@ namespace SoLoud
 			{                
 				if (pos == 24) len = stack[pos = 0]; 
 				int pivot = data[left];
-				float pivotvol = mVoice[pivot]->mVolume;
+				float pivotvol = mVoice[pivot]->mOverallVolume;
 				stack[pos++] = len;      
 				for (right = left - 1;;) 
 				{
@@ -888,12 +888,12 @@ namespace SoLoud
 					{
 						right++;
 					} 
-					while (mVoice[data[right]]->mVolume > pivotvol);
+					while (mVoice[data[right]]->mOverallVolume > pivotvol);
 					do
 					{
 						len--;
 					}
-					while (pivotvol > mVoice[data[len]]->mVolume);
+					while (pivotvol > mVoice[data[len]]->mOverallVolume);
 					if (right >= len) break;       
 					int temp = data[right];
 					data[right] = data[len];
@@ -959,14 +959,15 @@ namespace SoLoud
 					setVoiceRelativePlaySpeed(i, speed);
 				}
 
-				volume[0] = mVoice[i]->mVolume;
+				volume[0] = mVoice[i]->mOverallVolume;
 				if (mVoice[i]->mVolumeFader.mActive > 0)
 				{
-					mVoice[i]->mVolume = mVoice[i]->mVolumeFader.get(mVoice[i]->mStreamTime);
+					mVoice[i]->mSetVolume = mVoice[i]->mVolumeFader.get(mVoice[i]->mStreamTime);
 					mVoice[i]->mActiveFader = 1;
+					updateVoiceVolume(i);
 					mActiveVoiceDirty = true;
 				}
-				volume[1] = mVoice[i]->mVolume;
+				volume[1] = mVoice[i]->mOverallVolume;
 
 				if (mVoice[i]->mPanFader.mActive > 0)
 				{

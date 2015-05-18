@@ -55,6 +55,8 @@ namespace SoLoud
 		mCollider = aSource.mCollider;
 		mColliderData = aSource.mColliderData;
 		mAttenuator = aSource.mAttenuator;
+		m3dVolume = 1.0f;
+		mDopplerValue = 1.0f;
 	}
 
 	AudioSourceResampleData::AudioSourceResampleData()
@@ -74,10 +76,10 @@ namespace SoLoud
 		mPan = 0;
 		mChannelVolume[0] = 1.0f / (float)sqrt(2.0);
 		mChannelVolume[1] = 1.0f / (float)sqrt(2.0);
-		mVolume = 1.0f;
+		mSetVolume = 1.0f;
 		mBaseSamplerate = 44100.0f;
 		mSamplerate = 44100.0f;
-		mRelativePlaySpeed = 1.0f;
+		mSetRelativePlaySpeed = 1.0f;
 		mStreamTime = 0.0f;
 		mAudioSourceID = 0;
 		mActiveFader = 0;

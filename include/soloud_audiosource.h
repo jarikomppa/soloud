@@ -88,15 +88,15 @@ namespace SoLoud
 		float m3dDopplerFactor;
 		// Pointer to a custom audio collider object
 		AudioCollider *mCollider;
-		// POinter to a custom audio attenuator object
+		// Pointer to a custom audio attenuator object
 		AudioAttenuator *mAttenuator;
 		// User data related to audio collider
 		int mColliderData;
 
 		// Doppler sample rate multiplier
-		float mDopplerValue;
-		// Overall volume
-		float mVolume;
+		float mDopplerValue;		
+		// Overall 3d volume
+		float m3dVolume;
 		// Channel volume
 		float mChannelVolume[MAX_CHANNELS];
 		// Copy of flags
@@ -142,8 +142,10 @@ namespace SoLoud
 		float mPan;
 		// Volume for each channel (panning)
 		float mChannelVolume[MAX_CHANNELS];
-		// Overall volume
-		float mVolume;
+		// Set volume
+		float mSetVolume;
+		// Overall volume overall = set * 3d
+		float mOverallVolume;
 		// Base samplerate; samplerate = base samplerate * relative play speed
 		float mBaseSamplerate;
 		// Samplerate; samplerate = base samplerate * relative play speed
@@ -151,7 +153,9 @@ namespace SoLoud
 		// Number of channels this audio source produces
 		unsigned int mChannels;
 		// Relative play speed; samplerate = base samplerate * relative play speed
-		float mRelativePlaySpeed;
+		float mSetRelativePlaySpeed;
+		// Overall relative plays peed; overall = set * 3d
+		float mOverallRelativePlaySpeed;
 		// How long this stream has played, in seconds.
 		time mStreamTime;
 		// Fader for the audio panning

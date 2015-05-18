@@ -53,7 +53,7 @@ namespace SoLoud
 	{
 		FOR_ALL_VOICES_PRE
 			mVoice[ch]->mBaseSamplerate = aSamplerate;
-			mVoice[ch]->mSamplerate = mVoice[ch]->mBaseSamplerate * mVoice[ch]->mRelativePlaySpeed;
+			updateVoiceRelativePlaySpeed(ch);		
 		FOR_ALL_VOICES_POST
 	}
 

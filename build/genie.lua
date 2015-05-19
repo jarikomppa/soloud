@@ -302,14 +302,23 @@ solution "SoLoud"
 	debugdir "../bin"
 	flags { "NoExceptions", "NoRTTI", "NoPCH" }
 	if (os.is("Windows")) then defines { "_CRT_SECURE_NO_WARNINGS" } end
-    configuration { "x86", "Debug" }
+    configuration { "x32", "Debug" }
         targetsuffix "_x86_d"   
-    configuration { "x86", "Release" }
+    configuration { "x32", "Release" }
+		flags {	"EnableSSE2" }
         targetsuffix "_x86"    
     configuration { "x64", "Debug" }
         targetsuffix "_x64_d"    
     configuration { "x64", "Release" }
         targetsuffix "_x64"
+    configuration { "Release" }
+    	flags { "Optimize", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }   
+		defines { "NDEBUG" }
+		objdir (buildroot .. "/release")
+    configuration { "Debug" }
+		flags {"Symbols" }
+		defines { "DEBUG" }
+		objdir (buildroot .. "/debug")
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 
@@ -334,20 +343,7 @@ if (WITH_LIBMODPLUG == 1) then
 		links {"libmodplug"}
 end
 
-		configuration "Debug"
-			defines { "DEBUG" }
-			flags {"Symbols" }
-			objdir (buildroot .. "/debug")
-			targetname "simplest"
-			flags { "Symbols" }
-
-
-		configuration "Release"
-			defines { "NDEBUG" }
-			flags {"Optimize"}
-			objdir (buildroot .. "/release")
-			targetname "simplest"
-			flags { "EnableSSE2", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
+		targetname "simplest"
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 
@@ -372,20 +368,7 @@ if (WITH_LIBMODPLUG == 1) then
 		links {"libmodplug"}
 end
 
-		configuration "Debug"
-			defines { "DEBUG" }
-			flags {"Symbols" }
-			objdir (buildroot .. "/debug")
-			targetname "welcome"
-			flags { "Symbols" }
-
-
-		configuration "Release"
-			defines { "NDEBUG" }
-			flags {"Optimize"}
-			objdir (buildroot .. "/release")
-			targetname "welcome"
-			flags { "EnableSSE2", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
+		targetname "welcome"
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 
@@ -407,20 +390,7 @@ end
 		  links { "pthread" }
 		end
 
-		configuration "Debug"
-			defines { "DEBUG" }
-			flags {"Symbols" }
-			objdir (buildroot .. "/debug")
-			targetname "null"
-			flags { "Symbols" }
-
-
-		configuration "Release"
-			defines { "NDEBUG" }
-			flags {"Optimize"}
-			objdir (buildroot .. "/release")
-			targetname "null"
-			flags { "EnableSSE2", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
+		targetname "null"
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 
@@ -445,20 +415,7 @@ if (WITH_LIBMODPLUG == 1) then
 		links {"libmodplug"}
 end
 
-		configuration "Debug"
-			defines { "DEBUG" }
-			flags {"Symbols" }
-			objdir (buildroot .. "/debug")
-			targetname "enumerate"
-			flags { "Symbols" }
-
-
-		configuration "Release"
-			defines { "NDEBUG" }
-			flags {"Optimize"}
-			objdir (buildroot .. "/release")
-			targetname "enumerate"
-			flags { "EnableSSE2", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
+		targetname "enumerate"
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 
@@ -480,20 +437,7 @@ if (WITH_LIBMODPLUG == 1) then
 		"../ext/libmodplug/src/**"
 		}
 
-		configuration "Debug"
-			defines { "DEBUG" }
-			flags {"Symbols" }
-			objdir (buildroot .. "/debug")
-			targetname "libmodplug"
-			flags { "Symbols" }
-
-
-		configuration "Release"
-			defines { "NDEBUG" }
-			flags {"Optimize"}
-			objdir (buildroot .. "/release")
-			targetname "libmodplug"
-			flags { "EnableSSE2", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
+		targetname "libmodplug"
 end
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
@@ -516,20 +460,9 @@ if (WITH_SDL == 1) then
 	  "../demos/common/glew",
 	  sdl_include
 	}
+	defines { "GLEW_STATIC" }
 
-		configuration "Debug"
-			defines { "DEBUG", "GLEW_STATIC"}
-			flags {"Symbols" }
-			objdir (buildroot .. "/debug")
-			targetname "solouddemocommon"
-			flags { "Symbols" }
-
-		configuration "Release"
-			defines { "NDEBUG", "GLEW_STATIC" }
-			flags {"Optimize"}
-			objdir (buildroot .. "/release")
-			targetname "solouddemocommon"
-			flags { "EnableSSE2", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
+		targetname "solouddemocommon"
 end
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 
@@ -671,20 +604,7 @@ if (WITH_NULL == 1) then
 	}
 end    
 
-		configuration "Debug"
-			defines { "DEBUG" }
-			flags {"Symbols" }
-			objdir (buildroot .. "/debug")
-			targetname "soloud_static"
-			flags { "Symbols" }
-
-
-		configuration "Release"
-			defines { "NDEBUG" }
-			flags {"Optimize"}
-			objdir (buildroot .. "/release")
-			targetname "soloud_static"
-			flags { "EnableSSE2", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
+		targetname "soloud_static"
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 if (WITH_TOOLS == 1) then
@@ -698,19 +618,7 @@ if (WITH_TOOLS == 1) then
 if (WITH_LIBMODPLUG == 1) then
 		defines { "WITH_MODPLUG" }
 end
-		configuration "Debug"
-			defines { "DEBUG" }
-			flags {"Symbols" }
-			objdir (buildroot .. "/debug")
-			targetname "codegen"
-			flags { "Symbols" }
-
-		configuration "Release"
-			defines { "NDEBUG" }
-			flags {"Optimize"}
-			objdir (buildroot .. "/release")
-			targetname "codegen"
-			flags { "EnableSSE2", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
+		targetname "codegen"
 end
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
@@ -726,19 +634,7 @@ if (WITH_TOOLS == 1) then
 if (WITH_LIBMODPLUG == 1) then
 		defines { "WITH_MODPLUG" }
 end
-		configuration "Debug"
-			defines { "DEBUG" }
-			flags {"Symbols" }
-			objdir (buildroot .. "/debug")
-			targetname "tedsid2dump"
-			flags { "Symbols" }
-
-		configuration "Release"
-			defines { "NDEBUG" }
-			flags {"Optimize"}
-			objdir (buildroot .. "/release")
-			targetname "tedsid2dump"
-			flags { "EnableSSE2", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
+		targetname "tedsid2dump"
 end
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
@@ -752,19 +648,7 @@ if (WITH_TOOLS == 1) then
 		  "../src/tools/resamplerlab/**.c*"
 		}
 
-		configuration "Debug"
-			defines { "DEBUG" }
-			flags {"Symbols" }
-			objdir (buildroot .. "/debug")
-			targetname "resamplerlab"
-			flags { "Symbols" }
-
-		configuration "Release"
-			defines { "NDEBUG" }
-			flags {"Optimize"}
-			objdir (buildroot .. "/release")
-			targetname "resamplerlab"
-			flags { "EnableSSE2", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
+		targetname "resamplerlab"
 end
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
@@ -778,19 +662,7 @@ if (WITH_TOOLS == 1) then
 		  "../src/tools/lutgen/**.c*"
 		}
 
-		configuration "Debug"
-			defines { "DEBUG" }
-			flags {"Symbols" }
-			objdir (buildroot .. "/debug")
-			targetname "lutgen"
-			flags { "Symbols" }
-
-		configuration "Release"
-			defines { "NDEBUG" }
-			flags {"Optimize"}
-			objdir (buildroot .. "/release")
-			targetname "lutgen"
-			flags { "EnableSSE2", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
+		targetname "lutgen"
 end
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
@@ -818,20 +690,7 @@ if (WITH_ALSA == 1) then
 end
 
 
-		configuration "Debug"
-			defines { "DEBUG" }
-			flags {"Symbols" }
-			objdir (buildroot .. "/debug")
-			targetname "c_test"
-			flags { "Symbols" }
-
-
-		configuration "Release"
-			defines { "NDEBUG" }
-			flags {"Optimize"}
-			objdir (buildroot .. "/release")
-			targetname "c_test"
-			flags { "EnableSSE2", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
+		targetname "c_test"
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 
@@ -859,24 +718,9 @@ if (os.is("Windows")) then
 	linkoptions { "/DEF:\"../../src/c_api/soloud.def\"" }
 end
 
-		configuration "Debug"
-			defines { "DEBUG" }
-			flags {"Symbols" }
-			objdir (buildroot .. "/debug")
-			targetname "soloud"
-			implibdir("../lib")
-			implibname "soloud"
-			flags { "Symbols" }
-
-
-		configuration "Release"
-			defines { "NDEBUG" }
-			flags {"Optimize"}
-			objdir (buildroot .. "/release")
-			targetname "soloud"
-			implibdir("../lib")
-			implibname("soloud")
-			flags { "EnableSSE2", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
+		targetname "soloud"
+		implibdir("../lib")
+		implibname("soloud")
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 
@@ -903,26 +747,15 @@ function CommonDemo(_name)
 	libdirs {
 	  sdl_lib
 	}
+	defines { "GLEW_STATIC" }
+
 if (WITH_ALSA == 1) then
 	links {"asound"}
 end
 
 		links {"SoloudStatic", "SoloudDemoCommon", "sdlmain", "sdl", "opengl32"}
 
-		configuration "Debug"
-			defines { "DEBUG", "GLEW_STATIC" }
-			flags {"Symbols" }
-			objdir (buildroot .. "/debug")
-			targetname (_name)
-			flags { "Symbols" }
-
-
-		configuration "Release"
-			defines { "NDEBUG", "GLEW_STATIC" }
-			flags {"Optimize"}
-			objdir (buildroot .. "/release")
-			targetname (_name)
-			flags { "EnableSSE2", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
+		targetname (_name)
 end
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
@@ -965,20 +798,7 @@ if (WITH_LIBMODPLUG == 1) then
 		links {"libmodplug"}
 end
 
-		configuration "Debug"
-			defines { "DEBUG" }
-			flags {"Symbols" }
-			objdir (buildroot .. "/debug")
-			targetname "space"
-			flags { "Symbols" }
-
-
-		configuration "Release"
-			defines { "NDEBUG" }
-			flags {"Optimize"}
-			objdir (buildroot .. "/release")
-			targetname "space"
-			flags { "EnableSSE2", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
+		targetname "space"
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 
@@ -1013,6 +833,8 @@ end
 	  sdl_lib
 	}
 
+	defines { "GLEW_STATIC" }
+
 if (WITH_ALSA == 1) then
 	links {"asound"}
 end
@@ -1027,23 +849,14 @@ end
 
 		links {"SoloudStatic", "sdlmain", "sdl", "opengl32"}
 
+		targetname "piano"
+
 		configuration "Debug"
-			defines { "DEBUG", "GLEW_STATIC" }
-			flags {"Symbols" }
-			objdir (buildroot .. "/debug")
-			targetname "piano"
-			flags { "Symbols" }
 		if (WITH_PORTMIDI == 1) then
 			libdirs { portmidi_debug }
 		end
 
-
 		configuration "Release"
-			defines { "NDEBUG", "GLEW_STATIC" }
-			flags {"Optimize"}
-			objdir (buildroot .. "/release")
-			targetname "piano"
-			flags { "EnableSSE2", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
 		if (WITH_PORTMIDI == 1) then
 			libdirs { portmidi_release }
 		end
@@ -1070,20 +883,7 @@ end
 
 		links {"SoloudStatic", "sdlmain", "sdl"}
 
-		configuration "Debug"
-			defines { "DEBUG" }
-			flags {"Symbols" }
-			objdir (buildroot .. "/debug")
-			targetname "env"
-			flags { "Symbols" }
-
-
-		configuration "Release"
-			defines { "NDEBUG" }
-			flags {"Optimize"}
-			objdir (buildroot .. "/release")
-			targetname "env"
-			flags { "EnableSSE2", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
+		targetname "env"
 
 end
 

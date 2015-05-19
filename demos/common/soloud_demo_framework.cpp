@@ -43,6 +43,7 @@
 int gPressed[256], gWasPressed[256];
 int gMouseX = 0;
 int gMouseY = 0;
+SDL_Window *gSDLWindow;
 
 GLuint loadTexture(char * aFilename)
 {
@@ -552,17 +553,26 @@ void DemoInit()
 	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
-	if (SDL_SetVideoMode(800, 400, 32, SDL_OPENGL) == 0)
-	{
-		fprintf(stderr, "Video mode set failed: %s\n", SDL_GetError());
-		SDL_Quit();
-		exit(0);
-	}
+	int flags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN;
+
+
+	gSDLWindow = SDL_CreateWindow(
+		"",
+		SDL_WINDOWPOS_CENTERED,
+		SDL_WINDOWPOS_CENTERED,
+		800,
+		400,
+		flags);
+
+	SDL_GLContext glcontext = SDL_GL_CreateContext(gSDLWindow);
+
+	SDL_GL_SetSwapInterval(1);
+
 
 	glViewport(0, 0, 800, 400);
 
 	// set window title
-	SDL_WM_SetCaption("http://soloud-audio.com", NULL);
+	SDL_SetWindowTitle(gSDLWindow, "http://soloud-audio.com");
 
 	glewInit();
 
@@ -650,8 +660,7 @@ void DemoUpdateEnd()
 {
 	// End frame
 	ImGui::Render();
-	SDL_GL_SwapBuffers();
-
+	SDL_GL_SwapWindow(gSDLWindow);
 }
 
 int DemoTick()

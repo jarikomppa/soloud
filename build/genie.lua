@@ -23,6 +23,7 @@ end
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 
 local sdl_root       = "/libraries/sdl"
+local sdl2_root      = "/libraries/sdl2"
 local portmidi_root  = "/libraries/portmidi"
 local dxsdk_root     = os.getenv("DXSDK_DIR") and os.getenv("DXSDK_DIR") or "C:/Program Files (x86)/Microsoft DirectX SDK (June 2010)"
 local portaudio_root = "/libraries/portaudio"
@@ -31,7 +32,10 @@ local openal_root    = "/libraries/openal"
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 
 local sdl_include       = sdl_root .. "/include"
-local sdl_lib           = sdl_root .. "/lib"
+local sdl2_include      = sdl2_root .. "/include"
+local sdl2_lib_x86      = sdl2_root .. "/lib/x86"
+local sdl2_lib_x64      = sdl2_root .. "/lib/x64"
+local sdl2_lib          = "~2~"
 local portmidi_include  = portmidi_root .. "/pm_common"
 local portmidi_debug    = portmidi_root .. "/debug"
 local portmidi_release  = portmidi_root .. "/release"
@@ -302,11 +306,15 @@ solution "SoLoud"
 	debugdir "../bin"
 	flags { "NoExceptions", "NoRTTI", "NoPCH" }
 	if (os.is("Windows")) then defines { "_CRT_SECURE_NO_WARNINGS" } end
+    configuration { "x32" }
+        sdl2_lib = sdl2_lib_x86
+    configuration { "x64" }
+        sdl2_lib = sdl2_lib_x64
     configuration { "x32", "Debug" }
         targetsuffix "_x86_d"   
     configuration { "x32", "Release" }
 		flags {	"EnableSSE2" }
-        targetsuffix "_x86"    
+        targetsuffix "_x86"
     configuration { "x64", "Debug" }
         targetsuffix "_x64_d"    
     configuration { "x64", "Release" }
@@ -458,7 +466,7 @@ if (WITH_SDL == 1) then
 	  "../demos/common",
 	  "../demos/common/imgui",
 	  "../demos/common/glew",
-	  sdl_include
+	  sdl2_include
 	}
 	defines { "GLEW_STATIC" }
 
@@ -538,7 +546,7 @@ if (WITH_SDL == 1) then
 	  }
 	includedirs {
 	  "../include",
-	  sdl_include
+	  sdl2_include
 	}
 end
 
@@ -560,7 +568,7 @@ if (WITH_SDL2_STATIC == 1) then
 	  }
 	includedirs {
 	  "../include",
-	  sdl_include
+	  sdl2_include
 	}
 end
 
@@ -742,10 +750,10 @@ function CommonDemo(_name)
 	  "../demos/common",
 	  "../demos/common/imgui",
 	  "../demos/common/glew",
-	  sdl_include
+	  sdl2_include
 	}
 	libdirs {
-	  sdl_lib
+	  sdl2_lib
 	}
 	defines { "GLEW_STATIC" }
 
@@ -753,7 +761,7 @@ if (WITH_ALSA == 1) then
 	links {"asound"}
 end
 
-		links {"SoloudStatic", "SoloudDemoCommon", "sdlmain", "sdl", "opengl32"}
+		links {"SoloudStatic", "SoloudDemoCommon", "SDL2main", "SDL2", "opengl32"}
 
 		targetname (_name)
 end
@@ -784,16 +792,16 @@ end
 	  }
 	includedirs {
 	  "../include",
-	  sdl_include
+	  sdl2_include
 	}
 	libdirs {
-	  sdl_lib
+	  sdl2_lib
 	}
 if (WITH_ALSA == 1) then
 	links {"asound"}
 end
 
-		links {"SoloudStatic", "sdlmain", "sdl"}
+		links {"SoloudStatic", "SDL2main", "SDL2"}
 if (WITH_LIBMODPLUG == 1) then
 		links {"libmodplug"}
 end
@@ -827,10 +835,10 @@ end
 	  "../demos/common",
 	  "../demos/common/imgui",
 	  "../demos/common/glew",
-	  sdl_include
+	  sdl2_include
 	}
 	libdirs {
-	  sdl_lib
+	  sdl2_lib
 	}
 
 	defines { "GLEW_STATIC" }
@@ -847,7 +855,7 @@ end
 		links { "portmidi" }
 	end
 
-		links {"SoloudStatic", "sdlmain", "sdl", "opengl32"}
+		links {"SoloudStatic", "SDL2main", "SDL2", "opengl32"}
 
 		targetname "piano"
 
@@ -871,17 +879,17 @@ end
 	  }
 	includedirs {
 	  "../include",
-	  sdl_include
+	  sdl2_include
 	}
 	libdirs {
-	  sdl_lib
+	  sdl2_lib
 	}
 
 if (WITH_ALSA == 1) then
 	links {"asound"}
 end
 
-		links {"SoloudStatic", "sdlmain", "sdl"}
+		links {"SoloudStatic", "SDL2main", "SDL2"}
 
 		targetname "env"
 

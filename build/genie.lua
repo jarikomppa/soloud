@@ -291,6 +291,7 @@ print ("WITH_PORTMIDI   = ", WITH_PORTMIDI)
 print ("WITH_TOOLS      = ", WITH_TOOLS)
 print ("")
 
+
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 
 solution "SoLoud"
@@ -301,6 +302,14 @@ solution "SoLoud"
 	debugdir "../bin"
 	flags { "NoExceptions", "NoRTTI", "NoPCH" }
 	if (os.is("Windows")) then defines { "_CRT_SECURE_NO_WARNINGS" } end
+    configuration { "x86", "Debug" }
+        targetsuffix "_x86_d"   
+    configuration { "x86", "Release" }
+        targetsuffix "_x86"    
+    configuration { "x64", "Debug" }
+        targetsuffix "_x64_d"    
+    configuration { "x64", "Release" }
+        targetsuffix "_x64"
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 
@@ -329,7 +338,7 @@ end
 			defines { "DEBUG" }
 			flags {"Symbols" }
 			objdir (buildroot .. "/debug")
-			targetname "simplest_d"
+			targetname "simplest"
 			flags { "Symbols" }
 
 
@@ -367,7 +376,7 @@ end
 			defines { "DEBUG" }
 			flags {"Symbols" }
 			objdir (buildroot .. "/debug")
-			targetname "welcome_d"
+			targetname "welcome"
 			flags { "Symbols" }
 
 
@@ -402,7 +411,7 @@ end
 			defines { "DEBUG" }
 			flags {"Symbols" }
 			objdir (buildroot .. "/debug")
-			targetname "null_d"
+			targetname "null"
 			flags { "Symbols" }
 
 
@@ -440,7 +449,7 @@ end
 			defines { "DEBUG" }
 			flags {"Symbols" }
 			objdir (buildroot .. "/debug")
-			targetname "enumerate_d"
+			targetname "enumerate"
 			flags { "Symbols" }
 
 
@@ -475,7 +484,7 @@ if (WITH_LIBMODPLUG == 1) then
 			defines { "DEBUG" }
 			flags {"Symbols" }
 			objdir (buildroot .. "/debug")
-			targetname "libmodplug_x86_d"
+			targetname "libmodplug"
 			flags { "Symbols" }
 
 
@@ -483,7 +492,7 @@ if (WITH_LIBMODPLUG == 1) then
 			defines { "NDEBUG" }
 			flags {"Optimize"}
 			objdir (buildroot .. "/release")
-			targetname "libmodplug_x86"
+			targetname "libmodplug"
 			flags { "EnableSSE2", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
 end
 
@@ -512,14 +521,14 @@ if (WITH_SDL == 1) then
 			defines { "DEBUG", "GLEW_STATIC"}
 			flags {"Symbols" }
 			objdir (buildroot .. "/debug")
-			targetname "solouddemocommon_x86_d"
+			targetname "solouddemocommon"
 			flags { "Symbols" }
 
 		configuration "Release"
 			defines { "NDEBUG", "GLEW_STATIC" }
 			flags {"Optimize"}
 			objdir (buildroot .. "/release")
-			targetname "solouddemocommon_x86"
+			targetname "solouddemocommon"
 			flags { "EnableSSE2", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
 end
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
@@ -666,7 +675,7 @@ end
 			defines { "DEBUG" }
 			flags {"Symbols" }
 			objdir (buildroot .. "/debug")
-			targetname "soloud_x86_static_d"
+			targetname "soloud_static"
 			flags { "Symbols" }
 
 
@@ -674,7 +683,7 @@ end
 			defines { "NDEBUG" }
 			flags {"Optimize"}
 			objdir (buildroot .. "/release")
-			targetname "soloud_x86_static"
+			targetname "soloud_static"
 			flags { "EnableSSE2", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
@@ -693,7 +702,7 @@ end
 			defines { "DEBUG" }
 			flags {"Symbols" }
 			objdir (buildroot .. "/debug")
-			targetname "codegen_d"
+			targetname "codegen"
 			flags { "Symbols" }
 
 		configuration "Release"
@@ -721,7 +730,7 @@ end
 			defines { "DEBUG" }
 			flags {"Symbols" }
 			objdir (buildroot .. "/debug")
-			targetname "tedsid2dump_d"
+			targetname "tedsid2dump"
 			flags { "Symbols" }
 
 		configuration "Release"
@@ -747,7 +756,7 @@ if (WITH_TOOLS == 1) then
 			defines { "DEBUG" }
 			flags {"Symbols" }
 			objdir (buildroot .. "/debug")
-			targetname "resamplerlab_d"
+			targetname "resamplerlab"
 			flags { "Symbols" }
 
 		configuration "Release"
@@ -773,7 +782,7 @@ if (WITH_TOOLS == 1) then
 			defines { "DEBUG" }
 			flags {"Symbols" }
 			objdir (buildroot .. "/debug")
-			targetname "lutgen_d"
+			targetname "lutgen"
 			flags { "Symbols" }
 
 		configuration "Release"
@@ -813,7 +822,7 @@ end
 			defines { "DEBUG" }
 			flags {"Symbols" }
 			objdir (buildroot .. "/debug")
-			targetname "c_test_d"
+			targetname "c_test"
 			flags { "Symbols" }
 
 
@@ -854,9 +863,9 @@ end
 			defines { "DEBUG" }
 			flags {"Symbols" }
 			objdir (buildroot .. "/debug")
-			targetname "soloud_x86_d"
+			targetname "soloud"
 			implibdir("../lib")
-			implibname "soloud_x86_d"
+			implibname "soloud"
 			flags { "Symbols" }
 
 
@@ -864,9 +873,9 @@ end
 			defines { "NDEBUG" }
 			flags {"Optimize"}
 			objdir (buildroot .. "/release")
-			targetname "soloud_x86"
+			targetname "soloud"
 			implibdir("../lib")
-			implibname("soloud_x86")
+			implibname("soloud")
 			flags { "EnableSSE2", "OptimizeSpeed", "NoEditAndContinue", "No64BitChecks" }
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
@@ -904,7 +913,7 @@ end
 			defines { "DEBUG", "GLEW_STATIC" }
 			flags {"Symbols" }
 			objdir (buildroot .. "/debug")
-			targetname (_name .. "_d")
+			targetname (_name)
 			flags { "Symbols" }
 
 
@@ -960,7 +969,7 @@ end
 			defines { "DEBUG" }
 			flags {"Symbols" }
 			objdir (buildroot .. "/debug")
-			targetname "space_d"
+			targetname "space"
 			flags { "Symbols" }
 
 
@@ -1022,7 +1031,7 @@ end
 			defines { "DEBUG", "GLEW_STATIC" }
 			flags {"Symbols" }
 			objdir (buildroot .. "/debug")
-			targetname "piano_d"
+			targetname "piano"
 			flags { "Symbols" }
 		if (WITH_PORTMIDI == 1) then
 			libdirs { portmidi_debug }
@@ -1065,7 +1074,7 @@ end
 			defines { "DEBUG" }
 			flags {"Symbols" }
 			objdir (buildroot .. "/debug")
-			targetname "env_d"
+			targetname "env"
 			flags { "Symbols" }
 
 

@@ -44,12 +44,14 @@ namespace SoLoud
 
     result null_init(Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer, unsigned int aChannels)
     {
+		if (aChannels == 0 || aChannels == 3 || aChannels == 5 || aChannels > 6 || aBuffer < SAMPLE_GRANULARITY)
+			return INVALID_PARAMETER;
         aSoloud->mBackendData = 0;
         aSoloud->mBackendCleanupFunc = nullCleanup;
 
         aSoloud->postinit(aSamplerate, aBuffer, aFlags, aChannels);
         aSoloud->mBackendString = "null driver";
-        return 0;
+        return SO_NO_ERROR;
     }
 };
 #endif

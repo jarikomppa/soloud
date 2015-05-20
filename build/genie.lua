@@ -786,28 +786,10 @@ end
   CommonDemo("pewpew")
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
-
-  project "space"
-	kind "WindowedApp"
-	language "C++"
-	files {
-	  "../demos/space/**.c*"
-	  }
-	includedirs {
-	  "../include",
-	  sdl2_include
-	}
-    sdl2_lib()
-if (WITH_ALSA == 1) then
-	links {"asound"}
-end
-
-		links {"SoloudStatic", "SDL2main", "SDL2"}
-if (WITH_LIBMODPLUG == 1) then
-		links {"libmodplug"}
-end
-
-		targetname "space"
+		
+   CommonDemo("space")
+	links {"libmodplug"}
+   
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 

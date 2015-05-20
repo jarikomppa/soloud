@@ -45,7 +45,7 @@ int gMouseX = 0;
 int gMouseY = 0;
 SDL_Window *gSDLWindow;
 
-GLuint loadTexture(char * aFilename)
+unsigned int DemoLoadTexture(char * aFilename)
 {
 	int x, y, comp;
 	unsigned char *image = stbi_load(aFilename, &x, &y, &comp, 4);
@@ -579,7 +579,7 @@ void DemoInit()
 	InitImGui();
 	framework_init_flat();
 	framework_init_tex();
-	desktop_tex = loadTexture("graphics/soloud_bg.png");
+	desktop_tex = DemoLoadTexture("graphics/soloud_bg.png");
 
 	// Register SDL_Quit to be called at exit; makes sure things are
 	// cleaned up when we quit.

@@ -804,6 +804,7 @@ end
    CommonDemo("tedsid")
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
+
   project "piano"
 	kind "WindowedApp"
 	language "C++"
@@ -853,25 +854,7 @@ end
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 
-  project "env"
-	kind "WindowedApp"
-	language "C++"
-	files {
-	  "../demos/env/**.c*"
-	  }
-	includedirs {
-	  "../include",
-	  sdl2_include
-	}
-    sdl2_lib()
-
-if (WITH_ALSA == 1) then
-	links {"asound"}
-end
-
-		links {"SoloudStatic", "SDL2main", "SDL2"}
-
-		targetname "env"
+    CommonDemo("env")
 
 end
 

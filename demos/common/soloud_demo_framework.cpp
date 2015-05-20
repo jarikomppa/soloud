@@ -412,7 +412,13 @@ void DemoTriangle(float x0, float y0, float x1, float y1, float x2, float y2, un
 	glUseProgram(0);
 }
 
-void DemoTexQuad(int tex, float x0, float y0, float x1, float y1, float x2, float y2, float x3, float y3)
+void DemoQuad(float x0, float y0, float x1, float y1, unsigned int color)
+{
+	DemoTriangle(x0, y0, x0, y1, x1, y1, color);
+	DemoTriangle(x0, y0, x1, y0, x1, y1, color);
+}
+
+void DemoTexQuad(int tex, float x0, float y0, float x1, float y1)
 {
 	glEnableVertexAttribArray(tex_position_location);
 	glEnableVertexAttribArray(tex_uv_location);
@@ -423,11 +429,11 @@ void DemoTexQuad(int tex, float x0, float y0, float x1, float y1, float x2, floa
 	buf[0] = x0;
 	buf[1] = y0;
 	buf[2] = x1;
-	buf[3] = y1;
-	buf[4] = x2;
-	buf[5] = y2;
-	buf[6] = x3;
-	buf[7] = y3;
+	buf[3] = y0;
+	buf[4] = x0;
+	buf[5] = y1;
+	buf[6] = x1;
+	buf[7] = y1;
 
 	int i;
 	for (i = 0; i < 4; i++)
@@ -646,7 +652,7 @@ void DemoUpdateStart()
 	}
 	glClearColor(0.2f, 0.2f, 0.4f, 0);
 	glClear(GL_COLOR_BUFFER_BIT);
-	DemoTexQuad(desktop_tex, 0, 0, 800, 0, 0, 400, 800, 400);
+	DemoTexQuad(desktop_tex, 0, 0, 800, 400);
 	UpdateImGui();
 
 	gMouseX = gUIState.mousex;

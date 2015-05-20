@@ -44,15 +44,25 @@ int main(int argc, char *argv[])
 				"ID:       %d\n"
 				"String:   \"%s\"\n"
 				"Rate:     %d\n"
-				"Channels: %d%s\n"
-				"Buffer:   %d\n",
+				"Buffer:   %d\n"
+				"Channels: %d%s (default)\n",
 				soloud.getBackendId(),
 				soloud.getBackendString() == 0 ? "(null)" : soloud.getBackendString(),
 				soloud.getBackendSamplerate(),
+				soloud.getBackendBufferSize(),
 				soloud.getBackendChannels(),
-				(soloud.getBackendChannels() == 2 ? " (stereo)" : soloud.getBackendChannels() == 1 ? " (mono)" : ""),
-				soloud.getBackendBufferSize());
+				(soloud.getBackendChannels() == 6 ? " (5.1 surround)" : soloud.getBackendChannels() == 4 ? " (quad)" : soloud.getBackendChannels() == 2 ? " (stereo)" : soloud.getBackendChannels() == 1 ? " (mono)" : ""));
 			soloud.deinit();
+			int j;
+			for (j = 1; j < 7; j++)
+			{
+				int res = soloud.init(0, i, 0, 0, j);
+				if (res == SoLoud::SO_NO_ERROR && soloud.getBackendChannels() == j)
+				{
+					printf("Channels: %d%s\n", soloud.getBackendChannels(), (soloud.getBackendChannels() == 6 ? " (5.1 surround)" : soloud.getBackendChannels() == 4 ? " (quad)" : soloud.getBackendChannels() == 2 ? " (stereo)" : soloud.getBackendChannels() == 1 ? " (mono)" : ""));
+					soloud.deinit();
+				}
+			}
 		}
 		else
 		{

@@ -142,7 +142,7 @@ namespace SoLoud
         ZeroMemory(data, sizeof(WASAPIData));
         aSoloud->mBackendData = data;
         aSoloud->mBackendCleanupFunc = wasapiCleanup;
-		aSoloud->mChannels = 2;
+		
         data->bufferEndEvent = CreateEvent(0, FALSE, FALSE, 0);
         if (0 == data->bufferEndEvent)
         {
@@ -203,7 +203,7 @@ namespace SoLoud
         data->channels = format.nChannels;
         data->buffer = new float[data->bufferFrames * format.nChannels];
         data->soloud = aSoloud;
-        aSoloud->postinit(aSamplerate, data->bufferFrames * format.nChannels, aFlags);
+        aSoloud->postinit(aSamplerate, data->bufferFrames * format.nChannels, aFlags, 2);
         data->thread = Thread::createThread(wasapiThread, data);
         if (0 == data->thread)
         {

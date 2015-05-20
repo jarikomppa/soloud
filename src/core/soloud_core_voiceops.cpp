@@ -67,8 +67,22 @@ namespace SoLoud
 		if (mVoice[aVoice])
 		{
 			mVoice[aVoice]->mPan = aPan;
-			mVoice[aVoice]->mChannelVolume[0] = (float)cos((aPan + 1) * M_PI / 4);
-			mVoice[aVoice]->mChannelVolume[1] = (float)sin((aPan + 1) * M_PI / 4);
+			float l = (float)cos((aPan + 1) * M_PI / 4);
+			float r = (float)sin((aPan + 1) * M_PI / 4);
+			mVoice[aVoice]->mChannelVolume[0] = l;
+			mVoice[aVoice]->mChannelVolume[1] = r;
+			if (mVoice[aVoice]->mChannels == 4)
+			{
+				mVoice[aVoice]->mChannelVolume[2] = l;
+				mVoice[aVoice]->mChannelVolume[3] = r;
+			}
+			if (mVoice[aVoice]->mChannels == 6)
+			{
+				mVoice[aVoice]->mChannelVolume[2] = 1.0f / (float)sqrt(2.0f);
+				mVoice[aVoice]->mChannelVolume[3] = 1;
+				mVoice[aVoice]->mChannelVolume[4] = l;
+				mVoice[aVoice]->mChannelVolume[5] = r;
+			}
 		}
 	}
 

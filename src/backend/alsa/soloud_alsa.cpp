@@ -111,7 +111,6 @@ namespace SoLoud
         memset(data, 0, sizeof(ALSAData));
         aSoloud->mBackendData = data;
         aSoloud->mBackendCleanupFunc = alsaCleanup;
-        aSoloud->mChannels = 2;
         data->samples = aBuffer;
         data->channels = 2;
         data->soloud = aSoloud;
@@ -156,7 +155,7 @@ namespace SoLoud
 
         data->buffer = new float[data->samples*data->channels];
         data->sampleBuffer = new short[data->samples*data->channels];
-        aSoloud->postinit(aSamplerate, data->samples * data->channels, aFlags);
+        aSoloud->postinit(aSamplerate, data->samples * data->channels, aFlags, 2);
         data->threadHandle = Thread::createThread(alsaThread, data);
         if (0 == data->threadHandle)
         {

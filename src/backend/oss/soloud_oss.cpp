@@ -114,7 +114,6 @@ namespace SoLoud
         memset(data, 0, sizeof(OSSData));
         aSoloud->mBackendData = data;
         aSoloud->mBackendCleanupFunc = ossCleanup;
-        aSoloud->mChannels = 2;
         data->samples = aBuffer;
         data->soloud = aSoloud;
         bool deviceIsOpen = false;
@@ -167,7 +166,7 @@ namespace SoLoud
         }
         data->buffer = new float[data->samples*data->channels];
         data->sampleBuffer = new short[data->samples*data->channels];
-        aSoloud->postinit(aSamplerate, data->samples * data->channels, aFlags);
+        aSoloud->postinit(aSamplerate, data->samples * data->channels, aFlags, 2);
         data->threadHandle = Thread::createThread(ossThread, data);
         if (0 == data->threadHandle)
         {

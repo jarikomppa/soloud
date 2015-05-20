@@ -223,6 +223,14 @@ namespace SoLoud
 		}
 	}
 
+	result Bus::setChannels(unsigned int aChannels)
+	{
+		if (aChannels == 0 || aChannels == 3 || aChannels == 5 || aChannels > 6)
+			return INVALID_PARAMETER;
+		mChannels = aChannels;
+		return SO_NO_ERROR;
+	}
+
 	void Bus::setVisualizationEnable(bool aEnable)
 	{
 		if (aEnable)

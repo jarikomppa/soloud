@@ -126,7 +126,6 @@ namespace SoLoud
         ZeroMemory(data, sizeof(SoLoudWinMMData));
         aSoloud->mBackendData = data;
         aSoloud->mBackendCleanupFunc = winMMCleanup;
-		aSoloud->mChannels = 2;
         data->samples = aBuffer;
         data->soloud = aSoloud;
         data->bufferEndEvent = CreateEvent(0, FALSE, FALSE, 0);
@@ -165,7 +164,7 @@ namespace SoLoud
                 return UNKNOWN_ERROR;
             }
         }
-        aSoloud->postinit(aSamplerate, data->samples * format.nChannels, aFlags);
+        aSoloud->postinit(aSamplerate, data->samples * format.nChannels, aFlags, 2);
         data->threadHandle = Thread::createThread(winMMThread, data);
         if (0 == data->threadHandle)
         {

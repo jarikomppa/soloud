@@ -364,9 +364,10 @@ namespace SoLoud
 		return 0;
 	}
 
-	void Soloud::postinit(unsigned int aSamplerate, unsigned int aBufferSize, unsigned int aFlags)
+	void Soloud::postinit(unsigned int aSamplerate, unsigned int aBufferSize, unsigned int aFlags, unsigned int aChannels)
 	{		
 		mGlobalVolume = 1;
+		mChannels = aChannels;
 		mSamplerate = aSamplerate;
 		mBufferSize = aBufferSize;
 		mScratchSize = aBufferSize;
@@ -376,6 +377,66 @@ namespace SoLoud
 		mScratch = new float[mScratchSize * 2];
 		mFlags = aFlags;
 		mPostClipScaler = 0.95f;
+		switch (mChannels)
+		{
+		case 1:
+			m3dSpeakerPosition[0 * 3 + 0] = 0;
+			m3dSpeakerPosition[0 * 3 + 1] = 0;
+			m3dSpeakerPosition[0 * 3 + 2] = 1;
+			break;
+		case 2:
+			m3dSpeakerPosition[0 * 3 + 0] = 2;
+			m3dSpeakerPosition[0 * 3 + 1] = 0;
+			m3dSpeakerPosition[0 * 3 + 2] = 1;
+			m3dSpeakerPosition[1 * 3 + 0] = -2;
+			m3dSpeakerPosition[1 * 3 + 1] = 0;
+			m3dSpeakerPosition[1 * 3 + 2] = 1;
+			break;
+		case 4:
+			m3dSpeakerPosition[0 * 3 + 0] = 2;
+			m3dSpeakerPosition[0 * 3 + 1] = 0;
+			m3dSpeakerPosition[0 * 3 + 2] = 1;
+			m3dSpeakerPosition[1 * 3 + 0] = -2;
+			m3dSpeakerPosition[1 * 3 + 1] = 0;
+			m3dSpeakerPosition[1 * 3 + 2] = 1;
+			// I suppose technically the second pair should be straight left & right,
+			// but I prefer moving them a bit back to mirror the front speakers.
+			m3dSpeakerPosition[2 * 3 + 0] = 2;
+			m3dSpeakerPosition[2 * 3 + 1] = 0;
+			m3dSpeakerPosition[2 * 3 + 2] = -1;
+			m3dSpeakerPosition[3 * 3 + 0] = -2;
+			m3dSpeakerPosition[3 * 3 + 1] = 0;
+			m3dSpeakerPosition[3 * 3 + 2] = -1;
+			break;
+		case 6:
+			m3dSpeakerPosition[0 * 3 + 0] = 2;
+			m3dSpeakerPosition[0 * 3 + 1] = 0;
+			m3dSpeakerPosition[0 * 3 + 2] = 1;
+			m3dSpeakerPosition[1 * 3 + 0] = -2;
+			m3dSpeakerPosition[1 * 3 + 1] = 0;
+			m3dSpeakerPosition[1 * 3 + 2] = 1;
+
+			// center and subwoofer. 
+			m3dSpeakerPosition[2 * 3 + 0] = 0;
+			m3dSpeakerPosition[2 * 3 + 1] = 0;
+			m3dSpeakerPosition[2 * 3 + 2] = 1;
+			// Sub should be "mix of everything". We'll handle it as a special case and make it a null vector.
+			m3dSpeakerPosition[3 * 3 + 0] = 0;
+			m3dSpeakerPosition[3 * 3 + 1] = 0;
+			m3dSpeakerPosition[3 * 3 + 2] = 0;
+
+			// I suppose technically the second pair should be straight left & right,
+			// but I prefer moving them a bit back to mirror the front speakers.
+			m3dSpeakerPosition[4 * 3 + 0] = 2;
+			m3dSpeakerPosition[4 * 3 + 1] = 0;
+			m3dSpeakerPosition[4 * 3 + 2] = -1;
+			m3dSpeakerPosition[5 * 3 + 0] = -2;
+			m3dSpeakerPosition[5 * 3 + 1] = 0;
+			m3dSpeakerPosition[5 * 3 + 2] = -1;
+			break;
+
+
+		}
 	}
 
 	const char * Soloud::getErrorString(result aErrorCode) const
@@ -680,41 +741,61 @@ namespace SoLoud
 					// Move source pointer onwards (writesamples may be zero)
 					voice->mSrcOffset += writesamples * step_fixed;
 				}
-
-
-				unsigned int chofs[2];
-				chofs[0] = 0;
-				chofs[1] = aSamples;
 				
-				float lpan = voice->mCurrentChannelVolume[0];
-				float rpan = voice->mCurrentChannelVolume[1];
-				float lpand = voice->mChannelVolume[0] * voice->mOverallVolume;
-				float rpand = voice->mChannelVolume[1] * voice->mOverallVolume;
-				float lpani = (lpand - lpan) / aSamples;
-				float rpani = (rpand - rpan) / aSamples;
+				float pan[MAX_CHANNELS]; // current speaker volume
+				pan[0] = voice->mCurrentChannelVolume[0];
+				pan[1] = voice->mCurrentChannelVolume[1];
+				pan[2] = voice->mCurrentChannelVolume[2];
+				pan[3] = voice->mCurrentChannelVolume[3];
+				pan[4] = voice->mCurrentChannelVolume[4];
+				pan[5] = voice->mCurrentChannelVolume[5];
+				float pand[MAX_CHANNELS]; // destination speaker volume
+				pand[0] = voice->mChannelVolume[0] * voice->mOverallVolume;
+				pand[1] = voice->mChannelVolume[1] * voice->mOverallVolume;
+				pand[2] = voice->mChannelVolume[2] * voice->mOverallVolume;
+				pand[3] = voice->mChannelVolume[3] * voice->mOverallVolume;
+				pand[4] = voice->mChannelVolume[4] * voice->mOverallVolume;
+				pand[5] = voice->mChannelVolume[5] * voice->mOverallVolume;
+				float pani[MAX_CHANNELS]; // speaker volume increment per sample
+				pani[0] = (pand[0] - pan[0]) / aSamples;
+				pani[1] = (pand[1] - pan[1]) / aSamples;
+				pani[2] = (pand[2] - pan[2]) / aSamples;
+				pani[3] = (pand[3] - pan[3]) / aSamples;
+				pani[4] = (pand[4] - pan[4]) / aSamples;
+				pani[5] = (pand[5] - pan[5]) / aSamples;
+
+				// TODO: n channels to n channels here
 
 				if (voice->mChannels == 2)
 				{
-					for (j = 0; j < aSamples; j++, lpan += lpani, rpan += rpani)
+					for (j = 0; j < aSamples; j++)
 					{
-						float s1 = aScratch[chofs[0] + j];
-						float s2 = aScratch[chofs[1] + j];
-						aBuffer[j + 0] += s1 * lpan;
-						aBuffer[j + aSamples] += s2 * rpan;
+						pan[0] += pani[0];
+						pan[1] += pani[1];
+						float s1 = aScratch[j];
+						float s2 = aScratch[aSamples + j];
+						aBuffer[j + 0] += s1 * pan[0];
+						aBuffer[j + aSamples] += s2 * pan[1];
 					}
 				}
 				else
 				{
-					for (j = 0; j < aSamples; j++, lpan += lpani, rpan += rpani)
+					for (j = 0; j < aSamples; j++)
 					{
-						float s = aScratch[chofs[0] + j];
-						aBuffer[j + 0] += s * lpan;
-						aBuffer[j + aSamples] += s * rpan;
+						pan[0] += pani[0];
+						pan[1] += pani[1];
+						float s = aScratch[j];
+						aBuffer[j + 0] += s * pan[0];
+						aBuffer[j + aSamples] += s * pan[1];
 					}
 				}
 					
-				voice->mCurrentChannelVolume[0] = lpand;
-				voice->mCurrentChannelVolume[1] = rpand;
+				voice->mCurrentChannelVolume[0] = pand[0];
+				voice->mCurrentChannelVolume[1] = pand[1];
+				voice->mCurrentChannelVolume[2] = pand[2];
+				voice->mCurrentChannelVolume[3] = pand[3];
+				voice->mCurrentChannelVolume[4] = pand[4];
+				voice->mCurrentChannelVolume[5] = pand[5];
 
 				// clear voice if the sound is over
 				if (!(voice->mFlags & AudioSourceInstance::LOOPING) && voice->hasEnded())

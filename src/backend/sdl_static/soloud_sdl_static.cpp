@@ -85,10 +85,9 @@ namespace SoLoud
 		}
 		aSoloud->mBackendData = new float[as2.samples*4];
 
-		aSoloud->postinit(as2.freq, as2.samples * 2, aFlags);
+		aSoloud->postinit(as2.freq, as2.samples * 2, aFlags, 2);
 
 		aSoloud->mBackendCleanupFunc = soloud_sdlstatic_deinit;
-		aSoloud->mChannels = 2;
 
 		SDL_PauseAudio(0);
         aSoloud->mBackendString = "SDL (static)";

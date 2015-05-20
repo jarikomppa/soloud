@@ -192,7 +192,6 @@ namespace SoLoud
         ZeroMemory(data, sizeof(XAudio2Data));
         aSoloud->mBackendData = data;
         aSoloud->mBackendCleanupFunc = xaudio2Cleanup;
-        aSoloud->mChannels = 2;
         data->bufferEndEvent = CreateEvent(0, FALSE, FALSE, 0);
         if (0 == data->bufferEndEvent)
         {
@@ -233,7 +232,7 @@ namespace SoLoud
         }
         data->samples = aBuffer;
         data->soloud = aSoloud;
-        aSoloud->postinit(aSamplerate, aBuffer * format.nChannels, aFlags);
+        aSoloud->postinit(aSamplerate, aBuffer * format.nChannels, aFlags, 2);
         data->thread = Thread::createThread(xaudio2Thread, data);
         if (0 == data->thread)
         {

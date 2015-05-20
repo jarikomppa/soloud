@@ -122,10 +122,8 @@ namespace SoLoud
 		{
 			gSDL_Has_Float_Samples = 0;
 			aSoloud->mBackendData = new float[as2.samples * 4];
-		}
-		aSoloud->mChannels = as2.channels;
-		
-		aSoloud->postinit(as2.freq, as2.samples, aFlags);
+		}	
+		aSoloud->postinit(as2.freq, as2.samples, aFlags, as2.channels);
 
 		aSoloud->mBackendCleanupFunc = soloud_sdl_deinit;
 

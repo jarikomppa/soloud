@@ -33,6 +33,13 @@ namespace SoLoud
 	{
 		float mX, mY, mZ;
 
+		bool null()
+		{
+			if (mX == 0 && mY == 0 && mZ == 0)
+				return true;
+			return false;
+		}
+
 		void neg()
 		{
 			mX = -mX;
@@ -175,14 +182,14 @@ namespace SoLoud
 
 		vec3 speaker[MAX_CHANNELS];
 
-		speaker[0].mX = 2;
-		speaker[0].mY = 0;
-		speaker[0].mZ = 1;
-		speaker[0].normalize();
-		speaker[1].mX = -2;
-		speaker[1].mY = 0;
-		speaker[1].mZ = 1;
-		speaker[1].normalize();
+		int i;
+		for (i = 0; i < mChannels; i++)
+		{
+			speaker[i].mX = m3dSpeakerPosition[3 * i + 0];
+			speaker[i].mY = m3dSpeakerPosition[3 * i + 1];
+			speaker[i].mZ = m3dSpeakerPosition[3 * i + 2];
+			speaker[i].normalize();
+		}
 
 		vec3 lpos, lvel, at, up;
 		at.mX = m3dAt[0];
@@ -274,6 +281,8 @@ namespace SoLoud
 		for (j = 0; j < MAX_CHANNELS; j++)
 		{
 			float speakervol = (speaker[j].dot(pos) + 1) / 2;
+			if (speaker[j].null())
+				speakervol = 1;
 			// Different speaker "focus" calculations to try, if the default "bleeds" too much..
 			//speakervol = (speakervol * speakervol + speakervol) / 2;
 			//speakervol = speakervol * speakervol;
@@ -333,14 +342,13 @@ namespace SoLoud
 		// Step 2 - do 3d processing
 		vec3 speaker[MAX_CHANNELS];
 
-		speaker[0].mX = 2;
-		speaker[0].mY = 0;
-		speaker[0].mZ = 1;
-		speaker[0].normalize();
-		speaker[1].mX = -2;
-		speaker[1].mY = 0;
-		speaker[1].mZ = 1;
-		speaker[1].normalize();
+		for (i = 0; i < mChannels; i++)
+		{
+			speaker[i].mX = m3dSpeakerPosition[3 * i + 0];
+			speaker[i].mY = m3dSpeakerPosition[3 * i + 1];
+			speaker[i].mZ = m3dSpeakerPosition[3 * i + 2];
+			speaker[i].normalize();
+		}
 
 		vec3 lpos, lvel, at, up;
 		at.mX = m3dAt[0];
@@ -434,6 +442,8 @@ namespace SoLoud
 			for (j = 0; j < MAX_CHANNELS; j++)
 			{
 				float speakervol = (speaker[j].dot(pos) + 1) / 2;
+				if (speaker[j].null())
+					speakervol = 1;
 				// Different speaker "focus" calculations to try, if the default "bleeds" too much..
 				//speakervol = (speakervol * speakervol + speakervol) / 2;
 				//speakervol = speakervol * speakervol;

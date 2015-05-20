@@ -61,7 +61,8 @@ namespace SoLoud
 		handle play3d(AudioSource &aSound, float aPosX, float aPosY, float aPosZ, float aVelX = 0.0f, float aVelY = 0.0f, float aVelZ = 0.0f, float aVolume = 1.0f, bool aPaused = 0);
 		// Start playing a 3d audio source through the bus, delayed in relation to other sounds called via this function.
 		handle play3dClocked(time aSoundTime, AudioSource &aSound, float aPosX, float aPosY, float aPosZ, float aVelX = 0.0f, float aVelY = 0.0f, float aVelZ = 0.0f, float aVolume = 1.0f);
-
+		// Set number of channels for the bus (default 2)
+		result setChannels(unsigned int aChannels);
 		// Enable or disable visualization data gathering
 		void setVisualizationEnable(bool aEnable);
 		

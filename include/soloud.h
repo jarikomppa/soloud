@@ -144,6 +144,9 @@ namespace SoLoud
 		// Returns current backend buffer size
 		unsigned int getBackendBufferSize();
 
+		// Set speaker position in 3d space
+		result setSpeakerPosition(unsigned int aChannel, float aX, float aY, float aZ);
+		
 		// Start playing a sound. Returns voice handle, which can be ignored or used to alter the playing sound's parameters. Negative volume means to use default.
 		handle play(AudioSource &aSound, float aVolume = -1.0f, float aPan = 0.0f, bool aPaused = 0, unsigned int aBus = 0);
 		// Start playing a sound delayed in relation to other sounds called via this function. Negative volume means to use default.
@@ -223,7 +226,7 @@ namespace SoLoud
 		// Set panning value; -1 is left, 0 is center, 1 is right
 		void setPan(handle aVoiceHandle, float aPan);
 		// Set absolute left/right volumes
-		void setPanAbsolute(handle aVoiceHandle, float aLVolume, float aRVolume);
+		void setPanAbsolute(handle aVoiceHandle, float aLVolume, float aRVolume, float aLBVolume = 0, float aRBVolume = 0, float aCVolume = 0, float aSVolume = 0);
 		// Set overall volume
 		void setVolume(handle aVoiceHandle, float aVolume);
 		// Set delay, in samples, before starting to play samples. Calling this on a live sound will cause glitches.
@@ -317,7 +320,7 @@ namespace SoLoud
 		void mix(float *aBuffer, unsigned int aSamples);
 	public:
 		// Handle rest of initialization (called from backend)
-		void postinit(unsigned int aSamplerate, unsigned int aBufferSize, unsigned int aFlags);
+		void postinit(unsigned int aSamplerate, unsigned int aBufferSize, unsigned int aFlags, unsigned int aChannels);
 
 		// Update list of active voices
 		void calcActiveVoices();
@@ -406,6 +409,9 @@ namespace SoLoud
 		float m3dVelocity[3];
 		// 3d speed of sound (for doppler)
 		float m3dSoundSpeed;
+
+		// 3d position of speakers
+		float m3dSpeakerPosition[3 * MAX_CHANNELS];
 
 		// Data related to 3d processing, separate from AudioSource so we can do 3d calculations without audio mutex.
 		AudioSourceInstance3dData m3dData[VOICE_COUNT];

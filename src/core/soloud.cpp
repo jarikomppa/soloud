@@ -617,7 +617,7 @@ namespace SoLoud
 				!(voice->mFlags & AudioSourceInstance::PAUSED) &&
 				!(voice->mFlags & AudioSourceInstance::INAUDIBLE))
 			{
-				unsigned int j;
+				unsigned int j, k;
 				float step = voice->mSamplerate / aSamplerate;
 				int step_fixed = (int)floor(step * FIXPOINT_FRAC_MUL);
 				unsigned int outofs = 0;
@@ -743,59 +743,244 @@ namespace SoLoud
 				}
 				
 				float pan[MAX_CHANNELS]; // current speaker volume
-				pan[0] = voice->mCurrentChannelVolume[0];
-				pan[1] = voice->mCurrentChannelVolume[1];
-				pan[2] = voice->mCurrentChannelVolume[2];
-				pan[3] = voice->mCurrentChannelVolume[3];
-				pan[4] = voice->mCurrentChannelVolume[4];
-				pan[5] = voice->mCurrentChannelVolume[5];
 				float pand[MAX_CHANNELS]; // destination speaker volume
-				pand[0] = voice->mChannelVolume[0] * voice->mOverallVolume;
-				pand[1] = voice->mChannelVolume[1] * voice->mOverallVolume;
-				pand[2] = voice->mChannelVolume[2] * voice->mOverallVolume;
-				pand[3] = voice->mChannelVolume[3] * voice->mOverallVolume;
-				pand[4] = voice->mChannelVolume[4] * voice->mOverallVolume;
-				pand[5] = voice->mChannelVolume[5] * voice->mOverallVolume;
 				float pani[MAX_CHANNELS]; // speaker volume increment per sample
-				pani[0] = (pand[0] - pan[0]) / aSamples;
-				pani[1] = (pand[1] - pan[1]) / aSamples;
-				pani[2] = (pand[2] - pan[2]) / aSamples;
-				pani[3] = (pand[3] - pan[3]) / aSamples;
-				pani[4] = (pand[4] - pan[4]) / aSamples;
-				pani[5] = (pand[5] - pan[5]) / aSamples;
-
-				// TODO: n channels to n channels here
-
-				if (voice->mChannels == 2)
+				for (k = 0; k < voice->mChannels; k++)
 				{
-					for (j = 0; j < aSamples; j++)
-					{
-						pan[0] += pani[0];
-						pan[1] += pani[1];
-						float s1 = aScratch[j];
-						float s2 = aScratch[aSamples + j];
-						aBuffer[j + 0] += s1 * pan[0];
-						aBuffer[j + aSamples] += s2 * pan[1];
-					}
+					pan[k] = voice->mCurrentChannelVolume[k];
+					pand[k] = voice->mChannelVolume[k] * voice->mOverallVolume;
+					pani[k] = (pand[k] - pan[k]) / aSamples;
 				}
-				else
+
+				int ofs = 0;				
+				switch (aChannels)
 				{
-					for (j = 0; j < aSamples; j++)
+				case 1: // Target is mono. Sum everything. (1->1, 2->1, 4->1, 6->1)
+					for (j = 0, ofs = 0; j < voice->mChannels; j++, ofs += aSamples)
 					{
-						pan[0] += pani[0];
-						pan[1] += pani[1];
-						float s = aScratch[j];
-						aBuffer[j + 0] += s * pan[0];
-						aBuffer[j + aSamples] += s * pan[1];
+						pan[0] = voice->mCurrentChannelVolume[0];
+						for (k = 0; k < aSamples; k++)
+						{
+							pan[0] += pani[0];
+							aBuffer[k] += aScratch[ofs + k] * pan[0];
+						}
 					}
+					break;
+				case 2:
+					switch (voice->mChannels)
+					{
+					case 6: // 6->2, just sum lefties and righties, add a bit of center, ignore sub?
+						for (j = 0; j < aSamples; j++)
+						{
+							pan[0] += pani[0];
+							pan[1] += pani[1];
+							float s1 = aScratch[j];
+							float s2 = aScratch[aSamples + j];
+							float s3 = aScratch[aSamples * 2 + j];
+							float s4 = aScratch[aSamples * 3 + j];
+							float s5 = aScratch[aSamples * 4 + j];
+							float s6 = aScratch[aSamples * 5 + j];
+							aBuffer[j + 0] += 0.3f * (s1 + s3 + s5) * pan[0];
+							aBuffer[j + aSamples] += 0.3f * (s2 + s3 + s6) * pan[1];
+						}
+						break;
+					case 4: // 4->2, just sum lefties and righties
+						for (j = 0; j < aSamples; j++)
+						{
+							pan[0] += pani[0];
+							pan[1] += pani[1];
+							float s1 = aScratch[j];
+							float s2 = aScratch[aSamples + j];
+							float s3 = aScratch[aSamples*2 + j];
+							float s4 = aScratch[aSamples*3 + j];
+							aBuffer[j + 0] += 0.5f * (s1 + s3) * pan[0];
+							aBuffer[j + aSamples] += 0.5f * (s2 + s4) * pan[1];
+						}
+						break;
+					case 2: // 2->2
+						for (j = 0; j < aSamples; j++)
+						{
+							pan[0] += pani[0];
+							pan[1] += pani[1];
+							float s1 = aScratch[j];
+							float s2 = aScratch[aSamples + j];
+							aBuffer[j + 0] += s1 * pan[0];
+							aBuffer[j + aSamples] += s2 * pan[1];
+						}
+						break;
+					case 1: // 1->2
+						for (j = 0; j < aSamples; j++)
+						{
+							pan[0] += pani[0];
+							pan[1] += pani[1];
+							float s = aScratch[j];
+							aBuffer[j + 0] += s * pan[0];
+							aBuffer[j + aSamples] += s * pan[1];
+						}
+						break;
+					}
+					break;
+				case 4:
+					switch (voice->mChannels)
+					{
+					case 6: // 6->4, add a bit of center, ignore sub?
+						for (j = 0; j < aSamples; j++)
+						{
+							pan[0] += pani[0];
+							pan[1] += pani[1];
+							pan[2] += pani[2];
+							pan[3] += pani[3];
+							float s1 = aScratch[j];
+							float s2 = aScratch[aSamples + j];
+							float s3 = aScratch[aSamples * 2 + j];
+							float s4 = aScratch[aSamples * 3 + j];
+							float s5 = aScratch[aSamples * 4 + j];
+							float s6 = aScratch[aSamples * 5 + j];
+							float c = s3 * 0.7f;
+							aBuffer[j + 0] += s1 * pan[0] + c;
+							aBuffer[j + aSamples] += s2 * pan[1] + c;
+							aBuffer[j + aSamples * 2] += s5 * pan[2];
+							aBuffer[j + aSamples * 3] += s6 * pan[3];
+						}
+						break;
+					case 4: // 4->4
+						for (j = 0; j < aSamples; j++)
+						{
+							pan[0] += pani[0];
+							pan[1] += pani[1];
+							pan[2] += pani[2];
+							pan[3] += pani[3];
+							float s1 = aScratch[j];
+							float s2 = aScratch[aSamples + j];
+							float s3 = aScratch[aSamples * 2 + j];
+							float s4 = aScratch[aSamples * 3 + j];
+							aBuffer[j + 0] += s1 * pan[0];
+							aBuffer[j + aSamples] += s2 * pan[1];
+							aBuffer[j + aSamples * 2] += s3 * pan[2];
+							aBuffer[j + aSamples * 3] += s4 * pan[3];
+						}
+						break;
+					case 2: // 2->4
+						for (j = 0; j < aSamples; j++)
+						{
+							pan[0] += pani[0];
+							pan[1] += pani[1];
+							pan[2] += pani[2];
+							pan[3] += pani[3];
+							float s1 = aScratch[j];
+							float s2 = aScratch[aSamples + j];
+							aBuffer[j + 0] += s1 * pan[0];
+							aBuffer[j + aSamples] += s2 * pan[1];
+							aBuffer[j + aSamples * 2] += s1 * pan[2];
+							aBuffer[j + aSamples * 3] += s2 * pan[3];
+						}
+						break;
+					case 1: // 1->4
+						for (j = 0; j < aSamples; j++)
+						{
+							pan[0] += pani[0];
+							pan[1] += pani[1];
+							pan[2] += pani[2];
+							pan[3] += pani[3];
+							float s = aScratch[j];
+							aBuffer[j + 0] += s * pan[0];
+							aBuffer[j + aSamples] += s * pan[1];
+							aBuffer[j + aSamples * 2] += s * pan[2];
+							aBuffer[j + aSamples * 3] += s * pan[3];
+						}
+						break;
+					}
+					break;
+				case 6:
+					switch (voice->mChannels)
+					{
+					case 6: // 6->6
+						for (j = 0; j < aSamples; j++)
+						{
+							pan[0] += pani[0];
+							pan[1] += pani[1];
+							pan[2] += pani[2];
+							pan[3] += pani[3];
+							pan[4] += pani[4];
+							pan[5] += pani[5];
+							float s1 = aScratch[j];
+							float s2 = aScratch[aSamples + j];
+							float s3 = aScratch[aSamples * 2 + j];
+							float s4 = aScratch[aSamples * 3 + j];
+							float s5 = aScratch[aSamples * 4 + j];
+							float s6 = aScratch[aSamples * 5 + j];
+							aBuffer[j + 0] += s1 * pan[0];
+							aBuffer[j + aSamples] += s2 * pan[1];
+							aBuffer[j + aSamples * 2] += s3 * pan[3];
+							aBuffer[j + aSamples * 3] += s4 * pan[4];
+							aBuffer[j + aSamples * 4] += s5 * pan[5];
+							aBuffer[j + aSamples * 5] += s6 * pan[6];
+						}
+						break;
+					case 4: // 4->6
+						for (j = 0; j < aSamples; j++)
+						{
+							pan[0] += pani[0];
+							pan[1] += pani[1];
+							pan[2] += pani[2];
+							pan[3] += pani[3];
+							pan[4] += pani[4];
+							pan[5] += pani[5];
+							float s1 = aScratch[j];
+							float s2 = aScratch[aSamples + j];
+							float s3 = aScratch[aSamples * 2 + j];
+							float s4 = aScratch[aSamples * 3 + j];
+							aBuffer[j + 0] += s1 * pan[0];
+							aBuffer[j + aSamples] += s2 * pan[1];
+							aBuffer[j + aSamples * 2] += 0.5f * (s1 + s2) * pan[2];
+							aBuffer[j + aSamples * 3] += 0.25f * (s1 + s2 + s3 + s4) * pan[3];
+							aBuffer[j + aSamples * 4] += s3 * pan[4];
+							aBuffer[j + aSamples * 5] += s4 * pan[5];
+						}
+						break;
+					case 2: // 2->6
+						for (j = 0; j < aSamples; j++)
+						{
+							pan[0] += pani[0];
+							pan[1] += pani[1];
+							pan[2] += pani[2];
+							pan[3] += pani[3];
+							pan[4] += pani[4];
+							pan[5] += pani[5];
+							float s1 = aScratch[j];
+							float s2 = aScratch[aSamples + j];
+							aBuffer[j + 0] += s1 * pan[0];
+							aBuffer[j + aSamples] += s2 * pan[1];
+							aBuffer[j + aSamples * 2] += 0.5f * (s1 + s2) * pan[2];
+							aBuffer[j + aSamples * 3] += 0.5f * (s1 + s2) * pan[3];
+							aBuffer[j + aSamples * 4] += s1 * pan[4];
+							aBuffer[j + aSamples * 5] += s2 * pan[5];
+						}
+						break;
+					case 1: // 1->6
+						for (j = 0; j < aSamples; j++)
+						{
+							pan[0] += pani[0];
+							pan[1] += pani[1];
+							pan[2] += pani[2];
+							pan[3] += pani[3];
+							pan[4] += pani[4];
+							pan[5] += pani[5];
+							float s = aScratch[j];
+							aBuffer[j + 0] += s * pan[0];
+							aBuffer[j + aSamples] += s * pan[1];
+							aBuffer[j + aSamples * 2] += s * pan[2];
+							aBuffer[j + aSamples * 3] += s * pan[3];
+							aBuffer[j + aSamples * 4] += s * pan[4];
+							aBuffer[j + aSamples * 5] += s * pan[5];
+						}
+						break;
+					}
+					break;
 				}
-					
-				voice->mCurrentChannelVolume[0] = pand[0];
-				voice->mCurrentChannelVolume[1] = pand[1];
-				voice->mCurrentChannelVolume[2] = pand[2];
-				voice->mCurrentChannelVolume[3] = pand[3];
-				voice->mCurrentChannelVolume[4] = pand[4];
-				voice->mCurrentChannelVolume[5] = pand[5];
+				
+				for (k = 0; k < voice->mChannels; k++)
+					voice->mCurrentChannelVolume[k] = pand[k];
 
 				// clear voice if the sound is over
 				if (!(voice->mFlags & AudioSourceInstance::LOOPING) && voice->hasEnded())

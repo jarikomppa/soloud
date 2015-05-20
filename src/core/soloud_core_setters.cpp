@@ -68,21 +68,21 @@ namespace SoLoud
 	{
 		if (aVoiceCount == 0 || aVoiceCount >= VOICE_COUNT)
 			return INVALID_PARAMETER;
-		if (mLockMutexFunc) mLockMutexFunc(mMutex);
+		lockAudioMutex();
 		mMaxActiveVoices = aVoiceCount;
-		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+		unlockAudioMutex();
 		return SO_NO_ERROR;
 	}
 
 	void Soloud::setPauseAll(bool aPause)
 	{
-		if (mLockMutexFunc) mLockMutexFunc(mMutex);
+		lockAudioMutex();
 		int ch;
 		for (ch = 0; ch < (signed)mHighestVoice; ch++)
 		{
 			setVoicePause(ch, aPause);
 		}
-		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+		unlockAudioMutex();
 	}
 
 	void Soloud::setProtectVoice(handle aVoiceHandle, bool aProtect)

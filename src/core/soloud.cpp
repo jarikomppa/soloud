@@ -26,6 +26,7 @@ freely, subject to the following restrictions:
 #include <stdlib.h>
 #include <math.h> // sin
 #include "soloud_internal.h"
+#include "soloud_thread.h"
 #include "soloud_fft.h"
 
 //#define FLOATING_POINT_DEBUG
@@ -59,10 +60,8 @@ namespace SoLoud
 		mGlobalVolume = 0;
 		mPlayIndex = 0;
 		mBackendData = NULL;
-		mMutex = NULL;
+		mAudioThreadMutex = NULL;
 		mPostClipScaler = 0;
-		mLockMutexFunc = NULL;
-		mUnlockMutexFunc = NULL;
 		mBackendCleanupFunc = NULL;
 		mChannels = 2;		
 		mStreamTime = 0;
@@ -128,8 +127,9 @@ namespace SoLoud
 		if (mBackendCleanupFunc)
 			mBackendCleanupFunc(this);
 		mBackendCleanupFunc = 0;
-		mLockMutexFunc = 0;
-		mUnlockMutexFunc = 0;
+		if (mAudioThreadMutex)
+			Thread::destroyMutex(mAudioThreadMutex);
+		mAudioThreadMutex = NULL;
 	}
 
 	result Soloud::init(unsigned int aFlags, unsigned int aBackend, unsigned int aSamplerate, unsigned int aBufferSize)
@@ -138,6 +138,8 @@ namespace SoLoud
 			return INVALID_PARAMETER;
 
 		deinit();
+
+		mAudioThreadMutex = Thread::createMutex();
 
 		mBackendID = 0;
 		mBackendString = 0;
@@ -396,17 +398,17 @@ namespace SoLoud
 	float * Soloud::getWave()
 	{
 		int i;
-		if (mLockMutexFunc) mLockMutexFunc(mMutex);
+		lockAudioMutex();
 		for (i = 0; i < 256; i++)
 			mWaveData[i] = mVisualizationWaveData[i];
-		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+		unlockAudioMutex();
 		return mWaveData;
 	}
 
 
 	float * Soloud::calcFFT()
 	{
-		if (mLockMutexFunc) mLockMutexFunc(mMutex);
+		lockAudioMutex();
 		float temp[1024];
 		int i;
 		for (i = 0; i < 256; i++)
@@ -416,7 +418,7 @@ namespace SoLoud
 			temp[i+512] = 0;
 			temp[i+768] = 0;
 		}
-		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+		unlockAudioMutex();
 
 		SoLoud::FFT::fft1024(temp);
 
@@ -934,7 +936,7 @@ namespace SoLoud
 		}
 		globalVolume[1] = mGlobalVolume;
 
-		if (mLockMutexFunc) mLockMutexFunc(mMutex);
+		lockAudioMutex();
 
 		// Process faders. May change scratch size.
 		int i;
@@ -1019,7 +1021,7 @@ namespace SoLoud
 			}
 		}
 
-		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+		unlockAudioMutex();
 
 		clip(aBuffer, mScratch, aSamples, globalVolume[0], globalVolume[1]);
 		interlace_samples(mScratch, aBuffer, aSamples, 2);
@@ -1072,6 +1074,18 @@ namespace SoLoud
 				c++;
 			}
 		}
+	}
+
+	void Soloud::lockAudioMutex()
+	{
+		if (mAudioThreadMutex)
+			Thread::lockMutex(mAudioThreadMutex);
+	}
+
+	void Soloud::unlockAudioMutex()
+	{
+		if (mAudioThreadMutex)
+			Thread::unlockMutex(mAudioThreadMutex);
 	}
 
 };

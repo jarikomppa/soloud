@@ -127,11 +127,6 @@ namespace SoLoud
         {
             delete[] data->buffer;
         }
-		if (aSoloud->mMutex)
-			Thread::destroyMutex(aSoloud->mMutex);
-		aSoloud->mMutex = 0;
-		aSoloud->mLockMutexFunc = 0;
-		aSoloud->mUnlockMutexFunc = 0;
         delete data;
         aSoloud->mBackendData = 0;
         CoUninitialize();
@@ -206,9 +201,6 @@ namespace SoLoud
         }
         data->channels = format.nChannels;
         data->buffer = new float[data->bufferFrames * format.nChannels];
-        aSoloud->mMutex = Thread::createMutex();
-        aSoloud->mLockMutexFunc = Thread::lockMutex;
-        aSoloud->mUnlockMutexFunc = Thread::unlockMutex;
         data->soloud = aSoloud;
         aSoloud->postinit(aSamplerate, data->bufferFrames * format.nChannels, aFlags);
         data->thread = Thread::createThread(wasapiThread, data);

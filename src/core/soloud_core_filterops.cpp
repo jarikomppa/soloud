@@ -33,7 +33,7 @@ namespace SoLoud
 		if (aFilterId < 0 || aFilterId >= FILTERS_PER_STREAM)
 			return;
 
-		if (mLockMutexFunc) mLockMutexFunc(mMutex);
+		lockAudioMutex();
 		delete mFilterInstance[aFilterId];
 		mFilterInstance[aFilterId] = 0;
 		
@@ -42,7 +42,7 @@ namespace SoLoud
 		{
 			mFilterInstance[aFilterId] = mFilter[aFilterId]->createInstance();
 		}
-		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+		unlockAudioMutex();
 	}
 
 	float Soloud::getFilterParameter(handle aVoiceHandle, unsigned int aFilterId, unsigned int aAttributeId)
@@ -53,12 +53,12 @@ namespace SoLoud
 
 		if (aVoiceHandle == 0)
 		{
-			if (mLockMutexFunc) mLockMutexFunc(mMutex);		
+			lockAudioMutex();		
 			if (mFilterInstance[aFilterId])
 			{
 				ret = mFilterInstance[aFilterId]->getFilterParameter(aAttributeId);
 			}
-			if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+			unlockAudioMutex();
 			return ret;
 		}
 
@@ -67,13 +67,13 @@ namespace SoLoud
 		{
 			return ret;
 		}
-		if (mLockMutexFunc) mLockMutexFunc(mMutex);		
+		lockAudioMutex();		
 		if (mVoice[ch] &&
 			mVoice[ch]->mFilter[aFilterId])
 		{
 			ret = mVoice[ch]->mFilter[aFilterId]->getFilterParameter(aAttributeId);
 		}
-		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+		unlockAudioMutex();
 		
 		return ret;
 	}
@@ -85,12 +85,12 @@ namespace SoLoud
 
 		if (aVoiceHandle == 0)
 		{
-			if (mLockMutexFunc) mLockMutexFunc(mMutex);		
+			lockAudioMutex();		
 			if (mFilterInstance[aFilterId])
 			{
 				mFilterInstance[aFilterId]->setFilterParameter(aAttributeId, aValue);
 			}
-			if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+			unlockAudioMutex();
 			return;
 		}
 
@@ -110,12 +110,12 @@ namespace SoLoud
 
 		if (aVoiceHandle == 0)
 		{
-			if (mLockMutexFunc) mLockMutexFunc(mMutex);		
+			lockAudioMutex();		
 			if (mFilterInstance[aFilterId])
 			{
 				mFilterInstance[aFilterId]->fadeFilterParameter(aAttributeId, aTo, aTime, mStreamTime);
 			}
-			if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+			unlockAudioMutex();
 			return;
 		}
 
@@ -135,12 +135,12 @@ namespace SoLoud
 
 		if (aVoiceHandle == 0)
 		{
-			if (mLockMutexFunc) mLockMutexFunc(mMutex);		
+			lockAudioMutex();		
 			if (mFilterInstance[aFilterId])
 			{
 				mFilterInstance[aFilterId]->oscillateFilterParameter(aAttributeId, aFrom, aTo, aTime, mStreamTime);
 			}
-			if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+			unlockAudioMutex();
 			return;
 		}
 

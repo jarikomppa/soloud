@@ -104,10 +104,6 @@ namespace SoLoud
             delete[] data->buffer;
         }
         close(data->ossDeviceHandle);
-        Thread::destroyMutex(data->soloud->mMutex);
-        data->soloud->mMutex = 0;
-        data->soloud->mLockMutexFunc = 0;
-        data->soloud->mUnlockMutexFunc = 0;
         delete data;
         aSoloud->mBackendData = 0;
     }
@@ -170,9 +166,6 @@ namespace SoLoud
         }
         data->buffer = new float[data->samples*data->channels];
         data->sampleBuffer = new short[data->samples*data->channels];
-        aSoloud->mMutex = Thread::createMutex();
-        aSoloud->mLockMutexFunc = Thread::lockMutex;
-        aSoloud->mUnlockMutexFunc = Thread::unlockMutex;
         aSoloud->postinit(aSamplerate, data->samples * data->channels, aFlags);
         data->threadHandle = Thread::createThread(ossThread, data);
         if (0 == data->threadHandle)

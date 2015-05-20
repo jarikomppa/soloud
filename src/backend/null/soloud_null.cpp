@@ -47,9 +47,6 @@ namespace SoLoud
         aSoloud->mBackendData = 0;
         aSoloud->mBackendCleanupFunc = nullCleanup;
 
-        aSoloud->mMutex = 0;
-        aSoloud->mLockMutexFunc = 0;
-        aSoloud->mUnlockMutexFunc = 0;
         aSoloud->postinit(aSamplerate, aBuffer, aFlags);
         aSoloud->mBackendString = "null driver";
         return 0;

@@ -84,21 +84,10 @@ namespace SoLoud
 		}
 	}
 
-	void soloud_sdl_lockmutex(void *aMutexPtr)
-	{
-		dll_SDL_mutexP((SDL_mutex*)aMutexPtr);
-	}
-
-	void soloud_sdl_unlockmutex(void *aMutexPtr)
-	{
-		dll_SDL_mutexV((SDL_mutex*)aMutexPtr);
-	}
-
 	static void soloud_sdl_deinit(SoLoud::Soloud *aSoloud)
 	{
 		dll_SDL_CloseAudio();
 		delete[] (float*)aSoloud->mBackendData;
-		dll_SDL_DestroyMutex((SDL_mutex*)aSoloud->mMutex);
 	}
 
 	result sdl_init(SoLoud::Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer)
@@ -106,7 +95,6 @@ namespace SoLoud
 		if (!dll_SDL_found())
 			return DLL_NOT_FOUND;
 
-		aSoloud->mMutex = dll_SDL_CreateMutex();
 		SDL_AudioSpec as;
 		as.freq = aSamplerate;
 		as.format = AUDIO_F32;
@@ -138,8 +126,6 @@ namespace SoLoud
 		
 		aSoloud->postinit(as2.freq, as2.samples * 2, aFlags);
 
-		aSoloud->mLockMutexFunc = soloud_sdl_lockmutex;
-		aSoloud->mUnlockMutexFunc = soloud_sdl_unlockmutex;
 		aSoloud->mBackendCleanupFunc = soloud_sdl_deinit;
 
 		dll_SDL_PauseAudio(0);

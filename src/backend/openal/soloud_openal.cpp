@@ -82,10 +82,6 @@ namespace SoLoud
 		{
 			Thread::sleep(10);
 		}
-		Thread::destroyMutex(aSoloud->mMutex);
-		aSoloud->mMutex = 0;
-		aSoloud->mLockMutexFunc = 0;
-		aSoloud->mUnlockMutexFunc = 0;
 	}
 	
 	static void openal_mutex_lock(void * mutex)
@@ -145,9 +141,6 @@ namespace SoLoud
 
 		aSoloud->postinit(aSamplerate,aBuffer,aFlags);
 		aSoloud->mBackendCleanupFunc = soloud_openal_deinit;
-		aSoloud->mMutex = Thread::createMutex();
-		aSoloud->mLockMutexFunc = openal_mutex_lock;
-		aSoloud->mUnlockMutexFunc = openal_mutex_unlock;
 
 		device = dll_alc_OpenDevice(NULL);
 		context = dll_alc_CreateContext(device, NULL);

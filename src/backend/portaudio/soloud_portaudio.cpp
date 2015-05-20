@@ -93,10 +93,6 @@ namespace SoLoud
 	{
 		dll_Pa_CloseStream(gStream);
 		dll_Pa_Terminate();
-		Thread::destroyMutex(aSoloud->mMutex);
-		aSoloud->mMutex = 0;
-		aSoloud->mLockMutexFunc = 0;
-		aSoloud->mUnlockMutexFunc = 0;
 	}
 
 	result portaudio_init(SoLoud::Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer)
@@ -106,9 +102,6 @@ namespace SoLoud
 
 		aSoloud->postinit(aSamplerate, aBuffer * 2, aFlags);
 		aSoloud->mBackendCleanupFunc = soloud_portaudio_deinit;
-		aSoloud->mMutex = Thread::createMutex();
-		aSoloud->mLockMutexFunc = portaudio_mutex_lock;
-		aSoloud->mUnlockMutexFunc = portaudio_mutex_unlock;
 		dll_Pa_Initialize();
 		dll_Pa_OpenDefaultStream(&gStream, 0, 2, paFloat32, aSamplerate, paFramesPerBufferUnspecified, portaudio_callback, (void*)aSoloud);
 		dll_Pa_StartStream(gStream);

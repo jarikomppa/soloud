@@ -211,7 +211,7 @@ namespace SoLoud
 
 		if (mInstance)
 		{
-			if (mSoloud->mLockMutexFunc) mSoloud->mLockMutexFunc(mSoloud->mMutex);
+			mSoloud->lockAudioMutex();
 			delete mInstance->mFilter[aFilterId];
 			mInstance->mFilter[aFilterId] = 0;
 		
@@ -219,7 +219,7 @@ namespace SoLoud
 			{
 				mInstance->mFilter[aFilterId] = mFilter[aFilterId]->createInstance();
 			}
-			if (mSoloud->mUnlockMutexFunc) mSoloud->mUnlockMutexFunc(mSoloud->mMutex);
+			mSoloud->unlockAudioMutex();
 		}
 	}
 
@@ -239,7 +239,7 @@ namespace SoLoud
 	{
 		if (mInstance && mSoloud)
 		{
-			if (mSoloud->mLockMutexFunc) mSoloud->mLockMutexFunc(mSoloud->mMutex);
+			mSoloud->lockAudioMutex();
 			float temp[1024];
 			int i;
 			for (i = 0; i < 256; i++)
@@ -249,7 +249,7 @@ namespace SoLoud
 				temp[i+512] = 0;
 				temp[i+768] = 0;
 			}
-			if (mSoloud->mUnlockMutexFunc) mSoloud->mUnlockMutexFunc(mSoloud->mMutex);
+			mSoloud->unlockAudioMutex();
 
 			SoLoud::FFT::fft1024(temp);
 
@@ -269,10 +269,10 @@ namespace SoLoud
 		if (mInstance && mSoloud)
 		{
 			int i;
-			if (mSoloud->mLockMutexFunc) mSoloud->mLockMutexFunc(mSoloud->mMutex);
+			mSoloud->lockAudioMutex();
 			for (i = 0; i < 256; i++)
 				mWaveData[i] = mInstance->mVisualizationWaveData[i];
-			if (mSoloud->mUnlockMutexFunc) mSoloud->mUnlockMutexFunc(mSoloud->mMutex);
+			mSoloud->unlockAudioMutex();
 		}
 		return mWaveData;
 	}

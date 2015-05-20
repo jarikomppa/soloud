@@ -317,7 +317,7 @@ namespace SoLoud
 		int voices[VOICE_COUNT];
 
 		// Step 1 - find voices that need 3d processing
-		if (mLockMutexFunc) mLockMutexFunc(mMutex);
+		lockAudioMutex();
 		int i;
 		for (i = 0; i < (signed)mHighestVoice; i++)
 		{
@@ -328,7 +328,7 @@ namespace SoLoud
 				m3dData[i].mFlags = mVoice[i]->mFlags;
 			}
 		}
-		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+		unlockAudioMutex();
 
 		// Step 2 - do 3d processing
 		vec3 speaker[MAX_CHANNELS];
@@ -443,7 +443,7 @@ namespace SoLoud
 			v->m3dVolume = vol;
 		}
 
-		if (mLockMutexFunc) mLockMutexFunc(mMutex);
+		lockAudioMutex();
 		// Step 3 - update SoLoud voices
 
 		for (i = 0; i < voicecount; i++)
@@ -478,25 +478,25 @@ namespace SoLoud
 		}
 
 		mActiveVoiceDirty = true;
-		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+		unlockAudioMutex();
 	}
 
 
 	handle Soloud::play3d(AudioSource &aSound, float aPosX, float aPosY, float aPosZ, float aVelX, float aVelY, float aVelZ, float aVolume, bool aPaused, unsigned int aBus)
 	{
 		handle h = play(aSound, aVolume, 0, 1, aBus);
-		if (mLockMutexFunc) mLockMutexFunc(mMutex);
+		lockAudioMutex();
 		int v = getVoiceFromHandle(h);
 		if (v < 0) 
 		{
-			if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+			unlockAudioMutex();
 			return h;
 		}
 		m3dData[v].mHandle = h;
 		mVoice[v]->mFlags |= AudioSourceInstance::PROCESS_3D;
 		set3dSourceParameters(h, aPosX, aPosY, aPosZ, aVelX, aVelY, aVelZ);
 
-		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+		unlockAudioMutex();
 
 		int samples = 0;
 		if (aSound.mFlags & AudioSource::DISTANCE_DELAY)
@@ -524,11 +524,11 @@ namespace SoLoud
 	handle Soloud::play3dClocked(time aSoundTime, AudioSource &aSound, float aPosX, float aPosY, float aPosZ, float aVelX, float aVelY, float aVelZ, float aVolume, unsigned int aBus)
 	{
 		handle h = play(aSound, aVolume, 0, 1, aBus);
-		if (mLockMutexFunc) mLockMutexFunc(mMutex);
+		lockAudioMutex();
 		int v = getVoiceFromHandle(h);
 		if (v < 0) 
 		{
-			if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+			unlockAudioMutex();
 			return h;
 		}
 		m3dData[v].mHandle = h;
@@ -541,7 +541,7 @@ namespace SoLoud
 		pos.mX = aPosX;
 		pos.mY = aPosY;
 		pos.mZ = aPosZ;
-		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+		unlockAudioMutex();
 		int samples = 0;
 		if (lasttime != 0)
 		{

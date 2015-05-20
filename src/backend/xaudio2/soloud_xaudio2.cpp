@@ -177,10 +177,6 @@ namespace SoLoud
                 delete[] data->buffer[i];
             }
         }
-        Thread::destroyMutex(data->soloud->mMutex);
-        data->soloud->mMutex = 0;
-        data->soloud->mLockMutexFunc = 0;
-        data->soloud->mUnlockMutexFunc = 0;
         delete data;
         aSoloud->mBackendData = 0;
         CoUninitialize();
@@ -235,9 +231,6 @@ namespace SoLoud
             data->buffer[i] = new float[aBuffer * format.nChannels];
         }
         data->samples = aBuffer;
-        aSoloud->mMutex = Thread::createMutex();
-        aSoloud->mLockMutexFunc = Thread::lockMutex;
-        aSoloud->mUnlockMutexFunc = Thread::unlockMutex;
         data->soloud = aSoloud;
         aSoloud->postinit(aSamplerate, aBuffer * format.nChannels, aFlags);
         data->thread = Thread::createThread(xaudio2Thread, data);

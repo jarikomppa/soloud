@@ -87,12 +87,8 @@ namespace SoLoud
 	public:
 		// Back-end data; content is up to the back-end implementation.
 		void * mBackendData;
-		// Pointer for the mutex, usable by the back-end.
-		void * mMutex;
-		// Mutex lock for thread safety. Set by the back-end. If NULL, not called.
-		mutexCallFunction mLockMutexFunc;
-		// Mutex unlock for thread safety. Set by the back-end. If NULL, not called.
-		mutexCallFunction mUnlockMutexFunc;
+		// Pointer for the audio thread mutex.
+		void * mAudioThreadMutex;
 		// Called by SoLoud to shut down the back-end. If NULL, not called. Should be set by back-end.
 		soloudCallFunction mBackendCleanupFunc;
 
@@ -176,25 +172,25 @@ namespace SoLoud
 		void oscillateFilterParameter(handle aVoiceHandle, unsigned int aFilterId, unsigned int aAttributeId, float aFrom, float aTo, time aTime);
 
 		// Get current play time, in seconds.
-		time getStreamTime(handle aVoiceHandle) const;
+		time getStreamTime(handle aVoiceHandle);
 		// Get current pause state.
-		bool getPause(handle aVoiceHandle) const;
+		bool getPause(handle aVoiceHandle);
 		// Get current volume.
-		float getVolume(handle aVoiceHandle) const;
+		float getVolume(handle aVoiceHandle);
 		// Get current pan.
-		float getPan(handle aVoiceHandle) const;
+		float getPan(handle aVoiceHandle);
 		// Get current sample rate.
-		float getSamplerate(handle aVoiceHandle) const;
+		float getSamplerate(handle aVoiceHandle);
 		// Get current voice protection state.
-		bool getProtectVoice(handle aVoiceHandle) const;
+		bool getProtectVoice(handle aVoiceHandle);
 		// Get the current number of busy voices.
-		unsigned int getActiveVoiceCount() const; 
+		unsigned int getActiveVoiceCount(); 
 		// Get the current number of voices in SoLoud
-		unsigned int getVoiceCount() const;
+		unsigned int getVoiceCount();
 		// Check if the handle is still valid, or if the sound has stopped.
-		bool isValidVoiceHandle(handle aVoiceHandle) const;
+		bool isValidVoiceHandle(handle aVoiceHandle);
 		// Get current relative play speed.
-		float getRelativePlaySpeed(handle aVoiceHandle) const;
+		float getRelativePlaySpeed(handle aVoiceHandle);
 		// Get current post-clip scaler value.
 		float getPostClipScaler() const;
 		// Get current global volume
@@ -202,7 +198,7 @@ namespace SoLoud
 		// Get current maximum active voice setting
 		unsigned int getMaxActiveVoiceCount() const;
 		// Query whether a voice is set to loop.
-		bool getLooping(handle aVoiceHandle) const;
+		bool getLooping(handle aVoiceHandle);
 		
 		// Set voice's loop state
 		void setLooping(handle aVoiceHandle, bool aLooping);
@@ -429,6 +425,11 @@ namespace SoLoud
 		void trimVoiceGroup(handle aVoiceGroupHandle);
 		// Get pointer to the zero-terminated array of voice handles in a voice group
 		handle * voiceGroupHandleToArray(handle aVoiceGroupHandle) const;
+
+		// Lock audio thread mutex.
+		void lockAudioMutex();
+		// Unlock audio thread mutex.
+		void unlockAudioMutex();
 	};
 };
 

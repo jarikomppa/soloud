@@ -72,7 +72,7 @@ namespace SoLoud
 #define FOR_ALL_VOICES_PRE \
 		handle *h_ = NULL; \
 		handle th_[2] = { aVoiceHandle, 0 }; \
-		if (mLockMutexFunc) mLockMutexFunc(mMutex); \
+		lockAudioMutex(); \
 		h_ = voiceGroupHandleToArray(aVoiceHandle); \
 		if (h_ == NULL) h_ = th_; \
 		while (*h_) \
@@ -85,7 +85,7 @@ namespace SoLoud
 			} \
 			h_++; \
 		} \
-		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+		unlockAudioMutex();
 
 #define FOR_ALL_VOICES_PRE_3D \
 		handle *h_ = NULL; \

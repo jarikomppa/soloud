@@ -116,10 +116,6 @@ namespace SoLoud
             delete[] data->buffer;
         }
         waveOutClose(data->waveOut);
-        Thread::destroyMutex(data->soloud->mMutex);
-        data->soloud->mMutex = 0;
-        data->soloud->mLockMutexFunc = 0;
-        data->soloud->mUnlockMutexFunc = 0;
         delete data;
         aSoloud->mBackendData = 0;
     }
@@ -168,9 +164,6 @@ namespace SoLoud
                 return UNKNOWN_ERROR;
             }
         }
-        aSoloud->mMutex = Thread::createMutex();
-        aSoloud->mLockMutexFunc = Thread::lockMutex;
-        aSoloud->mUnlockMutexFunc = Thread::unlockMutex;
         aSoloud->postinit(aSamplerate, data->samples * format.nChannels, aFlags);
         data->threadHandle = Thread::createThread(winMMThread, data);
         if (0 == data->threadHandle)

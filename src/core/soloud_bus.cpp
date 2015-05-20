@@ -55,7 +55,7 @@ namespace SoLoud
 			mScratch = new float[mScratchSize];
 		}
 		
-		s->mixBus(aBuffer, aSamples, mScratch, handle, mSamplerate);
+		s->mixBus(aBuffer, aSamples, mScratch, handle, mSamplerate, mChannels);
 
 		int i;
 		if (mParent->mFlags & AudioSource::VISUALIZATION_DATA)

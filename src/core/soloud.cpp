@@ -599,7 +599,7 @@ namespace SoLoud
 #endif
 	}
 
-	void Soloud::mixBus(float *aBuffer, unsigned int aSamples, float *aScratch, unsigned int aBus, float aSamplerate)
+	void Soloud::mixBus(float *aBuffer, unsigned int aSamples, float *aScratch, unsigned int aBus, float aSamplerate, unsigned int aChannels)
 	{
 		unsigned int i;
 		// Clear accumulation buffer
@@ -1092,7 +1092,7 @@ namespace SoLoud
 			mScratch = new float[mScratchSize];
 		}
 		
-		mixBus(aBuffer, aSamples, mScratch, 0, (float)mSamplerate);
+		mixBus(aBuffer, aSamples, mScratch, 0, (float)mSamplerate, mChannels);
 
 		for (i = 0; i < FILTERS_PER_STREAM; i++)
 		{

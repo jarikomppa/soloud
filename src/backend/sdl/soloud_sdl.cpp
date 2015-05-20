@@ -60,18 +60,27 @@ extern "C"
 
 namespace SoLoud
 {
+	int gSDL_Has_Float_Samples = 0;
 	void soloud_sdl_audiomixer(void *userdata, Uint8 *stream, int len)
 	{
-		int samples = len / 4;
 		short *buf = (short*)stream;
 		SoLoud::Soloud *soloud = (SoLoud::Soloud *)userdata;
 		float *mixdata = (float*)(soloud->mBackendData);
-		soloud->mix(mixdata, samples);
-
-		int i;
-		for (i = 0; i < samples*2; i++)
+		if (gSDL_Has_Float_Samples)
 		{
-			buf[i] = (short)(mixdata[i] * 0x7fff);
+			int samples = len / (2 * sizeof(float));
+			soloud->mix((float*)buf, samples);
+		}
+		else
+		{
+			int samples = len / (2 * sizeof(short));
+			soloud->mix(mixdata, samples);
+
+			int i;
+			for (i = 0; i < samples * 2; i++)
+			{
+				buf[i] = (short)(mixdata[i] * 0x7fff);
+			}
 		}
 	}
 
@@ -100,7 +109,7 @@ namespace SoLoud
 		aSoloud->mMutex = dll_SDL_CreateMutex();
 		SDL_AudioSpec as;
 		as.freq = aSamplerate;
-		as.format = AUDIO_S16;
+		as.format = AUDIO_F32;
 		as.channels = 2;
 		as.samples = aBuffer;
 		as.callback = soloud_sdl_audiomixer;
@@ -109,10 +118,24 @@ namespace SoLoud
 		SDL_AudioSpec as2;
 		if (dll_SDL_OpenAudio(&as, &as2) < 0)
 		{
-			return UNKNOWN_ERROR;
+			as.format = AUDIO_S16;
+			if (dll_SDL_OpenAudio(&as, &as2) < 0)
+			{
+				return UNKNOWN_ERROR;
+			}
 		}
-		aSoloud->mBackendData = new float[as2.samples*4];
 
+		if (as2.format == AUDIO_F32)
+		{
+			gSDL_Has_Float_Samples = 1;
+			aSoloud->mBackendData = 0;
+		}
+		else
+		{
+			gSDL_Has_Float_Samples = 0;
+			aSoloud->mBackendData = new float[as2.samples * 4];
+		}
+		
 		aSoloud->postinit(as2.freq, as2.samples * 2, aFlags);
 
 		aSoloud->mLockMutexFunc = soloud_sdl_lockmutex;

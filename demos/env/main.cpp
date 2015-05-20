@@ -291,7 +291,7 @@ int main(int argc, char *argv[])
 		ImGui::Begin("Output");
 		ImGui::PlotLines("##Wave", buf, 256, 0, "Wave", -1, 1, ImVec2(264, 80));
 		ImGui::PlotHistogram("##FFT", fft, 256 / 2, 0, "FFT", 0, 10, ImVec2(264, 80), 8);
-		ImGui::Text("Active voices     : %d", gSoloud.getActiveVoiceCount());
+		ImGui::Text("Active voices    : %d", gSoloud.getActiveVoiceCount());
 
 		ImGui::Text("Progress         : %3.3f%%", 100 * p);
 		ImGui::Text("Rain volume      : %3.3f", gSoloud.getVolume(gRainHandle));

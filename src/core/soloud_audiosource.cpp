@@ -186,7 +186,7 @@ namespace SoLoud
 		{
 			mFilter[i] = 0;
 		}
-		mFlags = 0; 
+		mFlags = INAUDIBLE_KILL; 
 		mBaseSamplerate = 44100; 
 		mAudioSourceID = 0;
 		mSoloud = 0;

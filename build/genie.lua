@@ -322,6 +322,7 @@ solution "SoLoud"
 		flags {"Symbols" }
 		defines { "DEBUG" }
 		objdir (buildroot .. "/debug")
+    configuration {}
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 
@@ -738,6 +739,7 @@ function sdl2_lib()
         libdirs { sdl2_lib_x86 }
     configuration { "x64" } 
         libdirs { sdl2_lib_x64 }
+    configuration {}
 end
 
 function CommonDemo(_name)
@@ -865,6 +867,7 @@ end
 		if (WITH_PORTMIDI == 1) then
 			libdirs { portmidi_release }
 		end
+        configuration {}
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 

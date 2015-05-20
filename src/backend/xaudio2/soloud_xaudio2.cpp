@@ -182,7 +182,7 @@ namespace SoLoud
         CoUninitialize();
     }
 
-    result xaudio2_init(Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer)
+    result xaudio2_init(Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer, unsigned int aChannels)
     {
         if (FAILED(CoInitializeEx(0, COINIT_MULTITHREADED)))
         {
@@ -192,6 +192,7 @@ namespace SoLoud
         ZeroMemory(data, sizeof(XAudio2Data));
         aSoloud->mBackendData = data;
         aSoloud->mBackendCleanupFunc = xaudio2Cleanup;
+        aSoloud->mChannels = 2;
         data->bufferEndEvent = CreateEvent(0, FALSE, FALSE, 0);
         if (0 == data->bufferEndEvent)
         {

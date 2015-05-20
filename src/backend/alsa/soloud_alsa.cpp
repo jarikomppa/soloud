@@ -105,12 +105,13 @@ namespace SoLoud
         aSoloud->mBackendData = 0;
     }
 
-    result alsa_init(Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer)
+    result alsa_init(Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer, unsigned int aChannels)
     {
         ALSAData *data = new ALSAData;
         memset(data, 0, sizeof(ALSAData));
         aSoloud->mBackendData = data;
         aSoloud->mBackendCleanupFunc = alsaCleanup;
+        aSoloud->mChannels = 2;
         data->samples = aBuffer;
         data->channels = 2;
         data->soloud = aSoloud;

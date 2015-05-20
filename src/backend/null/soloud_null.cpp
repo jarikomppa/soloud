@@ -42,10 +42,11 @@ namespace SoLoud
     {
     }
 
-    result null_init(Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer)
+    result null_init(Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer, unsigned int aChannels)
     {
         aSoloud->mBackendData = 0;
         aSoloud->mBackendCleanupFunc = nullCleanup;
+		aSoloud->mChannels = aChannels;
 
         aSoloud->postinit(aSamplerate, aBuffer, aFlags);
         aSoloud->mBackendString = "null driver";

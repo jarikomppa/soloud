@@ -134,13 +134,14 @@ namespace SoLoud
 		threadrun++;
 	}
 
-	result openal_init(SoLoud::Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer)
+	result openal_init(SoLoud::Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer, unsigned int aChannels)
 	{
 		if (!dll_al_found())
 			return DLL_NOT_FOUND;
 
 		aSoloud->postinit(aSamplerate,aBuffer,aFlags);
 		aSoloud->mBackendCleanupFunc = soloud_openal_deinit;
+		aSoloud->mChannels = 2;
 
 		device = dll_alc_OpenDevice(NULL);
 		context = dll_alc_CreateContext(device, NULL);

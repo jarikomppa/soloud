@@ -132,7 +132,7 @@ namespace SoLoud
         CoUninitialize();
     }
 
-    result wasapi_init(Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer)
+	result wasapi_init(Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer, unsigned int aChannels)
     {
         if (FAILED(CoInitializeEx(0, COINIT_MULTITHREADED)))
         {
@@ -142,6 +142,7 @@ namespace SoLoud
         ZeroMemory(data, sizeof(WASAPIData));
         aSoloud->mBackendData = data;
         aSoloud->mBackendCleanupFunc = wasapiCleanup;
+		aSoloud->mChannels = 2;
         data->bufferEndEvent = CreateEvent(0, FALSE, FALSE, 0);
         if (0 == data->bufferEndEvent)
         {

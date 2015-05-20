@@ -120,12 +120,13 @@ namespace SoLoud
         aSoloud->mBackendData = 0;
     }
 
-    result winmm_init(Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer)
+	result winmm_init(Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer, unsigned int aChannels)
     {
         SoLoudWinMMData *data = new SoLoudWinMMData;
         ZeroMemory(data, sizeof(SoLoudWinMMData));
         aSoloud->mBackendData = data;
         aSoloud->mBackendCleanupFunc = winMMCleanup;
+		aSoloud->mChannels = 2;
         data->samples = aBuffer;
         data->soloud = aSoloud;
         data->bufferEndEvent = CreateEvent(0, FALSE, FALSE, 0);

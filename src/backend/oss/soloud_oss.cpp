@@ -108,12 +108,13 @@ namespace SoLoud
         aSoloud->mBackendData = 0;
     }
 
-    result oss_init(Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer)
+    result oss_init(Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer, unsigned int aChannels)
     {
         OSSData *data = new OSSData;
         memset(data, 0, sizeof(OSSData));
         aSoloud->mBackendData = data;
         aSoloud->mBackendCleanupFunc = ossCleanup;
+        aSoloud->mChannels = 2;
         data->samples = aBuffer;
         data->soloud = aSoloud;
         bool deviceIsOpen = false;

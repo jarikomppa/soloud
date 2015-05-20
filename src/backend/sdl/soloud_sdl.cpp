@@ -90,7 +90,7 @@ namespace SoLoud
 		delete[] (float*)aSoloud->mBackendData;
 	}
 
-	result sdl_init(SoLoud::Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer)
+	result sdl_init(SoLoud::Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer, unsigned int aChannels)
 	{
 		if (!dll_SDL_found())
 			return DLL_NOT_FOUND;
@@ -98,7 +98,7 @@ namespace SoLoud
 		SDL_AudioSpec as;
 		as.freq = aSamplerate;
 		as.format = AUDIO_F32;
-		as.channels = 2;
+		as.channels = aChannels;
 		as.samples = aBuffer;
 		as.callback = soloud_sdl_audiomixer;
 		as.userdata = (void*)aSoloud;
@@ -123,8 +123,9 @@ namespace SoLoud
 			gSDL_Has_Float_Samples = 0;
 			aSoloud->mBackendData = new float[as2.samples * 4];
 		}
+		aSoloud->mChannels = as2.channels;
 		
-		aSoloud->postinit(as2.freq, as2.samples * 2, aFlags);
+		aSoloud->postinit(as2.freq, as2.samples, aFlags);
 
 		aSoloud->mBackendCleanupFunc = soloud_sdl_deinit;
 

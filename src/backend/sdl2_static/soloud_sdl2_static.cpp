@@ -68,7 +68,7 @@ namespace SoLoud
 		delete[] (float*)aSoloud->mBackendData;
 	}
 
-	result sdl2static_init(SoLoud::Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer)
+	result sdl2static_init(SoLoud::Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer, unsigned int aChannels)
 	{
 		SDL_AudioSpec as;
 		as.freq = aSamplerate;
@@ -88,6 +88,7 @@ namespace SoLoud
 		aSoloud->postinit(as2.freq, as2.samples * 2, aFlags);
 
 		aSoloud->mBackendCleanupFunc = soloud_sdl2static_deinit;
+		aSoloud->mChannels = 2;
 
 		SDL_PauseAudio(0);
         aSoloud->mBackendString = "SDL2 (static)";

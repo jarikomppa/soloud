@@ -54,8 +54,8 @@ freely, subject to the following restrictions:
 // Use linear resampler
 #define RESAMPLER_LINEAR
 
-// Currently we only handle stereo.
-#define MAX_CHANNELS 2
+// 1)mono, 2)stereo 4)quad 6)5.1
+#define MAX_CHANNELS 6
 
 //
 /////////////////////////////////////////////////////////////////////
@@ -122,7 +122,7 @@ namespace SoLoud
 		};
 
 		// Initialize SoLoud. Must be called before SoLoud can be used.
-		result init(unsigned int aFlags = Soloud::CLIP_ROUNDOFF, unsigned int aBackend = Soloud::AUTO, unsigned int aSamplerate = Soloud::AUTO, unsigned int aBufferSize = Soloud::AUTO);
+		result init(unsigned int aFlags = Soloud::CLIP_ROUNDOFF, unsigned int aBackend = Soloud::AUTO, unsigned int aSamplerate = Soloud::AUTO, unsigned int aBufferSize = Soloud::AUTO, unsigned int aChannels = 2);
 
 		// Deinitialize SoLoud. Must be called before shutting down.
 		void deinit();

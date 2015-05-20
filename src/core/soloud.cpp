@@ -745,14 +745,14 @@ namespace SoLoud
 				float pan[MAX_CHANNELS]; // current speaker volume
 				float pand[MAX_CHANNELS]; // destination speaker volume
 				float pani[MAX_CHANNELS]; // speaker volume increment per sample
-				for (k = 0; k < voice->mChannels; k++)
+				for (k = 0; k < aChannels; k++)
 				{
 					pan[k] = voice->mCurrentChannelVolume[k];
 					pand[k] = voice->mChannelVolume[k] * voice->mOverallVolume;
 					pani[k] = (pand[k] - pan[k]) / aSamples;
 				}
 
-				int ofs = 0;				
+				int ofs = 0;
 				switch (aChannels)
 				{
 				case 1: // Target is mono. Sum everything. (1->1, 2->1, 4->1, 6->1)
@@ -979,7 +979,7 @@ namespace SoLoud
 					break;
 				}
 				
-				for (k = 0; k < voice->mChannels; k++)
+				for (k = 0; k < aChannels; k++)
 					voice->mCurrentChannelVolume[k] = pand[k];
 
 				// clear voice if the sound is over

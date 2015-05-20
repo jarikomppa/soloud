@@ -35,7 +35,6 @@ local sdl_include       = sdl_root .. "/include"
 local sdl2_include      = sdl2_root .. "/include"
 local sdl2_lib_x86      = sdl2_root .. "/lib/x86"
 local sdl2_lib_x64      = sdl2_root .. "/lib/x64"
-local sdl2_lib          = "~2~"
 local portmidi_include  = portmidi_root .. "/pm_common"
 local portmidi_debug    = portmidi_root .. "/debug"
 local portmidi_release  = portmidi_root .. "/release"
@@ -306,10 +305,6 @@ solution "SoLoud"
 	debugdir "../bin"
 	flags { "NoExceptions", "NoRTTI", "NoPCH" }
 	if (os.is("Windows")) then defines { "_CRT_SECURE_NO_WARNINGS" } end
-    configuration { "x32" }
-        sdl2_lib = sdl2_lib_x86
-    configuration { "x64" }
-        sdl2_lib = sdl2_lib_x64
     configuration { "x32", "Debug" }
         targetsuffix "_x86_d"   
     configuration { "x32", "Release" }
@@ -738,6 +733,13 @@ end
 
 if (WITH_SDL == 1) then
 
+function sdl2_lib()
+    configuration { "x32" } 
+        libdirs { sdl2_lib_x86 }
+    configuration { "x64" } 
+        libdirs { sdl2_lib_x64 }
+end
+
 function CommonDemo(_name)
   project(_name)
 	kind "WindowedApp"
@@ -752,9 +754,8 @@ function CommonDemo(_name)
 	  "../demos/common/glew",
 	  sdl2_include
 	}
-	libdirs {
-	  sdl2_lib
-	}
+	sdl2_lib()
+
 	defines { "GLEW_STATIC" }
 
 if (WITH_ALSA == 1) then
@@ -794,9 +795,7 @@ end
 	  "../include",
 	  sdl2_include
 	}
-	libdirs {
-	  sdl2_lib
-	}
+    sdl2_lib()
 if (WITH_ALSA == 1) then
 	links {"asound"}
 end
@@ -837,10 +836,8 @@ end
 	  "../demos/common/glew",
 	  sdl2_include
 	}
-	libdirs {
-	  sdl2_lib
-	}
-
+    sdl2_lib()
+    
 	defines { "GLEW_STATIC" }
 
 if (WITH_ALSA == 1) then
@@ -881,9 +878,7 @@ end
 	  "../include",
 	  sdl2_include
 	}
-	libdirs {
-	  sdl2_lib
-	}
+    sdl2_lib()
 
 if (WITH_ALSA == 1) then
 	links {"asound"}

@@ -146,7 +146,7 @@ static int shader_handle;
 static int texture_location, proj_mtx_location;
 static int position_location, uv_location, color_location;
 static size_t vbo_max_size = 20000;
-static unsigned int vbo_handle, vao_handle;
+static unsigned int vbo_handle;
 static unsigned int desktop_tex;
 
 // This is the main rendering function that you have to implement and provide to ImGui (via setting up 'RenderDrawListsFn' in the ImGuiIO structure)
@@ -157,7 +157,6 @@ static void ImImpl_RenderDrawLists(ImDrawList** const cmd_lists, int cmd_lists_c
 	if (cmd_lists_count == 0)
 		return;
 
-	glBindVertexArray(vao_handle);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo_handle);
 	glEnableVertexAttribArray(position_location);
 	glEnableVertexAttribArray(uv_location);
@@ -166,7 +165,6 @@ static void ImImpl_RenderDrawLists(ImDrawList** const cmd_lists, int cmd_lists_c
 	glVertexAttribPointer(position_location, 2, GL_FLOAT, GL_FALSE, sizeof(ImDrawVert), (GLvoid*)OFFSETOF(ImDrawVert, pos));
 	glVertexAttribPointer(uv_location, 2, GL_FLOAT, GL_FALSE, sizeof(ImDrawVert), (GLvoid*)OFFSETOF(ImDrawVert, uv));
 	glVertexAttribPointer(color_location, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(ImDrawVert), (GLvoid*)OFFSETOF(ImDrawVert, col));
-	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	// Setup render state: alpha-blending enabled, no face culling, no depth testing, scissor enabled
@@ -216,7 +214,6 @@ static void ImImpl_RenderDrawLists(ImDrawList** const cmd_lists, int cmd_lists_c
 	}
 	glUnmapBuffer(GL_ARRAY_BUFFER);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(vao_handle);
 
 	int cmd_offset = 0;
 	for (int n = 0; n < cmd_lists_count; n++)
@@ -235,7 +232,6 @@ static void ImImpl_RenderDrawLists(ImDrawList** const cmd_lists, int cmd_lists_c
 	}
 
 	// Restore modified state
-	glBindVertexArray(0);
 	glUseProgram(0);
 	glDisable(GL_SCISSOR_TEST);
 	glBindTexture(GL_TEXTURE_2D, 0);
@@ -312,8 +308,6 @@ void ImImpl_InitGL()
 	glGenBuffers(1, &vbo_handle);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo_handle);
 	glBufferData(GL_ARRAY_BUFFER, vbo_max_size, NULL, GL_DYNAMIC_DRAW);
-
-	glGenVertexArrays(1, &vao_handle);
 
 	LoadFontsTexture();
 }
@@ -397,7 +391,6 @@ void DemoTriangle(float x0, float y0, float x1, float y1, float x2, float y2, un
 
 	glDrawArrays(GL_TRIANGLES, 0, 3);
 
-	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glDisableVertexAttribArray(flat_position_location);
 	glUseProgram(0);

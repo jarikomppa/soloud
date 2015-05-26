@@ -26,6 +26,10 @@ freely, subject to the following restrictions:
 #include <math.h>
 #include <stdio.h>
 
+#ifdef __EMSCRIPTEN__
+#include "emscripten.h"
+#endif
+
 #include "imgui.h"
 #include "soloud_demo_framework.h"
 
@@ -43,6 +47,89 @@ SoLoud::LofiFilter gLofi;
 SoLoud::EchoFilter gEcho;
 SoLoud::DCRemovalFilter gDCRemoval;
 int gMusichandle;
+
+float filter_param0[4] = { 0, 0, 0, 0 };
+float filter_param1[4] = { 1000, 8000, 0, 0 };
+float filter_param2[4] = { 2, 3,  0, 0 };
+
+int hwchannels = 4;
+int waveform = 0;
+
+void mainloop()
+{
+	gSoloud.setFilterParameter(gMusichandle, 0, 0, filter_param0[0]);
+	gSoloud.setFilterParameter(gMusichandle, 1, 0, filter_param0[1]);
+	gSoloud.setFilterParameter(gMusichandle, 2, 0, filter_param0[2]);
+	gSoloud.setFilterParameter(gMusichandle, 3, 0, filter_param0[3]);
+
+	gSoloud.setFilterParameter(gMusichandle, 0, 2, filter_param1[0]);
+	gSoloud.setFilterParameter(gMusichandle, 0, 3, filter_param2[0]);
+	gSoloud.setFilterParameter(gMusichandle, 1, 1, filter_param1[1]);
+	gSoloud.setFilterParameter(gMusichandle, 1, 2, filter_param2[1]);
+
+	DemoUpdateStart();
+
+	float *buf = gSoloud.getWave();
+	float *fft = gSoloud.calcFFT();
+
+	ONCE(ImGui::SetNextWindowPos(ImVec2(500, 20)));
+	ImGui::Begin("Output");
+	ImGui::PlotLines("##Wave", buf, 256, 0, "Wave", -1, 1, ImVec2(264, 80));
+	ImGui::PlotHistogram("##FFT", fft, 256/2, 0, "FFT", 0, 10, ImVec2(264,80),8);
+	ImGui::Text("Music volume     : %d%%", (int)floor(gSoloud.getVolume(gMusichandle) * 100));
+	ImGui::Text("Active voices    : %d", gSoloud.getActiveVoiceCount());
+	ImGui::End();
+
+	ONCE(ImGui::SetNextWindowPos(ImVec2(20, 20)));
+	
+	ImGui::Begin("Control");
+	if (ImGui::SliderInt("Channels", &hwchannels, 1, 4))
+	{
+		gMusic.setParams(hwchannels, waveform);
+	}
+	if (ImGui::CollapsingHeader("Waveform", (const char*)0, true, false))
+	{
+		if (ImGui::RadioButton("Square", waveform == SoLoud::Monotone::SQUARE))
+		{
+			waveform = SoLoud::Monotone::SQUARE;
+			gMusic.setParams(hwchannels, waveform);
+		}
+		if (ImGui::RadioButton("Saw", waveform == SoLoud::Monotone::SAW))
+		{
+			waveform = SoLoud::Monotone::SAW;
+			gMusic.setParams(hwchannels, waveform);
+		}
+		if (ImGui::RadioButton("Sin", waveform == SoLoud::Monotone::SIN))
+		{
+			waveform = SoLoud::Monotone::SIN;
+			gMusic.setParams(hwchannels, waveform);
+		}
+		if (ImGui::RadioButton("SawSin", waveform == SoLoud::Monotone::SAWSIN))
+		{
+			waveform = SoLoud::Monotone::SAWSIN;
+			gMusic.setParams(hwchannels, waveform);
+		}
+	}
+	ImGui::Separator();
+	ImGui::Text("Biquad filter (lowpass)");
+	ImGui::SliderFloat("Wet##4", &filter_param0[0], 0, 1);
+	ImGui::SliderFloat("Frequency##4", &filter_param1[0], 0, 8000);
+	ImGui::SliderFloat("Resonance##4", &filter_param2[0], 1, 20);
+	ImGui::Separator();
+	ImGui::Text("Lofi filter");
+	ImGui::SliderFloat("Wet##2", &filter_param0[1], 0, 1);
+	ImGui::SliderFloat("Rate##2", &filter_param1[1], 1000, 8000);
+	ImGui::SliderFloat("Bit depth##2", &filter_param2[1], 0, 8);
+	ImGui::Separator();
+	ImGui::Text("Echo filter");
+	ImGui::SliderFloat("Wet##3", &filter_param0[2], 0, 1);
+	ImGui::Separator();
+	ImGui::Text("DC removal filter");
+	ImGui::SliderFloat("Wet##1", &filter_param0[3], 0, 1);
+	ImGui::End();
+	DemoUpdateEnd();
+}
+    
 
 // Entry point
 int main(int argc, char *argv[])
@@ -64,89 +151,16 @@ int main(int argc, char *argv[])
 	gSoloud.init(SoLoud::Soloud::CLIP_ROUNDOFF | SoLoud::Soloud::ENABLE_VISUALIZATION);
 
 	gMusichandle = gSoloud.play(gMusic);
-
-
-	float filter_param0[4] = { 0, 0, 0, 0 };
-	float filter_param1[4] = { 1000, 8000, 0, 0 };
-	float filter_param2[4] = { 2, 3,  0, 0 };
-	
-	int hwchannels = 4;
-	int waveform = 0;
-
-	// Main loop: loop forever.
-	while (1)
-	{
-		gSoloud.setFilterParameter(gMusichandle, 0, 0, filter_param0[0]);
-		gSoloud.setFilterParameter(gMusichandle, 1, 0, filter_param0[1]);
-		gSoloud.setFilterParameter(gMusichandle, 2, 0, filter_param0[2]);
-		gSoloud.setFilterParameter(gMusichandle, 3, 0, filter_param0[3]);
-
-		gSoloud.setFilterParameter(gMusichandle, 0, 2, filter_param1[0]);
-		gSoloud.setFilterParameter(gMusichandle, 0, 3, filter_param2[0]);
-		gSoloud.setFilterParameter(gMusichandle, 1, 1, filter_param1[1]);
-		gSoloud.setFilterParameter(gMusichandle, 1, 2, filter_param2[1]);
-
-		DemoUpdateStart();
-
-		float *buf = gSoloud.getWave();
-		float *fft = gSoloud.calcFFT();
-
-		ONCE(ImGui::SetNextWindowPos(ImVec2(500, 20)));
-		ImGui::Begin("Output");
-		ImGui::PlotLines("##Wave", buf, 256, 0, "Wave", -1, 1, ImVec2(264, 80));
-		ImGui::PlotHistogram("##FFT", fft, 256/2, 0, "FFT", 0, 10, ImVec2(264,80),8);
-		ImGui::Text("Music volume     : %d%%", (int)floor(gSoloud.getVolume(gMusichandle) * 100));
-		ImGui::Text("Active voices    : %d", gSoloud.getActiveVoiceCount());
-		ImGui::End();
-
-		ONCE(ImGui::SetNextWindowPos(ImVec2(20, 20)));
-		
-		ImGui::Begin("Control");
-		if (ImGui::SliderInt("Channels", &hwchannels, 1, 4))
-		{
+			waveform = SoLoud::Monotone::SAW;
 			gMusic.setParams(hwchannels, waveform);
-		}
-		if (ImGui::CollapsingHeader("Waveform", (const char*)0, true, false))
-		{
-			if (ImGui::RadioButton("Square", waveform == SoLoud::Monotone::SQUARE))
-			{
-				waveform = SoLoud::Monotone::SQUARE;
-				gMusic.setParams(hwchannels, waveform);
-			}
-			if (ImGui::RadioButton("Saw", waveform == SoLoud::Monotone::SAW))
-			{
-				waveform = SoLoud::Monotone::SAW;
-				gMusic.setParams(hwchannels, waveform);
-			}
-			if (ImGui::RadioButton("Sin", waveform == SoLoud::Monotone::SIN))
-			{
-				waveform = SoLoud::Monotone::SIN;
-				gMusic.setParams(hwchannels, waveform);
-			}
-			if (ImGui::RadioButton("SawSin", waveform == SoLoud::Monotone::SAWSIN))
-			{
-				waveform = SoLoud::Monotone::SAWSIN;
-				gMusic.setParams(hwchannels, waveform);
-			}
-		}
-		ImGui::Separator();
-		ImGui::Text("Biquad filter (lowpass)");
-		ImGui::SliderFloat("Wet##4", &filter_param0[0], 0, 1);
-		ImGui::SliderFloat("Frequency##4", &filter_param1[0], 0, 8000);
-		ImGui::SliderFloat("Resonance##4", &filter_param2[0], 1, 20);
-		ImGui::Separator();
-		ImGui::Text("Lofi filter");
-		ImGui::SliderFloat("Wet##2", &filter_param0[1], 0, 1);
-		ImGui::SliderFloat("Rate##2", &filter_param1[1], 1000, 8000);
-		ImGui::SliderFloat("Bit depth##2", &filter_param2[1], 0, 8);
-		ImGui::Separator();
-		ImGui::Text("Echo filter");
-		ImGui::SliderFloat("Wet##3", &filter_param0[2], 0, 1);
-		ImGui::Separator();
-		ImGui::Text("DC removal filter");
-		ImGui::SliderFloat("Wet##1", &filter_param0[3], 0, 1);
-		ImGui::End();
-		DemoUpdateEnd();
-	}
+
+#ifdef __EMSCRIPTEN__
+    emscripten_set_main_loop(mainloop, 60, 0);
+#else
+    while (1)
+    {
+        mainloop();
+    }
+#endif
 	return 0;
 }

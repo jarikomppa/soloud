@@ -194,16 +194,12 @@ static void ImImpl_RenderDrawLists(ImDrawList** const cmd_lists, int cmd_lists_c
 	size_t total_vtx_count = 0;
 	for (int n = 0; n < cmd_lists_count; n++)
 		total_vtx_count += cmd_lists[n]->vtx_buffer.size();
-	glBindBuffer(GL_ARRAY_BUFFER, vbo_handle);
+	
 	size_t neededBufferSize = total_vtx_count * sizeof(ImDrawVert);
-	if (neededBufferSize > vbo_max_size)
-	{
-		vbo_max_size = neededBufferSize + 5000;  // Grow buffer
-		glBufferData(GL_ARRAY_BUFFER, vbo_max_size, NULL, GL_STREAM_DRAW);
-	}
 
 	// Copy and convert all vertices into a single contiguous buffer
-	unsigned char* buffer_data = (unsigned char*)glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
+	unsigned char* buf = new unsigned char[neededBufferSize];
+	unsigned char* buffer_data = buf;
 	if (!buffer_data)
 		return;
 	for (int n = 0; n < cmd_lists_count; n++)
@@ -212,8 +208,10 @@ static void ImImpl_RenderDrawLists(ImDrawList** const cmd_lists, int cmd_lists_c
 		memcpy(buffer_data, &cmd_list->vtx_buffer[0], cmd_list->vtx_buffer.size() * sizeof(ImDrawVert));
 		buffer_data += cmd_list->vtx_buffer.size() * sizeof(ImDrawVert);
 	}
-	glUnmapBuffer(GL_ARRAY_BUFFER);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo_handle);
+	glBufferData(GL_ARRAY_BUFFER, neededBufferSize, buf, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	delete[] buf;
 
 	int cmd_offset = 0;
 	for (int n = 0; n < cmd_lists_count; n++)

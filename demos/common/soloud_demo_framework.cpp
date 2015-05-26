@@ -32,7 +32,11 @@
 #else
 #include "SDL/SDL.h"
 #endif
+#ifndef __EMSCRIPTEN__
 #include "GL/glew.h"
+#else
+#include <GLES2/gl2.h>
+#endif
 #include <math.h>
 #include <stdio.h>
 #include "imgui.h"
@@ -273,6 +277,9 @@ static void LoadFontsTexture()
 void ImImpl_InitGL()
 {
 	const GLchar *vertex_shader =
+#ifdef __EMSCRIPTEN__
+		"precision highp float;\n"
+#endif
 		"uniform mat4 ProjMtx;\n"
 		"attribute vec2 Position;\n"
 		"attribute vec2 UV;\n"
@@ -287,12 +294,15 @@ void ImImpl_InitGL()
 		"}\n";
 
 	const GLchar* fragment_shader =
+#ifdef __EMSCRIPTEN__
+		"precision mediump float;\n"
+#endif
 		"uniform sampler2D Texture;\n"
 		"varying vec2 Frag_UV;\n"
 		"varying vec4 Frag_Color;\n"
 		"void main()\n"
 		"{\n"
-		"	gl_FragColor = Frag_Color * texture( Texture, Frag_UV.st);\n"
+		"	gl_FragColor = Frag_Color * texture2D( Texture, Frag_UV.st);\n"
 		"}\n";
 
 	shader_handle = createProgram(vertex_shader, fragment_shader);
@@ -315,6 +325,9 @@ static unsigned int flat_shader_handle, flat_position_location, flat_color_locat
 void framework_init_flat()
 {
 	const GLchar *vertex_shader =
+#ifdef __EMSCRIPTEN__
+		"precision highp float;\n"
+#endif
 		"attribute vec2 Position;\n"
 		"void main()\n"
 		"{\n"
@@ -322,6 +335,9 @@ void framework_init_flat()
 		"}\n";
 
 	const GLchar* fragment_shader =
+#ifdef __EMSCRIPTEN__
+		"precision mediump float;\n"
+#endif
 		"uniform vec4 Color;\n"
 		"void main()\n"
 		"{\n"
@@ -338,6 +354,9 @@ static unsigned int tex_shader_handle, tex_position_location, tex_uv_location, t
 void framework_init_tex()
 {
 	const GLchar *vertex_shader =
+#ifdef __EMSCRIPTEN__
+		"precision highp float;\n"
+#endif
 		"attribute vec2 Position;\n"
 		"attribute vec2 TexCoord;\n"
 		"varying vec2 Frag_UV;\n"
@@ -348,11 +367,14 @@ void framework_init_tex()
 		"}\n";
 
 	const GLchar* fragment_shader =
+#ifdef __EMSCRIPTEN__
+		"precision mediump float;\n"
+#endif
 		"uniform sampler2D Texture;\n"
 		"varying vec2 Frag_UV;\n"
 		"void main()\n"
 		"{\n"
-		"	gl_FragColor = texture(Texture, Frag_UV.st);\n"
+		"	gl_FragColor = texture2D(Texture, Frag_UV.st);\n"
 		"}\n";
 
 	tex_shader_handle = createProgram(vertex_shader, fragment_shader);
@@ -562,7 +584,9 @@ void DemoInit()
 	// set window title
 	SDL_SetWindowTitle(gSDLWindow, "http://soloud-audio.com");
 
+#ifndef __EMSCRIPTEN__	
 	glewInit();
+#endif
 
 	InitImGui();
 	framework_init_flat();

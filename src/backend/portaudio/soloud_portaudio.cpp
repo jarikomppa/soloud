@@ -74,7 +74,9 @@ namespace SoLoud
 	{
 		SoLoud::Soloud *soloud = (SoLoud::Soloud *)userData;
 		float *mixdata = (float*)(soloud->mBackendData);
-		soloud->mix((float*)output, frameCount);
+		AlignedFloatBuffer ab;
+		ab.mData = (float*)output; // let's ASSUME portaudio has aligned buffers
+		soloud->mix(ab, frameCount);
 
 		return 0;
 	}

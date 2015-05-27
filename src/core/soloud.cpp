@@ -29,6 +29,10 @@ freely, subject to the following restrictions:
 #include "soloud_thread.h"
 #include "soloud_fft.h"
 
+#ifdef SOLOUD_SSE_INTRINSICS
+#include <smmintrin.h>
+#endif
+
 //#define FLOATING_POINT_DEBUG
 
 #ifdef FLOATING_POINT_DEBUG
@@ -42,6 +46,37 @@ freely, subject to the following restrictions:
 
 namespace SoLoud
 {
+	AlignedFloatBuffer::AlignedFloatBuffer()
+	{
+		mBasePtr = 0;
+		mData = 0;
+	}
+
+	result AlignedFloatBuffer::init(unsigned int aFloats)
+	{
+		delete[] mBasePtr;
+		mBasePtr = 0;
+		mData = 0;
+#ifdef DISABLE_SSE
+		mBasePtr = new unsigned char[aFloats * sizeof(float)];
+		if (mBasePtr == NULL)
+			return OUT_OF_MEMORY;
+		mData = mBasePtr;
+#else
+		mBasePtr = new unsigned char[aFloats * sizeof(float) + 16];
+		if (mBasePtr == NULL)
+			return OUT_OF_MEMORY;
+		mData = (float *)(((uintptr_t)mBasePtr + 15)&~15);
+#endif
+		return SO_NO_ERROR;
+	}
+
+	AlignedFloatBuffer::~AlignedFloatBuffer()
+	{
+		delete[] mBasePtr;
+	}
+
+
 	Soloud::Soloud()
 	{
 #ifdef FLOATING_POINT_DEBUG
@@ -51,7 +86,6 @@ namespace SoLoud
 		_controlfp(u, _MCW_EM);
 #endif
 		
-		mScratch = NULL;
 		mScratchSize = 0;
 		mScratchNeeded = 0;
 		mSamplerate = 0;
@@ -116,7 +150,6 @@ namespace SoLoud
 		{
 			delete mFilterInstance[i];
 		}
-		delete[] mScratch;
 		for (i = 0; i < mVoiceGroupCount; i++)
 			delete[] mVoiceGroup[i];
 		delete[] mVoiceGroup;
@@ -374,7 +407,7 @@ namespace SoLoud
 		if (mScratchSize < SAMPLE_GRANULARITY * 2) mScratchSize = SAMPLE_GRANULARITY * 2;
 		if (mScratchSize < 4096) mScratchSize = 4096;
 		mScratchNeeded = mScratchSize;
-		mScratch = new float[mScratchSize * 2];
+		mScratch.init(mScratchSize * MAX_CHANNELS);
 		mFlags = aFlags;
 		mPostClipScaler = 0.95f;
 		switch (mChannels)
@@ -493,61 +526,173 @@ namespace SoLoud
 		return mFFTData;
 	}
 
-	void Soloud::clip(float *aBuffer, float *aDestBuffer, unsigned int aSamples, float aVolume0, float aVolume1)
+#ifdef SOLOUD_SSE_INTRINSICS
+	void Soloud::clip(AlignedFloatBuffer &aBuffer, AlignedFloatBuffer &aDestBuffer, unsigned int aSamples, float aVolume0, float aVolume1)
 	{
 		float vd = (aVolume1 - aVolume0) / aSamples;
 		float v = aVolume0;
-		unsigned int i, j, c;
+		unsigned int i, j, c, d;
 		// Clip
 		if (mFlags & CLIP_ROUNDOFF)
 		{
-			int c = 0;
+			float nb = -1.65f;		__m128 negbound = _mm_load_ps1(&nb);
+			float pb = 1.65f;		__m128 posbound = _mm_load_ps1(&pb);
+			float ls = 0.87f;		__m128 linearscale = _mm_load_ps1(&ls);
+			float cs = -0.1f;		__m128 cubicscale = _mm_load_ps1(&cs);
+			float nw = -0.9862875f;	__m128 negwall = _mm_load_ps1(&nw);
+			float pw = 0.9862875f;	__m128 poswall = _mm_load_ps1(&pw);
+			__m128 postscale = _mm_load_ps1(&mPostClipScaler);
+			AlignedFloatBuffer volumes;
+			volumes.init(4);
+			volumes.mData[0] = v;
+			volumes.mData[1] = v + vd;
+			volumes.mData[2] = v + vd + vd;
+			volumes.mData[3] = v + vd + vd + vd;
+			vd *= 4;
+			__m128 vdelta = _mm_load_ps1(&vd);
+			c = 0;
+			d = 0;
+			for (j = 0; j < mChannels; j++)
+			{
+				__m128 vol = _mm_load_ps(volumes.mData);
+
+				for (i = 0; i < aSamples / 4; i++)
+				{
+					//float f1 = origdata[c] * v;	c++; v += vd;
+					__m128 f = _mm_load_ps(&aBuffer.mData[c]);
+					c += 4;
+					f = _mm_mul_ps(f, vol);
+					vol = _mm_add_ps(vol, vdelta);
+
+					//float u1 = (f1 > -1.65f);
+					__m128 u = _mm_cmpgt_ps(f, negbound);
+
+					//float o1 = (f1 < 1.65f);
+					__m128 o = _mm_cmplt_ps(f, posbound);
+
+					//f1 = (0.87f * f1 - 0.1f * f1 * f1 * f1) * u1 * o1;
+					__m128 lin = _mm_mul_ps(f, linearscale);
+					__m128 cubic = _mm_mul_ps(f, f);
+					cubic = _mm_mul_ps(cubic, f);
+					cubic = _mm_mul_ps(cubic, cubicscale);
+					f = _mm_add_ps(cubic, lin);
+
+					//f1 = f1 * u1 + !u1 * -0.9862875f;
+					__m128 lowmask = _mm_andnot_ps(u, negwall);
+					__m128 ilowmask = _mm_and_ps(u, f);
+					f = _mm_add_ps(lowmask, ilowmask);
+
+					//f1 = f1 * o1 + !o1 * 0.9862875f;
+					__m128 himask = _mm_andnot_ps(o, poswall);
+					__m128 ihimask = _mm_and_ps(o, f);
+					f = _mm_add_ps(himask, ihimask);
+
+					// outdata[d] = f1 * postclip; d++;
+					f = _mm_mul_ps(f, postscale);
+					_mm_store_ps(&aDestBuffer.mData[d], f);
+					d += 4;
+				}
+			}
+		}
+		else
+		{
+			float nb = -1.0f;	__m128 negbound = _mm_load_ps1(&nb);
+			float pb = 1.0f;	__m128 posbound = _mm_load_ps1(&pb);
+			__m128 postscale = _mm_load_ps1(&mPostClipScaler);
+			AlignedFloatBuffer volumes;
+			volumes.init(4);
+			volumes.mData[0] = v;
+			volumes.mData[1] = v + vd;
+			volumes.mData[2] = v + vd + vd;
+			volumes.mData[3] = v + vd + vd + vd;
+			vd *= 4;
+			__m128 vdelta = _mm_load_ps1(&vd);
+			c = 0;
+			d = 0;
+			for (j = 0; j < mChannels; j++)
+			{
+				__m128 vol = _mm_load_ps(volumes.mData);
+				for (i = 0; i < aSamples / 4; i++)
+				{
+					//float f1 = aBuffer.mData[c] * v; c++; v += vd;
+					__m128 f = _mm_load_ps(&aBuffer.mData[c]);
+					c += 4;
+					f = _mm_mul_ps(f, vol);
+					vol = _mm_add_ps(vol, vdelta);
+
+					//f1 = (f1 <= -1) ? -1 : (f1 >= 1) ? 1 : f1;
+					f = _mm_max_ps(f, negbound);
+					f = _mm_min_ps(f, posbound);
+
+					//aDestBuffer.mData[d] = f1 * mPostClipScaler; d++;
+					f = _mm_mul_ps(f, postscale);
+					_mm_store_ps(&aDestBuffer.mData[d], f);
+					d += 4;
+				}
+			}
+		}
+	}
+#else // fallback code
+	void Soloud::clip(AlignedFloatBuffer &aBuffer, AlignedFloatBuffer &aDestBuffer, unsigned int aSamples, float aVolume0, float aVolume1)
+	{
+		float vd = (aVolume1 - aVolume0) / aSamples;
+		float v = aVolume0;
+		unsigned int i, j, c, d;
+		// Clip
+		if (mFlags & CLIP_ROUNDOFF)
+		{
+			c = 0;
+			d = 0;
 			for (j = 0; j < mChannels; j++)
 			{
 				v = aVolume0;
-				for (i = 0; i < aSamples; i++, c++, v += vd)
+				for (i = 0; i < aSamples/4; i++)
 				{
-					float f = aBuffer[c] * v;
-					if (f <= -1.65f)
-					{
-						f = -0.9862875f;
-					}
-					else
-					if (f >= 1.65f)
-					{
-						f = 0.9862875f;
-					}
-					else
-					{
-						f =  0.87f * f - 0.1f * f * f * f;
-					}
-					aDestBuffer[c] = f * mPostClipScaler;
+					float f1 = aBuffer.mData[c] * v; c++; v += vd;
+					float f2 = aBuffer.mData[c] * v; c++; v += vd;
+					float f3 = aBuffer.mData[c] * v; c++; v += vd;
+					float f4 = aBuffer.mData[c] * v; c++; v += vd;
+
+					f1 = (f1 <= -1.65f) ? -0.9862875f : (f1 >= 1.65f) ? 0.9862875f : (0.87f * f1 - 0.1f * f1 * f1 * f1);
+					f2 = (f2 <= -1.65f) ? -0.9862875f : (f2 >= 1.65f) ? 0.9862875f : (0.87f * f2 - 0.1f * f2 * f2 * f2);
+					f3 = (f3 <= -1.65f) ? -0.9862875f : (f3 >= 1.65f) ? 0.9862875f : (0.87f * f3 - 0.1f * f3 * f3 * f3);
+					f4 = (f4 <= -1.65f) ? -0.9862875f : (f4 >= 1.65f) ? 0.9862875f : (0.87f * f4 - 0.1f * f4 * f4 * f4);
+
+					aDestBuffer.mData[d] = f1 * mPostClipScaler; d++;
+					aDestBuffer.mData[d] = f2 * mPostClipScaler; d++;
+					aDestBuffer.mData[d] = f3 * mPostClipScaler; d++;
+					aDestBuffer.mData[d] = f4 * mPostClipScaler; d++;
 				}
 			}
 		}
 		else
 		{
 			c = 0;
+			d = 0;
 			for (j = 0; j < mChannels; j++)
 			{
 				v = aVolume0;
-				for (i = 0; i < aSamples; i++, c++, v += vd)
+				for (i = 0; i < aSamples / 4; i++)
 				{
-					float f = aBuffer[i] * v;
-					if (f < -1.0f)
-					{
-						f = -1.0f;
-					}
-					else
-					if (f > 1.0f)
-					{
-						f = 1.0f;
-					}
-					aDestBuffer[i] = f * mPostClipScaler;
-				}
+					float f1 = aBuffer.mData[c] * v; c++; v += vd;
+					float f2 = aBuffer.mData[c] * v; c++; v += vd;
+					float f3 = aBuffer.mData[c] * v; c++; v += vd;
+					float f4 = aBuffer.mData[c] * v; c++; v += vd;
+
+					f1 = (f1 <= -1) ? -1 : (f1 >= 1) ? 1 : f1;
+					f2 = (f2 <= -1) ? -1 : (f2 >= 1) ? 1 : f2;
+					f3 = (f3 <= -1) ? -1 : (f3 >= 1) ? 1 : f3;
+					f4 = (f4 <= -1) ? -1 : (f4 >= 1) ? 1 : f4;
+
+					aDestBuffer.mData[d] = f1 * mPostClipScaler; d++;
+					aDestBuffer.mData[d] = f2 * mPostClipScaler; d++;
+					aDestBuffer.mData[d] = f3 * mPostClipScaler; d++;
+					aDestBuffer.mData[d] = f4 * mPostClipScaler; d++;
 			}
 		}
 	}
+}
+#endif
 
 #define FIXPOINT_FRAC_BITS 20
 #define FIXPOINT_FRAC_MUL (1 << FIXPOINT_FRAC_BITS)
@@ -791,8 +936,8 @@ namespace SoLoud
 							pan[1] += pani[1];
 							float s1 = aScratch[j];
 							float s2 = aScratch[aSamples + j];
-							float s3 = aScratch[aSamples*2 + j];
-							float s4 = aScratch[aSamples*3 + j];
+							float s3 = aScratch[aSamples * 2 + j];
+							float s4 = aScratch[aSamples * 3 + j];
 							aBuffer[j + 0] += 0.5f * (s1 + s3) * pan[0];
 							aBuffer[j + aSamples] += 0.5f * (s2 + s4) * pan[1];
 						}
@@ -1175,7 +1320,7 @@ namespace SoLoud
 		}		
 	}
 
-	void Soloud::mix(float *aBuffer, unsigned int aSamples)
+	void Soloud::mix(AlignedFloatBuffer &aBuffer, unsigned int aSamples)
 	{
 #ifdef FLOATING_POINT_DEBUG
 		// This needs to be done in the audio thread as well..
@@ -1273,24 +1418,23 @@ namespace SoLoud
 		if (mScratchSize < mScratchNeeded)
 		{
 			mScratchSize = mScratchNeeded;
-			delete[] mScratch;
-			mScratch = new float[mScratchSize];
+			mScratch.init(mScratchSize * MAX_CHANNELS);
 		}
 		
-		mixBus(aBuffer, aSamples, mScratch, 0, (float)mSamplerate, mChannels);
+		mixBus(aBuffer.mData, aSamples, mScratch.mData, 0, (float)mSamplerate, mChannels);
 
 		for (i = 0; i < FILTERS_PER_STREAM; i++)
 		{
 			if (mFilterInstance[i])
 			{
-				mFilterInstance[i]->filter(aBuffer, aSamples, mChannels, (float)mSamplerate, mStreamTime);
+				mFilterInstance[i]->filter(aBuffer.mData, aSamples, mChannels, (float)mSamplerate, mStreamTime);
 			}
 		}
 
 		unlockAudioMutex();
 
 		clip(aBuffer, mScratch, aSamples, globalVolume[0], globalVolume[1]);
-		interlace_samples(mScratch, aBuffer, aSamples, mChannels);
+		interlace_samples(mScratch.mData, aBuffer.mData, aSamples, mChannels);
 
 		if (mFlags & ENABLE_VISUALIZATION)
 		{
@@ -1302,7 +1446,7 @@ namespace SoLoud
 					mVisualizationWaveData[i] = 0;
 					for (j = 0; j < (signed)mChannels; j++)
 					{
-						mVisualizationWaveData[i] += aBuffer[i*mChannels + j];
+						mVisualizationWaveData[i] += aBuffer.mData[i*mChannels + j];
 					}
 				}
 			}
@@ -1315,7 +1459,7 @@ namespace SoLoud
 					mVisualizationWaveData[i] = 0;
 					for (j = 0; j < (signed)mChannels; j++)
 					{
-						mVisualizationWaveData[i] += aBuffer[((i % aSamples) * mChannels) + j];
+						mVisualizationWaveData[i] += aBuffer.mData[((i % aSamples) * mChannels) + j];
 					}
 				}
 			}

@@ -30,7 +30,6 @@ namespace SoLoud
 	BusInstance::BusInstance(Bus *aParent)
 	{
 		mParent = aParent;
-		mScratch = 0;
 		mScratchSize = 0;
 		mFlags |= PROTECTED | INAUDIBLE_TICK;
 	}
@@ -51,11 +50,10 @@ namespace SoLoud
 		if (s->mScratchNeeded != mScratchSize)
 		{
 			mScratchSize = s->mScratchNeeded;
-			delete[] mScratch;
-			mScratch = new float[mScratchSize];
+			mScratch.init(mScratchSize * MAX_CHANNELS);
 		}
 		
-		s->mixBus(aBuffer, aSamples, mScratch, handle, mSamplerate, mChannels);
+		s->mixBus(aBuffer, aSamples, mScratch.mData, handle, mSamplerate, mChannels);
 
 		int i;
 		if (mParent->mFlags & AudioSource::VISUALIZATION_DATA)
@@ -101,7 +99,6 @@ namespace SoLoud
 				s->stopVoice(i);
 			}
 		}
-		delete[] mScratch;
 	}
 
 	Bus::Bus()

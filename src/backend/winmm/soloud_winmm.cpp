@@ -50,7 +50,7 @@ namespace SoLoud
 
     struct SoLoudWinMMData
     {
-        float *buffer;
+        AlignedFloatBuffer buffer;
         short *sampleBuffer[BUFFER_COUNT];
         WAVEHDR header[BUFFER_COUNT];
         HWAVEOUT waveOut;
@@ -76,7 +76,7 @@ namespace SoLoud
                 short *tgtBuf = data->sampleBuffer[i];
                 for (DWORD j=0;j<(data->header[i].dwBufferLength/sizeof(short));++j) 
                 {
-                    tgtBuf[j] = static_cast<short>(floor(data->buffer[j] 
+                    tgtBuf[j] = static_cast<short>(floor(data->buffer.mData[j] 
                                                          * static_cast<float>(0x7fff)));
                 }
                 if (MMSYSERR_NOERROR != waveOutWrite(data->waveOut, &data->header[i], 
@@ -110,10 +110,6 @@ namespace SoLoud
             {
                 delete[] data->sampleBuffer[i];
             }
-        }
-        if (0 != data->buffer)
-        {
-            delete[] data->buffer;
         }
         waveOutClose(data->waveOut);
         delete data;
@@ -151,7 +147,7 @@ namespace SoLoud
         {
             return UNKNOWN_ERROR;
         }
-        data->buffer = new float[data->samples*format.nChannels];
+        data->buffer.init(data->samples*format.nChannels);
         for (int i=0;i<BUFFER_COUNT;++i) 
         {
             data->sampleBuffer[i] = new short[data->samples*format.nChannels];

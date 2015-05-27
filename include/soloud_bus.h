@@ -35,7 +35,7 @@ namespace SoLoud
 	{
 		Bus *mParent;
 		unsigned int mScratchSize;
-		float *mScratch;
+		AlignedFloatBuffer mScratch;
 	public:
 		// Mono-mixed wave data for visualization and for visualization FFT input
 		float mVisualizationWaveData[256];

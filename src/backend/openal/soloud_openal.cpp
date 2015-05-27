@@ -101,7 +101,8 @@ namespace SoLoud
 		ALint state;
 		dll_al_GetSourcei(source, AL_BUFFERS_PROCESSED, &buffersProcessed);
 
-		float mixbuf[BUFFER_SIZE*2];
+		AlignedFloatBuffer mixbuf;
+		mixbuf.init(BUFFER_SIZE * 2);
 		short downbuf[BUFFER_SIZE*2];
 
 		while (buffersProcessed--) 
@@ -109,7 +110,7 @@ namespace SoLoud
 			aSoloud->mix(mixbuf,BUFFER_SIZE);
 			int i;
 			for (i = 0; i < BUFFER_SIZE*2; i++)
-				downbuf[i] = (short)floor(mixbuf[i] * 0x7fff);
+				downbuf[i] = (short)floor(mixbuf.mData[i] * 0x7fff);
 
 			dll_al_SourceUnqueueBuffers(source, 1, &buffer);
 

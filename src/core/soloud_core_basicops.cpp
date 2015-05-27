@@ -130,7 +130,7 @@ namespace SoLoud
 	void Soloud::seek(handle aVoiceHandle, time aSeconds)
 	{
 		FOR_ALL_VOICES_PRE
-			mVoice[ch]->seek(aSeconds, mScratch, mScratchSize);
+			mVoice[ch]->seek(aSeconds, mScratch.mData, mScratchSize);
 		FOR_ALL_VOICES_POST
 	}
 

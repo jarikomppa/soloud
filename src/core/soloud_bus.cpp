@@ -64,7 +64,10 @@ namespace SoLoud
 			{
 				for (i = 0; i < 256; i++)
 				{
-					mVisualizationWaveData[i] = aBuffer[i] + aBuffer[i+aSamples];
+					int j;
+					mVisualizationWaveData[i] = 0;
+					for (j = 0; j < (signed)mChannels; j++)
+						mVisualizationWaveData[i] += aBuffer[i + aSamples * j];
 				}
 			}
 			else
@@ -72,11 +75,13 @@ namespace SoLoud
 				// Very unlikely failsafe branch
 				for (i = 0; i < 256; i++)
 				{
-					mVisualizationWaveData[i] = aBuffer[i % aSamples] + aBuffer[(i % aSamples) + aSamples];
+					int j;
+					mVisualizationWaveData[i] = 0;
+					for (j = 0; j < (signed)mChannels; j++)
+						mVisualizationWaveData[i] += aBuffer[(i % aSamples) + aSamples * j];
 				}
 			}
 		}
-
 	}
 
 	bool BusInstance::hasEnded()

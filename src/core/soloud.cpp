@@ -502,7 +502,7 @@ namespace SoLoud
 		if (mFlags & CLIP_ROUNDOFF)
 		{
 			int c = 0;
-			for (j = 0; j < 2; j++)
+			for (j = 0; j < mChannels; j++)
 			{
 				v = aVolume0;
 				for (i = 0; i < aSamples; i++, c++, v += vd)
@@ -528,7 +528,7 @@ namespace SoLoud
 		else
 		{
 			c = 0;
-			for (j = 0; j < 2; j++)
+			for (j = 0; j < mChannels; j++)
 			{
 				v = aVolume0;
 				for (i = 0; i < aSamples; i++, c++, v += vd)
@@ -603,7 +603,7 @@ namespace SoLoud
 	{
 		unsigned int i;
 		// Clear accumulation buffer
-		for (i = 0; i < aSamples * 2; i++)
+		for (i = 0; i < aSamples * aChannels; i++)
 		{
 			aBuffer[i] = 0;
 		}
@@ -1283,14 +1283,14 @@ namespace SoLoud
 		{
 			if (mFilterInstance[i])
 			{
-				mFilterInstance[i]->filter(aBuffer, aSamples, 2, (float)mSamplerate, mStreamTime);
+				mFilterInstance[i]->filter(aBuffer, aSamples, mChannels, (float)mSamplerate, mStreamTime);
 			}
 		}
 
 		unlockAudioMutex();
 
 		clip(aBuffer, mScratch, aSamples, globalVolume[0], globalVolume[1]);
-		interlace_samples(mScratch, aBuffer, aSamples, 2);
+		interlace_samples(mScratch, aBuffer, aSamples, mChannels);
 
 		if (mFlags & ENABLE_VISUALIZATION)
 		{
@@ -1298,7 +1298,12 @@ namespace SoLoud
 			{
 				for (i = 0; i < 256; i++)
 				{
-					mVisualizationWaveData[i] = aBuffer[i*2+0] + aBuffer[i*2+1];
+					int j;
+					mVisualizationWaveData[i] = 0;
+					for (j = 0; j < (signed)mChannels; j++)
+					{
+						mVisualizationWaveData[i] += aBuffer[i*mChannels + j];
+					}
 				}
 			}
 			else
@@ -1306,7 +1311,12 @@ namespace SoLoud
 				// Very unlikely failsafe branch
 				for (i = 0; i < 256; i++)
 				{
-					mVisualizationWaveData[i] = aBuffer[((i % aSamples) * 2) + 0] + aBuffer[((i % aSamples) * 2) + 1];
+					int j;
+					mVisualizationWaveData[i] = 0;
+					for (j = 0; j < (signed)mChannels; j++)
+					{
+						mVisualizationWaveData[i] += aBuffer[((i % aSamples) * mChannels) + j];
+					}
 				}
 			}
 		}

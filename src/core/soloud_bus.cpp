@@ -204,7 +204,7 @@ namespace SoLoud
 
 	void Bus::setFilter(unsigned int aFilterId, Filter *aFilter)
 	{
-		if (aFilterId < 0 || aFilterId >= FILTERS_PER_STREAM)
+		if (aFilterId >= FILTERS_PER_STREAM)
 			return;
 
 		mFilter[aFilterId] = aFilter;

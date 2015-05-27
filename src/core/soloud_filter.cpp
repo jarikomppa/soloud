@@ -93,7 +93,7 @@ namespace SoLoud
 
 	void FilterInstance::setFilterParameter(unsigned int aAttributeId, float aValue)
 	{
-		if (aAttributeId < 0 || aAttributeId >= mNumParams)
+		if (aAttributeId >= mNumParams)
 			return;
 
 		mParamFader[aAttributeId].mActive = 0;
@@ -103,7 +103,7 @@ namespace SoLoud
 
 	void FilterInstance::fadeFilterParameter(unsigned int aAttributeId, float aTo, double aTime, double aStartTime)
 	{
-		if (aAttributeId < 0 || aAttributeId >= mNumParams || aTime <= 0 || aTo == mParam[aAttributeId])
+		if (aAttributeId >= mNumParams || aTime <= 0 || aTo == mParam[aAttributeId])
 			return;
 
 		mParamFader[aAttributeId].set(mParam[aAttributeId], aTo, aTime, aStartTime);
@@ -111,7 +111,7 @@ namespace SoLoud
 
 	void FilterInstance::oscillateFilterParameter(unsigned int aAttributeId, float aFrom, float aTo, double aTime, double aStartTime)
 	{
-		if (aAttributeId < 0 || aAttributeId >= mNumParams || aTime <= 0 || aFrom == aTo)
+		if (aAttributeId >= mNumParams || aTime <= 0 || aFrom == aTo)
 			return;
 
 		mParamFader[aAttributeId].setLFO(aFrom, aTo, aTime, aStartTime);
@@ -119,7 +119,7 @@ namespace SoLoud
 
 	float FilterInstance::getFilterParameter(unsigned int aAttributeId)
 	{
-		if (aAttributeId < 0 || aAttributeId >= mNumParams)
+		if (aAttributeId >= mNumParams)
 			return 0;
 
 		return mParam[aAttributeId];

@@ -134,7 +134,7 @@ namespace SoLoud
 
 	result Soloud::init(unsigned int aFlags, unsigned int aBackend, unsigned int aSamplerate, unsigned int aBufferSize, unsigned int aChannels)
 	{		
-		if (aBackend < 0 || aBackend >= BACKEND_MAX || aSamplerate < 0 || aBufferSize < 0)
+		if (aBackend >= BACKEND_MAX || aSamplerate == 0 || aBufferSize == 0 || aChannels == 0 || aChannels == 3 || aChannels == 5 || aChannels > 6)
 			return INVALID_PARAMETER;
 
 		deinit();

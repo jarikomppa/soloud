@@ -105,13 +105,10 @@ namespace SoLoud
 
 	AudioSourceInstance::~AudioSourceInstance()
 	{
-		if (mFilter)
+		int i;
+		for (i = 0; i < FILTERS_PER_STREAM; i++)
 		{
-			int i;
-			for (i = 0; i < FILTERS_PER_STREAM; i++)
-			{
-				delete mFilter[i];
-			}
+			delete mFilter[i];
 		}
 		delete mResampleData[0];
 		delete mResampleData[1];
@@ -157,7 +154,7 @@ namespace SoLoud
 		double offset = aSeconds - mStreamTime;
 		if (offset < 0)
 		{
-			if (rewind() < 0)
+			if (rewind() != SO_NO_ERROR)
 			{
 				// can't do generic seek backwards unless we can rewind.
 				return;
@@ -238,7 +235,7 @@ namespace SoLoud
 
 	void AudioSource::setFilter(unsigned int aFilterId, Filter *aFilter)
 	{
-		if (aFilterId < 0 || aFilterId >= FILTERS_PER_STREAM)
+		if (aFilterId >= FILTERS_PER_STREAM)
 			return;
 		mFilter[aFilterId] = aFilter;
 	}

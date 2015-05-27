@@ -183,7 +183,7 @@ namespace SoLoud
 		vec3 speaker[MAX_CHANNELS];
 
 		int i;
-		for (i = 0; i < mChannels; i++)
+		for (i = 0; i < (signed)mChannels; i++)
 		{
 			speaker[i].mX = m3dSpeakerPosition[3 * i + 0];
 			speaker[i].mY = m3dSpeakerPosition[3 * i + 1];
@@ -330,7 +330,7 @@ namespace SoLoud
 		int i;
 		for (i = 0; i < (signed)mHighestVoice; i++)
 		{
-			if (mVoice && mVoice[i] && mVoice[i]->mFlags & AudioSourceInstance::PROCESS_3D)
+			if (mVoice[i] && mVoice[i]->mFlags & AudioSourceInstance::PROCESS_3D)
 			{
 				voices[voicecount] = i;
 				voicecount++;
@@ -342,7 +342,7 @@ namespace SoLoud
 		// Step 2 - do 3d processing
 		vec3 speaker[MAX_CHANNELS];
 
-		for (i = 0; i < mChannels; i++)
+		for (i = 0; i < (signed)mChannels; i++)
 		{
 			speaker[i].mX = m3dSpeakerPosition[3 * i + 0];
 			speaker[i].mY = m3dSpeakerPosition[3 * i + 1];

@@ -52,7 +52,8 @@ namespace SoLoud
 		mFrom = aFrom;
 		mTo = aTo;
 		mTime = aTime;
-		mDelta = abs(aTo - aFrom) / 2;
+		mDelta = (aTo - aFrom) / 2;
+		if (mDelta < 0) mDelta = -mDelta;
 		mStartTime = aStartTime;
 		mEndTime = (float)M_PI * 2 / mTime;
 	}

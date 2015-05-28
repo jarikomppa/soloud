@@ -60,19 +60,20 @@ extern "C"
 
 namespace SoLoud
 {
-	int gSDL_Has_Float_Samples = 0;
+	static SDL_AudioSpec gActiveAudioSpec;
+
 	void soloud_sdl_audiomixer(void *userdata, Uint8 *stream, int len)
 	{
 		short *buf = (short*)stream;
 		SoLoud::Soloud *soloud = (SoLoud::Soloud *)userdata;
-		if (gSDL_Has_Float_Samples)
+		if (gActiveAudioSpec.format == AUDIO_F32)
 		{
-			int samples = len / (2 * sizeof(float));
+			int samples = len / (gActiveAudioSpec.channels * sizeof(float));
 			soloud->mix((float *)buf, samples);
 		}
-		else
+		else // assume s16 if not float
 		{
-			int samples = len / (2 * sizeof(short));
+			int samples = len / (gActiveAudioSpec.channels * sizeof(short));
 			soloud->mix_s16(buf, samples);
 		}
 	}
@@ -95,25 +96,16 @@ namespace SoLoud
 		as.callback = soloud_sdl_audiomixer;
 		as.userdata = (void*)aSoloud;
 
-		SDL_AudioSpec as2;
-		if (dll_SDL_OpenAudio(&as, &as2) < 0)
+		if (dll_SDL_OpenAudio(&as, &gActiveAudioSpec) < 0)
 		{
 			as.format = AUDIO_S16;
-			if (dll_SDL_OpenAudio(&as, &as2) < 0)
+			if (dll_SDL_OpenAudio(&as, &gActiveAudioSpec) < 0 || gActiveAudioSpec.format != AUDIO_S16)
 			{
 				return UNKNOWN_ERROR;
 			}
 		}
 
-		if (as2.format == AUDIO_F32)
-		{
-			gSDL_Has_Float_Samples = 1;
-		}
-		else
-		{
-			gSDL_Has_Float_Samples = 0;
-		}	
-		aSoloud->postinit(as2.freq, as2.samples, aFlags, as2.channels);
+		aSoloud->postinit(gActiveAudioSpec.freq, gActiveAudioSpec.samples, aFlags, gActiveAudioSpec.channels);
 
 		aSoloud->mBackendCleanupFunc = soloud_sdl_deinit;
 

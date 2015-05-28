@@ -72,14 +72,11 @@ namespace SoLoud
                 {
                     continue;
                 }
-                data->soloud->mix(data->buffer, data->samples);
                 short *tgtBuf = data->sampleBuffer[i];
-                for (DWORD j=0;j<(data->header[i].dwBufferLength/sizeof(short));++j) 
-                {
-                    tgtBuf[j] = static_cast<short>(floor(data->buffer.mData[j] 
-                                                         * static_cast<float>(0x7fff)));
-                }
-                if (MMSYSERR_NOERROR != waveOutWrite(data->waveOut, &data->header[i], 
+				
+				data->soloud->mix_s16(tgtBuf, data->samples);
+
+				if (MMSYSERR_NOERROR != waveOutWrite(data->waveOut, &data->header[i], 
                                                      sizeof(WAVEHDR))) 
                 {
                     return;

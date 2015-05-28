@@ -36,6 +36,12 @@ freely, subject to the following restrictions:
 #define WINDOWS_VERSION
 #endif
 
+#if !defined(DISABLE_SSE)
+#ifdef _MSC_VER
+#define SOLOUD_SSE_INTRINSICS
+#endif
+#endif
+
 #define SOLOUD_VERSION 110
 
 /////////////////////////////////////////////////////////////////////
@@ -73,6 +79,24 @@ namespace SoLoud
 	typedef double time;
 };
 
+namespace SoLoud
+{
+	// Class that handles aligned allocations to support vectorized operations
+	class AlignedFloatBuffer
+	{
+	public:
+		float *mData; // aligned pointer
+		unsigned char *mBasePtr; // raw allocated pointer (for delete)
+
+		// ctor
+		AlignedFloatBuffer();
+		// Allocate and align buffer
+		result init(unsigned int aFloats);
+		// dtor
+		~AlignedFloatBuffer();
+	};
+};
+
 #include "soloud_filter.h"
 #include "soloud_fader.h"
 #include "soloud_audiosource.h"
@@ -81,6 +105,7 @@ namespace SoLoud
 
 namespace SoLoud
 {
+
 	// Soloud core class.
 	class Soloud
 	{
@@ -316,8 +341,12 @@ namespace SoLoud
 
 		// Rest of the stuff is used internally.
 
-		// Mix and return N stereo samples in the buffer. Called by the back-end, or user with null driver.
+		// Mix N samples * M channels. Called by other mix_ functions. 
+		void mix_internal(unsigned int aSamples);
+		// Returns mixed float samples in buffer. Called by the back-end, or user with null driver.
 		void mix(float *aBuffer, unsigned int aSamples);
+		// Returns mixed 16-bit signed integer samples in buffer. Called by the back-end, or user with null driver.
+		void mix_s16(short *aBuffer, unsigned int aSamples);
 	public:
 		// Handle rest of initialization (called from backend)
 		void postinit(unsigned int aSamplerate, unsigned int aBufferSize, unsigned int aFlags, unsigned int aChannels);
@@ -331,11 +360,13 @@ namespace SoLoud
 		// Highest voice in use so far
 		unsigned int mHighestVoice;
 		// Scratch buffer, used for resampling.
-		float *mScratch;
+		AlignedFloatBuffer mScratch;
 		// Current size of the scratch, in samples.
 		unsigned int mScratchSize;
 		// Amount of scratch needed.
 		unsigned int mScratchNeeded;
+		// Output scratch buffer, used in mix_().
+		AlignedFloatBuffer mOutputScratch;
 		// Audio voices.
 		AudioSourceInstance *mVoice[VOICE_COUNT];
 		// Output sample rate (not float)
@@ -391,7 +422,7 @@ namespace SoLoud
 		// Perform 3d audio parameter update for one voice
 		void update3dVoice(unsigned int aVoice);
 		// Clip the samples in the buffer
-		void clip(float *aBuffer, float *aDestBuffer, unsigned int aSamples, float aVolume0, float aVolume1);
+		void clip(AlignedFloatBuffer &aBuffer, AlignedFloatBuffer &aDestBuffer, unsigned int aSamples, float aVolume0, float aVolume1);
 		// Mono-mixed wave data for visualization and for visualization FFT input
 		float mVisualizationWaveData[256];
 		// FFT output data

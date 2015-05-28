@@ -52,7 +52,6 @@ namespace SoLoud
 {
     struct WASAPIData
     {
-        AlignedFloatBuffer buffer;
         IMMDeviceEnumerator *deviceEnumerator;
         IMMDevice *device;
         IAudioClient *audioClient;
@@ -72,12 +71,7 @@ namespace SoLoud
         {
             return;
         }
-        aData->soloud->mix(aData->buffer, aFrames);
-        for (UINT32 i=0;i<aFrames*aData->channels;++i) 
-        {
-            reinterpret_cast<short*>(buffer)[i] = static_cast<short>(floor(aData->buffer.mData[i] 
-                                                           * static_cast<float>(0x7fff)));
-        }
+        aData->soloud->mix_s16((short *)buffer, aFrames);
         aData->renderClient->ReleaseBuffer(aFrames, 0);
     }
 
@@ -197,7 +191,6 @@ namespace SoLoud
             return UNKNOWN_ERROR;
         }
         data->channels = format.nChannels;
-        data->buffer.init(data->bufferFrames * format.nChannels);
         data->soloud = aSoloud;
         aSoloud->postinit(aSamplerate, data->bufferFrames * format.nChannels, aFlags, 2);
         data->thread = Thread::createThread(wasapiThread, data);

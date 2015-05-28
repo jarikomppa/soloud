@@ -408,6 +408,7 @@ namespace SoLoud
 		if (mScratchSize < 4096) mScratchSize = 4096;
 		mScratchNeeded = mScratchSize;
 		mScratch.init(mScratchSize * MAX_CHANNELS);
+		mOutputScratch.init(mScratchSize * MAX_CHANNELS);
 		mFlags = aFlags;
 		mPostClipScaler = 0.95f;
 		switch (mChannels)
@@ -1320,7 +1321,7 @@ namespace SoLoud
 		}		
 	}
 
-	void Soloud::mix(AlignedFloatBuffer &aBuffer, unsigned int aSamples)
+	void Soloud::mix_internal(unsigned int aSamples)
 	{
 #ifdef FLOATING_POINT_DEBUG
 		// This needs to be done in the audio thread as well..
@@ -1421,20 +1422,19 @@ namespace SoLoud
 			mScratch.init(mScratchSize * MAX_CHANNELS);
 		}
 		
-		mixBus(aBuffer.mData, aSamples, mScratch.mData, 0, (float)mSamplerate, mChannels);
+		mixBus(mOutputScratch.mData, aSamples, mScratch.mData, 0, (float)mSamplerate, mChannels);
 
 		for (i = 0; i < FILTERS_PER_STREAM; i++)
 		{
 			if (mFilterInstance[i])
 			{
-				mFilterInstance[i]->filter(aBuffer.mData, aSamples, mChannels, (float)mSamplerate, mStreamTime);
+				mFilterInstance[i]->filter(mOutputScratch.mData, aSamples, mChannels, (float)mSamplerate, mStreamTime);
 			}
 		}
 
 		unlockAudioMutex();
 
-		clip(aBuffer, mScratch, aSamples, globalVolume[0], globalVolume[1]);
-		interlace_samples(mScratch.mData, aBuffer.mData, aSamples, mChannels);
+		clip(mOutputScratch, mScratch, aSamples, globalVolume[0], globalVolume[1]);
 
 		if (mFlags & ENABLE_VISUALIZATION)
 		{
@@ -1446,7 +1446,7 @@ namespace SoLoud
 					mVisualizationWaveData[i] = 0;
 					for (j = 0; j < (signed)mChannels; j++)
 					{
-						mVisualizationWaveData[i] += aBuffer.mData[i*mChannels + j];
+						mVisualizationWaveData[i] += mScratch.mData[i + j * aSamples];
 					}
 				}
 			}
@@ -1459,14 +1459,26 @@ namespace SoLoud
 					mVisualizationWaveData[i] = 0;
 					for (j = 0; j < (signed)mChannels; j++)
 					{
-						mVisualizationWaveData[i] += aBuffer.mData[((i % aSamples) * mChannels) + j];
+						mVisualizationWaveData[i] += mScratch.mData[(i % aSamples) + j * aSamples];
 					}
 				}
 			}
 		}
 	}
 
-	void deinterlace_samples(const float *aSourceBuffer, float *aDestBuffer, unsigned int aSamples, unsigned int aChannels)
+	void Soloud::mix(float *aBuffer, unsigned int aSamples)
+	{
+		mix_internal(aSamples);
+		interlace_samples_float(mScratch.mData, aBuffer, aSamples, mChannels);
+	}
+
+	void Soloud::mix_s16(short *aBuffer, unsigned int aSamples)
+	{
+		mix_internal(aSamples);
+		interlace_samples_s16(mScratch.mData, aBuffer, aSamples, mChannels);
+	}
+
+	void deinterlace_samples_float(const float *aSourceBuffer, float *aDestBuffer, unsigned int aSamples, unsigned int aChannels)
 	{
 		// 121212 -> 111222
 		unsigned int i, j, c;
@@ -1481,7 +1493,7 @@ namespace SoLoud
 		}
 	}
 
-	void interlace_samples(const float *aSourceBuffer, float *aDestBuffer, unsigned int aSamples, unsigned int aChannels)
+	void interlace_samples_float(const float *aSourceBuffer, float *aDestBuffer, unsigned int aSamples, unsigned int aChannels)
 	{
 		// 111222 -> 121212
 		unsigned int i, j, c;
@@ -1491,6 +1503,21 @@ namespace SoLoud
 			for (i = j; i < aSamples * aChannels; i += aChannels)
 			{
 				aDestBuffer[i] = aSourceBuffer[c];
+				c++;
+			}
+		}
+	}
+
+	void interlace_samples_s16(const float *aSourceBuffer, short *aDestBuffer, unsigned int aSamples, unsigned int aChannels)
+	{
+		// 111222 -> 121212
+		unsigned int i, j, c;
+		c = 0;
+		for (j = 0; j < aChannels; j++)
+		{
+			for (i = j; i < aSamples * aChannels; i += aChannels)
+			{
+				aDestBuffer[i] = (short)(aSourceBuffer[c] * 0x7fff);
 				c++;
 			}
 		}

@@ -65,31 +65,21 @@ namespace SoLoud
 	{
 		short *buf = (short*)stream;
 		SoLoud::Soloud *soloud = (SoLoud::Soloud *)userdata;
-		AlignedFloatBuffer *mixdata = (AlignedFloatBuffer*)(soloud->mBackendData);
 		if (gSDL_Has_Float_Samples)
 		{
 			int samples = len / (2 * sizeof(float));
-			AlignedFloatBuffer ab;
-			ab.mData = (float*)buf; // let's ASSUME SDL has aligned buffers
-			soloud->mix(ab, samples);
+			soloud->mix((float *)buf, samples);
 		}
 		else
 		{
 			int samples = len / (2 * sizeof(short));
-			soloud->mix(*mixdata, samples);
-
-			int i;
-			for (i = 0; i < samples * 2; i++)
-			{
-				buf[i] = (short)(mixdata->mData[i] * 0x7fff);
-			}
+			soloud->mix_s16(buf, samples);
 		}
 	}
 
 	static void soloud_sdl_deinit(SoLoud::Soloud *aSoloud)
 	{
 		dll_SDL_CloseAudio();
-		delete[] (float*)aSoloud->mBackendData;
 	}
 
 	result sdl_init(SoLoud::Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer, unsigned int aChannels)
@@ -118,14 +108,10 @@ namespace SoLoud
 		if (as2.format == AUDIO_F32)
 		{
 			gSDL_Has_Float_Samples = 1;
-			aSoloud->mBackendData = 0;
 		}
 		else
 		{
 			gSDL_Has_Float_Samples = 0;
-			AlignedFloatBuffer *ab = new AlignedFloatBuffer();
-			aSoloud->mBackendData = (void*)ab;
-			ab->init(as2.samples * as2.channels);
 		}	
 		aSoloud->postinit(as2.freq, as2.samples, aFlags, as2.channels);
 

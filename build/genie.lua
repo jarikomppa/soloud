@@ -322,6 +322,14 @@ solution "SoLoud"
 		flags {"Symbols" }
 		defines { "DEBUG" }
 		objdir (buildroot .. "/debug")
+	
+	-- Enable SSE4.1 when using gmake + gcc.
+	-- TODO: SoLoud could do with some better platform determination. genie
+	--       doesn't do this well on it's own and is recommended to setup this
+	--       manually. See https://github.com/bkaradzic/bx/blob/master/scripts/toolchain.lua
+	configuration { "gmake" }
+		buildoptions { "-msse4.1" }
+
     configuration {}
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --

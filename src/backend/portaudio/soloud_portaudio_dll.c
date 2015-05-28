@@ -72,6 +72,7 @@ static void *getdllproc(HMODULE dllhandle, const char *procname)
 static void* openDll()
 {
     void* res = dlopen("libportaudio_x86.so", RTLD_LAZY);
+
 //	if (!res) res = dlopen("/Library/Frameworks/PortAudio.framework", RTLD_LAZY);
 
 	return res;

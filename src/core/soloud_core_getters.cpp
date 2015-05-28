@@ -159,6 +159,20 @@ namespace SoLoud
 		return v;
 	}
 
+	float Soloud::getOverallVolume(handle aVoiceHandle)
+	{
+		lockAudioMutex();
+		int ch = getVoiceFromHandle(aVoiceHandle);
+		if (ch == -1)
+		{
+			unlockAudioMutex();
+			return 0;
+		}
+		float v = mVoice[ch]->mOverallVolume;
+		unlockAudioMutex();
+		return v;
+	}
+
 	float Soloud::getPan(handle aVoiceHandle)
 	{
 		lockAudioMutex();

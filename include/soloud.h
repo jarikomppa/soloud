@@ -205,6 +205,8 @@ namespace SoLoud
 		bool getPause(handle aVoiceHandle);
 		// Get current volume.
 		float getVolume(handle aVoiceHandle);
+		// Get current overall volume (set volume * 3d volume)
+		float getOverallVolume(handle aVoiceHandle);
 		// Get current pan.
 		float getPan(handle aVoiceHandle);
 		// Get current sample rate.

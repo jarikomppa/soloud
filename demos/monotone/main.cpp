@@ -26,10 +26,6 @@ freely, subject to the following restrictions:
 #include <math.h>
 #include <stdio.h>
 
-#ifdef __EMSCRIPTEN__
-#include "emscripten.h"
-#endif
-
 #include "imgui.h"
 #include "soloud_demo_framework.h"
 
@@ -55,7 +51,7 @@ float filter_param2[4] = { 2, 3,  0, 0 };
 int hwchannels = 4;
 int waveform = 0;
 
-void mainloop()
+void DemoMainloop()
 {
 	gSoloud.setFilterParameter(gMusichandle, 0, 0, filter_param0[0]);
 	gSoloud.setFilterParameter(gMusichandle, 1, 0, filter_param0[1]);
@@ -131,18 +127,16 @@ void mainloop()
 }
     
 
-// Entry point
-int main(int argc, char *argv[])
-{
-	DemoInit();
 
+int DemoEntry(int argc, char *argv[])
+{
 	gMusic.load("audio/Jakim - Aboriginal Derivatives.mon");
 	gMusic.setParams(10);
 
 	gEcho.setParams(0.2f, 0.5f, 0.05f);
 	gBiquad.setParams(SoLoud::BiquadResonantFilter::LOWPASS, 44100, 4000, 2);
 
-	gMusic.setLooping(1);	
+	gMusic.setLooping(1);
 	gMusic.setFilter(0, &gBiquad);
 	gMusic.setFilter(1, &gLofi);
 	gMusic.setFilter(2, &gEcho);
@@ -151,16 +145,8 @@ int main(int argc, char *argv[])
 	gSoloud.init(SoLoud::Soloud::CLIP_ROUNDOFF | SoLoud::Soloud::ENABLE_VISUALIZATION);
 
 	gMusichandle = gSoloud.play(gMusic);
-			waveform = SoLoud::Monotone::SAW;
-			gMusic.setParams(hwchannels, waveform);
-
-#ifdef __EMSCRIPTEN__
-    emscripten_set_main_loop(mainloop, 60, 0);
-#else
-    while (1)
-    {
-        mainloop();
-    }
-#endif
+	waveform = SoLoud::Monotone::SAW;
+	gMusic.setParams(hwchannels, waveform);
+	
 	return 0;
 }

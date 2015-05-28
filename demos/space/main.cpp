@@ -55,11 +55,8 @@ int gSpeechhandle = 0;
 int gLastloop = 0;
 int gTickofs = 0;
 
-// Entry point
-int main(int argc, char *argv[])
+int DemoEntry(int argc, char *argv[])
 {
-	DemoInit();
-
 	gSoloud.init();
 	gSoloud.setVisualizationEnable(1);
 	gSoloud.setGlobalVolume(3);
@@ -102,57 +99,57 @@ int main(int argc, char *argv[])
 	gSpeechBus.setVisualizationEnable(1);
 	gMusicBus.setVisualizationEnable(1);
 
-	// Main loop: loop forever.
-	while (1)
-	{
-		int tick = DemoTick();
-
-		DemoUpdateStart();
-
-		float *fft = gMusicBus.calcFFT();
-
-		ONCE(ImGui::SetNextWindowPos(ImVec2(500, 20)));
-		ImGui::Begin("Output");
-		ImGui::PlotHistogram("##FFT", fft, 256 / 2, 0, "FFT", 0, 10, ImVec2(264, 80), 8);
-		ImGui::Text("Active voices    : %d", gSoloud.getActiveVoiceCount());
-		ImGui::Text(
-			"Active voices include 2\n"
-			"audio busses, music and\n"
-			"speech.");
-		ImGui::End();
-
-		ONCE(ImGui::SetNextWindowPos(ImVec2(20, 20)));
-		ONCE(ImGui::SetNextWindowSize(ImVec2(280, 360)));
-		ImGui::Begin("Alien");
-		float *buf = gSpeechBus.getWave();
-		ImGui::Image((ImTextureID) gAlien,ImVec2(128,128));
-		ImGui::PlotLines("##Wave", buf, 256, 0, "Wave", -1, 1, ImVec2(264, 80));
-		int loop = gSoloud.getLoopCount(gSpeechhandle);
-		if (loop != gLastloop)
-		{
-			gLastloop = loop;
-			gTickofs = tick;
-		}
-
-		char *s = "What the alien has to say might\n"
-			"appear around here if this\n"
-			"wasn't just a dummy mockup..\n"
-			"\n       \n"
-			"This is a demo of getting\n"
-			"visualization data from different\n"
-			"parts of the audio pipeline.";
-		char temp[512];
-		int i = 0;
-		while (s[i] && i < (tick - gTickofs) / 70)
-		{
-			temp[i] = s[i];
-			i++;
-		}
-		temp[i] = 0;
-		ImGui::Text(temp);
-		ImGui::End();
-
-		DemoUpdateEnd();
-	}
 	return 0;
+}
+
+void DemoMainloop()
+{
+	int tick = DemoTick();
+
+	DemoUpdateStart();
+
+	float *fft = gMusicBus.calcFFT();
+
+	ONCE(ImGui::SetNextWindowPos(ImVec2(500, 20)));
+	ImGui::Begin("Output");
+	ImGui::PlotHistogram("##FFT", fft, 256 / 2, 0, "FFT", 0, 10, ImVec2(264, 80), 8);
+	ImGui::Text("Active voices    : %d", gSoloud.getActiveVoiceCount());
+	ImGui::Text(
+		"Active voices include 2\n"
+		"audio busses, music and\n"
+		"speech.");
+	ImGui::End();
+
+	ONCE(ImGui::SetNextWindowPos(ImVec2(20, 20)));
+	ONCE(ImGui::SetNextWindowSize(ImVec2(280, 360)));
+	ImGui::Begin("Alien");
+	float *buf = gSpeechBus.getWave();
+	ImGui::Image((ImTextureID) gAlien,ImVec2(128,128));
+	ImGui::PlotLines("##Wave", buf, 256, 0, "Wave", -1, 1, ImVec2(264, 80));
+	int loop = gSoloud.getLoopCount(gSpeechhandle);
+	if (loop != gLastloop)
+	{
+		gLastloop = loop;
+		gTickofs = tick;
+	}
+
+	char *s = "What the alien has to say might\n"
+		"appear around here if this\n"
+		"wasn't just a dummy mockup..\n"
+		"\n       \n"
+		"This is a demo of getting\n"
+		"visualization data from different\n"
+		"parts of the audio pipeline.";
+	char temp[512];
+	int i = 0;
+	while (s[i] && i < (tick - gTickofs) / 70)
+	{
+		temp[i] = s[i];
+		i++;
+	}
+	temp[i] = 0;
+	ImGui::Text(temp);
+	ImGui::End();
+
+	DemoUpdateEnd();
 }

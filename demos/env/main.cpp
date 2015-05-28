@@ -253,9 +253,8 @@ float render()
 }
 
 
-int main(int argc, char *argv[])
+int DemoEntry(int argc, char *argv[])
 {
-	DemoInit();
 	gSoloud.init(SoLoud::Soloud::CLIP_ROUNDOFF | SoLoud::Soloud::ENABLE_VISUALIZATION);
 	gSoloud.setGlobalVolume(0.75);
 	gSoloud.setPostClipScaler(0.75);
@@ -275,34 +274,32 @@ int main(int argc, char *argv[])
 
 	gWalker = DemoLoadTexture("graphics/env_walker.png");
 	gBackground = DemoLoadTexture("graphics/env_bg.png");
-
-
-	// Main loop: loop forever.
-	while (1)
-	{
-		DemoUpdateStart();
-
-		float p = render();
-
-		float *buf = gSoloud.getWave();
-		float *fft = gSoloud.calcFFT();
-
-		ONCE(ImGui::SetNextWindowPos(ImVec2(500, 20)));
-		ImGui::Begin("Output");
-		ImGui::PlotLines("##Wave", buf, 256, 0, "Wave", -1, 1, ImVec2(264, 80));
-		ImGui::PlotHistogram("##FFT", fft, 256 / 2, 0, "FFT", 0, 10, ImVec2(264, 80), 8);
-		ImGui::Text("Active voices    : %d", gSoloud.getActiveVoiceCount());
-
-		ImGui::Text("Progress         : %3.3f%%", 100 * p);
-		ImGui::Text("Rain volume      : %3.3f", gSoloud.getVolume(gRainHandle));
-		ImGui::Text("Music volume     : %3.3f", gSoloud.getVolume(gMusicHandle));
-		ImGui::Text("Wind volume      : %3.3f", gSoloud.getVolume(gWindHandle));
-		ImGui::Text("Music pan        : %3.3f", gSoloud.getPan(gMusicHandle));
-		ImGui::Text("Music filter wet : %3.3f", gSoloud.getFilterParameter(gMusicHandle, 0, SoLoud::BiquadResonantFilter::WET));
-		ImGui::Text("Music filter freq: %3.3f", gSoloud.getFilterParameter(gMusicHandle, 0, SoLoud::BiquadResonantFilter::FREQUENCY));
-		ImGui::End();
-
-		DemoUpdateEnd();
-	}
 	return 0;
+}
+
+void DemoMainloop()
+{
+	DemoUpdateStart();
+
+	float p = render();
+
+	float *buf = gSoloud.getWave();
+	float *fft = gSoloud.calcFFT();
+
+	ONCE(ImGui::SetNextWindowPos(ImVec2(500, 20)));
+	ImGui::Begin("Output");
+	ImGui::PlotLines("##Wave", buf, 256, 0, "Wave", -1, 1, ImVec2(264, 80));
+	ImGui::PlotHistogram("##FFT", fft, 256 / 2, 0, "FFT", 0, 10, ImVec2(264, 80), 8);
+	ImGui::Text("Active voices    : %d", gSoloud.getActiveVoiceCount());
+
+	ImGui::Text("Progress         : %3.3f%%", 100 * p);
+	ImGui::Text("Rain volume      : %3.3f", gSoloud.getVolume(gRainHandle));
+	ImGui::Text("Music volume     : %3.3f", gSoloud.getVolume(gMusicHandle));
+	ImGui::Text("Wind volume      : %3.3f", gSoloud.getVolume(gWindHandle));
+	ImGui::Text("Music pan        : %3.3f", gSoloud.getPan(gMusicHandle));
+	ImGui::Text("Music filter wet : %3.3f", gSoloud.getFilterParameter(gMusicHandle, 0, SoLoud::BiquadResonantFilter::WET));
+	ImGui::Text("Music filter freq: %3.3f", gSoloud.getFilterParameter(gMusicHandle, 0, SoLoud::BiquadResonantFilter::FREQUENCY));
+	ImGui::End();
+
+	DemoUpdateEnd();
 }

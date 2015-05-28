@@ -34,9 +34,13 @@
 #endif
 #ifndef __EMSCRIPTEN__
 #include "GL/glew.h"
-#else
+#endif
+
+#ifdef __EMSCRIPTEN__
+#include "emscripten.h"
 #include <GLES2/gl2.h>
 #endif
+
 #include <math.h>
 #include <stdio.h>
 #include "imgui.h"
@@ -683,4 +687,25 @@ int DemoTick()
 void DemoYield()
 {
 	SDL_Delay(1);
+}
+
+extern int DemoEntry(int argc, char *argv[]);
+extern void DemoMainloop();
+
+// Entry point
+int main(int argc, char *argv[])
+{
+	DemoInit();
+	int res = DemoEntry(argc, argv);
+	if (res != 0)
+		return res;
+#ifdef __EMSCRIPTEN__
+	emscripten_set_main_loop(DemoMainloop, 60, 0);
+#else
+	while (1)
+	{
+		DemoMainloop();
+	}
+#endif
+	return 0;
 }

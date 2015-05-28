@@ -131,7 +131,7 @@ static int load_dll()
 		}
 		return 1;
 	}
-	return 1;	
+	return 0;	
 }
 
 int dll_Pa_found()

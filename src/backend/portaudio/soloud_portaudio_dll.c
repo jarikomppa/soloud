@@ -73,15 +73,6 @@ static void* openDll()
 {
     void* res = dlopen("libportaudio_x86.so", RTLD_LAZY);
 
-    // fallbacks. todo, clean up soon.
-    if (res == NULL)
-    {
-        res = dlopen("libportaudio.so", RTLD_LAZY);
-    }
-    if (res == NULL)
-    {
-        res = dlopen("/usr/lib/libportaudio.so", RTLD_LAZY);
-    }
 //	if (!res) res = dlopen("/Library/Frameworks/PortAudio.framework", RTLD_LAZY);
 
 	return res;

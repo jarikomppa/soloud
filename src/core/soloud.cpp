@@ -66,7 +66,7 @@ namespace SoLoud
 		mBasePtr = new unsigned char[aFloats * sizeof(float) + 16];
 		if (mBasePtr == NULL)
 			return OUT_OF_MEMORY;
-		mData = (float *)(((uintptr_t)mBasePtr + 15)&~15);
+		mData = (float *)(((size_t)mBasePtr + 15)&~15);
 #endif
 		return SO_NO_ERROR;
 	}

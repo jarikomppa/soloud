@@ -57,7 +57,7 @@ namespace SoLoud
 		delete[] mBasePtr;
 		mBasePtr = 0;
 		mData = 0;
-#ifdef DISABLE_SSE
+#ifdef DISABLE_SIMD
 		mBasePtr = new unsigned char[aFloats * sizeof(float)];
 		if (mBasePtr == NULL)
 			return OUT_OF_MEMORY;

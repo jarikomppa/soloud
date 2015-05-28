@@ -36,7 +36,7 @@ freely, subject to the following restrictions:
 #define WINDOWS_VERSION
 #endif
 
-#if !defined(DISABLE_SSE)
+#if !defined(DISABLE_SIMD)
 #if defined(__x86_64__) || defined( _M_X64 ) || defined( __i386 ) || defined( _M_IX86 )
 #define SOLOUD_SSE_INTRINSICS
 #endif

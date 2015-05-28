@@ -89,7 +89,7 @@ namespace SoLoud
         }
         OSSData *data = static_cast<OSSData*>(aSoloud->mBackendData);
         data->audioProcessingDone = true;
-        if (0 != data->threadHandle)
+        if (data->threadHandle)
         {
             Thread::wait(data->threadHandle);
             Thread::release(data->threadHandle);

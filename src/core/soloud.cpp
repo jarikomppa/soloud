@@ -923,7 +923,7 @@ namespace SoLoud
 							float s1 = aScratch[j];
 							float s2 = aScratch[aSamples + j];
 							float s3 = aScratch[aSamples * 2 + j];
-							float s4 = aScratch[aSamples * 3 + j];
+							//float s4 = aScratch[aSamples * 3 + j];
 							float s5 = aScratch[aSamples * 4 + j];
 							float s6 = aScratch[aSamples * 5 + j];
 							aBuffer[j + 0] += 0.3f * (s1 + s3 + s5) * pan[0];
@@ -979,7 +979,7 @@ namespace SoLoud
 							float s1 = aScratch[j];
 							float s2 = aScratch[aSamples + j];
 							float s3 = aScratch[aSamples * 2 + j];
-							float s4 = aScratch[aSamples * 3 + j];
+							//float s4 = aScratch[aSamples * 3 + j];
 							float s5 = aScratch[aSamples * 4 + j];
 							float s6 = aScratch[aSamples * 5 + j];
 							float c = s3 * 0.7f;
@@ -1057,10 +1057,10 @@ namespace SoLoud
 							float s6 = aScratch[aSamples * 5 + j];
 							aBuffer[j + 0] += s1 * pan[0];
 							aBuffer[j + aSamples] += s2 * pan[1];
-							aBuffer[j + aSamples * 2] += s3 * pan[3];
-							aBuffer[j + aSamples * 3] += s4 * pan[4];
-							aBuffer[j + aSamples * 4] += s5 * pan[5];
-							aBuffer[j + aSamples * 5] += s6 * pan[6];
+							aBuffer[j + aSamples * 2] += s3 * pan[2];
+							aBuffer[j + aSamples * 3] += s4 * pan[3];
+							aBuffer[j + aSamples * 4] += s5 * pan[4];
+							aBuffer[j + aSamples * 5] += s6 * pan[5];
 						}
 						break;
 					case 4: // 4->6

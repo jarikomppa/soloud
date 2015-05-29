@@ -456,11 +456,11 @@ namespace SoLoud
 			aFile->read(temp, 2);
 			unsigned int datavalue = temp[0] | (temp[1] << 8);
 			mSong.mPatternData[i] = datavalue;
-			unsigned int note = (datavalue >> 9) & 127;
-			unsigned int effect = (datavalue >> 6) & 7;
-			unsigned int effectdata = (datavalue)& 63;
-			unsigned int effectdata1 = (datavalue >> 3) & 7;
-			unsigned int effectdata2 = (datavalue >> 0) & 7;
+			//unsigned int note = (datavalue >> 9) & 127;
+			//unsigned int effect = (datavalue >> 6) & 7;
+			//unsigned int effectdata = (datavalue)& 63;
+			//unsigned int effectdata1 = (datavalue >> 3) & 7;
+			//unsigned int effectdata2 = (datavalue >> 0) & 7;
 		}
 
 		return SO_NO_ERROR;

@@ -30,7 +30,7 @@
 #include "SDL.h"
 #include <windows.h>
 #else
-#include "SDL/SDL.h"
+#include "SDL2/SDL.h"
 #endif
 #ifndef __EMSCRIPTEN__
 #include "GL/glew.h"

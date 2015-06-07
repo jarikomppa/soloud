@@ -767,7 +767,7 @@ namespace SoLoud
 				float step = voice->mSamplerate / aSamplerate;
 				// avoid step overflow
 				if (step > (1 << (32 - FIXPOINT_FRAC_BITS)))
-					step = (1 << (32 - FIXPOINT_FRAC_BITS)) - 1;
+					step = 0;
 				unsigned int step_fixed = (int)floor(step * FIXPOINT_FRAC_MUL);
 				unsigned int outofs = 0;
 			

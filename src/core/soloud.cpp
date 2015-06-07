@@ -220,7 +220,7 @@ namespace SoLoud
 		}
 #endif
 
-#if defined(WITH_SDL)
+#if defined(WITH_SDL) || defined(WITH_SDL2)
 		if (aBackend == Soloud::SDL || 
 			aBackend == Soloud::SDL2 ||
 			aBackend == Soloud::AUTO)

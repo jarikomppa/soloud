@@ -25,7 +25,7 @@ freely, subject to the following restrictions:
 
 #include "soloud.h"
 
-#if !defined(WITH_SDL)
+#if !(defined(WITH_SDL) || defined(WITH_SDL2))
 
 namespace SoLoud
 {

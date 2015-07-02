@@ -16,7 +16,7 @@ Here's some guidelines on contributing to the SoLoud project.
 - All optimized code (such as SSE or assembler) must be 
   accompanied by plain 'c' version, because:
   a) optimizations come and go, porting 30 years from now
-     can be really painful
+     can be really painful.
   b) plain 'c' version works as documentation of the
      optimized code.
      
@@ -41,7 +41,7 @@ Coding convention in brief:
       ClassName
       functionName
 
-void ExampleClass::example(int aFoo)
+int ExampleClass::example(int aFoo)
 {
     if (aFoo)
     {
@@ -56,4 +56,5 @@ void ExampleClass::example(int aFoo)
             return HISS;
         }
     }
+    return 0;
 }

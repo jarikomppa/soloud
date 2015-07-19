@@ -55,6 +55,8 @@ namespace SoLoud
 		mCollider = aSource.mCollider;
 		mColliderData = aSource.mColliderData;
 		mAttenuator = aSource.mAttenuator;
+		m3dVolume = 1.0f;
+		mDopplerValue = 1.0f;
 	}
 
 	AudioSourceResampleData::AudioSourceResampleData()
@@ -72,19 +74,20 @@ namespace SoLoud
 		mPlayIndex = 0;
 		mFlags = 0;
 		mPan = 0;
-		mChannelVolume[0] = 1.0f / (float)sqrt(2.0);
-		mChannelVolume[1] = 1.0f / (float)sqrt(2.0);
-		mVolume = 1.0f;
+		// Default all volumes to 1.0 so sound behind N mix busses isn't super quiet.
+		int i;
+		for (i = 0; i < MAX_CHANNELS; i++)
+			mChannelVolume[i] = 1.0f;		
+		mSetVolume = 1.0f;
 		mBaseSamplerate = 44100.0f;
 		mSamplerate = 44100.0f;
-		mRelativePlaySpeed = 1.0f;
+		mSetRelativePlaySpeed = 1.0f;
 		mStreamTime = 0.0f;
 		mAudioSourceID = 0;
 		mActiveFader = 0;
 		mChannels = 1;
 		mBusHandle = ~0u;
 		mLoopCount = 0;
-		int i;
 		for (i = 0; i < FILTERS_PER_STREAM; i++)
 		{
 			mFilter[i] = NULL;
@@ -93,6 +96,7 @@ namespace SoLoud
 		{
 			mCurrentChannelVolume[i] = 0;
 		}
+		// behind pointers because we swap between the two buffers
 		mResampleData[0] = new AudioSourceResampleData;
 		mResampleData[1] = new AudioSourceResampleData;
 		mSrcOffset = 0;
@@ -103,13 +107,10 @@ namespace SoLoud
 
 	AudioSourceInstance::~AudioSourceInstance()
 	{
-		if (mFilter)
+		int i;
+		for (i = 0; i < FILTERS_PER_STREAM; i++)
 		{
-			int i;
-			for (i = 0; i < FILTERS_PER_STREAM; i++)
-			{
-				delete mFilter[i];
-			}
+			delete mFilter[i];
 		}
 		delete mResampleData[0];
 		delete mResampleData[1];
@@ -155,7 +156,7 @@ namespace SoLoud
 		double offset = aSeconds - mStreamTime;
 		if (offset < 0)
 		{
-			if (rewind() < 0)
+			if (rewind() != SO_NO_ERROR)
 			{
 				// can't do generic seek backwards unless we can rewind.
 				return;
@@ -184,7 +185,7 @@ namespace SoLoud
 		{
 			mFilter[i] = 0;
 		}
-		mFlags = 0; 
+		mFlags = INAUDIBLE_KILL; 
 		mBaseSamplerate = 44100; 
 		mAudioSourceID = 0;
 		mSoloud = 0;
@@ -236,7 +237,7 @@ namespace SoLoud
 
 	void AudioSource::setFilter(unsigned int aFilterId, Filter *aFilter)
 	{
-		if (aFilterId < 0 || aFilterId >= FILTERS_PER_STREAM)
+		if (aFilterId >= FILTERS_PER_STREAM)
 			return;
 		mFilter[aFilterId] = aFilter;
 	}
@@ -309,7 +310,7 @@ namespace SoLoud
 		mColliderData = aUserData;
 	}
 
-	void AudioSource::setAttenuator(AudioAttenuator *aAttenuator)
+	void AudioSource::set3dAttenuator(AudioAttenuator *aAttenuator)
 	{
 		mAttenuator = aAttenuator;
 	}

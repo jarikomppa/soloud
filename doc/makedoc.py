@@ -14,6 +14,7 @@ src = [
     "downloads.mmd",
     "quickstart.mmd",
     "faq.mmd",
+    "dirstruct.mmd",
     "premake.mmd",
     "legal.mmd",
     "concepts.mmd",
@@ -52,6 +53,7 @@ src = [
     "flangerfilter.mmd",
     "dcremovalfilter.mmd",
     "fftfilter.mmd",
+    "bassboostfilter.mmd",
     "mixbus.mmd",
     "collider.mmd",
     "attenuator.mmd",
@@ -81,7 +83,7 @@ if not os.path.exists("temp/"):
     
 print "- -- --- -- - Generating single-file HTML docs"
 
-callp = ["pandoc", "-s", "--toc", "--default-image-extension=png", "-o", datestring + "/soloud_" + datestring + ".html"]
+callp = ["pandoc", "-s", "-t", "html5", "-H", "singlehtml_head.txt", "-B", "singlehtml_body.txt", "--toc", "--self-contained", "--default-image-extension=png", "-o", datestring + "/soloud_" + datestring + ".html"]
 for x in src:
     if x not in website_only:
         callp.append(x)
@@ -93,7 +95,7 @@ for x in src:
     with open(datestring + "/web/" + x[:len(x)-3]+"html", "w") as file_out:
         with open(datestring + "/web/" + x[:len(x)-3]+"html.bak", "r") as file_in:
             for line in file_in:
-                file_out.write(line.replace('code>', 'code>\n'))
+                file_out.write(line.replace('code>', 'code>\n').replace('::','::<wbr>').replace('\xc2','').replace('\xa0',''))
     if x == "intro.mmd":
         if os.path.isfile(datestring + "/web/index.html"):
             os.remove(datestring + "/web/index.html")

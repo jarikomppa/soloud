@@ -14,8 +14,8 @@
    height="1052.3622047"
    id="svg2"
    version="1.1"
-   inkscape:version="0.48.4 r9939"
-   sodipodi:docname="New document 1">
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="resampler.svg">
   <defs
      id="defs4" />
   <sodipodi:namedview
@@ -44,7 +44,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -53,11 +53,12 @@
      inkscape:groupmode="layer"
      id="layer1">
     <image
-       y="10.005048"
-       x="6.214273"
+       sodipodi:absref="E:\vcproj\soloud\proj\doc\images\resampler.png"
+       xlink:href="resampler.png"
+       width="379.13477"
+       height="120.80647"
        id="image2993"
-       xlink:href="file:///E:/vcproj/soloud/doc/images/resampler.png"
-       height="129"
-       width="404.84906" />
+       x="6.214273"
+       y="10.005048" />
   </g>
 </svg>

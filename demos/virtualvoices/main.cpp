@@ -41,11 +41,8 @@ SoLoud::Sfxr gSfx[VOICES];
 
 int gSndHandle[VOICES];
 
-// Entry point
-int main(int argc, char *argv[])
+int DemoEntry(int argc, char *argv[])
 {
-	DemoInit();
-
 	gSoloud.init(SoLoud::Soloud::CLIP_ROUNDOFF | SoLoud::Soloud::ENABLE_VISUALIZATION);
 	gSoloud.setGlobalVolume(4);
 	gSoloud.setMaxActiveVoiceCount(16);
@@ -54,6 +51,7 @@ int main(int argc, char *argv[])
 	{
 		gSfx[i].loadPreset(SoLoud::Sfxr::COIN, i);
 		gSfx[i].setLooping(1);
+		gSfx[i].setInaudibleBehavior(false, false); // make sure we don't kill inaudible sounds
 		gSfx[i].set3dMinMaxDistance(1, 100);
 		gSfx[i].set3dAttenuation(SoLoud::AudioSource::LINEAR_DISTANCE, 1);
 	}
@@ -65,52 +63,52 @@ int main(int argc, char *argv[])
 			gSndHandle[i * VOICEGRID + j] = gSoloud.play3d(gSfx[i * VOICEGRID + j], i * 15 + 20.0f, 0, j * 15 + 20.0f);
 		}
 	}
-
-	// Main loop: loop forever.
-	while (1)
-	{
-		DemoUpdateStart();
-
-		float tick = DemoTick() / 1000.0f;
-
-		gSoloud.set3dListenerParameters(
-			(float)gMouseX, 0, (float)gMouseY,
-			0, 0, 0, 
-			0, 1, 0);
-
-		gSoloud.update3dAudio();
-
-		for (i = 0; i < VOICEGRID; i++)
-		{
-			for (j = 0; j < VOICEGRID; j++)
-			{
-				float v = gSoloud.getVolume(gSndHandle[i * VOICEGRID + j]);
-				DemoTriangle(
-					i * 15 + 20.0f, j * 15 + 20.0f,
-					i * 15 + 20.0f - 5, j * 15 + 20.0f + 5,
-					i * 15 + 20.0f + 5, j * 15 + 20.0f + 5,
-					0xff000000 | (int)(v * 0xff) * 0x010101);
-				DemoTriangle(
-					i * 15 + 20.0f, j * 15 + 20.0f + 10,
-					i * 15 + 20.0f - 5, j * 15 + 20.0f + 5,
-					i * 15 + 20.0f + 5, j * 15 + 20.0f + 5,
-					0xff000000 | (int)(v * 0xff) * 0x010101);
-			}
-		}
-
-		float *buf = gSoloud.getWave();
-		float *fft = gSoloud.calcFFT();
-
-		ONCE(ImGui::SetNextWindowPos(ImVec2(500, 20)));
-		ImGui::Begin("Output");
-		ImGui::PlotLines("##Wave", buf, 256, 0, "Wave", -1, 1, ImVec2(264, 80));
-		ImGui::PlotHistogram("##FFT", fft, 256 / 2, 0, "FFT", 0, 10, ImVec2(264, 80), 8);
-		ImGui::Text("Active voices    : %d", gSoloud.getActiveVoiceCount());
-		ImGui::Text("Total voices     : %d", gSoloud.getVoiceCount());
-		ImGui::Text("Maximum voices   : %d", VOICE_COUNT);
-		ImGui::End();
-
-		DemoUpdateEnd();
-	}
 	return 0;
+}
+
+void DemoMainloop()
+{
+	int i, j;
+	DemoUpdateStart();
+
+	float tick = DemoTick() / 1000.0f;
+
+	gSoloud.set3dListenerParameters(
+		(float)gMouseX, 0, (float)gMouseY,
+		0, 0, 0, 
+		0, 1, 0);
+
+	gSoloud.update3dAudio();
+
+	for (i = 0; i < VOICEGRID; i++)
+	{
+		for (j = 0; j < VOICEGRID; j++)
+		{
+			float v = gSoloud.getOverallVolume(gSndHandle[i * VOICEGRID + j]);
+			DemoTriangle(
+				i * 15 + 20.0f, j * 15 + 20.0f,
+				i * 15 + 20.0f - 5, j * 15 + 20.0f + 5,
+				i * 15 + 20.0f + 5, j * 15 + 20.0f + 5,
+				0xff000000 | (int)(v * 0xff) * 0x010101);
+			DemoTriangle(
+				i * 15 + 20.0f, j * 15 + 20.0f + 10,
+				i * 15 + 20.0f - 5, j * 15 + 20.0f + 5,
+				i * 15 + 20.0f + 5, j * 15 + 20.0f + 5,
+				0xff000000 | (int)(v * 0xff) * 0x010101);
+		}
+	}
+
+	float *buf = gSoloud.getWave();
+	float *fft = gSoloud.calcFFT();
+
+	ONCE(ImGui::SetNextWindowPos(ImVec2(500, 20)));
+	ImGui::Begin("Output");
+	ImGui::PlotLines("##Wave", buf, 256, 0, "Wave", -1, 1, ImVec2(264, 80));
+	ImGui::PlotHistogram("##FFT", fft, 256 / 2, 0, "FFT", 0, 10, ImVec2(264, 80), 8);
+	ImGui::Text("Active voices    : %d", gSoloud.getActiveVoiceCount());
+	ImGui::Text("Total voices     : %d", gSoloud.getVoiceCount());
+	ImGui::Text("Maximum voices   : %d", VOICE_COUNT);
+	ImGui::End();
+
+	DemoUpdateEnd();
 }

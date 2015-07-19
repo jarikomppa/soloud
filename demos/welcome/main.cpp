@@ -82,13 +82,15 @@ int main(int argc, char *argv[])
 	// Configure sound source
 	printf("%s\n>", "What is your name?");
 	char name[512];
-	scanf("%511s",name);
+	fgets(name, 511, stdin);	
 	speech.setText(name);
+	speech.setVolume(5);
 	// Play the sound source (we could do this several times if we wanted)
 	soloud.play(speech);
 
+
 	// Wait for voice to finish
-	while (soloud.getActiveVoiceCount() > 1)
+	while (soloud.getVoiceCount() > 1)
 	{
 		// Still going, sleep for a bit
 		SoLoud::Thread::sleep(100);

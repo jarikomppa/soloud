@@ -5,7 +5,7 @@
 
 /*
 SoLoud audio engine
-Copyright (c) 2013-2014 Jari Komppa
+Copyright (c) 2013-2015 Jari Komppa
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -37,6 +37,7 @@ freely, subject to the following restrictions:
 #include "../include/soloud_echofilter.h"
 #include "../include/soloud_fader.h"
 #include "../include/soloud_fftfilter.h"
+#include "../include/soloud_bassboostfilter.h"
 #include "../include/soloud_filter.h"
 #include "../include/soloud_speech.h"
 #include "../include/soloud_thread.h"
@@ -801,10 +802,10 @@ void Bus_set3dColliderEx(void * aClassPtr, AudioCollider * aCollider, int aUserD
 	cl->set3dCollider(aCollider, aUserData);
 }
 
-void Bus_setAttenuator(void * aClassPtr, AudioAttenuator * aAttenuator)
+void Bus_set3dAttenuator(void * aClassPtr, AudioAttenuator * aAttenuator)
 {
 	Bus * cl = (Bus *)aClassPtr;
-	cl->setAttenuator(aAttenuator);
+	cl->set3dAttenuator(aAttenuator);
 }
 
 void Bus_setInaudibleBehavior(void * aClassPtr, int aMustTick, int aKill)
@@ -849,6 +850,22 @@ void FFTFilter_destroy(void * aClassPtr)
 void * FFTFilter_create()
 {
   return (void *)new FFTFilter;
+}
+
+void BassboostFilter_destroy(void * aClassPtr)
+{
+  delete (BassboostFilter *)aClassPtr;
+}
+
+int BassboostFilter_setParams(void * aClassPtr, float aBoost)
+{
+	BassboostFilter * cl = (BassboostFilter *)aClassPtr;
+	return cl->setParams(aBoost);
+}
+
+void * BassboostFilter_create()
+{
+  return (void *)new BassboostFilter;
 }
 
 void Speech_destroy(void * aClassPtr)
@@ -927,10 +944,10 @@ void Speech_set3dColliderEx(void * aClassPtr, AudioCollider * aCollider, int aUs
 	cl->set3dCollider(aCollider, aUserData);
 }
 
-void Speech_setAttenuator(void * aClassPtr, AudioAttenuator * aAttenuator)
+void Speech_set3dAttenuator(void * aClassPtr, AudioAttenuator * aAttenuator)
 {
 	Speech * cl = (Speech *)aClassPtr;
-	cl->setAttenuator(aAttenuator);
+	cl->set3dAttenuator(aAttenuator);
 }
 
 void Speech_setInaudibleBehavior(void * aClassPtr, int aMustTick, int aKill)
@@ -1051,10 +1068,10 @@ void Wav_set3dColliderEx(void * aClassPtr, AudioCollider * aCollider, int aUserD
 	cl->set3dCollider(aCollider, aUserData);
 }
 
-void Wav_setAttenuator(void * aClassPtr, AudioAttenuator * aAttenuator)
+void Wav_set3dAttenuator(void * aClassPtr, AudioAttenuator * aAttenuator)
 {
 	Wav * cl = (Wav *)aClassPtr;
-	cl->setAttenuator(aAttenuator);
+	cl->set3dAttenuator(aAttenuator);
 }
 
 void Wav_setInaudibleBehavior(void * aClassPtr, int aMustTick, int aKill)
@@ -1187,10 +1204,10 @@ void WavStream_set3dColliderEx(void * aClassPtr, AudioCollider * aCollider, int 
 	cl->set3dCollider(aCollider, aUserData);
 }
 
-void WavStream_setAttenuator(void * aClassPtr, AudioAttenuator * aAttenuator)
+void WavStream_set3dAttenuator(void * aClassPtr, AudioAttenuator * aAttenuator)
 {
 	WavStream * cl = (WavStream *)aClassPtr;
-	cl->setAttenuator(aAttenuator);
+	cl->set3dAttenuator(aAttenuator);
 }
 
 void WavStream_setInaudibleBehavior(void * aClassPtr, int aMustTick, int aKill)
@@ -1339,10 +1356,10 @@ void Sfxr_set3dColliderEx(void * aClassPtr, AudioCollider * aCollider, int aUser
 	cl->set3dCollider(aCollider, aUserData);
 }
 
-void Sfxr_setAttenuator(void * aClassPtr, AudioAttenuator * aAttenuator)
+void Sfxr_set3dAttenuator(void * aClassPtr, AudioAttenuator * aAttenuator)
 {
 	Sfxr * cl = (Sfxr *)aClassPtr;
-	cl->setAttenuator(aAttenuator);
+	cl->set3dAttenuator(aAttenuator);
 }
 
 void Sfxr_setInaudibleBehavior(void * aClassPtr, int aMustTick, int aKill)
@@ -1495,10 +1512,10 @@ void Modplug_set3dColliderEx(void * aClassPtr, AudioCollider * aCollider, int aU
 	cl->set3dCollider(aCollider, aUserData);
 }
 
-void Modplug_setAttenuator(void * aClassPtr, AudioAttenuator * aAttenuator)
+void Modplug_set3dAttenuator(void * aClassPtr, AudioAttenuator * aAttenuator)
 {
 	Modplug * cl = (Modplug *)aClassPtr;
-	cl->setAttenuator(aAttenuator);
+	cl->set3dAttenuator(aAttenuator);
 }
 
 void Modplug_setInaudibleBehavior(void * aClassPtr, int aMustTick, int aKill)
@@ -1625,10 +1642,10 @@ void Monotone_set3dColliderEx(void * aClassPtr, AudioCollider * aCollider, int a
 	cl->set3dCollider(aCollider, aUserData);
 }
 
-void Monotone_setAttenuator(void * aClassPtr, AudioAttenuator * aAttenuator)
+void Monotone_set3dAttenuator(void * aClassPtr, AudioAttenuator * aAttenuator)
 {
 	Monotone * cl = (Monotone *)aClassPtr;
-	cl->setAttenuator(aAttenuator);
+	cl->set3dAttenuator(aAttenuator);
 }
 
 void Monotone_setInaudibleBehavior(void * aClassPtr, int aMustTick, int aKill)
@@ -1755,10 +1772,10 @@ void TedSid_set3dColliderEx(void * aClassPtr, AudioCollider * aCollider, int aUs
 	cl->set3dCollider(aCollider, aUserData);
 }
 
-void TedSid_setAttenuator(void * aClassPtr, AudioAttenuator * aAttenuator)
+void TedSid_set3dAttenuator(void * aClassPtr, AudioAttenuator * aAttenuator)
 {
 	TedSid * cl = (TedSid *)aClassPtr;
-	cl->setAttenuator(aAttenuator);
+	cl->set3dAttenuator(aAttenuator);
 }
 
 void TedSid_setInaudibleBehavior(void * aClassPtr, int aMustTick, int aKill)

@@ -30,7 +30,6 @@ namespace SoLoud
 	BusInstance::BusInstance(Bus *aParent)
 	{
 		mParent = aParent;
-		mScratch = 0;
 		mScratchSize = 0;
 		mFlags |= PROTECTED | INAUDIBLE_TICK;
 	}
@@ -51,11 +50,10 @@ namespace SoLoud
 		if (s->mScratchNeeded != mScratchSize)
 		{
 			mScratchSize = s->mScratchNeeded;
-			delete[] mScratch;
-			mScratch = new float[mScratchSize];
+			mScratch.init(mScratchSize * MAX_CHANNELS);
 		}
 		
-		s->mixBus(aBuffer, aSamples, mScratch, handle, mSamplerate);
+		s->mixBus(aBuffer, aSamples, mScratch.mData, handle, mSamplerate, mChannels);
 
 		int i;
 		if (mParent->mFlags & AudioSource::VISUALIZATION_DATA)
@@ -64,7 +62,10 @@ namespace SoLoud
 			{
 				for (i = 0; i < 256; i++)
 				{
-					mVisualizationWaveData[i] = aBuffer[i] + aBuffer[i+aSamples];
+					int j;
+					mVisualizationWaveData[i] = 0;
+					for (j = 0; j < (signed)mChannels; j++)
+						mVisualizationWaveData[i] += aBuffer[i + aSamples * j];
 				}
 			}
 			else
@@ -72,11 +73,13 @@ namespace SoLoud
 				// Very unlikely failsafe branch
 				for (i = 0; i < 256; i++)
 				{
-					mVisualizationWaveData[i] = aBuffer[i % aSamples] + aBuffer[(i % aSamples) + aSamples];
+					int j;
+					mVisualizationWaveData[i] = 0;
+					for (j = 0; j < (signed)mChannels; j++)
+						mVisualizationWaveData[i] += aBuffer[(i % aSamples) + aSamples * j];
 				}
 			}
 		}
-
 	}
 
 	bool BusInstance::hasEnded()
@@ -96,7 +99,6 @@ namespace SoLoud
 				s->stopVoice(i);
 			}
 		}
-		delete[] mScratch;
 	}
 
 	Bus::Bus()
@@ -204,14 +206,14 @@ namespace SoLoud
 
 	void Bus::setFilter(unsigned int aFilterId, Filter *aFilter)
 	{
-		if (aFilterId < 0 || aFilterId >= FILTERS_PER_STREAM)
+		if (aFilterId >= FILTERS_PER_STREAM)
 			return;
 
 		mFilter[aFilterId] = aFilter;
 
 		if (mInstance)
 		{
-			if (mSoloud->mLockMutexFunc) mSoloud->mLockMutexFunc(mSoloud->mMutex);
+			mSoloud->lockAudioMutex();
 			delete mInstance->mFilter[aFilterId];
 			mInstance->mFilter[aFilterId] = 0;
 		
@@ -219,8 +221,16 @@ namespace SoLoud
 			{
 				mInstance->mFilter[aFilterId] = mFilter[aFilterId]->createInstance();
 			}
-			if (mSoloud->mUnlockMutexFunc) mSoloud->mUnlockMutexFunc(mSoloud->mMutex);
+			mSoloud->unlockAudioMutex();
 		}
+	}
+
+	result Bus::setChannels(unsigned int aChannels)
+	{
+		if (aChannels == 0 || aChannels == 3 || aChannels == 5 || aChannels > 6)
+			return INVALID_PARAMETER;
+		mChannels = aChannels;
+		return SO_NO_ERROR;
 	}
 
 	void Bus::setVisualizationEnable(bool aEnable)
@@ -239,7 +249,7 @@ namespace SoLoud
 	{
 		if (mInstance && mSoloud)
 		{
-			if (mSoloud->mLockMutexFunc) mSoloud->mLockMutexFunc(mSoloud->mMutex);
+			mSoloud->lockAudioMutex();
 			float temp[1024];
 			int i;
 			for (i = 0; i < 256; i++)
@@ -249,7 +259,7 @@ namespace SoLoud
 				temp[i+512] = 0;
 				temp[i+768] = 0;
 			}
-			if (mSoloud->mUnlockMutexFunc) mSoloud->mUnlockMutexFunc(mSoloud->mMutex);
+			mSoloud->unlockAudioMutex();
 
 			SoLoud::FFT::fft1024(temp);
 
@@ -269,10 +279,10 @@ namespace SoLoud
 		if (mInstance && mSoloud)
 		{
 			int i;
-			if (mSoloud->mLockMutexFunc) mSoloud->mLockMutexFunc(mSoloud->mMutex);
+			mSoloud->lockAudioMutex();
 			for (i = 0; i < 256; i++)
 				mWaveData[i] = mInstance->mVisualizationWaveData[i];
-			if (mSoloud->mUnlockMutexFunc) mSoloud->mUnlockMutexFunc(mSoloud->mMutex);
+			mSoloud->unlockAudioMutex();
 		}
 		return mWaveData;
 	}

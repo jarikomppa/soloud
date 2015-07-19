@@ -53,7 +53,7 @@ namespace SoLoud
 	{
 		FOR_ALL_VOICES_PRE
 			mVoice[ch]->mBaseSamplerate = aSamplerate;
-			mVoice[ch]->mSamplerate = mVoice[ch]->mBaseSamplerate * mVoice[ch]->mRelativePlaySpeed;
+			updateVoiceRelativePlaySpeed(ch);		
 		FOR_ALL_VOICES_POST
 	}
 
@@ -68,21 +68,21 @@ namespace SoLoud
 	{
 		if (aVoiceCount == 0 || aVoiceCount >= VOICE_COUNT)
 			return INVALID_PARAMETER;
-		if (mLockMutexFunc) mLockMutexFunc(mMutex);
+		lockAudioMutex();
 		mMaxActiveVoices = aVoiceCount;
-		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+		unlockAudioMutex();
 		return SO_NO_ERROR;
 	}
 
 	void Soloud::setPauseAll(bool aPause)
 	{
-		if (mLockMutexFunc) mLockMutexFunc(mMutex);
+		lockAudioMutex();
 		int ch;
 		for (ch = 0; ch < (signed)mHighestVoice; ch++)
 		{
 			setVoicePause(ch, aPause);
 		}
-		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+		unlockAudioMutex();
 	}
 
 	void Soloud::setProtectVoice(handle aVoiceHandle, bool aProtect)
@@ -106,12 +106,24 @@ namespace SoLoud
 		FOR_ALL_VOICES_POST
 	}
 
-	void Soloud::setPanAbsolute(handle aVoiceHandle, float aLVolume, float aRVolume)
+	void Soloud::setPanAbsolute(handle aVoiceHandle, float aLVolume, float aRVolume, float aLBVolume, float aRBVolume, float aCVolume, float aSVolume)
 	{
 		FOR_ALL_VOICES_PRE
-			mVoice[ch]->mPanFader.mActive = 0;
-			mVoice[ch]->mChannelVolume[0] = aLVolume;
+			mVoice[ch]->mPanFader.mActive = 0;	
+			mVoice[ch]->mChannelVolume[0] = aLVolume;			
 			mVoice[ch]->mChannelVolume[1] = aRVolume;
+			if (mVoice[ch]->mChannels == 4)
+			{
+				mVoice[ch]->mChannelVolume[2] = aLBVolume;
+				mVoice[ch]->mChannelVolume[3] = aRBVolume;
+			}
+			if (mVoice[ch]->mChannels == 6)
+			{
+				mVoice[ch]->mChannelVolume[2] = aCVolume;
+				mVoice[ch]->mChannelVolume[3] = aSVolume;
+				mVoice[ch]->mChannelVolume[4] = aLBVolume;
+				mVoice[ch]->mChannelVolume[5] = aRBVolume;
+			}
 		FOR_ALL_VOICES_POST
 	}
 
@@ -170,6 +182,16 @@ namespace SoLoud
 		{
 			mFlags &= ~ENABLE_VISUALIZATION;
 		}
+	}
+
+	result Soloud::setSpeakerPosition(unsigned int aChannel, float aX, float aY, float aZ)
+	{
+		if (aChannel >= mChannels)
+			return INVALID_PARAMETER;
+		m3dSpeakerPosition[3 * aChannel + 0] = aX;
+		m3dSpeakerPosition[3 * aChannel + 1] = aY;
+		m3dSpeakerPosition[3 * aChannel + 2] = aZ;
+		return SO_NO_ERROR;
 	}
 
 }

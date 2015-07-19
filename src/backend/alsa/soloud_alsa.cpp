@@ -101,15 +101,11 @@ namespace SoLoud
         {
             delete[] data->buffer;
         }
-        Thread::destroyMutex(data->soloud->mMutex);
-        data->soloud->mMutex = 0;
-        data->soloud->mLockMutexFunc = 0;
-        data->soloud->mUnlockMutexFunc = 0;
         delete data;
         aSoloud->mBackendData = 0;
     }
 
-    result alsa_init(Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer)
+    result alsa_init(Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer, unsigned int aChannels)
     {
         ALSAData *data = new ALSAData;
         memset(data, 0, sizeof(ALSAData));
@@ -159,10 +155,7 @@ namespace SoLoud
 
         data->buffer = new float[data->samples*data->channels];
         data->sampleBuffer = new short[data->samples*data->channels];
-        aSoloud->mMutex = Thread::createMutex();
-        aSoloud->mLockMutexFunc = Thread::lockMutex;
-        aSoloud->mUnlockMutexFunc = Thread::unlockMutex;
-        aSoloud->postinit(aSamplerate, data->samples * data->channels, aFlags);
+        aSoloud->postinit(aSamplerate, data->samples * data->channels, aFlags, 2);
         data->threadHandle = Thread::createThread(alsaThread, data);
         if (0 == data->threadHandle)
         {

@@ -8,13 +8,13 @@ look at the chapter that covers your environment (such as Python).
 
 
 First, you need to download SoLoud sources. You can find the downloads
-on the <http://soloud-audio.com/download.html> page.
+on the <http://soloud-audio.com/downloads.html> page.
 
 #### Add SoLoud to your project
 
 
 There's a few ways to include SoLoud to your project. Probably the
-easiest is to use premake4 to create the build files, and build a 
+easiest is to use GENie / premake4 to create the build files, and build a 
 static library for your compiler / environment.
 
 There may also be a pre-built static library in the SoLoud distribution,
@@ -23,7 +23,8 @@ which you may be able to use. Note that the Windows DLL only exports the
 
 You can go the lazy way and just add all of the sources to your project,
 or you can copy the things you need to a single directory and include
-those. You'll need the core files, and quite likely the wav files. If
+those. You'll need the core files, and quite likely the files from
+audiosource/wav. If
 you need the speech synth, include those, too. If you go this route,
 you'll need to enable one or more of the back-ends via preprocessor
 defines. The current list is:
@@ -41,13 +42,14 @@ WITH_WINMM          Windows multimedia
 WITH_WASAPI         WASAPI (experimental)
 WITH_OSS            Linux OSS
 WITH_ALSA           Linux ALSA
+WITH_NULLDRIVER     No audio device
 
 
 #### Include files
 
 
 In order to use a certain feature of SoLoud, you need to include its
-include file. You might have, for instance:
+header file. You might have, for instance:
 
     #include "soloud.h"
     #include "soloud_wav.h"
@@ -55,16 +57,16 @@ include file. You might have, for instance:
 #### Variables
 
 
-You need at least the SoLoud engine core, and one or more of the sound
+You need at least the SoLoud engine core, and one or more of the audio
 source variables. If you're using five different sound effect wav files,
 you need five SoLoud::Wav objects. You can play one object any number of
-times, even on top of each other.
+times, even on top of itself.
 
 Where to place these is up to you. Globals work, as do allocation from
 heap, including in a class as members, etc.
 
-    SoLoud::Soloud gSoloud;
-    SoLoud::Wav gWave;
+    SoLoud::Soloud gSoloud; // SoLoud engine
+    SoLoud::Wav gWave;      // One wave file
 
 #### Initialize SoLoud
 
@@ -72,7 +74,7 @@ heap, including in a class as members, etc.
 In your application, once you have your framework up (for instance after your 
 SDL\_Init call), include a call to initialize SoLoud.
 
-    gSoloud.init();
+    gSoloud.init(); // Initialize SoLoud
     
 The call has a bunch of optional parameters if you'd rather pick the replay
 back-end and its parameters yourself; the default should work for most cases.
@@ -80,10 +82,10 @@ back-end and its parameters yourself; the default should work for most cases.
 #### Set up sound sources
 
 
-This step varies from one sound source to another, but basically you'll
+This step varies from one audio source to another, but basically you'll
 load your wave files here.
 
-    gWave.load("pew_pew.wav");
+    gWave.load("pew_pew.wav"); // Load a wave
 
 #### Play sounds
 
@@ -91,10 +93,10 @@ load your wave files here.
 Now you're ready to play the sounds. Place playing commands wherever you
 need sound to be played.
 
-    gSoloud.play(gWave);
+    gSoloud.play(gWave); // Play the wave
 
 Note that you can play the same sound several times, and it doesn't cut
-itself off.
+itself off (but if that's what you want, there's an option for that too).
 
 #### Take control of the sound
 
@@ -102,8 +104,8 @@ itself off.
 You can adjust various things about the sound you're playing if you take
 the handle.
 
-    int x = gSoloud.play(gWave);
-    gSoloud.setPan(x, -0.2f);
+    int x = gSoloud.play(gWave); // Grab the handle
+    gSoloud.setPan(x, -0.2f);    // Use handle to adjust panning
 
 Read the soloud.h header file (or this documentation) for further things
 you can do.
@@ -114,7 +116,7 @@ you can do.
 After you've done, remember to clean up. If you don't, the audio thread
 may do stupid things while the application is shutting down.
 
-    gSoloud.deinit();
+    gSoloud.deinit(); // Clean up!
 
 #### Enjoy
 
@@ -122,4 +124,7 @@ And you're done!
 
 Note that most calls above also return some kind of return code which may
 help you diagnose potential problems. When loading wave files, for instance,
-you may want to check if the file is actually found.
+you may want to check if the file is actually found. Many of the calls also
+have additional optional parameters, and there are also alternate calls
+to do (almost) the same thing (Wav::load() and WavStream::loadToMem() as 
+an example).

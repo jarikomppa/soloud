@@ -42,11 +42,10 @@ float bullety[MAX_BULLETS]; // bullet y coordinate
 float bulletv[MAX_BULLETS]; // bullet y velocity
 int bulletc[MAX_BULLETS];   // bullet spawned via 'clocked'
 
-// Entry point
-int main(int argc, char *argv[])
-{
-	DemoInit();
+int lasttick;
 
+int DemoEntry(int argc, char *argv[])
+{
 	int i;
 	for (i = 0; i < MAX_BULLETS; i++)
 		bullety[i] = 0;
@@ -55,130 +54,132 @@ int main(int argc, char *argv[])
 	gSoloud.init(SoLoud::Soloud::CLIP_ROUNDOFF | SoLoud::Soloud::ENABLE_VISUALIZATION, 0, 0, 4096);
 	gSfx.loadPreset(SoLoud::Sfxr::LASER, 3);
 
-	int lasttick = DemoTick();
-	bool fire1 = 0;
-	bool fire2 = 0;
-	bool fire3 = 0;
+	lasttick = DemoTick();
+	return 0;
+}
 
-	float x = 0;
 
-	// Main loop: loop forever.
-	while (1)
-	{
-		int tick = DemoTick();
-		x = (gMouseX - 400.0f) / 200.0f;
+bool fire1 = 0;
+bool fire2 = 0;
+bool fire3 = 0;
+
+float x = 0;
+
+void DemoMainloop()
+{
+	int i;
+	int tick = DemoTick();
+	x = (gMouseX - 400.0f) / 200.0f;
 		
-		if (lasttick >= tick)
+	if (lasttick >= tick)
+	{
+		DemoYield();
+	}
+	else
+	{
+		while (lasttick < tick)
 		{
-			DemoYield();
-		}
-		else
-		{
-			while (lasttick < tick)
+			if (x < -1) x = -1;
+			if (x > 1) x = 1;
+			gSfx.loadPreset(SoLoud::Sfxr::LASER, 3);
+			if (fire1)
 			{
-				if (x < -1) x = -1;
-				if (x > 1) x = 1;
-				gSfx.loadPreset(SoLoud::Sfxr::LASER, 3);
-				if (fire1)
-				{
-					gSoloud.playClocked(lasttick / 1000.0f, gSfx, 1, x);
-					bulletc[bulletidx] = 1;
-				}
-
-				if (fire2)
-				{
-					gSoloud.play(gSfx, 1, x);
-					bulletc[bulletidx] = 0;
-				}
-
-				if (fire3)
-				{
-					gSoloud.playClocked(lasttick / 1000.0f, gSfx, 1, x);
-					bulletc[bulletidx] = 1;
-				}
-
-				if (fire1 || fire2 || fire3)
-				{
-					bullety[bulletidx] = 350;
-					bulletx[bulletidx] = x;
-					bulletv[bulletidx] = -25;
-					bulletidx = (bulletidx + 1) % MAX_BULLETS;
-				}
-
-				if (fire1) fire1 = 0;
-
-				for (i = 0; i < MAX_BULLETS; i++)
-				{
-					if (bullety[i])
-					{
-						bullety[i] += bulletv[i];
-						bulletv[i] += 1;
-					}
-					if (bullety[i] > 400)
-					{
-						bullety[i] = 0;
-						int v;
-						if (bulletc[i])
-							v = gSoloud.playClocked(lasttick / 1000.0f, gSfx, 1, bulletx[i]);
-						else
-							v = gSoloud.play(gSfx, 1, bulletx[i]);
-						gSoloud.setRelativePlaySpeed(v, 0.5f);
-					}
-				}
-
-				lasttick += 40;
+				gSoloud.playClocked(lasttick / 1000.0f, gSfx, 1, x);
+				bulletc[bulletidx] = 1;
 			}
 
-			DemoUpdateStart();
-			DemoTriangle(400 + x * 200, 350,
-				375 + x * 200, 400,
-				425 + x * 200, 400,
-				0xff3399ff);
+			if (fire2)
+			{
+				gSoloud.play(gSfx, 1, x);
+				bulletc[bulletidx] = 0;
+			}
+
+			if (fire3)
+			{
+				gSoloud.playClocked(lasttick / 1000.0f, gSfx, 1, x);
+				bulletc[bulletidx] = 1;
+			}
+
+			if (fire1 || fire2 || fire3)
+			{
+				bullety[bulletidx] = 350;
+				bulletx[bulletidx] = x;
+				bulletv[bulletidx] = -25;
+				bulletidx = (bulletidx + 1) % MAX_BULLETS;
+			}
+
+			if (fire1) fire1 = 0;
 
 			for (i = 0; i < MAX_BULLETS; i++)
 			{
-				if (bullety[i] != 0)
+				if (bullety[i])
 				{
-					DemoTriangle(400 + bulletx[i] * 200, bullety[i],
-						400 - 2.5f + bulletx[i] * 200, 10 + bullety[i],
-						400 + 2.5f + bulletx[i] * 200, 10 + bullety[i],
-						0xff773333);
+					bullety[i] += bulletv[i];
+					bulletv[i] += 1;
+				}
+				if (bullety[i] > 400)
+				{
+					bullety[i] = 0;
+					int v;
+					if (bulletc[i])
+						v = gSoloud.playClocked(lasttick / 1000.0f, gSfx, 1, bulletx[i]);
+					else
+						v = gSoloud.play(gSfx, 1, bulletx[i]);
+					gSoloud.setRelativePlaySpeed(v, 0.5f);
 				}
 			}
 
-			float *buf = gSoloud.getWave();
-			float *fft = gSoloud.calcFFT();
-
-			ONCE(ImGui::SetNextWindowPos(ImVec2(500, 20)));
-			ImGui::Begin("Output");
-			ImGui::PlotLines("##Wave", buf, 256, 0, "Wave", -1, 1, ImVec2(264, 80));
-			ImGui::PlotHistogram("##FFT", fft, 256 / 2, 0, "FFT", 0, 10, ImVec2(264, 80), 8);
-			ImGui::Text("Active voices     : %d", gSoloud.getActiveVoiceCount());
-			ImGui::Text("----|----|----|----|----|");
-
-			char temp[200];
-			for (i = 0; i < (signed)gSoloud.getActiveVoiceCount(); i++)
-				temp[i] = '-';
-			temp[i] = 0;
-			ImGui::Text(temp);
-
-			ImGui::End();
-
-			ONCE(ImGui::SetNextWindowPos(ImVec2(20, 20)));
-			ImGui::Begin("Control");
-			ImGui::Text("Click to play a single sound:");
-			if (ImGui::Button("Play (single)"))
-			{
-				fire1 = 1;
-			}
-			ImGui::Separator();
-			ImGui::Text("\nCheckbox for repeated calls:");
-			ImGui::Checkbox("Play", &fire2);
-			ImGui::Checkbox("PlayClocked", &fire3);
-
-			ImGui::End();
-			DemoUpdateEnd();
+			lasttick += 40;
 		}
+
+		DemoUpdateStart();
+		DemoTriangle(400 + x * 200, 350,
+			375 + x * 200, 400,
+			425 + x * 200, 400,
+			0xff3399ff);
+
+		for (i = 0; i < MAX_BULLETS; i++)
+		{
+			if (bullety[i] != 0)
+			{
+				DemoTriangle(400 + bulletx[i] * 200, bullety[i],
+					400 - 2.5f + bulletx[i] * 200, 10 + bullety[i],
+					400 + 2.5f + bulletx[i] * 200, 10 + bullety[i],
+					0xff773333);
+			}
+		}
+
+		float *buf = gSoloud.getWave();
+		float *fft = gSoloud.calcFFT();
+
+		ONCE(ImGui::SetNextWindowPos(ImVec2(500, 20)));
+		ImGui::Begin("Output");
+		ImGui::PlotLines("##Wave", buf, 256, 0, "Wave", -1, 1, ImVec2(264, 80));
+		ImGui::PlotHistogram("##FFT", fft, 256 / 2, 0, "FFT", 0, 10, ImVec2(264, 80), 8);
+		ImGui::Text("Active voices     : %d", gSoloud.getActiveVoiceCount());
+		ImGui::Text("----|----|----|----|----|");
+
+		char temp[200];
+		for (i = 0; i < (signed)gSoloud.getActiveVoiceCount(); i++)
+			temp[i] = '-';
+		temp[i] = 0;
+		ImGui::Text(temp);
+
+		ImGui::End();
+
+		ONCE(ImGui::SetNextWindowPos(ImVec2(20, 20)));
+		ImGui::Begin("Control");
+		ImGui::Text("Click to play a single sound:");
+		if (ImGui::Button("Play (single)"))
+		{
+			fire1 = 1;
+		}
+		ImGui::Separator();
+		ImGui::Text("\nCheckbox for repeated calls:");
+		ImGui::Checkbox("Play", &fire2);
+		ImGui::Checkbox("PlayClocked", &fire3);
+
+		ImGui::End();
+		DemoUpdateEnd();
 	}
-	return 0;
 }

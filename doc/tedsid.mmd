@@ -99,15 +99,7 @@ inaudible.
 Set the default volume of the instances created from this audio source.
 
     gTinyVoice.setVolume(0.1);
-    
-### TedSid.setAttenuator()
-
-Set a custom attenuator for the instances created from this audio source.
-use NULL to disable.
-
-    // No attenuator needed anymore
-    gFoo.setAttenuator(NULL);
-    
+      
 ### tedsid2dump tool
 
 The tedsid2dump tool can be used to dump audio chip register writes from plus/4 and c64 tunes.
@@ -170,3 +162,4 @@ Like all other audio sources, monotone inherits the 3d audio interfaces. Please 
 - TedSid.set3dListenerRelative()
 - TedSid.set3dDistanceDelay()
 - TedSid.set3dCollider()
+- TedSid.set3dAttenuator()

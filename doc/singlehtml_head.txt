@@ -1,0 +1,53 @@
+ <style>
+
+html {
+	font-family:"Palatino Linotype", "Book Antiqua", Palatino, serif;
+	color:#000000;				
+}
+
+h1, h2
+{
+	font-size: 32px;
+	line-height: 46px;	
+	font-weight: normal;
+	padding: 0;
+	margin: 0;
+	margin-top: 10px;	
+	word-wrap: break-word;
+}
+
+a
+{
+	text-decoration:none;
+	color:#c57917;
+}
+
+a:hover
+{
+	text-decoration:underline;
+}
+
+.code, pre
+{
+	font-family: Consolas, "Lucida Console", "Bitstream Vera Sans Mono", Monaco, monospace;
+	font-size: 12px;
+	color: black;
+	background-color: #e4f5fd;
+	padding: 8px 8px 8px 8px;
+	border-style: none;
+	clear: both;
+}
+
+.img_mid
+{	
+  display: block;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+table { border-collapse: collapse; border-top: 1px solid #c57917; border-bottom: 1px solid #c57917; }
+table th { border-bottom: 1px solid #c57917; }
+table th, table td { padding: 1px 6px; }
+
+
+</style>

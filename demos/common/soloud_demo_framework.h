@@ -29,9 +29,12 @@
 
 extern int gPressed[256], gWasPressed[256];
 extern int gMouseX, gMouseY;
+unsigned int DemoLoadTexture(char * aFilename);
 void DemoInit();
 void DemoUpdateStart();
 void DemoUpdateEnd();
 int DemoTick();
 void DemoYield();
 void DemoTriangle(float x0, float y0, float x1, float y1, float x2, float y2, unsigned int color);
+void DemoQuad(float x0, float y0, float x1, float y1, unsigned int color);
+void DemoTexQuad(int tex, float x0, float y0, float x1, float y1);

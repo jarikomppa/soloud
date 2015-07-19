@@ -71,30 +71,30 @@ This function pointer is used by SoLoud to signal the back-end to
 perform cleanup; stop any threads, free any resources, etc. If NULL, not
 called, but may result in resource leaks and quite possibly crashes.
 
+Soloud.mBackendString
+---------------------
+
+Descriptive, short asciiz string about the back-end. Applications may
+use this to print out different audio devices for user to pick from.
+
 Different back-ends
 -------------------
 
 This is a non-exhaustive list of back-ends and notes regarding them.
 
--   SDL
-    -   Most tested, primary development platform
-    -   Cross-platform
-    -   Low latency
--   PortAudio
-    -   Cross-platform
-    -   Low latency
--   Windows multimedia
-    -   Simplest back-end for Windows-only programs
--   oss (/dev/dsp)
-    -   Simplest back-end for Linux-only programs
-    -   Experimental
--   OpenAL
-    -   Experimental
-    -   High latency; if this is your only option, you're probably
-        better off using OpenAL directly.
--   WASAPI
-    -   Experimental
--   XAudio2
-    -   Experimental
+Backend            | x64  | Notes
+------------------ | ---- | -----
+SDL/SDL2 DLL       | No   | Most tested, primary development platform. Cross-platform. Low latency.
+SDL Static         | No?  | Mostly meant for emscripten use.
+SDL2 Static        | Yes? | Can be used to statically link to SDL2.
+PortAudio          | No   | Cross-platform. Very low latency. Dynamic linking.
+WinMM              | Yes  | Simplest back-end for Windows-only programs.
+ALSA               | Yes  | Default audio interface for Linux
+oss (/dev/dsp)     | Yes  | Simplest back-end for Linux-only programs. Experimental.
+OpenAL             | No   | Very experimental. Very high latency; if this is your only option, you're probably better off using OpenAL directly.
+WASAPI             | Yes  | Experimental
+XAudio2            | Yes  | Experimental
+Null driver        | Yes  | Can be used to use SoLoud without audio device.
 
+The back-ends that are not x64 ready use runtime dyndll linking. It may be possible in the future to link to 64bit dll:s and make them work. Current dyndll linkage is towards 32bit dlls which does not work in x64.
 

@@ -52,7 +52,6 @@ namespace SoLoud
 {
     struct WASAPIData
     {
-        float *buffer;
         IMMDeviceEnumerator *deviceEnumerator;
         IMMDevice *device;
         IAudioClient *audioClient;
@@ -72,12 +71,7 @@ namespace SoLoud
         {
             return;
         }
-        aData->soloud->mix(aData->buffer, aFrames);
-        for (UINT32 i=0;i<aFrames*aData->channels;++i) 
-        {
-            reinterpret_cast<short*>(buffer)[i] = static_cast<short>(floor(aData->buffer[i] 
-                                                           * static_cast<float>(0x7fff)));
-        }
+        aData->soloud->mix_s16((short *)buffer, aFrames);
         aData->renderClient->ReleaseBuffer(aFrames, 0);
     }
 
@@ -123,21 +117,12 @@ namespace SoLoud
         SAFE_RELEASE(data->audioClient);
         SAFE_RELEASE(data->device);
         SAFE_RELEASE(data->deviceEnumerator);
-        if (0 != data->buffer)
-        {
-            delete[] data->buffer;
-        }
-		if (aSoloud->mMutex)
-			Thread::destroyMutex(aSoloud->mMutex);
-		aSoloud->mMutex = 0;
-		aSoloud->mLockMutexFunc = 0;
-		aSoloud->mUnlockMutexFunc = 0;
         delete data;
         aSoloud->mBackendData = 0;
         CoUninitialize();
     }
 
-    result wasapi_init(Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer)
+	result wasapi_init(Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer, unsigned int aChannels)
     {
         if (FAILED(CoInitializeEx(0, COINIT_MULTITHREADED)))
         {
@@ -147,6 +132,7 @@ namespace SoLoud
         ZeroMemory(data, sizeof(WASAPIData));
         aSoloud->mBackendData = data;
         aSoloud->mBackendCleanupFunc = wasapiCleanup;
+		
         data->bufferEndEvent = CreateEvent(0, FALSE, FALSE, 0);
         if (0 == data->bufferEndEvent)
         {
@@ -205,12 +191,8 @@ namespace SoLoud
             return UNKNOWN_ERROR;
         }
         data->channels = format.nChannels;
-        data->buffer = new float[data->bufferFrames * format.nChannels];
-        aSoloud->mMutex = Thread::createMutex();
-        aSoloud->mLockMutexFunc = Thread::lockMutex;
-        aSoloud->mUnlockMutexFunc = Thread::unlockMutex;
         data->soloud = aSoloud;
-        aSoloud->postinit(aSamplerate, data->bufferFrames * format.nChannels, aFlags);
+        aSoloud->postinit(aSamplerate, data->bufferFrames * format.nChannels, aFlags, 2);
         data->thread = Thread::createThread(wasapiThread, data);
         if (0 == data->thread)
         {

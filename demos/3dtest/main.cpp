@@ -22,7 +22,6 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-
 #include <stdlib.h>
 #include <math.h>
 #include <stdio.h>
@@ -42,11 +41,9 @@ int gSndHandle_mouse = 0;
 int gSndHandle_orbit = 0;
 int gSndHandle_crazy = 0;
 
-// Entry point
-int main(int argc, char *argv[])
-{
-	DemoInit();
 
+int DemoEntry(int argc, char *argv[])
+{
 	gSoloud.init(SoLoud::Soloud::CLIP_ROUNDOFF | SoLoud::Soloud::ENABLE_VISUALIZATION);
 	gSoloud.setGlobalVolume(4);
 
@@ -67,110 +64,110 @@ int main(int argc, char *argv[])
 	gSfx_crazy.set3dMinMaxDistance(1, 400);
 	gSfx_crazy.set3dAttenuation(SoLoud::AudioSource::EXPONENTIAL_DISTANCE, 0.25);
 	gSndHandle_crazy = gSoloud.play3d(gSfx_crazy, 50, 0, 0);
-
-	bool orbit_enable = 1;
-	bool crazy_enable = 1;
-	bool mouse_enable = 1;
-
-	// Main loop: loop forever.
-	while (1)
-	{
-		DemoUpdateStart();
-
-		gSoloud.setPause(gSndHandle_crazy, !crazy_enable);
-		gSoloud.setPause(gSndHandle_orbit, !orbit_enable);
-		gSoloud.setPause(gSndHandle_mouse, !mouse_enable);
-
-		float tick = DemoTick() / 1000.0f;
-
-		float crazyx = (float)(sin(tick) * sin(tick * 0.234) * sin(tick * 4.234) * 150);
-		float crazyz = (float)(cos(tick) * cos(tick * 0.234) * cos(tick * 4.234) * 150 - 50);
-		float tickd = tick - 0.1f;
-		float crazyxv = (float)(sin(tickd) * sin(tickd * 0.234) * sin(tickd * 4.234) * 150);
-		float crazyzv = (float)(cos(tickd) * cos(tickd * 0.234) * cos(tickd * 4.234) * 150 - 50);
-		crazyxv = crazyxv - crazyx;
-		crazyzv = crazyzv - crazyz;
-
-		gSoloud.set3dSourceParameters(gSndHandle_crazy, crazyx, 0, crazyz, crazyxv, 0, crazyzv);
-
-		float orbitx = (float)sin(tick) * 50;
-		float orbitz = (float)cos(tick) * 50;
-		float orbitxv = (float)sin(tickd) * 50;
-		float orbitzv = (float)cos(tickd) * 50;
-		orbitxv = orbitxv - orbitx;
-		orbitzv = orbitzv - orbitz;
-		
-		gSoloud.set3dSourceParameters(gSndHandle_orbit, orbitx, 0, orbitz, orbitxv, 0, orbitzv);
-
-		float mousex = gMouseX - 400.0f;
-		float mousez = gMouseY - 200.0f;
-
-		gSoloud.set3dSourcePosition(gSndHandle_mouse, mousex, mousez, 0);
-
-		gSoloud.update3dAudio();
-
-		DemoTriangle(
-			5+400, 5+200 - 20,
-			5+400 - 20, 5+200 + 20,
-			5+400 + 20, 5+200 + 20,
-			0x77000000);
-		DemoTriangle(
-			400, 200 - 20,
-			400 - 20, 200 + 20,
-			400 + 20, 200 + 20,
-			0xffeeeeee);
-
-		DemoTriangle(
-			5+400 + orbitx * 2, 5+200 + orbitz * 2 - 10,
-			5+400 + orbitx * 2 - 10, 5+200 + orbitz * 2 + 10,
-			5+400 + orbitx * 2 + 10, 5+200 + orbitz * 2 + 10,
-			0x77000000);
-		DemoTriangle(
-			400 + orbitx*2, 200 + orbitz*2-10,
-			400 + orbitx*2-10, 200 + orbitz*2+10,
-			400 + orbitx*2+10, 200 + orbitz*2+10,
-			0xffffff00);
-
-		DemoTriangle(
-			5 + 400 + crazyx * 2, 5 + 200 + crazyz * 2 - 10,
-			5 + 400 + crazyx * 2 - 10, 5 + 200 + crazyz * 2 + 10,
-			5 + 400 + crazyx * 2 + 10, 5 + 200 + crazyz * 2 + 10,
-			0x77000000);
-		DemoTriangle(
-			400 + crazyx * 2, 200 + crazyz * 2 - 10,
-			400 + crazyx * 2 - 10,200 + crazyz * 2 + 10,
-			400 + crazyx * 2 + 10,200 + crazyz * 2 + 10,
-			0xffff00ff);
-
-		DemoTriangle(
-			5 + 400 + mousex, 5 + 200 + mousez - 10,
-			5 + 400 + mousex - 10, 5 + 200 + mousez + 10,
-			5 + 400 + mousex + 10, 5 + 200 + mousez + 10,
-			0x77000000);
-		DemoTriangle(
-			400 + mousex, 200 + mousez - 10,
-			400 + mousex - 10, 200 + mousez + 10,
-			400 + mousex + 10, 200 + mousez + 10,
-			0xff00ffff);
-
-		float *buf = gSoloud.getWave();
-		float *fft = gSoloud.calcFFT();
-
-		ONCE(ImGui::SetNextWindowPos(ImVec2(500, 20)));
-		ImGui::Begin("Output");
-		ImGui::PlotLines("##Wave", buf, 256, 0, "Wave", -1, 1, ImVec2(264, 80));
-		ImGui::PlotHistogram("##FFT", fft, 256 / 2, 0, "FFT", 0, 10, ImVec2(264, 80), 8);
-		ImGui::Text("Active voices    : %d", gSoloud.getActiveVoiceCount());
-		ImGui::End();
-
-		ONCE(ImGui::SetNextWindowPos(ImVec2(20, 20)));
-		ImGui::Begin("Control");
-		ImGui::Checkbox("Orbit sound", &orbit_enable);
-		ImGui::Checkbox("Crazy sound", &crazy_enable);
-		ImGui::Checkbox("Mouse sound", &mouse_enable);
-
-		ImGui::End();
-		DemoUpdateEnd();
-	}
 	return 0;
+}
+
+
+bool orbit_enable = 1;
+bool crazy_enable = 1;
+bool mouse_enable = 1;
+
+void DemoMainloop()
+{
+	DemoUpdateStart();
+
+	gSoloud.setPause(gSndHandle_crazy, !crazy_enable);
+	gSoloud.setPause(gSndHandle_orbit, !orbit_enable);
+	gSoloud.setPause(gSndHandle_mouse, !mouse_enable);
+
+	float tick = DemoTick() / 1000.0f;
+
+	float crazyx = (float)(sin(tick) * sin(tick * 0.234) * sin(tick * 4.234) * 150);
+	float crazyz = (float)(cos(tick) * cos(tick * 0.234) * cos(tick * 4.234) * 150 - 50);
+	float tickd = tick - 0.1f;
+	float crazyxv = (float)(sin(tickd) * sin(tickd * 0.234) * sin(tickd * 4.234) * 150);
+	float crazyzv = (float)(cos(tickd) * cos(tickd * 0.234) * cos(tickd * 4.234) * 150 - 50);
+	crazyxv = crazyxv - crazyx;
+	crazyzv = crazyzv - crazyz;
+
+	gSoloud.set3dSourceParameters(gSndHandle_crazy, crazyx, 0, crazyz, crazyxv, 0, crazyzv);
+
+	float orbitx = (float)sin(tick) * 50;
+	float orbitz = (float)cos(tick) * 50;
+	float orbitxv = (float)sin(tickd) * 50;
+	float orbitzv = (float)cos(tickd) * 50;
+	orbitxv = orbitxv - orbitx;
+	orbitzv = orbitzv - orbitz;
+		
+	gSoloud.set3dSourceParameters(gSndHandle_orbit, orbitx, 0, orbitz, orbitxv, 0, orbitzv);
+
+	float mousex = gMouseX - 400.0f;
+	float mousez = gMouseY - 200.0f;
+
+	gSoloud.set3dSourcePosition(gSndHandle_mouse, mousex, mousez, 0);
+
+	gSoloud.update3dAudio();
+
+	DemoTriangle(
+		5+400, 5+200 - 20,
+		5+400 - 20, 5+200 + 20,
+		5+400 + 20, 5+200 + 20,
+		0x77000000);
+	DemoTriangle(
+		400, 200 - 20,
+		400 - 20, 200 + 20,
+		400 + 20, 200 + 20,
+		0xffeeeeee);
+
+	DemoTriangle(
+		5+400 + orbitx * 2, 5+200 + orbitz * 2 - 10,
+		5+400 + orbitx * 2 - 10, 5+200 + orbitz * 2 + 10,
+		5+400 + orbitx * 2 + 10, 5+200 + orbitz * 2 + 10,
+		0x77000000);
+	DemoTriangle(
+		400 + orbitx*2, 200 + orbitz*2-10,
+		400 + orbitx*2-10, 200 + orbitz*2+10,
+		400 + orbitx*2+10, 200 + orbitz*2+10,
+		0xffffff00);
+
+	DemoTriangle(
+		5 + 400 + crazyx * 2, 5 + 200 + crazyz * 2 - 10,
+		5 + 400 + crazyx * 2 - 10, 5 + 200 + crazyz * 2 + 10,
+		5 + 400 + crazyx * 2 + 10, 5 + 200 + crazyz * 2 + 10,
+		0x77000000);
+	DemoTriangle(
+		400 + crazyx * 2, 200 + crazyz * 2 - 10,
+		400 + crazyx * 2 - 10,200 + crazyz * 2 + 10,
+		400 + crazyx * 2 + 10,200 + crazyz * 2 + 10,
+		0xffff00ff);
+
+	DemoTriangle(
+		5 + 400 + mousex, 5 + 200 + mousez - 10,
+		5 + 400 + mousex - 10, 5 + 200 + mousez + 10,
+		5 + 400 + mousex + 10, 5 + 200 + mousez + 10,
+		0x77000000);
+	DemoTriangle(
+		400 + mousex, 200 + mousez - 10,
+		400 + mousex - 10, 200 + mousez + 10,
+		400 + mousex + 10, 200 + mousez + 10,
+		0xff00ffff);
+
+	float *buf = gSoloud.getWave();
+	float *fft = gSoloud.calcFFT();
+
+	ONCE(ImGui::SetNextWindowPos(ImVec2(500, 20)));
+	ImGui::Begin("Output");
+	ImGui::PlotLines("##Wave", buf, 256, 0, "Wave", -1, 1, ImVec2(264, 80));
+	ImGui::PlotHistogram("##FFT", fft, 256 / 2, 0, "FFT", 0, 10, ImVec2(264, 80), 8);
+	ImGui::Text("Active voices    : %d", gSoloud.getActiveVoiceCount());
+	ImGui::End();
+
+	ONCE(ImGui::SetNextWindowPos(ImVec2(20, 20)));
+	ImGui::Begin("Control");
+	ImGui::Checkbox("Orbit sound", &orbit_enable);
+	ImGui::Checkbox("Crazy sound", &crazy_enable);
+	ImGui::Checkbox("Mouse sound", &mouse_enable);
+
+	ImGui::End();
+	DemoUpdateEnd();
 }

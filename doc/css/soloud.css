@@ -1,12 +1,12 @@
 html {
 	font-family:"Palatino Linotype", "Book Antiqua", Palatino, serif;
-	color:#d0d0d0;				
+	color:#000000;				
 }
 
 body {
 	background-image: url(logo.png);
 	background-repeat: no-repeat;
-	background-color: #404040;
+	background-color: #ffffff;
 }
 
 .logo {
@@ -17,29 +17,20 @@ body {
 	height:130px;
 }
 
-.title {
-	font-size: 60px;
-	position: absolute;
-	left:190px;
-	top:26px;
-	width:610px;
-	text-align:center;
-}
-
 .divider {
 	position:absolute;
 	top:130px;
 	left:0px;
 	width:100%;
 	overflow:hidden;
-	background:#d0d0d0;
+	background:#c57917;
 	height:1px;
 }
 
 .content {
 	position:absolute;
 	top:140px;
-	left:190px;
+	left:200px;
 	width:600px;
 }
 
@@ -50,29 +41,21 @@ body {
 	width:170px;
 }
 
-h1 {
-	font-size: 32px;
-	line-height: 32px;	
-	font-weight: normal;
-	padding: 0;
-	margin: 0;
-	margin-top:0px;
-}
-
-h2
+h1, h2
 {
 	font-size: 32px;
-	line-height: 32px;	
+	line-height: 46px;	
 	font-weight: normal;
 	padding: 0;
 	margin: 0;
-	margin-top: 40px;	
+	margin-top: 10px;	
+	word-wrap: break-word;
 }
 
 a
 {
 	text-decoration:none;
-	color:white;
+	color:#c57917;
 }
 
 a:hover
@@ -85,11 +68,9 @@ a:hover
 	font-family: Consolas, "Lucida Console", "Bitstream Vera Sans Mono", Monaco, monospace;
 	font-size: 12px;
 	color: black;
-	background-color: #d0d0d0;
+	background-color: #e4f5fd;
 	padding: 8px 8px 8px 8px;
-	border-style: dashed;
-	border-width: 1px;
-	border-color: #404040;	
+	border-style: none;
 	clear: both;
 }
 
@@ -98,4 +79,19 @@ a:hover
   display: block;
 	margin-left: auto;
 	margin-right: auto;
-};
+}
+
+
+
+table { border-collapse: collapse; border-top: 1px solid #c57917; border-bottom: 1px solid #c57917; }
+table th { border-bottom: 1px solid #c57917; }
+table th, table td { padding: 1px 6px; }
+
+.content h1:first-child, .content h2:first-child {
+	font-size: 60px;
+	position: absolute;
+	left:-10px;
+	top:-114px;
+	width:610px;
+	text-align:right;
+}

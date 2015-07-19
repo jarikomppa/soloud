@@ -30,9 +30,17 @@
 #include "SDL.h"
 #include <windows.h>
 #else
-#include "SDL/SDL.h"
+#include "SDL2/SDL.h"
 #endif
+#ifndef __EMSCRIPTEN__
 #include "GL/glew.h"
+#endif
+
+#ifdef __EMSCRIPTEN__
+#include "emscripten.h"
+#include <GLES2/gl2.h>
+#endif
+
 #include <math.h>
 #include <stdio.h>
 #include "imgui.h"
@@ -43,8 +51,9 @@
 int gPressed[256], gWasPressed[256];
 int gMouseX = 0;
 int gMouseY = 0;
+SDL_Window *gSDLWindow;
 
-GLuint loadTexture(char * aFilename)
+unsigned int DemoLoadTexture(char * aFilename)
 {
 	int x, y, comp;
 	unsigned char *image = stbi_load(aFilename, &x, &y, &comp, 4);
@@ -145,7 +154,7 @@ static int shader_handle;
 static int texture_location, proj_mtx_location;
 static int position_location, uv_location, color_location;
 static size_t vbo_max_size = 20000;
-static unsigned int vbo_handle, vao_handle;
+static unsigned int vbo_handle;
 static unsigned int desktop_tex;
 
 // This is the main rendering function that you have to implement and provide to ImGui (via setting up 'RenderDrawListsFn' in the ImGuiIO structure)
@@ -156,7 +165,6 @@ static void ImImpl_RenderDrawLists(ImDrawList** const cmd_lists, int cmd_lists_c
 	if (cmd_lists_count == 0)
 		return;
 
-	glBindVertexArray(vao_handle);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo_handle);
 	glEnableVertexAttribArray(position_location);
 	glEnableVertexAttribArray(uv_location);
@@ -165,7 +173,6 @@ static void ImImpl_RenderDrawLists(ImDrawList** const cmd_lists, int cmd_lists_c
 	glVertexAttribPointer(position_location, 2, GL_FLOAT, GL_FALSE, sizeof(ImDrawVert), (GLvoid*)OFFSETOF(ImDrawVert, pos));
 	glVertexAttribPointer(uv_location, 2, GL_FLOAT, GL_FALSE, sizeof(ImDrawVert), (GLvoid*)OFFSETOF(ImDrawVert, uv));
 	glVertexAttribPointer(color_location, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(ImDrawVert), (GLvoid*)OFFSETOF(ImDrawVert, col));
-	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	// Setup render state: alpha-blending enabled, no face culling, no depth testing, scissor enabled
@@ -195,16 +202,12 @@ static void ImImpl_RenderDrawLists(ImDrawList** const cmd_lists, int cmd_lists_c
 	size_t total_vtx_count = 0;
 	for (int n = 0; n < cmd_lists_count; n++)
 		total_vtx_count += cmd_lists[n]->vtx_buffer.size();
-	glBindBuffer(GL_ARRAY_BUFFER, vbo_handle);
+	
 	size_t neededBufferSize = total_vtx_count * sizeof(ImDrawVert);
-	if (neededBufferSize > vbo_max_size)
-	{
-		vbo_max_size = neededBufferSize + 5000;  // Grow buffer
-		glBufferData(GL_ARRAY_BUFFER, vbo_max_size, NULL, GL_STREAM_DRAW);
-	}
 
 	// Copy and convert all vertices into a single contiguous buffer
-	unsigned char* buffer_data = (unsigned char*)glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
+	unsigned char* buf = new unsigned char[neededBufferSize];
+	unsigned char* buffer_data = buf;
 	if (!buffer_data)
 		return;
 	for (int n = 0; n < cmd_lists_count; n++)
@@ -213,9 +216,10 @@ static void ImImpl_RenderDrawLists(ImDrawList** const cmd_lists, int cmd_lists_c
 		memcpy(buffer_data, &cmd_list->vtx_buffer[0], cmd_list->vtx_buffer.size() * sizeof(ImDrawVert));
 		buffer_data += cmd_list->vtx_buffer.size() * sizeof(ImDrawVert);
 	}
-	glUnmapBuffer(GL_ARRAY_BUFFER);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo_handle);
+	glBufferData(GL_ARRAY_BUFFER, neededBufferSize, buf, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(vao_handle);
+	delete[] buf;
 
 	int cmd_offset = 0;
 	for (int n = 0; n < cmd_lists_count; n++)
@@ -234,7 +238,6 @@ static void ImImpl_RenderDrawLists(ImDrawList** const cmd_lists, int cmd_lists_c
 	}
 
 	// Restore modified state
-	glBindVertexArray(0);
 	glUseProgram(0);
 	glDisable(GL_SCISSOR_TEST);
 	glBindTexture(GL_TEXTURE_2D, 0);
@@ -278,13 +281,15 @@ static void LoadFontsTexture()
 void ImImpl_InitGL()
 {
 	const GLchar *vertex_shader =
-		"#version 330\n"
+#ifdef __EMSCRIPTEN__
+		"precision highp float;\n"
+#endif
 		"uniform mat4 ProjMtx;\n"
-		"in vec2 Position;\n"
-		"in vec2 UV;\n"
-		"in vec4 Color;\n"
-		"out vec2 Frag_UV;\n"
-		"out vec4 Frag_Color;\n"
+		"attribute vec2 Position;\n"
+		"attribute vec2 UV;\n"
+		"attribute vec4 Color;\n"
+		"varying vec2 Frag_UV;\n"
+		"varying vec4 Frag_Color;\n"
 		"void main()\n"
 		"{\n"
 		"	Frag_UV = UV;\n"
@@ -293,14 +298,15 @@ void ImImpl_InitGL()
 		"}\n";
 
 	const GLchar* fragment_shader =
-		"#version 330\n"
+#ifdef __EMSCRIPTEN__
+		"precision mediump float;\n"
+#endif
 		"uniform sampler2D Texture;\n"
-		"in vec2 Frag_UV;\n"
-		"in vec4 Frag_Color;\n"
-		"out vec4 Out_Color;\n"
+		"varying vec2 Frag_UV;\n"
+		"varying vec4 Frag_Color;\n"
 		"void main()\n"
 		"{\n"
-		"	Out_Color = Frag_Color * texture( Texture, Frag_UV.st);\n"
+		"	gl_FragColor = Frag_Color * texture2D( Texture, Frag_UV.st);\n"
 		"}\n";
 
 	shader_handle = createProgram(vertex_shader, fragment_shader);
@@ -315,8 +321,6 @@ void ImImpl_InitGL()
 	glBindBuffer(GL_ARRAY_BUFFER, vbo_handle);
 	glBufferData(GL_ARRAY_BUFFER, vbo_max_size, NULL, GL_DYNAMIC_DRAW);
 
-	glGenVertexArrays(1, &vao_handle);
-
 	LoadFontsTexture();
 }
 
@@ -325,20 +329,23 @@ static unsigned int flat_shader_handle, flat_position_location, flat_color_locat
 void framework_init_flat()
 {
 	const GLchar *vertex_shader =
-		"#version 330\n"
-		"in vec2 Position;\n"
+#ifdef __EMSCRIPTEN__
+		"precision highp float;\n"
+#endif
+		"attribute vec2 Position;\n"
 		"void main()\n"
 		"{\n"
 		"	gl_Position = vec4(Position.xy,0,1);\n"
 		"}\n";
 
 	const GLchar* fragment_shader =
-		"#version 330\n"
+#ifdef __EMSCRIPTEN__
+		"precision mediump float;\n"
+#endif
 		"uniform vec4 Color;\n"
-		"out vec4 Out_Color;\n"
 		"void main()\n"
 		"{\n"
-		"	Out_Color = Color;\n"
+		"	gl_FragColor = Color;\n"
 		"}\n";
 
 	flat_shader_handle = createProgram(vertex_shader, fragment_shader);
@@ -351,10 +358,12 @@ static unsigned int tex_shader_handle, tex_position_location, tex_uv_location, t
 void framework_init_tex()
 {
 	const GLchar *vertex_shader =
-		"#version 330\n"
-		"in vec2 Position;\n"
-		"in vec2 TexCoord;\n"
-		"out vec2 Frag_UV;\n"
+#ifdef __EMSCRIPTEN__
+		"precision highp float;\n"
+#endif
+		"attribute vec2 Position;\n"
+		"attribute vec2 TexCoord;\n"
+		"varying vec2 Frag_UV;\n"
 		"void main()\n"
 		"{\n"
 		"	Frag_UV = TexCoord;\n"
@@ -362,13 +371,14 @@ void framework_init_tex()
 		"}\n";
 
 	const GLchar* fragment_shader =
-		"#version 330\n"
+#ifdef __EMSCRIPTEN__
+		"precision mediump float;\n"
+#endif
 		"uniform sampler2D Texture;\n"
-		"in vec2 Frag_UV;\n"
-		"out vec4 Out_Color;\n"
+		"varying vec2 Frag_UV;\n"
 		"void main()\n"
 		"{\n"
-		"	Out_Color = texture(Texture, Frag_UV.st);\n"
+		"	gl_FragColor = texture2D(Texture, Frag_UV.st);\n"
 		"}\n";
 
 	tex_shader_handle = createProgram(vertex_shader, fragment_shader);
@@ -405,13 +415,18 @@ void DemoTriangle(float x0, float y0, float x1, float y1, float x2, float y2, un
 
 	glDrawArrays(GL_TRIANGLES, 0, 3);
 
-	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glDisableVertexAttribArray(flat_position_location);
 	glUseProgram(0);
 }
 
-void DemoTexQuad(int tex, float x0, float y0, float x1, float y1, float x2, float y2, float x3, float y3)
+void DemoQuad(float x0, float y0, float x1, float y1, unsigned int color)
+{
+	DemoTriangle(x0, y0, x0, y1, x1, y1, color);
+	DemoTriangle(x0, y0, x1, y0, x1, y1, color);
+}
+
+void DemoTexQuad(int tex, float x0, float y0, float x1, float y1)
 {
 	glEnableVertexAttribArray(tex_position_location);
 	glEnableVertexAttribArray(tex_uv_location);
@@ -422,11 +437,11 @@ void DemoTexQuad(int tex, float x0, float y0, float x1, float y1, float x2, floa
 	buf[0] = x0;
 	buf[1] = y0;
 	buf[2] = x1;
-	buf[3] = y1;
-	buf[4] = x2;
-	buf[5] = y2;
-	buf[6] = x3;
-	buf[7] = y3;
+	buf[3] = y0;
+	buf[4] = x0;
+	buf[5] = y1;
+	buf[6] = x1;
+	buf[7] = y1;
 
 	int i;
 	for (i = 0; i < 4; i++)
@@ -552,24 +567,35 @@ void DemoInit()
 	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
-	if (SDL_SetVideoMode(800, 400, 32, SDL_OPENGL) == 0)
-	{
-		fprintf(stderr, "Video mode set failed: %s\n", SDL_GetError());
-		SDL_Quit();
-		exit(0);
-	}
+	int flags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN;
+
+
+	gSDLWindow = SDL_CreateWindow(
+		"",
+		SDL_WINDOWPOS_CENTERED,
+		SDL_WINDOWPOS_CENTERED,
+		800,
+		400,
+		flags);
+
+	SDL_GLContext glcontext = SDL_GL_CreateContext(gSDLWindow);
+
+	SDL_GL_SetSwapInterval(1);
+
 
 	glViewport(0, 0, 800, 400);
 
 	// set window title
-	SDL_WM_SetCaption("http://soloud-audio.com", NULL);
+	SDL_SetWindowTitle(gSDLWindow, "http://soloud-audio.com");
 
+#ifndef __EMSCRIPTEN__	
 	glewInit();
+#endif
 
 	InitImGui();
 	framework_init_flat();
 	framework_init_tex();
-	desktop_tex = loadTexture("graphics/soloud_bg.png");
+	desktop_tex = DemoLoadTexture("graphics/soloud_bg.png");
 
 	// Register SDL_Quit to be called at exit; makes sure things are
 	// cleaned up when we quit.
@@ -636,7 +662,7 @@ void DemoUpdateStart()
 	}
 	glClearColor(0.2f, 0.2f, 0.4f, 0);
 	glClear(GL_COLOR_BUFFER_BIT);
-	DemoTexQuad(desktop_tex, 0, 0, 800, 0, 0, 400, 800, 400);
+	DemoTexQuad(desktop_tex, 0, 0, 800, 400);
 	UpdateImGui();
 
 	gMouseX = gUIState.mousex;
@@ -650,8 +676,7 @@ void DemoUpdateEnd()
 {
 	// End frame
 	ImGui::Render();
-	SDL_GL_SwapBuffers();
-
+	SDL_GL_SwapWindow(gSDLWindow);
 }
 
 int DemoTick()
@@ -662,4 +687,25 @@ int DemoTick()
 void DemoYield()
 {
 	SDL_Delay(1);
+}
+
+extern int DemoEntry(int argc, char *argv[]);
+extern void DemoMainloop();
+
+// Entry point
+int main(int argc, char *argv[])
+{
+	DemoInit();
+	int res = DemoEntry(argc, argv);
+	if (res != 0)
+		return res;
+#ifdef __EMSCRIPTEN__
+	emscripten_set_main_loop(DemoMainloop, 60, 0);
+#else
+	while (1)
+	{
+		DemoMainloop();
+	}
+#endif
+	return 0;
 }

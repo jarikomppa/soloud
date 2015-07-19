@@ -207,5 +207,104 @@ namespace SoLoud
             delete aThreadHandle;
         }
 #endif
+
+		static void poolWorker(void *aParam)
+		{
+			Pool *myPool = (Pool*)aParam;
+			while (myPool->mRunning)
+			{
+				PoolTask *t = myPool->getWork();
+				if (!t)
+				{
+					sleep(1);
+				}
+				else
+				{
+					t->work();
+				}
+			}
+		}
+
+		Pool::Pool()
+		{
+			mRunning = 0;
+			mThreadCount = 0;
+			mThread = 0;
+			mWorkMutex = 0;
+			mRobin = 0;
+			mMaxTask = 0;
+		}
+
+		Pool::~Pool()
+		{
+			mRunning = 0;
+			int i;
+			for (i = 0; i < mThreadCount; i++)
+			{
+				wait(mThread[i]);
+				release(mThread[i]);
+			}
+			delete[] mThread;
+			if (mWorkMutex)
+				destroyMutex(mWorkMutex);
+		}
+
+		void Pool::init(int aThreadCount)
+		{
+			if (aThreadCount > 0)
+			{
+				mMaxTask = 0;
+				mWorkMutex = createMutex();
+				mRunning = 1;
+				mThreadCount = aThreadCount;
+				mThread = new ThreadHandle[aThreadCount];
+				int i;
+				for (i = 0; i < mThreadCount; i++)
+				{
+					mThread[i] = createThread(poolWorker, this);
+				}
+			}
+		}
+
+		void Pool::addWork(PoolTask *aTask)
+		{
+			if (mThreadCount == 0)
+			{
+				aTask->work();
+			}
+			else
+			{
+				if (mWorkMutex) lockMutex(mWorkMutex);
+				if (mMaxTask == MAX_THREADPOOL_TASKS)
+				{
+					// If we're at max tasks, do the task on calling thread 
+					// (we're in trouble anyway, might as well slow down adding more work)
+					if (mWorkMutex) unlockMutex(mWorkMutex);
+					aTask->work();
+				}
+				else
+				{
+					mTaskArray[mMaxTask] = aTask;
+					mMaxTask++;
+					if (mWorkMutex) unlockMutex(mWorkMutex);
+				}
+			}
+		}
+
+		PoolTask * Pool::getWork()
+		{
+			PoolTask *t = 0;
+			if (mWorkMutex) lockMutex(mWorkMutex);
+			if (mMaxTask > 0)
+			{
+				int r = mRobin % mMaxTask;
+				mRobin++;
+				t = mTaskArray[r];
+				mTaskArray[r] = mTaskArray[mMaxTask - 1];
+				mMaxTask--;
+			}
+			if (mWorkMutex) unlockMutex(mWorkMutex);
+			return t;
+		}
 	}
 }

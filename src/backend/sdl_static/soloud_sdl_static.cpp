@@ -47,60 +47,49 @@ namespace SoLoud
 
 namespace SoLoud
 {
+	static SDL_AudioSpec gActiveAudioSpec;
 	void soloud_sdlstatic_audiomixer(void *userdata, Uint8 *stream, int len)
 	{
-		int samples = len / 4;
 		short *buf = (short*)stream;
 		SoLoud::Soloud *soloud = (SoLoud::Soloud *)userdata;
-		float *mixdata = (float*)(soloud->mBackendData);
-		soloud->mix(mixdata, samples);
-
-		int i;
-		for (i = 0; i < samples*2; i++)
+		if (gActiveAudioSpec.format == AUDIO_F32)
 		{
-			buf[i] = (short)(mixdata[i] * 0x7fff);
+			int samples = len / (gActiveAudioSpec.channels * sizeof(float));
+			soloud->mix((float *)buf, samples);
 		}
-	}
-
-	void soloud_sdlstatic_lockmutex(void *aMutexPtr)
-	{
-		SDL_mutexP((SDL_mutex*)aMutexPtr);	
-	}
-
-	void soloud_sdlstatic_unlockmutex(void *aMutexPtr)
-	{
-		SDL_mutexV((SDL_mutex*)aMutexPtr);
+		else // assume s16 if not float
+		{
+			int samples = len / (gActiveAudioSpec.channels * sizeof(short));
+			soloud->mix_s16(buf, samples);
+		}
 	}
 
 	static void soloud_sdlstatic_deinit(SoLoud::Soloud *aSoloud)
 	{
 		SDL_CloseAudio();
-		delete[] (float*)aSoloud->mBackendData;
-		SDL_DestroyMutex((SDL_mutex*)aSoloud->mMutex);
 	}
 
-	result sdlstatic_init(SoLoud::Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer)
+	result sdlstatic_init(SoLoud::Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer, unsigned int aChannels)
 	{
-		aSoloud->mMutex = SDL_CreateMutex();
 		SDL_AudioSpec as;
 		as.freq = aSamplerate;
-		as.format = AUDIO_S16;
-		as.channels = 2;
+		as.format = AUDIO_F32;
+		as.channels = aChannels;
 		as.samples = aBuffer;
 		as.callback = soloud_sdlstatic_audiomixer;
 		as.userdata = (void*)aSoloud;
 
-		SDL_AudioSpec as2;
-		if (SDL_OpenAudio(&as, &as2) < 0)
+		if (SDL_OpenAudio(&as, &gActiveAudioSpec) < 0)
 		{
-			return UNKNOWN_ERROR;
+			as.format = AUDIO_S16;
+			if (SDL_OpenAudio(&as, &gActiveAudioSpec) < 0 || gActiveAudioSpec.format != AUDIO_S16)
+			{
+				return UNKNOWN_ERROR;
+			}
 		}
-		aSoloud->mBackendData = new float[as2.samples*4];
 
-		aSoloud->postinit(as2.freq, as2.samples * 2, aFlags);
+		aSoloud->postinit(gActiveAudioSpec.freq, gActiveAudioSpec.samples, aFlags, gActiveAudioSpec.channels);
 
-		aSoloud->mLockMutexFunc = soloud_sdlstatic_lockmutex;
-		aSoloud->mUnlockMutexFunc = soloud_sdlstatic_unlockmutex;
 		aSoloud->mBackendCleanupFunc = soloud_sdlstatic_deinit;
 
 		SDL_PauseAudio(0);

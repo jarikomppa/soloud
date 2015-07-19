@@ -50,7 +50,7 @@ namespace SoLoud
 
     struct SoLoudWinMMData
     {
-        float *buffer;
+        AlignedFloatBuffer buffer;
         short *sampleBuffer[BUFFER_COUNT];
         WAVEHDR header[BUFFER_COUNT];
         HWAVEOUT waveOut;
@@ -72,14 +72,11 @@ namespace SoLoud
                 {
                     continue;
                 }
-                data->soloud->mix(data->buffer, data->samples);
                 short *tgtBuf = data->sampleBuffer[i];
-                for (DWORD j=0;j<(data->header[i].dwBufferLength/sizeof(short));++j) 
-                {
-                    tgtBuf[j] = static_cast<short>(floor(data->buffer[j] 
-                                                         * static_cast<float>(0x7fff)));
-                }
-                if (MMSYSERR_NOERROR != waveOutWrite(data->waveOut, &data->header[i], 
+				
+				data->soloud->mix_s16(tgtBuf, data->samples);
+
+				if (MMSYSERR_NOERROR != waveOutWrite(data->waveOut, &data->header[i], 
                                                      sizeof(WAVEHDR))) 
                 {
                     return;
@@ -111,20 +108,12 @@ namespace SoLoud
                 delete[] data->sampleBuffer[i];
             }
         }
-        if (0 != data->buffer)
-        {
-            delete[] data->buffer;
-        }
         waveOutClose(data->waveOut);
-        Thread::destroyMutex(data->soloud->mMutex);
-        data->soloud->mMutex = 0;
-        data->soloud->mLockMutexFunc = 0;
-        data->soloud->mUnlockMutexFunc = 0;
         delete data;
         aSoloud->mBackendData = 0;
     }
 
-    result winmm_init(Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer)
+	result winmm_init(Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer, unsigned int aChannels)
     {
         SoLoudWinMMData *data = new SoLoudWinMMData;
         ZeroMemory(data, sizeof(SoLoudWinMMData));
@@ -155,7 +144,7 @@ namespace SoLoud
         {
             return UNKNOWN_ERROR;
         }
-        data->buffer = new float[data->samples*format.nChannels];
+        data->buffer.init(data->samples*format.nChannels);
         for (int i=0;i<BUFFER_COUNT;++i) 
         {
             data->sampleBuffer[i] = new short[data->samples*format.nChannels];
@@ -168,10 +157,7 @@ namespace SoLoud
                 return UNKNOWN_ERROR;
             }
         }
-        aSoloud->mMutex = Thread::createMutex();
-        aSoloud->mLockMutexFunc = Thread::lockMutex;
-        aSoloud->mUnlockMutexFunc = Thread::unlockMutex;
-        aSoloud->postinit(aSamplerate, data->samples * format.nChannels, aFlags);
+        aSoloud->postinit(aSamplerate, data->samples * format.nChannels, aFlags, 2);
         data->threadHandle = Thread::createThread(winMMThread, data);
         if (0 == data->threadHandle)
         {

@@ -24,6 +24,13 @@ freely, subject to the following restrictions:
 
 #include "soloud_basicwave.h"
 
+static float my_fabs(float x)
+{
+    if (x < 0)
+        return -x;
+    return x;
+}
+
 namespace SoLoud
 {
 
@@ -69,7 +76,7 @@ namespace SoLoud
 			case Basicwave::TRIANGLE:
 				for (i = 0; i < aSamples; i++)
 				{
-					aBuffer[i] = abs(0.5f - fmod(mParent->mFreq * mOffset, 1)) * 4 - 1;
+					aBuffer[i] = my_fabs(0.5f - fmod(mParent->mFreq * mOffset, 1)) * 4 - 1;
 					mOffset++;
 				}
 				break;

@@ -34,6 +34,11 @@ namespace SoLoud
 
 	class BassboostFilterInstance : public FFTFilterInstance
 	{
+		enum FILTERATTRIBUTE
+		{
+			WET = 0,
+			BOOST = 1
+		};
 		BassboostFilter *mParent;
 	public:
 		virtual void fftFilterChannel(float *aFFTBuffer, unsigned int aSamples, float aSamplerate, time aTime, unsigned int aChannel, unsigned int aChannels);
@@ -43,6 +48,13 @@ namespace SoLoud
 	class BassboostFilter : public FFTFilter
 	{
 	public:
+		enum FILTERATTRIBUTE
+		{
+			WET = 0,
+			BOOST = 1
+		};
+		float mBoost;
+		result setParams(float aBoost);
 		virtual FilterInstance *createInstance();
 		BassboostFilter();
 	};

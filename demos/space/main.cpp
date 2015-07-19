@@ -1,6 +1,6 @@
 /*
 SoLoud audio engine
-Copyright (c) 2013-2014 Jari Komppa
+Copyright (c) 2013-2015 Jari Komppa
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -23,13 +23,11 @@ freely, subject to the following restrictions:
 */
 
 #include <stdlib.h>
-#if defined(_MSC_VER)
-#include "SDL.h"
-#else
-#include "SDL/SDL.h"
-#endif
 #include <math.h>
 #include <stdio.h>
+
+#include "imgui.h"
+#include "soloud_demo_framework.h"
 
 
 #include "soloud.h"
@@ -50,147 +48,15 @@ SoLoud::FlangerFilter gFlanger;
 SoLoud::LofiFilter gLofi;
 SoLoud::BiquadResonantFilter gReso;
 
-int speechhandle = 0;
+unsigned int gAlien = 0;
 
-SDL_Surface *screen;
-SDL_Surface *font;
-SDL_Surface *bg;
+int gSpeechhandle = 0;
 
-int lastloop = 0;
-int tickofs = 0;
+int gLastloop = 0;
+int gTickofs = 0;
 
-void putpixel(int x, int y, int color)
+int DemoEntry(int argc, char *argv[])
 {
-	if (y < 0 || y > 480 || x < 0 || x > 640) 
-		return;
-	unsigned int *ptr = (unsigned int*)screen->pixels;
-	int lineoffset = y * (screen->pitch / 4);
-	ptr[lineoffset + x] = color;
-}
-
-int drawchar(int ch, int x, int y, int c)
-{
-	int i, j, maxx = 0;
-	for (i = 0; i < 16; i++)
-	{
-		for (j = 0; j < 16; j++)
-		{
-			if (((char*)font->pixels)[((ch-32)*16+i)*16+j])
-			{
-				putpixel(x+j,y+i,c);
-				if (j > maxx) maxx = j;
-			}
-		}
-	}
-	return maxx + 1;
-}
-
-void drawstring(char * s, int x, int y, int c, int max)
-{
-	int ox = x;
-	while (*s && max)
-	{
-		max--;
-		if (*s == '\n')
-		{
-			x = ox;
-			y += 16;
-		}
-		else
-		{
-			x += drawchar(*s, x, y, c);
-			if (*s == 32) x += 3;
-		}
-		s++;
-	}
-}
-
-
-void drawrect(int x, int y, int w, int h, int c)
-{
-	int i, j;
-	for (i = 0; i < w; i++)
-		for (j = 0; j < h; j++)
-			putpixel(i+x, j+y, c);			
-}
-
-void render()
-{   
-	// Lock surface if needed
-	if (SDL_MUSTLOCK(screen))
-		if (SDL_LockSurface(screen) < 0) 
-			return;
-
-	// Ask SDL for the time in milliseconds
-	int tick = SDL_GetTicks();
-
-	int i, j;
-	for (i = 0; i < 480; i++)
-		for (j = 0; j < 640; j++)
-			putpixel(j, i, ((int*)bg->pixels)[i*bg->pitch/4+j] | 0xff000000);
-	
-	float *w = gSpeechBus.getWave();
-
-	drawrect(317,231,226,133,0xff003f00);
-	for (i = 0; i < 7; i++)
-		drawrect(317+(i+1)*(226/8),231,1,133,0xff005f00);
-	drawrect(317,231+65,226,1,0xff007f00);
-	drawrect(317,231+32,226,1,0xff00af00);
-	drawrect(317,231+97,226,1,0xff00af00);
-
-	for (i = 0; i < 226; i+=2)
-	{
-		float v = fabs(w[i] + (rand() % 500)/10000.0f);
-		if (v > 1) v = 1;
-		float h = 132 * v / 2;
-		drawrect(317+i, 231 + 66-(int)floor(h), 1, (int)floor(h*2), 0xff009f00);
-	}
-
-	float *f = gMusicBus.calcFFT();
-
-	drawrect(62,383,103,60,0xff003f00);
-	for (i = 0; i < 103; i++)
-	{
-		float v = f[(i & ~7) + 5] / 2;
-		float h = 60 * v;
-		if (h > 60) h = 60;
-		drawrect(62+i,383+60-(int)floor(h),1,(int)floor(h),0xff007f00);
-	}
-
-	int loop = gSoloud.getLoopCount(speechhandle);
-	if (loop != lastloop)
-	{
-		lastloop = loop;
-		tickofs = tick;
-	}
-
-	drawstring("What the alien has to say might\n"
-				"appear around here if this\n"
-				"wasn't just a dummy mockup..\n"
-				"\n       \n"
-				"This is a demo of getting\n"
-				"visualization data from different\n"
-				"parts of the audio pipeline.", 317,50,0xff00ff00, (tick - tickofs) / 70);
-
-	// Unlock if needed
-	if (SDL_MUSTLOCK(screen)) 
-		SDL_UnlockSurface(screen);
-
-	// Tell SDL to update the whole screen
-	SDL_UpdateRect(screen, 0, 0, 640, 480);    
-}
-
-
-// Entry point
-int main(int argc, char *argv[])
-{	
-	// Initialize SDL's subsystems - in this case, only video.
-	if ( SDL_Init(SDL_INIT_VIDEO) < 0 ) 
-	{
-		fprintf(stderr, "Unable to init SDL: %s\n", SDL_GetError());
-		exit(1);
-	}
-
 	gSoloud.init();
 	gSoloud.setVisualizationEnable(1);
 	gSoloud.setGlobalVolume(3);
@@ -199,30 +65,32 @@ int main(int argc, char *argv[])
 	gSoloud.play(gSpeechBus);
 	gSoloud.play(gMusicBus);
 
+	gAlien = DemoLoadTexture("graphics/alien.png");
+
 	gSpeech.setFilter(1, &gFlanger);
 	gSpeech.setFilter(0, &gLofi);
 	gSpeech.setFilter(2, &gReso);
-	gLofi.setParams(8000,4);
-	gFlanger.setParams(0.002f,100);
-//	gReso.setParams(SoLoud::BiquadResonantFilter::LOWPASS, 8000, 500, 5);
+	gLofi.setParams(8000, 4);
+	gFlanger.setParams(0.002f, 100);
+	//	gReso.setParams(SoLoud::BiquadResonantFilter::LOWPASS, 8000, 500, 5);
 	gReso.setParams(SoLoud::BiquadResonantFilter::BANDPASS, 8000, 1000, 0.5);
 
 	gSpeech.setText("What the alien has to say might\n"
-				"appear around here if this\n"
-				"wasn't just a dummy mockup..\n"
-				"\n..........\n"
-				"This is a demo of getting\n"
-				"visualization data from different\n"
-				"parts of the audio pipeline."
-				"\n..........\n"
-				"\n..........\n"
-				"\n..........\n");
-	gSpeech.setLooping(1);	
+		"appear around here if this\n"
+		"wasn't just a dummy mockup..\n"
+		"\n..........\n"
+		"This is a demo of getting\n"
+		"visualization data from different\n"
+		"parts of the audio pipeline."
+		"\n..........\n"
+		"\n..........\n"
+		"\n..........\n");
+	gSpeech.setLooping(1);
 
-	speechhandle = gSpeechBus.play(gSpeech, 3, -0.25);
-	gSoloud.setRelativePlaySpeed(speechhandle, 1.2f);
-	
-	gSoloud.oscillateFilterParameter(speechhandle, 0, SoLoud::LofiFilter::SAMPLERATE, 2000, 8000, 4);
+	gSpeechhandle = gSpeechBus.play(gSpeech, 3, -0.25);
+	gSoloud.setRelativePlaySpeed(gSpeechhandle, 1.2f);
+
+	gSoloud.oscillateFilterParameter(gSpeechhandle, 0, SoLoud::LofiFilter::SAMPLERATE, 2000, 8000, 4);
 
 
 	gMod.load("audio/BRUCE.S3M");
@@ -231,55 +99,57 @@ int main(int argc, char *argv[])
 	gSpeechBus.setVisualizationEnable(1);
 	gMusicBus.setVisualizationEnable(1);
 
-	
-	// Register SDL_Quit to be called at exit; makes sure things are
-	// cleaned up when we quit.
-	atexit(SDL_Quit);	
-
-	// Attempt to create a 640x480 window with 32bit pixels.
-	screen = SDL_SetVideoMode(640, 480, 32, SDL_SWSURFACE);
-	font = SDL_LoadBMP("graphics/font.bmp");
-	SDL_Surface *temp = SDL_LoadBMP("graphics/spaaaace.bmp");
-	bg = SDL_DisplayFormat(temp);	
-	SDL_FreeSurface(temp);
-	// If we fail, return error.
-	if ( screen == NULL ) 
-	{
-		fprintf(stderr, "Unable to set 640x480 video: %s\n", SDL_GetError());
-		exit(1);
-	}
-
-	SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
-
-	// Main loop: loop forever.
-	while (1)
-	{
-		// Render stuff
-		render();
-
-		// Poll for events, and handle the ones we care about.
-		SDL_Event event;
-		while (SDL_PollEvent(&event)) 
-		{
-			switch (event.type) 
-			{
-			case SDL_KEYUP:
-				// If escape is pressed, return (and thus, quit)
-				switch (event.key.keysym.sym)
-				{
-				case SDLK_ESCAPE:
-					{
-						gSoloud.deinit();
-						return 0;
-					}
-					break;
-				}
-				break;
-			case SDL_QUIT:
-				gSoloud.deinit();
-				return(0);
-			}
-		}
-	}
 	return 0;
+}
+
+void DemoMainloop()
+{
+	int tick = DemoTick();
+
+	DemoUpdateStart();
+
+	float *fft = gMusicBus.calcFFT();
+
+	ONCE(ImGui::SetNextWindowPos(ImVec2(500, 20)));
+	ImGui::Begin("Output");
+	ImGui::PlotHistogram("##FFT", fft, 256 / 2, 0, "FFT", 0, 10, ImVec2(264, 80), 8);
+	ImGui::Text("Active voices    : %d", gSoloud.getActiveVoiceCount());
+	ImGui::Text(
+		"Active voices include 2\n"
+		"audio busses, music and\n"
+		"speech.");
+	ImGui::End();
+
+	ONCE(ImGui::SetNextWindowPos(ImVec2(20, 20)));
+	ONCE(ImGui::SetNextWindowSize(ImVec2(280, 360)));
+	ImGui::Begin("Alien");
+	float *buf = gSpeechBus.getWave();
+	ImGui::Image((ImTextureID) gAlien,ImVec2(128,128));
+	ImGui::PlotLines("##Wave", buf, 256, 0, "Wave", -1, 1, ImVec2(264, 80));
+	int loop = gSoloud.getLoopCount(gSpeechhandle);
+	if (loop != gLastloop)
+	{
+		gLastloop = loop;
+		gTickofs = tick;
+	}
+
+	char *s = "What the alien has to say might\n"
+		"appear around here if this\n"
+		"wasn't just a dummy mockup..\n"
+		"\n       \n"
+		"This is a demo of getting\n"
+		"visualization data from different\n"
+		"parts of the audio pipeline.";
+	char temp[512];
+	int i = 0;
+	while (s[i] && i < (tick - gTickofs) / 70)
+	{
+		temp[i] = s[i];
+		i++;
+	}
+	temp[i] = 0;
+	ImGui::Text(temp);
+	ImGui::End();
+
+	DemoUpdateEnd();
 }

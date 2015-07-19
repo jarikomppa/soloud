@@ -33,18 +33,10 @@ freely, subject to the following restrictions:
 typedef int (*SDLOpenAudio)(SDL_AudioSpec *desired, SDL_AudioSpec *obtained);
 typedef void (*SDLCloseAudio)();
 typedef void (*SDLPauseAudio)(int pause_on);
-typedef SDL_mutex* (*SDLCreateMutex)();
-typedef void (*SDLDestroyMutex)(SDL_mutex *mutex);
-typedef int (*SDLmutexP)(SDL_mutex *mutex);
-typedef int (*SDLmutexV)(SDL_mutex *mutex);
 
 static SDLOpenAudio dSDL_OpenAudio = NULL;
 static SDLCloseAudio dSDL_CloseAudio = NULL;
 static SDLPauseAudio dSDL_PauseAudio = NULL;
-static SDLCreateMutex dSDL_CreateMutex = NULL;
-static SDLDestroyMutex dSDL_DestroyMutex = NULL;
-static SDLmutexP dSDL_mutexP = NULL;
-static SDLmutexV dSDL_mutexV = NULL;
 
 #ifdef WINDOWS_VERSION
 #include <windows.h>
@@ -101,25 +93,11 @@ static int load_dll()
 	    dSDL_OpenAudio = (SDLOpenAudio)getDllProc(dll, "SDL_OpenAudio");
 	    dSDL_CloseAudio = (SDLCloseAudio)getDllProc(dll, "SDL_CloseAudio");
 	    dSDL_PauseAudio = (SDLPauseAudio)getDllProc(dll, "SDL_PauseAudio");
-	    dSDL_CreateMutex = (SDLCreateMutex)getDllProc(dll, "SDL_CreateMutex");
-	    dSDL_DestroyMutex = (SDLDestroyMutex)getDllProc(dll, "SDL_DestroyMutex");
-	    dSDL_mutexP = (SDLmutexP)getDllProc(dll, "SDL_mutexP");
-	    dSDL_mutexV = (SDLmutexV)getDllProc(dll, "SDL_mutexV");
-
-		// SDL2 renames the functions (and a good thing, too)
-		if (dSDL_mutexP == NULL)
-			dSDL_mutexP = (SDLmutexP)getDllProc(dll, "SDL_LockMutex");
-		if (dSDL_mutexV == NULL)
-			dSDL_mutexV = (SDLmutexP)getDllProc(dll, "SDL_UnlockMutex");
 
 
         if (dSDL_OpenAudio && 
         	dSDL_CloseAudio &&
-        	dSDL_PauseAudio &&
-            dSDL_CreateMutex &&
-            dSDL_DestroyMutex &&
-            dSDL_mutexP &&
-            dSDL_mutexV)
+        	dSDL_PauseAudio)
         {
         	return 1;
         }
@@ -150,31 +128,4 @@ void dll_SDL_PauseAudio(int pause_on)
 {
 	if (load_dll())
 		dSDL_PauseAudio(pause_on);
-}
-
-SDL_mutex * dll_SDL_CreateMutex()
-{
-	if (load_dll())
-		return dSDL_CreateMutex();
-	return NULL;
-}
-
-void dll_SDL_DestroyMutex(SDL_mutex * mutex)
-{
-	if (load_dll())
-		dSDL_DestroyMutex(mutex);
-}
-
-int dll_SDL_mutexP(SDL_mutex * mutex)
-{
-	if (load_dll())
-		return dSDL_mutexP(mutex);
-	return 0;
-}
-
-int dll_SDL_mutexV(SDL_mutex * mutex)
-{
-	if (load_dll())
-		return dSDL_mutexV(mutex);
-	return 0;
 }

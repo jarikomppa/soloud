@@ -82,10 +82,6 @@ namespace SoLoud
 		{
 			Thread::sleep(10);
 		}
-		Thread::destroyMutex(aSoloud->mMutex);
-		aSoloud->mMutex = 0;
-		aSoloud->mLockMutexFunc = 0;
-		aSoloud->mUnlockMutexFunc = 0;
 	}
 	
 	static void openal_mutex_lock(void * mutex)
@@ -105,15 +101,11 @@ namespace SoLoud
 		ALint state;
 		dll_al_GetSourcei(source, AL_BUFFERS_PROCESSED, &buffersProcessed);
 
-		float mixbuf[BUFFER_SIZE*2];
 		short downbuf[BUFFER_SIZE*2];
 
 		while (buffersProcessed--) 
 		{
-			aSoloud->mix(mixbuf,BUFFER_SIZE);
-			int i;
-			for (i = 0; i < BUFFER_SIZE*2; i++)
-				downbuf[i] = (short)floor(mixbuf[i] * 0x7fff);
+			aSoloud->mix_s16(downbuf,BUFFER_SIZE);
 
 			dll_al_SourceUnqueueBuffers(source, 1, &buffer);
 
@@ -138,16 +130,13 @@ namespace SoLoud
 		threadrun++;
 	}
 
-	result openal_init(SoLoud::Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer)
+	result openal_init(SoLoud::Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer, unsigned int aChannels)
 	{
 		if (!dll_al_found())
 			return DLL_NOT_FOUND;
 
-		aSoloud->postinit(aSamplerate,aBuffer,aFlags);
+		aSoloud->postinit(aSamplerate,aBuffer,aFlags,2);
 		aSoloud->mBackendCleanupFunc = soloud_openal_deinit;
-		aSoloud->mMutex = Thread::createMutex();
-		aSoloud->mLockMutexFunc = openal_mutex_lock;
-		aSoloud->mUnlockMutexFunc = openal_mutex_unlock;
 
 		device = dll_alc_OpenDevice(NULL);
 		context = dll_alc_CreateContext(device, NULL);

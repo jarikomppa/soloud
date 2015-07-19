@@ -43,13 +43,16 @@ All of the formulas take three parameters: rolloff factor, minimum and maximum d
     result = min_distance / (min_distance + 
              rolloff_factor * (distance - min_distance))
 
-![Inverse distance, varying rolloff](images/att_inv_rolloff)
+![Inverse distance, varying rolloff](images/att_inv_rolloff)\ 
+
 The higher the rolloff factor, the more steeply the volume drops. At low enough rolloff factor, the volume never drops near zero. Values over 1 recommended (unless you have special needs). Values less than equal to zero result in undefined behavior.
 
-![Inverse distance, varying min](images/att_inv_min)
+![Inverse distance, varying min](images/att_inv_min)\ 
+
 Increasing the minimum distance pushes the start of the attenuation further. It also causes the curve to change. Note that the minimum distance must be above 0.
 
-![Inverse distance, varying max](images/att_inv_max)
+![Inverse distance, varying max](images/att_inv_max)\ 
+
 The maximum distance simply cuts the attenuation at the volume level it has reached at that point.
 
 #### Linear Distance
@@ -57,37 +60,44 @@ The maximum distance simply cuts the attenuation at the volume level it has reac
     result = 1 - rolloff_factor * 
              (distance - min_distance) / (max_distance - min_distance)
 
-![Linear distance, varying rolloff](images/att_lin_rolloff)
+![Linear distance, varying rolloff](images/att_lin_rolloff)\ 
+
 The rolloff factor for linear distance simply sets the maximum volume reduction. Using values outside the 0..1 range causes undefined behavior.
 
-![Linear distance, varying min](images/att_lin_min)
+![Linear distance, varying min](images/att_lin_min)\ 
+
 The minimum distance works as one might expect. Minimum distance must be less or equal to maximum distance.
 
-![Linear distance, varying max](images/att_lin_max)
+![Linear distance, varying max](images/att_lin_max)\ 
+
 The maximum distance works as one might expect. Minimum distance must be less or equal to maximum distance.
 
 #### Exponential Distance
     distance = CLAMP(distance, min_distance, max_distance)
     result = pow(distance / min_distance, -rolloff_factor)
     
-![Exponential distance, varying rolloff](images/att_exp_rolloff)
+![Exponential distance, varying rolloff](images/att_exp_rolloff)\ 
+
 The higher the rolloff factor, the more steeply the volume drops. At low enough rolloff factor, the volume never drops near zero. Values over 1 recommended (unless you have special needs). Values less than equal to zero result in really weird behavior.
 
-![Exponential distance, varying min](images/att_exp_min)
+![Exponential distance, varying min](images/att_exp_min)\ 
+
 Increasing the minimum distance pushes the start of the attenuation further. It also causes the curve to change. Note that the minimum distance must be above 0.
 
-![Exponential distance, varying max](images/att_exp_max)
+![Exponential distance, varying max](images/att_exp_max)\ 
+
 The maximum distance simply cuts the attenuation at the volume level it has reached at that point.
 
 ### Doppler
 "Doppler effect" is the physical phenomenon that causes sound sources (like an ambulance) to sound higher-pitched when they're coming towards you and lower-pitched when going away. 
 
-![Doppler effect](images/doppler)
-A stationary sound (with a stationary listener) receives sound waves as you'd expect. When the sound source (or listener) are moving, the sound waves get "squashed" (for higher-pitch sould) or "stretched" (for lower-pitch sound) depending on whether the sound is approaching or receding from the listener.
+![Doppler effect](images/doppler)\ 
+
+A stationary sound (with a stationary listener) receives sound waves as you'd expect. When the sound source (or listener) are moving, the sound waves get "squashed" (for higher-pitch sound) or "stretched" (for lower-pitch sound) depending on whether the sound is approaching or receding from the listener.
 
 SoLoud uses the OpenAL 1.1 formula for doppler calculation. The calculation depends on the listeners' and sound sources' velocities being properly calculated on the application's side. If you do not wish to use the doppler, simply leave all velocities at zero.
 
-In addition to velocities, the doppler depends on the proper value of speed of sound. The default value is set at 343, which assumes that your world coordinates are in meters (where 1 unit is 1 meter), and that the environment is dry air at around 20 degrees celsius. If those assumptions do not match your environment, change the speed with set3dSoundSpeed().
+In addition to velocities, the doppler depends on the proper value of speed of sound. The default value is set at 343, which assumes that your world coordinates are in meters (where 1 unit is 1 meter), and that the environment is dry air at around 20 degrees Celsius. If those assumptions do not match your environment, change the speed with set3dSoundSpeed().
 
     soloud.set3dSoundSpeed(1497); // we're in water
     
@@ -105,6 +115,7 @@ Speakers are defined as 3d vectors, and the volume at which each speaker plays i
 
 In practise this ((dot+1)/2) calculation creates a field where sounds that come from the same direction as the speaker play at maximum volume, while sounds that come from exact opposite direction play at zero volume, and anything in between gets a reduced volume.
 
-![Speaker volume field](images/speaker_dot)
+![Speaker volume field](images/speaker_dot)\ 
+
 This algorithm is easily applied to any number of speakers in any positioning in 3d space. It may not be as clear-sounding as "Vector Base Amplitude Panning (VBAP)", but it's really easy to implement.
     

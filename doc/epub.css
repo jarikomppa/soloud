@@ -17,10 +17,11 @@ pre
 	font-family: monospace;
 	font-size: 12px;
 	color: black;
-	background-color: #d0d0d0;
+	background-color: #e4f5fd;
 	padding: 8px 8px 8px 8px;
-	border-style: dashed;
-	border-width: 1px;
-	border-color: #404040;	
+	border-style: none;
 	clear: both;
 }
+table { border-collapse: collapse; border-top: 1px solid #c57917; border-bottom: 1px solid #c57917; }
+table th { border-bottom: 1px solid #c57917; }
+table th, table td { padding: 1px 6px; }

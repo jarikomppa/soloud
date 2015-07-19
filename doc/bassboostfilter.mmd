@@ -1,0 +1,28 @@
+## SoLoud::BassboostFilter
+
+The bassboost filter is a proof of concept FFT filter.
+It simply multiplies the first few bands of the FFT by
+the boost value.
+
+There is one parameter - how strong the boost effect is.
+
+    // Set up bass boost filter
+    gBassboost.setParams(0.1f);  
+    // Set the filter as the first filter of the bus
+    gBus.setFilter(0, &gBassboost); 
+
+### BassboostFilter.setParams()
+
+Set the parameters of the filter.
+
+    gBassboost.setParams(11); // ours goes to 11
+    
+Changing the parameters via setParams() does not affect "live" sounds. Live parameters
+can be set, faded or oscillated:
+
+    gSoloud.fadeFilterParameter(
+      gMusicHandle, // Sound handle
+      0,            // First filter
+      SoLoud::BassboostFilter::BOOST, // What to adjust
+      0,            // Target value
+      3);           // Time in seconds

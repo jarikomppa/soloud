@@ -32,7 +32,8 @@ namespace SoLoud
 	BassboostFilterInstance::BassboostFilterInstance(BassboostFilter *aParent)
 	{
 		mParent = aParent;
-		initParams(1);
+		initParams(2);
+		mParam[BOOST] = aParent->mBoost;
 	}
 
 	void BassboostFilterInstance::fftFilterChannel(float *aFFTBuffer, unsigned int aSamples, float aSamplerate, time aTime, unsigned int aChannel, unsigned int aChannels)
@@ -40,13 +41,21 @@ namespace SoLoud
 		unsigned int i;
 		for (i = 0; i < 2; i++)
 		{
-			aFFTBuffer[i] *= 4;
+			aFFTBuffer[i] *= mParam[BOOST];
 		}
 	}
 
+	result BassboostFilter::setParams(float aBoost)
+	{
+		if (aBoost < 0)
+			return INVALID_PARAMETER;
+		mBoost = aBoost;
+		return SO_NO_ERROR;
+	}
 
 	BassboostFilter::BassboostFilter()
 	{
+		mBoost = 2;
 	}
 
 	FilterInstance *BassboostFilter::createInstance()

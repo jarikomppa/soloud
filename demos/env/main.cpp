@@ -1,6 +1,6 @@
 /*
 SoLoud audio engine
-Copyright (c) 2013-2014 Jari Komppa
+Copyright (c) 2013-2015 Jari Komppa
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -23,14 +23,10 @@ freely, subject to the following restrictions:
 */
 
 #include <stdlib.h>
-#if defined(_MSC_VER)
-#include "SDL.h"
-#else
-#include "SDL/SDL.h"
-#endif
 #include <math.h>
 #include <stdio.h>
-
+#include "imgui.h"
+#include "soloud_demo_framework.h"
 
 #include "soloud.h"
 #include "soloud_wav.h"
@@ -41,88 +37,28 @@ SoLoud::Soloud gSoloud;			// SoLoud engine core
 SoLoud::BiquadResonantFilter gLPFilter;
 SoLoud::Wav gRain, gWind, gMusic;
 
+int gWalker, gBackground;
 int gRainHandle, gWindHandle, gMusicHandle;
 
-SDL_Surface *screen;
-SDL_Surface *font;
-SDL_Surface *bg;
-SDL_Surface *walker;
-
-void putpixel(int x, int y, int color)
+void drawbg(int x, int y)
 {
-	if (y < 0 || y > 255 || x < 0 || x > 400) 
-		return;
-	unsigned int *ptr = (unsigned int*)screen->pixels;
-	int lineoffset = y * (screen->pitch / 4);
-	ptr[lineoffset + x] = color;
-}
-
-void mulpixel(int x, int y, int color)
-{
-	if (y < 0 || y > 255 || x < 0 || x > 400) 
-		return;
-	unsigned int *ptr = (unsigned int*)screen->pixels;
-	int lineoffset = y * (screen->pitch / 4);
-	ptr[lineoffset + x] &= color;
-}
-
-int drawchar(int ch, int x, int y)
-{
-	int i, j, maxx = 0;
-	for (i = 0; i < 16; i++)
-	{
-		for (j = 0; j < 16; j++)
-		{
-			if (((char*)font->pixels)[((ch-32)*16+i)*16+j])
-			{
-				putpixel(x+j,y+i,0xff000000);
-				if (j > maxx) maxx = j;
-			}
-		}
-	}
-	return maxx + 1;
-}
-
-void drawstring(char * s, int x, int y)
-{
-	while (*s)
-	{
-		x += drawchar(*s, x, y);
-		if (*s == 32) x += 3;
-		s++;
-	}
+	DemoTexQuad(gBackground, x, y+100, x + 800, y + 600+100);
 }
 
 void drawwalker(int frame, int x, int y)
 {
-	int ofs = frame * walker->w * 2 * walker->pitch / 4;
-	int i, j;
-	for (i = 0; i < walker->w*2; i++)
-	{
-		for (j = 0; j < walker->w; j++)
-		{
-			mulpixel(x+j,y+i,((int*)walker->pixels)[ofs + i * walker->pitch / 4 + j]);
-		}
-	}
+	DemoTexQuad(gWalker, x-12, y + frame + 100, x + 60-12, y + 60 + frame + 100);
 }
 
 void drawrect(int x, int y, int w, int h, int c)
 {
-	int i, j;
-	for (i = 0; i < w; i++)
-		for (j = 0; j < h; j++)
-			putpixel(i+x, j+y, c);			
+	DemoQuad(x, y + 100, x + w, y + h + 100, c);
 }
 
-void render()
+float render()
 {   
-	// Lock surface if needed
-	if (SDL_MUSTLOCK(screen))
-		if (SDL_LockSurface(screen) < 0) 
-			return;
-
 	// Ask SDL for the time in milliseconds
-	int tick = SDL_GetTicks();
+	int tick = DemoTick();
 
 	float p = (tick % 60000) / 60000.0f;
 
@@ -135,7 +71,7 @@ void render()
 	if (p < 0.1f)
 	{
 		xpos = 0;
-		ypos = 600-256;
+		ypos = -340;
 		dudey= -8;
 	}
 	else
@@ -146,8 +82,8 @@ void render()
 		v = SMOOTHSTEP(v);
 		v = SMOOTHSTEP(v);
 
-		xpos = (int)floor(v * (800 - 400));
-		ypos = 600 - 256;
+		xpos = -(int)floor(v * (800 - 400));
+		ypos = -340;
 		dudey = (int)floor((1 - v) * -8);
 	}
 	else
@@ -157,13 +93,13 @@ void render()
 		v = SMOOTHSTEP(v);
 		v = SMOOTHSTEP(v);
 		v = SMOOTHSTEP(v);
-		xpos = 800 - 400;
-		ypos = (int)floor((1 - v) * (600 - 256));
+		xpos = -(800 - 400);
+		ypos = (int)floor((1 - v) * (- 340));
 		dudey = (int)floor(v * 90);
 	}
 	else
 	{
-		xpos = 800-400;
+		xpos = -(800-400);
 		ypos = 0;
 		dudey = 90;
 	}
@@ -298,63 +234,28 @@ void render()
 			gSoloud.fadePan(gMusicHandle, 0, 0.2f);
 		mode_e = 2;
 	}
-
-	int i, j;
-	for (i = 0; i < 256; i++)
-		for (j = 0; j < 400; j++)
-			putpixel(j, i, *(((int*)bg->pixels)+j+xpos+(i+ypos)*bg->pitch/4));
+	
+	drawbg(xpos, ypos);
 
 	drawwalker((tick >> 7) % ((tick >> 8) % 5 + 1), (400-32)/2 + 12, 256-32*2-32-dudey);
-
+	
 	if (p > 0.5f)
 	{
 		int w = (int)floor((p - 0.5f) * 600);
 		if (w > 32) w = 32;
-		drawrect((400-32)/2+12, 256-32*2-32-ypos+600-256, w/2, 64, 0xffffffff);
-		drawrect((400-32)/2+12+32-(w/2), 256-32*2-32-ypos+600-256, w/2, 64, 0xffffffff);
+		drawrect((400-32)/2+12, 256-32*2-32+ypos+340, w/2, 64, 0xffffffff);
+		drawrect((400-32)/2+12+32-(w/2), 256-32*2-32+ypos+340, w/2, 64, 0xffffffff);
 
-		drawrect((400-32)/2+12+(w/2), 256-32*2-32-ypos+600-256, 1, 64, 0xffaaaaaa);
-		drawrect((400-32)/2+12+32-(w/2), 256-32*2-32-ypos+600-256, 1, 64, 0xffaaaaaa);
+		drawrect((400-32)/2+12+(w/2), 256-32*2-32+ypos+340, 1, 64, 0xffaaaaaa);
+		drawrect((400-32)/2+12+32-(w/2), 256-32*2-32+ypos+340, 1, 64, 0xffaaaaaa);
 	}
-
-	char temp[256];
-	//sprintf(temp, "%3.8f", p);
-	//drawstring(temp,0,0);
-	drawrect(0, 0, 100, 12, 0xff808080);
-	drawrect(0, 2, (int)floor(100 * p), 8, 0xffe0e0e0);
-	sprintf(temp, "Rain volume: %3.3f", gSoloud.getVolume(gRainHandle));
-	drawstring(temp,0,20);
-	sprintf(temp, "Music volume: %3.3f", gSoloud.getVolume(gMusicHandle));
-	drawstring(temp,0,40);
-	sprintf(temp, "Wind volume: %3.3f", gSoloud.getVolume(gWindHandle));
-	drawstring(temp,0,60);
-	sprintf(temp, "Music pan: %3.3f", gSoloud.getPan(gMusicHandle));
-	drawstring(temp,0,80);
-	sprintf(temp, "Music filter wet: %3.3f", gSoloud.getFilterParameter(gMusicHandle,0,SoLoud::BiquadResonantFilter::WET));
-	drawstring(temp,0,100);
-	sprintf(temp, "Music filter freq: %3.3f", gSoloud.getFilterParameter(gMusicHandle,0,SoLoud::BiquadResonantFilter::FREQUENCY));
-	drawstring(temp,0,120);
-
-	// Unlock if needed
-	if (SDL_MUSTLOCK(screen)) 
-		SDL_UnlockSurface(screen);
-
-	// Tell SDL to update the whole screen
-	SDL_UpdateRect(screen, 0, 0, 400, 256);    
+	return p;
 }
 
 
-// Entry point
-int main(int argc, char *argv[])
-{	
-	// Initialize SDL's subsystems - in this case, only video.
-	if ( SDL_Init(SDL_INIT_VIDEO) < 0 ) 
-	{
-		fprintf(stderr, "Unable to init SDL: %s\n", SDL_GetError());
-		exit(1);
-	}
-
-	gSoloud.init();
+int DemoEntry(int argc, char *argv[])
+{
+	gSoloud.init(SoLoud::Soloud::CLIP_ROUNDOFF | SoLoud::Soloud::ENABLE_VISUALIZATION);
 	gSoloud.setGlobalVolume(0.75);
 	gSoloud.setPostClipScaler(0.75);
 
@@ -364,64 +265,41 @@ int main(int argc, char *argv[])
 	gWind.setLooping(1);
 	gMusic.load("audio/tetsno.ogg");
 	gMusic.setLooping(1);
-	gLPFilter.setParams(SoLoud::BiquadResonantFilter::LOWPASS,44100,100,10);
+	gLPFilter.setParams(SoLoud::BiquadResonantFilter::LOWPASS, 44100, 100, 10);
 	gMusic.setFilter(0, &gLPFilter);
 
-	gRainHandle = gSoloud.play(gRain,1);
-	gWindHandle = gSoloud.play(gWind,0);
-	gMusicHandle = gSoloud.play(gMusic,0);
-	
-	// Register SDL_Quit to be called at exit; makes sure things are
-	// cleaned up when we quit.
-	atexit(SDL_Quit);	
+	gRainHandle = gSoloud.play(gRain, 1);
+	gWindHandle = gSoloud.play(gWind, 0);
+	gMusicHandle = gSoloud.play(gMusic, 0);
 
-	// Attempt to create a 640x480 window with 32bit pixels.
-	screen = SDL_SetVideoMode(400, 256, 32, SDL_SWSURFACE);
-	font = SDL_LoadBMP("graphics/font.bmp");
-	SDL_Surface *temp = SDL_LoadBMP("graphics/env_bg.bmp");
-	bg = SDL_DisplayFormat(temp);	
-	SDL_FreeSurface(temp);
-	temp = SDL_LoadBMP("graphics/env_walker.bmp");
-	walker = SDL_DisplayFormat(temp);
-	SDL_FreeSurface(temp);
-	// If we fail, return error.
-	if ( screen == NULL ) 
-	{
-		fprintf(stderr, "Unable to set 640x480 video: %s\n", SDL_GetError());
-		exit(1);
-	}
-
-	SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
-
-	// Main loop: loop forever.
-	while (1)
-	{
-		// Render stuff
-		render();
-
-		// Poll for events, and handle the ones we care about.
-		SDL_Event event;
-		while (SDL_PollEvent(&event)) 
-		{
-			switch (event.type) 
-			{
-			case SDL_KEYUP:
-				// If escape is pressed, return (and thus, quit)
-				switch (event.key.keysym.sym)
-				{
-				case SDLK_ESCAPE:
-					{
-						gSoloud.deinit();
-						return 0;
-					}
-					break;
-				}
-				break;
-			case SDL_QUIT:
-				gSoloud.deinit();
-				return(0);
-			}
-		}
-	}
+	gWalker = DemoLoadTexture("graphics/env_walker.png");
+	gBackground = DemoLoadTexture("graphics/env_bg.png");
 	return 0;
+}
+
+void DemoMainloop()
+{
+	DemoUpdateStart();
+
+	float p = render();
+
+	float *buf = gSoloud.getWave();
+	float *fft = gSoloud.calcFFT();
+
+	ONCE(ImGui::SetNextWindowPos(ImVec2(500, 20)));
+	ImGui::Begin("Output");
+	ImGui::PlotLines("##Wave", buf, 256, 0, "Wave", -1, 1, ImVec2(264, 80));
+	ImGui::PlotHistogram("##FFT", fft, 256 / 2, 0, "FFT", 0, 10, ImVec2(264, 80), 8);
+	ImGui::Text("Active voices    : %d", gSoloud.getActiveVoiceCount());
+
+	ImGui::Text("Progress         : %3.3f%%", 100 * p);
+	ImGui::Text("Rain volume      : %3.3f", gSoloud.getVolume(gRainHandle));
+	ImGui::Text("Music volume     : %3.3f", gSoloud.getVolume(gMusicHandle));
+	ImGui::Text("Wind volume      : %3.3f", gSoloud.getVolume(gWindHandle));
+	ImGui::Text("Music pan        : %3.3f", gSoloud.getPan(gMusicHandle));
+	ImGui::Text("Music filter wet : %3.3f", gSoloud.getFilterParameter(gMusicHandle, 0, SoLoud::BiquadResonantFilter::WET));
+	ImGui::Text("Music filter freq: %3.3f", gSoloud.getFilterParameter(gMusicHandle, 0, SoLoud::BiquadResonantFilter::FREQUENCY));
+	ImGui::End();
+
+	DemoUpdateEnd();
 }

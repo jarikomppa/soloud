@@ -47,7 +47,7 @@ Flag                 | Description
 -------------------- | -----------
 CLIP_ROUNDOFF        | Use roundoff clipper. Without this flag the clipper defaults to "hard" clipping to -1/+1
 ENABLE_VISUALIZATION | Enable gathering of visualization data. Can be changed at runtime with setVisualizationEnable()
-LEFT_HANDED_3D       | Use left-handed (direct3d) 3d coordinates. Default is right-handed (opengl) coordinates.
+LEFT_HANDED_3D       | Use left-handed (Direct3D) 3d coordinates. Default is right-handed (OpenGL) coordinates.
 
 Current set of back-ends is:
 
@@ -113,22 +113,22 @@ start of the next outgoing sound buffer.
 
 Let's say we have a short sample and we want to play it repeatedly. 
 
-![Single blip](images/clocked_1)
-.
+![Single blip](images/clocked_1)\ 
+
 
 If our play calls are rapid enough, several calls will hit the same
 audio buffer, and the effect simply amplifies the sound:
 
-![blips via play()](images/clocked_2)
-.
+![blips via play()](images/clocked_2)\ 
+
 
 If we use playClocked instead, SoLoud will notice that several calls
 are being made within one audio buffer, and will delay the later ones
 based on the time given as a parameter, resulting in what we wanted
 in the first place:
 
-![blips via playClocked](images/clocked_3)
-.
+![blips via playClocked](images/clocked_3)\ 
+
 
 The "pew pew" example gives an interactive and intuitive way of 
 understanding how this function is used, and what problem it solves.

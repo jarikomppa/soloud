@@ -72,14 +72,6 @@ Set the default volume of the instances created from this audio source.
 
     gTinyVoice.setVolume(0.1);
     
-### Speech.setAttenuator()
-
-Set a custom attenuator for the instances created from this audio source.
-use NULL to disable.
-
-    // No attenuator needed anymore
-    gFoo.setAttenuator(NULL);
-
 ### Inherited 3d audio interfaces
 
 Like all other audio sources, Speech inherits the 3d audio interfaces. Please refer to the 3d audio chapter for details on:
@@ -91,4 +83,6 @@ Like all other audio sources, Speech inherits the 3d audio interfaces. Please re
 - Speech.set3dListenerRelative()
 - Speech.set3dDistanceDelay()
 - Speech.set3dCollider()
+- Speech.set3dAttenuator()
+      
       

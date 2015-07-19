@@ -40,11 +40,8 @@ int gSfxbusHandle, gMusicbusHandle, gSpeechbusHandle;
 
 float gSfxvol = 1, gMusicvol = 1, gSpeechvol = 1;
 
-// Entry point
-int main(int argc, char *argv[])
+int DemoEntry(int argc, char *argv[])
 {
-	DemoInit();
-
 	gSoloud.init(SoLoud::Soloud::CLIP_ROUNDOFF | SoLoud::Soloud::ENABLE_VISUALIZATION);
 	gSoloud.setGlobalVolume(0.75);
 	gSoloud.setPostClipScaler(0.75);
@@ -71,53 +68,52 @@ int main(int argc, char *argv[])
 
 	gSfxbus.play(gSfxloop);
 	gMusicbus.play(gMusicloop);
-
-	int speechtick = 0;
-	int speechcount = 0;
-
-	// Main loop: loop forever.
-	while (1)
-	{
-		DemoUpdateStart();
-
-		if (speechtick < DemoTick())
-		{
-			int h = gSpeechbus.play(gSpeech[speechcount % 10], (rand() % 200) / 50.0f + 2, (rand() % 20) / 10.0f - 1);
-			speechcount++;
-			gSoloud.setRelativePlaySpeed(h, (rand() % 100) / 200.0f + 0.75f);
-			gSoloud.fadePan(h, (rand() % 20) / 10.0f - 1, 2);
-			speechtick = DemoTick() + 4000;
-		}
-
-		float *buf = gSoloud.getWave();
-		float *fft = gSoloud.calcFFT();
-
-		ONCE(ImGui::SetNextWindowPos(ImVec2(500, 20)));
-		ImGui::Begin("Output");
-		ImGui::PlotLines("##Wave", buf, 256, 0, "Wave", -1, 1, ImVec2(264, 80));
-		ImGui::PlotHistogram("##FFT", fft, 256 / 2, 0, "FFT", 0, 10, ImVec2(264, 80), 8);
-		ImGui::Text("Speech bus volume : %d%%", (int)floor(gSoloud.getVolume(gSpeechbusHandle) * 100));
-		ImGui::Text("Music bus volume  : %d%%", (int)floor(gSoloud.getVolume(gMusicbusHandle) * 100));
-		ImGui::Text("Sfx bus volume    : %d%%", (int)floor(gSoloud.getVolume(gSfxbusHandle) * 100));
-		ImGui::Text("Active voices     : %d", gSoloud.getActiveVoiceCount());
-		ImGui::End();
-
-		ONCE(ImGui::SetNextWindowPos(ImVec2(20, 20)));
-		ImGui::Begin("Control");
-		if (ImGui::SliderFloat("Speech bus volume", &gSpeechvol, 0, 2))
-		{
-			gSoloud.setVolume(gSpeechbusHandle, gSpeechvol); 
-		}
-		if (ImGui::SliderFloat("Music bus volume", &gMusicvol, 0, 2))
-		{
-			gSoloud.setVolume(gMusicbusHandle, gMusicvol);
-		}
-		if (ImGui::SliderFloat("Sfx bus volume", &gSfxvol, 0, 2))
-		{
-			gSoloud.setVolume(gSfxbusHandle, gSfxvol);
-		}
-		ImGui::End();
-		DemoUpdateEnd();
-	}
 	return 0;
+}
+
+int speechtick = 0;
+int speechcount = 0;
+
+void DemoMainloop()
+{
+	DemoUpdateStart();
+
+	if (speechtick < DemoTick())
+	{
+		int h = gSpeechbus.play(gSpeech[speechcount % 10], (rand() % 200) / 50.0f + 2, (rand() % 20) / 10.0f - 1);
+		speechcount++;
+		gSoloud.setRelativePlaySpeed(h, (rand() % 100) / 200.0f + 0.75f);
+		gSoloud.fadePan(h, (rand() % 20) / 10.0f - 1, 2);
+		speechtick = DemoTick() + 4000;
+	}
+
+	float *buf = gSoloud.getWave();
+	float *fft = gSoloud.calcFFT();
+
+	ONCE(ImGui::SetNextWindowPos(ImVec2(500, 20)));
+	ImGui::Begin("Output");
+	ImGui::PlotLines("##Wave", buf, 256, 0, "Wave", -1, 1, ImVec2(264, 80));
+	ImGui::PlotHistogram("##FFT", fft, 256 / 2, 0, "FFT", 0, 10, ImVec2(264, 80), 8);
+	ImGui::Text("Speech bus volume : %d%%", (int)floor(gSoloud.getVolume(gSpeechbusHandle) * 100));
+	ImGui::Text("Music bus volume  : %d%%", (int)floor(gSoloud.getVolume(gMusicbusHandle) * 100));
+	ImGui::Text("Sfx bus volume    : %d%%", (int)floor(gSoloud.getVolume(gSfxbusHandle) * 100));
+	ImGui::Text("Active voices     : %d", gSoloud.getActiveVoiceCount());
+	ImGui::End();
+
+	ONCE(ImGui::SetNextWindowPos(ImVec2(20, 20)));
+	ImGui::Begin("Control");
+	if (ImGui::SliderFloat("Speech bus volume", &gSpeechvol, 0, 2))
+	{
+		gSoloud.setVolume(gSpeechbusHandle, gSpeechvol); 
+	}
+	if (ImGui::SliderFloat("Music bus volume", &gMusicvol, 0, 2))
+	{
+		gSoloud.setVolume(gMusicbusHandle, gMusicvol);
+	}
+	if (ImGui::SliderFloat("Sfx bus volume", &gSfxvol, 0, 2))
+	{
+		gSoloud.setVolume(gSfxbusHandle, gSfxvol);
+	}
+	ImGui::End();
+	DemoUpdateEnd();
 }

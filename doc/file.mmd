@@ -6,7 +6,7 @@ use the File class internally and support loading through a File class.
 This enables SoLoud to load from memory pointers, stream data from memory, as well as support
 virtual filesystems such as PhysFS by extending the File class.
 
-![File class hierarcy](images/file)
+![File class hierarchy](images/file)\ 
 
 SoLoud has two File-extended classes, DiskFile which uses stdio FILE* interfaces internally, 
 and MemoryFile which uses an in-memory buffer.
@@ -46,13 +46,13 @@ samples.
 
 ### File.getFilePtr()
 
-Returns FILE pointer if avaiable, 0 if not. Useful to check if we're using
+Returns FILE pointer if available, 0 if not. Useful to check if we're using
 DiskFile (or compatible), and avoids casting between File class subtypes
 if access to the FILE pointer is needed.
 
 ### File.getMemPtr()
 
-Returns memory pointer if avaiable, 0 if not. Useful to check if we're using
+Returns memory pointer if available, 0 if not. Useful to check if we're using
 MemoryFile (or compatible), and avoids casting between File class subtypes
 if access to the memory pointer is needed.
 

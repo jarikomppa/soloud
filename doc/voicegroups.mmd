@@ -5,7 +5,7 @@ Unpausing two sounds on subsequent lines in code may work most of the time,
 but it not guaranteed, and in the worst case one of them will not make it
 to the same sound buffer as the other.
 
-![Problem unpausing two voices. Delay may vary, 40ms used as an example.](images/voicegroups)
+![Problem unpausing two voices. Delay may vary, 40ms used as an example.](images/voicegroups)\ 
 
 SoLoud's solution to this problem are voice groups. You create a voice
 group handle, add voice handles to it, and then use the voice group handle
@@ -29,7 +29,7 @@ Example of use:
     // unpause both musics in one atomic op    
     soloud.setPause(gh, 0); 
 
-    // Clean up, destroy grup. Leaves actual voices alone.
+    // Clean up, destroy group. Leaves actual voices alone.
     soloud.destroyVoiceGroup(gh);
 
 

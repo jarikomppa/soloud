@@ -89,7 +89,7 @@ namespace SoLoud
         }
         OSSData *data = static_cast<OSSData*>(aSoloud->mBackendData);
         data->audioProcessingDone = true;
-        if (0 != data->threadHandle)
+        if (data->threadHandle)
         {
             Thread::wait(data->threadHandle);
             Thread::release(data->threadHandle);
@@ -104,15 +104,11 @@ namespace SoLoud
             delete[] data->buffer;
         }
         close(data->ossDeviceHandle);
-        Thread::destroyMutex(data->soloud->mMutex);
-        data->soloud->mMutex = 0;
-        data->soloud->mLockMutexFunc = 0;
-        data->soloud->mUnlockMutexFunc = 0;
         delete data;
         aSoloud->mBackendData = 0;
     }
 
-    result oss_init(Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer)
+    result oss_init(Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer, unsigned int aChannels)
     {
         OSSData *data = new OSSData;
         memset(data, 0, sizeof(OSSData));
@@ -170,10 +166,7 @@ namespace SoLoud
         }
         data->buffer = new float[data->samples*data->channels];
         data->sampleBuffer = new short[data->samples*data->channels];
-        aSoloud->mMutex = Thread::createMutex();
-        aSoloud->mLockMutexFunc = Thread::lockMutex;
-        aSoloud->mUnlockMutexFunc = Thread::unlockMutex;
-        aSoloud->postinit(aSamplerate, data->samples * data->channels, aFlags);
+        aSoloud->postinit(aSamplerate, data->samples * data->channels, aFlags, 2);
         data->threadHandle = Thread::createThread(ossThread, data);
         if (0 == data->threadHandle)
         {

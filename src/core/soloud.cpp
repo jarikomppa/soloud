@@ -26,7 +26,12 @@ freely, subject to the following restrictions:
 #include <stdlib.h>
 #include <math.h> // sin
 #include "soloud_internal.h"
+#include "soloud_thread.h"
 #include "soloud_fft.h"
+
+#ifdef SOLOUD_SSE_INTRINSICS
+#include <smmintrin.h>
+#endif
 
 //#define FLOATING_POINT_DEBUG
 
@@ -44,6 +49,37 @@ freely, subject to the following restrictions:
 
 namespace SoLoud
 {
+	AlignedFloatBuffer::AlignedFloatBuffer()
+	{
+		mBasePtr = 0;
+		mData = 0;
+	}
+
+	result AlignedFloatBuffer::init(unsigned int aFloats)
+	{
+		delete[] mBasePtr;
+		mBasePtr = 0;
+		mData = 0;
+#ifdef DISABLE_SIMD
+		mBasePtr = new unsigned char[aFloats * sizeof(float)];
+		if (mBasePtr == NULL)
+			return OUT_OF_MEMORY;
+		mData = mBasePtr;
+#else
+		mBasePtr = new unsigned char[aFloats * sizeof(float) + 16];
+		if (mBasePtr == NULL)
+			return OUT_OF_MEMORY;
+		mData = (float *)(((size_t)mBasePtr + 15)&~15);
+#endif
+		return SO_NO_ERROR;
+	}
+
+	AlignedFloatBuffer::~AlignedFloatBuffer()
+	{
+		delete[] mBasePtr;
+	}
+
+
 	Soloud::Soloud()
 	{
 #ifdef FLOATING_POINT_DEBUG
@@ -53,7 +89,6 @@ namespace SoLoud
 		_controlfp(u, _MCW_EM);
 #endif
 		
-		mScratch = NULL;
 		mScratchSize = 0;
 		mScratchNeeded = 0;
 		mSamplerate = 0;
@@ -62,10 +97,8 @@ namespace SoLoud
 		mGlobalVolume = 0;
 		mPlayIndex = 0;
 		mBackendData = NULL;
-		mMutex = NULL;
+		mAudioThreadMutex = NULL;
 		mPostClipScaler = 0;
-		mLockMutexFunc = NULL;
-		mUnlockMutexFunc = NULL;
 		mBackendCleanupFunc = NULL;
 		mChannels = 2;		
 		mStreamTime = 0;
@@ -120,7 +153,6 @@ namespace SoLoud
 		{
 			delete mFilterInstance[i];
 		}
-		delete[] mScratch;
 		for (i = 0; i < mVoiceGroupCount; i++)
 			delete[] mVoiceGroup[i];
 		delete[] mVoiceGroup;
@@ -131,16 +163,19 @@ namespace SoLoud
 		if (mBackendCleanupFunc)
 			mBackendCleanupFunc(this);
 		mBackendCleanupFunc = 0;
-		mLockMutexFunc = 0;
-		mUnlockMutexFunc = 0;
+		if (mAudioThreadMutex)
+			Thread::destroyMutex(mAudioThreadMutex);
+		mAudioThreadMutex = NULL;
 	}
 
-	result Soloud::init(unsigned int aFlags, unsigned int aBackend, unsigned int aSamplerate, unsigned int aBufferSize)
+	result Soloud::init(unsigned int aFlags, unsigned int aBackend, unsigned int aSamplerate, unsigned int aBufferSize, unsigned int aChannels)
 	{		
-		if (aBackend < 0 || aBackend >= BACKEND_MAX || aSamplerate < 0 || aBufferSize < 0)
+		if (aBackend >= BACKEND_MAX || aChannels == 3 || aChannels == 5 || aChannels > 6)
 			return INVALID_PARAMETER;
 
 		deinit();
+
+		mAudioThreadMutex = Thread::createMutex();
 
 		mBackendID = 0;
 		mBackendString = 0;
@@ -158,7 +193,7 @@ namespace SoLoud
 		{
 			if (aBufferSize == Soloud::AUTO) buffersize = 2048;
 
-			int ret = sdlstatic_init(this, aFlags, samplerate, buffersize);
+			int ret = sdlstatic_init(this, aFlags, samplerate, buffersize, aChannels);
 			if (ret == 0)
 			{
 				inited = 1;
@@ -176,7 +211,7 @@ namespace SoLoud
 		{
 			if (aBufferSize == Soloud::AUTO) buffersize = 2048;
 
-			int ret = sdl2static_init(this, aFlags, samplerate, buffersize);
+			int ret = sdl2static_init(this, aFlags, samplerate, buffersize, aChannels);
 			if (ret == 0)
 			{
 				inited = 1;
@@ -188,14 +223,14 @@ namespace SoLoud
 		}
 #endif
 
-#if defined(WITH_SDL)
+#if defined(WITH_SDL) || defined(WITH_SDL2)
 		if (aBackend == Soloud::SDL || 
 			aBackend == Soloud::SDL2 ||
 			aBackend == Soloud::AUTO)
 		{
 			if (aBufferSize == Soloud::AUTO) buffersize = 2048;
 
-			int ret = sdl_init(this, aFlags, samplerate, buffersize);
+			int ret = sdl_init(this, aFlags, samplerate, buffersize, aChannels);
 			if (ret == 0)
 			{
 				inited = 1;
@@ -214,7 +249,7 @@ namespace SoLoud
 		{
 			if (aBufferSize == Soloud::AUTO) buffersize = 2048;
 
-			int ret = portaudio_init(this, aFlags, samplerate, buffersize);
+			int ret = portaudio_init(this, aFlags, samplerate, buffersize, aChannels);
 			if (ret == 0)
 			{
 				inited = 1;
@@ -233,7 +268,7 @@ namespace SoLoud
 		{
 			if (aBufferSize == Soloud::AUTO) buffersize = 4096;
 
-			int ret = xaudio2_init(this, aFlags, samplerate, buffersize);
+			int ret = xaudio2_init(this, aFlags, samplerate, buffersize, aChannels);
 			if (ret == 0)
 			{
 				inited = 1;
@@ -252,7 +287,7 @@ namespace SoLoud
 		{
 			if (aBufferSize == Soloud::AUTO) buffersize = 4096;
 
-			int ret = winmm_init(this, aFlags, samplerate, buffersize);
+			int ret = winmm_init(this, aFlags, samplerate, buffersize, aChannels);
 			if (ret == 0)
 			{
 				inited = 1;
@@ -271,7 +306,7 @@ namespace SoLoud
 		{
 			if (aBufferSize == Soloud::AUTO) buffersize = 4096;
 
-			int ret = wasapi_init(this, aFlags, samplerate, buffersize);
+			int ret = wasapi_init(this, aFlags, samplerate, buffersize, aChannels);
 			if (ret == 0)
 			{
 				inited = 1;
@@ -290,7 +325,7 @@ namespace SoLoud
 		{
 			if (aBufferSize == Soloud::AUTO) buffersize = 2048;
 
-			int ret = alsa_init(this, aFlags, samplerate, buffersize);
+			int ret = alsa_init(this, aFlags, samplerate, buffersize, aChannels);
 			if (ret == 0)
 			{
 				inited = 1;
@@ -309,7 +344,7 @@ namespace SoLoud
 		{
 			if (aBufferSize == Soloud::AUTO) buffersize = 2048;
 
-			int ret = oss_init(this, aFlags, samplerate, buffersize);
+			int ret = oss_init(this, aFlags, samplerate, buffersize, aChannels);
 			if (ret == 0)
 			{
 				inited = 1;
@@ -328,7 +363,7 @@ namespace SoLoud
 		{
 			if (aBufferSize == Soloud::AUTO) buffersize = 4096;
 
-			int ret = openal_init(this, aFlags, samplerate, buffersize);
+			int ret = openal_init(this, aFlags, samplerate, buffersize, aChannels);
 			if (ret == 0)
 			{
 				inited = 1;
@@ -346,7 +381,7 @@ namespace SoLoud
 		{
 			if (aBufferSize == Soloud::AUTO) buffersize = 2048;
 
-			int ret = null_init(this, aFlags, samplerate, buffersize);
+			int ret = null_init(this, aFlags, samplerate, buffersize, aChannels);
 			if (ret == 0)
 			{
 				inited = 1;
@@ -365,18 +400,80 @@ namespace SoLoud
 		return 0;
 	}
 
-	void Soloud::postinit(unsigned int aSamplerate, unsigned int aBufferSize, unsigned int aFlags)
+	void Soloud::postinit(unsigned int aSamplerate, unsigned int aBufferSize, unsigned int aFlags, unsigned int aChannels)
 	{		
 		mGlobalVolume = 1;
+		mChannels = aChannels;
 		mSamplerate = aSamplerate;
 		mBufferSize = aBufferSize;
 		mScratchSize = aBufferSize;
 		if (mScratchSize < SAMPLE_GRANULARITY * 2) mScratchSize = SAMPLE_GRANULARITY * 2;
 		if (mScratchSize < 4096) mScratchSize = 4096;
 		mScratchNeeded = mScratchSize;
-		mScratch = new float[mScratchSize * 2];
+		mScratch.init(mScratchSize * MAX_CHANNELS);
+		mOutputScratch.init(mScratchSize * MAX_CHANNELS);
 		mFlags = aFlags;
 		mPostClipScaler = 0.95f;
+		switch (mChannels)
+		{
+		case 1:
+			m3dSpeakerPosition[0 * 3 + 0] = 0;
+			m3dSpeakerPosition[0 * 3 + 1] = 0;
+			m3dSpeakerPosition[0 * 3 + 2] = 1;
+			break;
+		case 2:
+			m3dSpeakerPosition[0 * 3 + 0] = 2;
+			m3dSpeakerPosition[0 * 3 + 1] = 0;
+			m3dSpeakerPosition[0 * 3 + 2] = 1;
+			m3dSpeakerPosition[1 * 3 + 0] = -2;
+			m3dSpeakerPosition[1 * 3 + 1] = 0;
+			m3dSpeakerPosition[1 * 3 + 2] = 1;
+			break;
+		case 4:
+			m3dSpeakerPosition[0 * 3 + 0] = 2;
+			m3dSpeakerPosition[0 * 3 + 1] = 0;
+			m3dSpeakerPosition[0 * 3 + 2] = 1;
+			m3dSpeakerPosition[1 * 3 + 0] = -2;
+			m3dSpeakerPosition[1 * 3 + 1] = 0;
+			m3dSpeakerPosition[1 * 3 + 2] = 1;
+			// I suppose technically the second pair should be straight left & right,
+			// but I prefer moving them a bit back to mirror the front speakers.
+			m3dSpeakerPosition[2 * 3 + 0] = 2;
+			m3dSpeakerPosition[2 * 3 + 1] = 0;
+			m3dSpeakerPosition[2 * 3 + 2] = -1;
+			m3dSpeakerPosition[3 * 3 + 0] = -2;
+			m3dSpeakerPosition[3 * 3 + 1] = 0;
+			m3dSpeakerPosition[3 * 3 + 2] = -1;
+			break;
+		case 6:
+			m3dSpeakerPosition[0 * 3 + 0] = 2;
+			m3dSpeakerPosition[0 * 3 + 1] = 0;
+			m3dSpeakerPosition[0 * 3 + 2] = 1;
+			m3dSpeakerPosition[1 * 3 + 0] = -2;
+			m3dSpeakerPosition[1 * 3 + 1] = 0;
+			m3dSpeakerPosition[1 * 3 + 2] = 1;
+
+			// center and subwoofer. 
+			m3dSpeakerPosition[2 * 3 + 0] = 0;
+			m3dSpeakerPosition[2 * 3 + 1] = 0;
+			m3dSpeakerPosition[2 * 3 + 2] = 1;
+			// Sub should be "mix of everything". We'll handle it as a special case and make it a null vector.
+			m3dSpeakerPosition[3 * 3 + 0] = 0;
+			m3dSpeakerPosition[3 * 3 + 1] = 0;
+			m3dSpeakerPosition[3 * 3 + 2] = 0;
+
+			// I suppose technically the second pair should be straight left & right,
+			// but I prefer moving them a bit back to mirror the front speakers.
+			m3dSpeakerPosition[4 * 3 + 0] = 2;
+			m3dSpeakerPosition[4 * 3 + 1] = 0;
+			m3dSpeakerPosition[4 * 3 + 2] = -1;
+			m3dSpeakerPosition[5 * 3 + 0] = -2;
+			m3dSpeakerPosition[5 * 3 + 1] = 0;
+			m3dSpeakerPosition[5 * 3 + 2] = -1;
+			break;
+
+
+		}
 	}
 
 	const char * Soloud::getErrorString(result aErrorCode) const
@@ -399,17 +496,17 @@ namespace SoLoud
 	float * Soloud::getWave()
 	{
 		int i;
-		if (mLockMutexFunc) mLockMutexFunc(mMutex);
+		lockAudioMutex();
 		for (i = 0; i < 256; i++)
 			mWaveData[i] = mVisualizationWaveData[i];
-		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+		unlockAudioMutex();
 		return mWaveData;
 	}
 
 
 	float * Soloud::calcFFT()
 	{
-		if (mLockMutexFunc) mLockMutexFunc(mMutex);
+		lockAudioMutex();
 		float temp[1024];
 		int i;
 		for (i = 0; i < 256; i++)
@@ -419,7 +516,7 @@ namespace SoLoud
 			temp[i+512] = 0;
 			temp[i+768] = 0;
 		}
-		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+		unlockAudioMutex();
 
 		SoLoud::FFT::fft1024(temp);
 
@@ -433,61 +530,173 @@ namespace SoLoud
 		return mFFTData;
 	}
 
-	void Soloud::clip(float *aBuffer, float *aDestBuffer, unsigned int aSamples, float aVolume0, float aVolume1)
+#ifdef SOLOUD_SSE_INTRINSICS
+	void Soloud::clip(AlignedFloatBuffer &aBuffer, AlignedFloatBuffer &aDestBuffer, unsigned int aSamples, float aVolume0, float aVolume1)
 	{
 		float vd = (aVolume1 - aVolume0) / aSamples;
 		float v = aVolume0;
-		unsigned int i, j, c;
+		unsigned int i, j, c, d;
 		// Clip
 		if (mFlags & CLIP_ROUNDOFF)
 		{
-			int c = 0;
-			for (j = 0; j < 2; j++)
+			float nb = -1.65f;		__m128 negbound = _mm_load_ps1(&nb);
+			float pb = 1.65f;		__m128 posbound = _mm_load_ps1(&pb);
+			float ls = 0.87f;		__m128 linearscale = _mm_load_ps1(&ls);
+			float cs = -0.1f;		__m128 cubicscale = _mm_load_ps1(&cs);
+			float nw = -0.9862875f;	__m128 negwall = _mm_load_ps1(&nw);
+			float pw = 0.9862875f;	__m128 poswall = _mm_load_ps1(&pw);
+			__m128 postscale = _mm_load_ps1(&mPostClipScaler);
+			AlignedFloatBuffer volumes;
+			volumes.init(4);
+			volumes.mData[0] = v;
+			volumes.mData[1] = v + vd;
+			volumes.mData[2] = v + vd + vd;
+			volumes.mData[3] = v + vd + vd + vd;
+			vd *= 4;
+			__m128 vdelta = _mm_load_ps1(&vd);
+			c = 0;
+			d = 0;
+			for (j = 0; j < mChannels; j++)
+			{
+				__m128 vol = _mm_load_ps(volumes.mData);
+
+				for (i = 0; i < aSamples / 4; i++)
+				{
+					//float f1 = origdata[c] * v;	c++; v += vd;
+					__m128 f = _mm_load_ps(&aBuffer.mData[c]);
+					c += 4;
+					f = _mm_mul_ps(f, vol);
+					vol = _mm_add_ps(vol, vdelta);
+
+					//float u1 = (f1 > -1.65f);
+					__m128 u = _mm_cmpgt_ps(f, negbound);
+
+					//float o1 = (f1 < 1.65f);
+					__m128 o = _mm_cmplt_ps(f, posbound);
+
+					//f1 = (0.87f * f1 - 0.1f * f1 * f1 * f1) * u1 * o1;
+					__m128 lin = _mm_mul_ps(f, linearscale);
+					__m128 cubic = _mm_mul_ps(f, f);
+					cubic = _mm_mul_ps(cubic, f);
+					cubic = _mm_mul_ps(cubic, cubicscale);
+					f = _mm_add_ps(cubic, lin);
+
+					//f1 = f1 * u1 + !u1 * -0.9862875f;
+					__m128 lowmask = _mm_andnot_ps(u, negwall);
+					__m128 ilowmask = _mm_and_ps(u, f);
+					f = _mm_add_ps(lowmask, ilowmask);
+
+					//f1 = f1 * o1 + !o1 * 0.9862875f;
+					__m128 himask = _mm_andnot_ps(o, poswall);
+					__m128 ihimask = _mm_and_ps(o, f);
+					f = _mm_add_ps(himask, ihimask);
+
+					// outdata[d] = f1 * postclip; d++;
+					f = _mm_mul_ps(f, postscale);
+					_mm_store_ps(&aDestBuffer.mData[d], f);
+					d += 4;
+				}
+			}
+		}
+		else
+		{
+			float nb = -1.0f;	__m128 negbound = _mm_load_ps1(&nb);
+			float pb = 1.0f;	__m128 posbound = _mm_load_ps1(&pb);
+			__m128 postscale = _mm_load_ps1(&mPostClipScaler);
+			AlignedFloatBuffer volumes;
+			volumes.init(4);
+			volumes.mData[0] = v;
+			volumes.mData[1] = v + vd;
+			volumes.mData[2] = v + vd + vd;
+			volumes.mData[3] = v + vd + vd + vd;
+			vd *= 4;
+			__m128 vdelta = _mm_load_ps1(&vd);
+			c = 0;
+			d = 0;
+			for (j = 0; j < mChannels; j++)
+			{
+				__m128 vol = _mm_load_ps(volumes.mData);
+				for (i = 0; i < aSamples / 4; i++)
+				{
+					//float f1 = aBuffer.mData[c] * v; c++; v += vd;
+					__m128 f = _mm_load_ps(&aBuffer.mData[c]);
+					c += 4;
+					f = _mm_mul_ps(f, vol);
+					vol = _mm_add_ps(vol, vdelta);
+
+					//f1 = (f1 <= -1) ? -1 : (f1 >= 1) ? 1 : f1;
+					f = _mm_max_ps(f, negbound);
+					f = _mm_min_ps(f, posbound);
+
+					//aDestBuffer.mData[d] = f1 * mPostClipScaler; d++;
+					f = _mm_mul_ps(f, postscale);
+					_mm_store_ps(&aDestBuffer.mData[d], f);
+					d += 4;
+				}
+			}
+		}
+	}
+#else // fallback code
+	void Soloud::clip(AlignedFloatBuffer &aBuffer, AlignedFloatBuffer &aDestBuffer, unsigned int aSamples, float aVolume0, float aVolume1)
+	{
+		float vd = (aVolume1 - aVolume0) / aSamples;
+		float v = aVolume0;
+		unsigned int i, j, c, d;
+		// Clip
+		if (mFlags & CLIP_ROUNDOFF)
+		{
+			c = 0;
+			d = 0;
+			for (j = 0; j < mChannels; j++)
 			{
 				v = aVolume0;
-				for (i = 0; i < aSamples; i++, c++, v += vd)
+				for (i = 0; i < aSamples/4; i++)
 				{
-					float f = aBuffer[c] * v;
-					if (f <= -1.65f)
-					{
-						f = -0.9862875f;
-					}
-					else
-					if (f >= 1.65f)
-					{
-						f = 0.9862875f;
-					}
-					else
-					{
-						f =  0.87f * f - 0.1f * f * f * f;
-					}
-					aDestBuffer[c] = f * mPostClipScaler;
+					float f1 = aBuffer.mData[c] * v; c++; v += vd;
+					float f2 = aBuffer.mData[c] * v; c++; v += vd;
+					float f3 = aBuffer.mData[c] * v; c++; v += vd;
+					float f4 = aBuffer.mData[c] * v; c++; v += vd;
+
+					f1 = (f1 <= -1.65f) ? -0.9862875f : (f1 >= 1.65f) ? 0.9862875f : (0.87f * f1 - 0.1f * f1 * f1 * f1);
+					f2 = (f2 <= -1.65f) ? -0.9862875f : (f2 >= 1.65f) ? 0.9862875f : (0.87f * f2 - 0.1f * f2 * f2 * f2);
+					f3 = (f3 <= -1.65f) ? -0.9862875f : (f3 >= 1.65f) ? 0.9862875f : (0.87f * f3 - 0.1f * f3 * f3 * f3);
+					f4 = (f4 <= -1.65f) ? -0.9862875f : (f4 >= 1.65f) ? 0.9862875f : (0.87f * f4 - 0.1f * f4 * f4 * f4);
+
+					aDestBuffer.mData[d] = f1 * mPostClipScaler; d++;
+					aDestBuffer.mData[d] = f2 * mPostClipScaler; d++;
+					aDestBuffer.mData[d] = f3 * mPostClipScaler; d++;
+					aDestBuffer.mData[d] = f4 * mPostClipScaler; d++;
 				}
 			}
 		}
 		else
 		{
 			c = 0;
-			for (j = 0; j < 2; j++)
+			d = 0;
+			for (j = 0; j < mChannels; j++)
 			{
 				v = aVolume0;
-				for (i = 0; i < aSamples; i++, c++, v += vd)
+				for (i = 0; i < aSamples / 4; i++)
 				{
-					float f = aBuffer[i] * v;
-					if (f < -1.0f)
-					{
-						f = -1.0f;
-					}
-					else
-					if (f > 1.0f)
-					{
-						f = 1.0f;
-					}
-					aDestBuffer[i] = f * mPostClipScaler;
-				}
+					float f1 = aBuffer.mData[c] * v; c++; v += vd;
+					float f2 = aBuffer.mData[c] * v; c++; v += vd;
+					float f3 = aBuffer.mData[c] * v; c++; v += vd;
+					float f4 = aBuffer.mData[c] * v; c++; v += vd;
+
+					f1 = (f1 <= -1) ? -1 : (f1 >= 1) ? 1 : f1;
+					f2 = (f2 <= -1) ? -1 : (f2 >= 1) ? 1 : f2;
+					f3 = (f3 <= -1) ? -1 : (f3 >= 1) ? 1 : f3;
+					f4 = (f4 <= -1) ? -1 : (f4 >= 1) ? 1 : f4;
+
+					aDestBuffer.mData[d] = f1 * mPostClipScaler; d++;
+					aDestBuffer.mData[d] = f2 * mPostClipScaler; d++;
+					aDestBuffer.mData[d] = f3 * mPostClipScaler; d++;
+					aDestBuffer.mData[d] = f4 * mPostClipScaler; d++;
 			}
 		}
 	}
+}
+#endif
 
 #define FIXPOINT_FRAC_BITS 20
 #define FIXPOINT_FRAC_MUL (1 << FIXPOINT_FRAC_BITS)
@@ -539,11 +748,11 @@ namespace SoLoud
 #endif
 	}
 
-	void Soloud::mixBus(float *aBuffer, unsigned int aSamples, float *aScratch, unsigned int aBus, float aSamplerate)
+	void Soloud::mixBus(float *aBuffer, unsigned int aSamples, float *aScratch, unsigned int aBus, float aSamplerate, unsigned int aChannels)
 	{
 		unsigned int i;
 		// Clear accumulation buffer
-		for (i = 0; i < aSamples * 2; i++)
+		for (i = 0; i < aSamples * aChannels; i++)
 		{
 			aBuffer[i] = 0;
 		}
@@ -557,11 +766,14 @@ namespace SoLoud
 				!(voice->mFlags & AudioSourceInstance::PAUSED) &&
 				!(voice->mFlags & AudioSourceInstance::INAUDIBLE))
 			{
-				unsigned int j;
+				unsigned int j, k;
 				float step = voice->mSamplerate / aSamplerate;
-				int step_fixed = (int)floor(step * FIXPOINT_FRAC_MUL);
+				// avoid step overflow
+				if (step > (1 << (32 - FIXPOINT_FRAC_BITS)))
+					step = 0;
+				unsigned int step_fixed = (int)floor(step * FIXPOINT_FRAC_MUL);
 				unsigned int outofs = 0;
-				
+			
 				if (voice->mDelaySamples)
 				{
 					if (voice->mDelaySamples > aSamples)
@@ -582,7 +794,7 @@ namespace SoLoud
 					}
 				}												
 
-				while (outofs < aSamples)
+				while (step_fixed != 0 && outofs < aSamples)
 				{
 					if (voice->mLeftoverSamples == 0)
 					{
@@ -681,41 +893,246 @@ namespace SoLoud
 					// Move source pointer onwards (writesamples may be zero)
 					voice->mSrcOffset += writesamples * step_fixed;
 				}
-
-
-				unsigned int chofs[2];
-				chofs[0] = 0;
-				chofs[1] = aSamples;
 				
-				float lpan = voice->mCurrentChannelVolume[0];
-				float rpan = voice->mCurrentChannelVolume[1];
-				float lpand = voice->mChannelVolume[0] * voice->mVolume;
-				float rpand = voice->mChannelVolume[1] * voice->mVolume;
-				float lpani = (lpand - lpan) / aSamples;
-				float rpani = (rpand - rpan) / aSamples;
+				float pan[MAX_CHANNELS]; // current speaker volume
+				float pand[MAX_CHANNELS]; // destination speaker volume
+				float pani[MAX_CHANNELS]; // speaker volume increment per sample
+				for (k = 0; k < aChannels; k++)
+				{
+					pan[k] = voice->mCurrentChannelVolume[k];
+					pand[k] = voice->mChannelVolume[k] * voice->mOverallVolume;
+					pani[k] = (pand[k] - pan[k]) / aSamples;
+				}
 
-				if (voice->mChannels == 2)
+				int ofs = 0;
+				switch (aChannels)
 				{
-					for (j = 0; j < aSamples; j++, lpan += lpani, rpan += rpani)
+				case 1: // Target is mono. Sum everything. (1->1, 2->1, 4->1, 6->1)
+					for (j = 0, ofs = 0; j < voice->mChannels; j++, ofs += aSamples)
 					{
-						float s1 = aScratch[chofs[0] + j];
-						float s2 = aScratch[chofs[1] + j];
-						aBuffer[j + 0] += s1 * lpan;
-						aBuffer[j + aSamples] += s2 * rpan;
+						pan[0] = voice->mCurrentChannelVolume[0];
+						for (k = 0; k < aSamples; k++)
+						{
+							pan[0] += pani[0];
+							aBuffer[k] += aScratch[ofs + k] * pan[0];
+						}
 					}
-				}
-				else
-				{
-					for (j = 0; j < aSamples; j++, lpan += lpani, rpan += rpani)
+					break;
+				case 2:
+					switch (voice->mChannels)
 					{
-						float s = aScratch[chofs[0] + j];
-						aBuffer[j + 0] += s * lpan;
-						aBuffer[j + aSamples] += s * rpan;
+					case 6: // 6->2, just sum lefties and righties, add a bit of center, ignore sub?
+						for (j = 0; j < aSamples; j++)
+						{
+							pan[0] += pani[0];
+							pan[1] += pani[1];
+							float s1 = aScratch[j];
+							float s2 = aScratch[aSamples + j];
+							float s3 = aScratch[aSamples * 2 + j];
+							//float s4 = aScratch[aSamples * 3 + j];
+							float s5 = aScratch[aSamples * 4 + j];
+							float s6 = aScratch[aSamples * 5 + j];
+							aBuffer[j + 0] += 0.3f * (s1 + s3 + s5) * pan[0];
+							aBuffer[j + aSamples] += 0.3f * (s2 + s3 + s6) * pan[1];
+						}
+						break;
+					case 4: // 4->2, just sum lefties and righties
+						for (j = 0; j < aSamples; j++)
+						{
+							pan[0] += pani[0];
+							pan[1] += pani[1];
+							float s1 = aScratch[j];
+							float s2 = aScratch[aSamples + j];
+							float s3 = aScratch[aSamples * 2 + j];
+							float s4 = aScratch[aSamples * 3 + j];
+							aBuffer[j + 0] += 0.5f * (s1 + s3) * pan[0];
+							aBuffer[j + aSamples] += 0.5f * (s2 + s4) * pan[1];
+						}
+						break;
+					case 2: // 2->2
+						for (j = 0; j < aSamples; j++)
+						{
+							pan[0] += pani[0];
+							pan[1] += pani[1];
+							float s1 = aScratch[j];
+							float s2 = aScratch[aSamples + j];
+							aBuffer[j + 0] += s1 * pan[0];
+							aBuffer[j + aSamples] += s2 * pan[1];
+						}
+						break;
+					case 1: // 1->2
+						for (j = 0; j < aSamples; j++)
+						{
+							pan[0] += pani[0];
+							pan[1] += pani[1];
+							float s = aScratch[j];
+							aBuffer[j + 0] += s * pan[0];
+							aBuffer[j + aSamples] += s * pan[1];
+						}
+						break;
 					}
+					break;
+				case 4:
+					switch (voice->mChannels)
+					{
+					case 6: // 6->4, add a bit of center, ignore sub?
+						for (j = 0; j < aSamples; j++)
+						{
+							pan[0] += pani[0];
+							pan[1] += pani[1];
+							pan[2] += pani[2];
+							pan[3] += pani[3];
+							float s1 = aScratch[j];
+							float s2 = aScratch[aSamples + j];
+							float s3 = aScratch[aSamples * 2 + j];
+							//float s4 = aScratch[aSamples * 3 + j];
+							float s5 = aScratch[aSamples * 4 + j];
+							float s6 = aScratch[aSamples * 5 + j];
+							float c = s3 * 0.7f;
+							aBuffer[j + 0] += s1 * pan[0] + c;
+							aBuffer[j + aSamples] += s2 * pan[1] + c;
+							aBuffer[j + aSamples * 2] += s5 * pan[2];
+							aBuffer[j + aSamples * 3] += s6 * pan[3];
+						}
+						break;
+					case 4: // 4->4
+						for (j = 0; j < aSamples; j++)
+						{
+							pan[0] += pani[0];
+							pan[1] += pani[1];
+							pan[2] += pani[2];
+							pan[3] += pani[3];
+							float s1 = aScratch[j];
+							float s2 = aScratch[aSamples + j];
+							float s3 = aScratch[aSamples * 2 + j];
+							float s4 = aScratch[aSamples * 3 + j];
+							aBuffer[j + 0] += s1 * pan[0];
+							aBuffer[j + aSamples] += s2 * pan[1];
+							aBuffer[j + aSamples * 2] += s3 * pan[2];
+							aBuffer[j + aSamples * 3] += s4 * pan[3];
+						}
+						break;
+					case 2: // 2->4
+						for (j = 0; j < aSamples; j++)
+						{
+							pan[0] += pani[0];
+							pan[1] += pani[1];
+							pan[2] += pani[2];
+							pan[3] += pani[3];
+							float s1 = aScratch[j];
+							float s2 = aScratch[aSamples + j];
+							aBuffer[j + 0] += s1 * pan[0];
+							aBuffer[j + aSamples] += s2 * pan[1];
+							aBuffer[j + aSamples * 2] += s1 * pan[2];
+							aBuffer[j + aSamples * 3] += s2 * pan[3];
+						}
+						break;
+					case 1: // 1->4
+						for (j = 0; j < aSamples; j++)
+						{
+							pan[0] += pani[0];
+							pan[1] += pani[1];
+							pan[2] += pani[2];
+							pan[3] += pani[3];
+							float s = aScratch[j];
+							aBuffer[j + 0] += s * pan[0];
+							aBuffer[j + aSamples] += s * pan[1];
+							aBuffer[j + aSamples * 2] += s * pan[2];
+							aBuffer[j + aSamples * 3] += s * pan[3];
+						}
+						break;
+					}
+					break;
+				case 6:
+					switch (voice->mChannels)
+					{
+					case 6: // 6->6
+						for (j = 0; j < aSamples; j++)
+						{
+							pan[0] += pani[0];
+							pan[1] += pani[1];
+							pan[2] += pani[2];
+							pan[3] += pani[3];
+							pan[4] += pani[4];
+							pan[5] += pani[5];
+							float s1 = aScratch[j];
+							float s2 = aScratch[aSamples + j];
+							float s3 = aScratch[aSamples * 2 + j];
+							float s4 = aScratch[aSamples * 3 + j];
+							float s5 = aScratch[aSamples * 4 + j];
+							float s6 = aScratch[aSamples * 5 + j];
+							aBuffer[j + 0] += s1 * pan[0];
+							aBuffer[j + aSamples] += s2 * pan[1];
+							aBuffer[j + aSamples * 2] += s3 * pan[2];
+							aBuffer[j + aSamples * 3] += s4 * pan[3];
+							aBuffer[j + aSamples * 4] += s5 * pan[4];
+							aBuffer[j + aSamples * 5] += s6 * pan[5];
+						}
+						break;
+					case 4: // 4->6
+						for (j = 0; j < aSamples; j++)
+						{
+							pan[0] += pani[0];
+							pan[1] += pani[1];
+							pan[2] += pani[2];
+							pan[3] += pani[3];
+							pan[4] += pani[4];
+							pan[5] += pani[5];
+							float s1 = aScratch[j];
+							float s2 = aScratch[aSamples + j];
+							float s3 = aScratch[aSamples * 2 + j];
+							float s4 = aScratch[aSamples * 3 + j];
+							aBuffer[j + 0] += s1 * pan[0];
+							aBuffer[j + aSamples] += s2 * pan[1];
+							aBuffer[j + aSamples * 2] += 0.5f * (s1 + s2) * pan[2];
+							aBuffer[j + aSamples * 3] += 0.25f * (s1 + s2 + s3 + s4) * pan[3];
+							aBuffer[j + aSamples * 4] += s3 * pan[4];
+							aBuffer[j + aSamples * 5] += s4 * pan[5];
+						}
+						break;
+					case 2: // 2->6
+						for (j = 0; j < aSamples; j++)
+						{
+							pan[0] += pani[0];
+							pan[1] += pani[1];
+							pan[2] += pani[2];
+							pan[3] += pani[3];
+							pan[4] += pani[4];
+							pan[5] += pani[5];
+							float s1 = aScratch[j];
+							float s2 = aScratch[aSamples + j];
+							aBuffer[j + 0] += s1 * pan[0];
+							aBuffer[j + aSamples] += s2 * pan[1];
+							aBuffer[j + aSamples * 2] += 0.5f * (s1 + s2) * pan[2];
+							aBuffer[j + aSamples * 3] += 0.5f * (s1 + s2) * pan[3];
+							aBuffer[j + aSamples * 4] += s1 * pan[4];
+							aBuffer[j + aSamples * 5] += s2 * pan[5];
+						}
+						break;
+					case 1: // 1->6
+						for (j = 0; j < aSamples; j++)
+						{
+							pan[0] += pani[0];
+							pan[1] += pani[1];
+							pan[2] += pani[2];
+							pan[3] += pani[3];
+							pan[4] += pani[4];
+							pan[5] += pani[5];
+							float s = aScratch[j];
+							aBuffer[j + 0] += s * pan[0];
+							aBuffer[j + aSamples] += s * pan[1];
+							aBuffer[j + aSamples * 2] += s * pan[2];
+							aBuffer[j + aSamples * 3] += s * pan[3];
+							aBuffer[j + aSamples * 4] += s * pan[4];
+							aBuffer[j + aSamples * 5] += s * pan[5];
+						}
+						break;
+					}
+					break;
 				}
-					
-				voice->mCurrentChannelVolume[0] = lpand;
-				voice->mCurrentChannelVolume[1] = rpand;
+				
+				for (k = 0; k < aChannels; k++)
+					voice->mCurrentChannelVolume[k] = pand[k];
 
 				// clear voice if the sound is over
 				if (!(voice->mFlags & AudioSourceInstance::LOOPING) && voice->hasEnded())
@@ -749,7 +1166,7 @@ namespace SoLoud
 					}
 				}
 
-				while (outofs < aSamples)
+				while (step_fixed != 0 && outofs < aSamples)
 				{
 					if (voice->mLeftoverSamples == 0)
 					{
@@ -883,7 +1300,7 @@ namespace SoLoud
 			{                
 				if (pos == 24) len = stack[pos = 0]; 
 				int pivot = data[left];
-				float pivotvol = mVoice[pivot]->mVolume;
+				float pivotvol = mVoice[pivot]->mOverallVolume;
 				stack[pos++] = len;      
 				for (right = left - 1;;) 
 				{
@@ -891,12 +1308,12 @@ namespace SoLoud
 					{
 						right++;
 					} 
-					while (mVoice[data[right]]->mVolume > pivotvol);
+					while (mVoice[data[right]]->mOverallVolume > pivotvol);
 					do
 					{
 						len--;
 					}
-					while (pivotvol > mVoice[data[len]]->mVolume);
+					while (pivotvol > mVoice[data[len]]->mOverallVolume);
 					if (right >= len) break;       
 					int temp = data[right];
 					data[right] = data[len];
@@ -910,7 +1327,7 @@ namespace SoLoud
 		}		
 	}
 
-	void Soloud::mix(float *aBuffer, unsigned int aSamples)
+	void Soloud::mix_internal(unsigned int aSamples)
 	{
 #ifdef FLOATING_POINT_DEBUG
 		// This needs to be done in the audio thread as well..
@@ -937,7 +1354,7 @@ namespace SoLoud
 		}
 		globalVolume[1] = mGlobalVolume;
 
-		if (mLockMutexFunc) mLockMutexFunc(mMutex);
+		lockAudioMutex();
 
 		// Process faders. May change scratch size.
 		int i;
@@ -962,14 +1379,15 @@ namespace SoLoud
 					setVoiceRelativePlaySpeed(i, speed);
 				}
 
-				volume[0] = mVoice[i]->mVolume;
+				volume[0] = mVoice[i]->mOverallVolume;
 				if (mVoice[i]->mVolumeFader.mActive > 0)
 				{
-					mVoice[i]->mVolume = mVoice[i]->mVolumeFader.get(mVoice[i]->mStreamTime);
+					mVoice[i]->mSetVolume = mVoice[i]->mVolumeFader.get(mVoice[i]->mStreamTime);
 					mVoice[i]->mActiveFader = 1;
+					updateVoiceVolume(i);
 					mActiveVoiceDirty = true;
 				}
-				volume[1] = mVoice[i]->mVolume;
+				volume[1] = mVoice[i]->mOverallVolume;
 
 				if (mVoice[i]->mPanFader.mActive > 0)
 				{
@@ -1007,24 +1425,22 @@ namespace SoLoud
 		if (mScratchSize < mScratchNeeded)
 		{
 			mScratchSize = mScratchNeeded;
-			delete[] mScratch;
-			mScratch = new float[mScratchSize];
+			mScratch.init(mScratchSize * MAX_CHANNELS);
 		}
 		
-		mixBus(aBuffer, aSamples, mScratch, 0, (float)mSamplerate);
+		mixBus(mOutputScratch.mData, aSamples, mScratch.mData, 0, (float)mSamplerate, mChannels);
 
 		for (i = 0; i < FILTERS_PER_STREAM; i++)
 		{
 			if (mFilterInstance[i])
 			{
-				mFilterInstance[i]->filter(aBuffer, aSamples, 2, (float)mSamplerate, mStreamTime);
+				mFilterInstance[i]->filter(mOutputScratch.mData, aSamples, mChannels, (float)mSamplerate, mStreamTime);
 			}
 		}
 
-		if (mUnlockMutexFunc) mUnlockMutexFunc(mMutex);
+		unlockAudioMutex();
 
-		clip(aBuffer, mScratch, aSamples, globalVolume[0], globalVolume[1]);
-		interlace_samples(mScratch, aBuffer, aSamples, 2);
+		clip(mOutputScratch, mScratch, aSamples, globalVolume[0], globalVolume[1]);
 
 		if (mFlags & ENABLE_VISUALIZATION)
 		{
@@ -1032,7 +1448,12 @@ namespace SoLoud
 			{
 				for (i = 0; i < 256; i++)
 				{
-					mVisualizationWaveData[i] = aBuffer[i*2+0] + aBuffer[i*2+1];
+					int j;
+					mVisualizationWaveData[i] = 0;
+					for (j = 0; j < (signed)mChannels; j++)
+					{
+						mVisualizationWaveData[i] += mScratch.mData[i + j * aSamples];
+					}
 				}
 			}
 			else
@@ -1040,13 +1461,30 @@ namespace SoLoud
 				// Very unlikely failsafe branch
 				for (i = 0; i < 256; i++)
 				{
-					mVisualizationWaveData[i] = aBuffer[((i % aSamples) * 2) + 0] + aBuffer[((i % aSamples) * 2) + 1];
+					int j;
+					mVisualizationWaveData[i] = 0;
+					for (j = 0; j < (signed)mChannels; j++)
+					{
+						mVisualizationWaveData[i] += mScratch.mData[(i % aSamples) + j * aSamples];
+					}
 				}
 			}
 		}
 	}
 
-	void deinterlace_samples(const float *aSourceBuffer, float *aDestBuffer, unsigned int aSamples, unsigned int aChannels)
+	void Soloud::mix(float *aBuffer, unsigned int aSamples)
+	{
+		mix_internal(aSamples);
+		interlace_samples_float(mScratch.mData, aBuffer, aSamples, mChannels);
+	}
+
+	void Soloud::mix_s16(short *aBuffer, unsigned int aSamples)
+	{
+		mix_internal(aSamples);
+		interlace_samples_s16(mScratch.mData, aBuffer, aSamples, mChannels);
+	}
+
+	void deinterlace_samples_float(const float *aSourceBuffer, float *aDestBuffer, unsigned int aSamples, unsigned int aChannels)
 	{
 		// 121212 -> 111222
 		unsigned int i, j, c;
@@ -1061,7 +1499,7 @@ namespace SoLoud
 		}
 	}
 
-	void interlace_samples(const float *aSourceBuffer, float *aDestBuffer, unsigned int aSamples, unsigned int aChannels)
+	void interlace_samples_float(const float *aSourceBuffer, float *aDestBuffer, unsigned int aSamples, unsigned int aChannels)
 	{
 		// 111222 -> 121212
 		unsigned int i, j, c;
@@ -1074,6 +1512,33 @@ namespace SoLoud
 				c++;
 			}
 		}
+	}
+
+	void interlace_samples_s16(const float *aSourceBuffer, short *aDestBuffer, unsigned int aSamples, unsigned int aChannels)
+	{
+		// 111222 -> 121212
+		unsigned int i, j, c;
+		c = 0;
+		for (j = 0; j < aChannels; j++)
+		{
+			for (i = j; i < aSamples * aChannels; i += aChannels)
+			{
+				aDestBuffer[i] = (short)(aSourceBuffer[c] * 0x7fff);
+				c++;
+			}
+		}
+	}
+
+	void Soloud::lockAudioMutex()
+	{
+		if (mAudioThreadMutex)
+			Thread::lockMutex(mAudioThreadMutex);
+	}
+
+	void Soloud::unlockAudioMutex()
+	{
+		if (mAudioThreadMutex)
+			Thread::unlockMutex(mAudioThreadMutex);
 	}
 
 };

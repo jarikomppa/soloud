@@ -106,6 +106,12 @@ namespace SoLoud
 			Thread::sleep(10);
 		}
 
+		(*playerObj)->Destroy( playerObj );
+		playerObj = NULL;
+		player = NULL;
+		playerVol = NULL;
+		playerBufferQueue = NULL;
+
 		(*outputMixObj)->Destroy( outputMixObj );
 		outputMixObj = NULL;
 		outputMixVol = NULL;

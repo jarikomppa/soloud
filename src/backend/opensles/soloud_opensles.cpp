@@ -56,126 +56,150 @@ namespace SoLoud
 
 #define NUM_BUFFERS 2
 
-// Engine.
-static SLObjectItf engineObj = NULL;
-static SLEngineItf engine = NULL;
-
-// Output mix.
-static SLObjectItf outputMixObj = NULL;
-static SLVolumeItf outputMixVol = NULL;
-
-// Data.
-static SLDataLocator_OutputMix outLocator;
-static SLDataSink dstDataSink;
-
-// Player.
-static SLObjectItf playerObj = NULL;
-static SLPlayItf player = NULL;
-static SLVolumeItf playerVol = NULL;
-static SLAndroidSimpleBufferQueueItf playerBufferQueue = NULL;
-
-static unsigned int bufferSize = 4096;
-static unsigned int channels = 2;
-static short *outputBuffers[ NUM_BUFFERS ] = { NULL };
-static int buffersQueued = 0;
-static int activeBuffer = 0;
-static volatile int threadrun = 0;
-
-static SLDataLocator_AndroidSimpleBufferQueue inLocator;
-
 namespace SoLoud
 {
+	struct BackendData
+	{
+		BackendData()
+		{
+			memset(this, 0, sizeof(BackendData));
+		}
+
+		~BackendData()
+		{
+			// Wait until thread is done.
+			threadrun++;
+			while (threadrun == 1)
+			{
+				Thread::sleep(10);
+			}
+
+			if(playerObj)
+			{
+				(*playerObj)->Destroy(playerObj);
+			}
+
+			if(outputMixObj)
+			{
+				(*outputMixObj)->Destroy(outputMixObj);
+			}
+
+			if(engineObj)
+			{
+				(*engineObj)->Destroy(engineObj);
+			}
+
+			for(int idx = 0; idx < NUM_BUFFERS; ++idx)
+			{
+				delete [] outputBuffers[idx];
+			}
+		}
+
+		// Engine.
+		SLObjectItf engineObj;
+		SLEngineItf engine;
+
+		// Output mix.
+		SLObjectItf outputMixObj;
+		SLVolumeItf outputMixVol;
+
+		// Data.
+		SLDataLocator_OutputMix outLocator;
+		SLDataSink dstDataSink;
+
+		// Player.
+		SLObjectItf playerObj;
+		SLPlayItf player;
+		SLVolumeItf playerVol;
+		SLAndroidSimpleBufferQueueItf playerBufferQueue;
+
+		unsigned int bufferSize;
+		unsigned int channels;
+		short *outputBuffers[ NUM_BUFFERS ];
+		int buffersQueued;
+		int activeBuffer;
+		volatile int threadrun;
+
+		SLDataLocator_AndroidSimpleBufferQueue inLocator;
+	};
+
  	void soloud_opensles_deinit(SoLoud::Soloud *aSoloud)
 	{
-		threadrun++;
-		while (threadrun == 1)
-		{
-			Thread::sleep(10);
-		}
-
-		(*playerObj)->Destroy( playerObj );
-		playerObj = NULL;
-		player = NULL;
-		playerVol = NULL;
-		playerBufferQueue = NULL;
-
-		(*outputMixObj)->Destroy( outputMixObj );
-		outputMixObj = NULL;
-		outputMixVol = NULL;
-
-		(*engineObj)->Destroy( engineObj );
-		engineObj = NULL;
-		engine = NULL;
-
-		for(int idx = 0; idx < NUM_BUFFERS; ++idx)
-		{
-			delete [] outputBuffers[idx];
-		}
+		BackendData *data = static_cast<BackendData*>(aSoloud->mBackendData);
+		delete data;
+		aSoloud->mBackendData = NULL;
 	}
 
 	static void opensles_iterate(SoLoud::Soloud *aSoloud)
 	{
+		BackendData *data = static_cast<BackendData*>(aSoloud->mBackendData);
+
 		// If we have no buffered queued, queue one up for playback.
-		if(buffersQueued == 0)
+		if(data->buffersQueued == 0)
 		{
 			// Get next output buffer, advance, next buffer.
-			short * outputBuffer = outputBuffers[activeBuffer];
-			activeBuffer = ( activeBuffer + 1 ) % NUM_BUFFERS;
-			short * nextBuffer = outputBuffers[activeBuffer];
+			short * outputBuffer = data->outputBuffers[data->activeBuffer];
+			data->activeBuffer = (data->activeBuffer + 1) % NUM_BUFFERS;
+			short * nextBuffer = data->outputBuffers[data->activeBuffer];
 
 			// Mix this buffer. 
-			const int bufferSizeBytes = bufferSize * channels * sizeof(short);
-			(*playerBufferQueue)->Enqueue( playerBufferQueue, outputBuffer, bufferSizeBytes );
-			++buffersQueued;
+			const int bufferSizeBytes = data->bufferSize * data->channels * sizeof(short);
+			(*data->playerBufferQueue)->Enqueue(data->playerBufferQueue, outputBuffer, bufferSizeBytes);
+			++data->buffersQueued;
 
-			aSoloud->mix_s16(nextBuffer,bufferSize);
+			aSoloud->mix_s16(nextBuffer,data->bufferSize);
 		}
 	}
 
 	static void opensles_thread(void *aParam)
 	{
-		Soloud *soloud = (Soloud *)aParam;
-		while (threadrun == 0)
+		Soloud *soloud = static_cast<Soloud*>(aParam);
+		BackendData *data = static_cast<BackendData*>(soloud->mBackendData);
+		while (data->threadrun == 0)
 		{
 			opensles_iterate(soloud);
 
 			// TODO: Condition var?
 			Thread::sleep(1);
 		}
-		threadrun++;
+		data->threadrun++;
 	}
 
-	static void SLAPIENTRY soloud_opensles_play_callback( SLPlayItf player, void *context, SLuint32 event )
+	static void SLAPIENTRY soloud_opensles_play_callback(SLPlayItf player, void *context, SLuint32 event)
 	{
+		Soloud *soloud = static_cast<Soloud*>(context);
+		BackendData *data = static_cast<BackendData*>(soloud->mBackendData);
 		if( event & SL_PLAYEVENT_HEADATEND )
 		{
-			--buffersQueued;
+			data->buffersQueued--;
 		}
 	}
 
 	result opensles_init(SoLoud::Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer, unsigned int aChannels)
 	{
+		BackendData *data = new BackendData();
+
 		// Allocate output buffer to mix into.
-		bufferSize = aBuffer;
-		channels = aChannels;
-		const int bufferSizeBytes = bufferSize * channels * sizeof(short);
+		data->bufferSize = aBuffer;
+		data->channels = aChannels;
+		const int bufferSizeBytes = data->bufferSize * data->channels * sizeof(short);
 		for(int idx = 0; idx < NUM_BUFFERS; ++idx)
 		{
-			outputBuffers[idx] = new short[ bufferSize * channels ];
-			memset(outputBuffers[idx], 0, bufferSizeBytes);
+			data->outputBuffers[idx] = new short[ data->bufferSize * data->channels ];
+			memset(data->outputBuffers[idx], 0, bufferSizeBytes);
 		}
 
 		// Create engine.
 		const SLEngineOption opts[] = { SL_ENGINEOPTION_THREADSAFE, SL_BOOLEAN_TRUE };
-		if(slCreateEngine( &engineObj, 1, opts, 0, NULL, NULL ) != SL_RESULT_SUCCESS)
+		if(slCreateEngine( &data->engineObj, 1, opts, 0, NULL, NULL ) != SL_RESULT_SUCCESS)
 		{
 			LOG_ERROR( "Failed to create engine." );
 			return UNKNOWN_ERROR;
 		}
 
 		// Realize and get engine interfaxce.	
-		(*engineObj)->Realize(engineObj, SL_BOOLEAN_FALSE);
-		if((*engineObj)->GetInterface(engineObj, SL_IID_ENGINE, &engine) != SL_RESULT_SUCCESS)
+		(*data->engineObj)->Realize(data->engineObj, SL_BOOLEAN_FALSE);
+		if((*data->engineObj)->GetInterface(data->engineObj, SL_IID_ENGINE, &data->engine) != SL_RESULT_SUCCESS)
 		{
 			LOG_ERROR( "Failed to get engine interface." );
 			return UNKNOWN_ERROR;
@@ -185,33 +209,33 @@ namespace SoLoud
 		const SLInterfaceID ids[] = { SL_IID_VOLUME };
 		const SLboolean req[] = { SL_BOOLEAN_FALSE };
 
-		if((*engine)->CreateOutputMix(engine, &outputMixObj, 1, ids, req) != SL_RESULT_SUCCESS)
+		if((*data->engine)->CreateOutputMix(data->engine, &data->outputMixObj, 1, ids, req) != SL_RESULT_SUCCESS)
 		{
 			LOG_ERROR( "Failed to create output mix object." );
 			return UNKNOWN_ERROR;
 		}
-		(*outputMixObj)->Realize(outputMixObj, SL_BOOLEAN_FALSE);
+		(*data->outputMixObj)->Realize(data->outputMixObj, SL_BOOLEAN_FALSE);
 
-		if((*outputMixObj)->GetInterface(outputMixObj, SL_IID_VOLUME, &outputMixVol) != SL_RESULT_SUCCESS)
+		if((*data->outputMixObj)->GetInterface(data->outputMixObj, SL_IID_VOLUME, &data->outputMixVol) != SL_RESULT_SUCCESS)
 		{
 			LOG_ERROR( "Failed to get output mix volume interface." );
 		}
 
 		// Create android buffer queue.
-		inLocator.locatorType = SL_DATALOCATOR_ANDROIDSIMPLEBUFFERQUEUE;
-		inLocator.numBuffers = NUM_BUFFERS;
+		data->inLocator.locatorType = SL_DATALOCATOR_ANDROIDSIMPLEBUFFERQUEUE;
+		data->inLocator.numBuffers = NUM_BUFFERS;
 
 		// Setup data format.
 		SLDataFormat_PCM format;
 		format.formatType = SL_DATAFORMAT_PCM;
-		format.numChannels = channels;
+		format.numChannels = data->channels;
 		format.samplesPerSec = aSamplerate * 1000; //mHz
 		format.bitsPerSample = SL_PCMSAMPLEFORMAT_FIXED_16;
 		format.containerSize = 16;
 		format.endianness = SL_BYTEORDER_LITTLEENDIAN;
 
 		// Determine channel mask.
-		if(channels == 2)
+		if(data->channels == 2)
 		{
 			format.channelMask = SL_SPEAKER_FRONT_LEFT | SL_SPEAKER_FRONT_RIGHT;
 		}
@@ -221,51 +245,52 @@ namespace SoLoud
 		}
 		 
 		SLDataSource src;
-		src.pLocator = &inLocator;
+		src.pLocator = &data->inLocator;
 		src.pFormat = &format;
 
 		// Output mix.
-		outLocator.locatorType = SL_DATALOCATOR_OUTPUTMIX;
-		outLocator.outputMix = outputMixObj;
+		data->outLocator.locatorType = SL_DATALOCATOR_OUTPUTMIX;
+		data->outLocator.outputMix = data->outputMixObj;
 		 
-		dstDataSink.pLocator = &outLocator;
-		dstDataSink.pFormat = NULL;
+		data->dstDataSink.pLocator = &data->outLocator;
+		data->dstDataSink.pFormat = NULL;
 
 		// Setup player.
 		{
 			const SLInterfaceID ids[] = { SL_IID_VOLUME, SL_IID_ANDROIDSIMPLEBUFFERQUEUE };
 			const SLboolean req[] = { SL_BOOLEAN_TRUE, SL_BOOLEAN_TRUE };
  
-			(*engine)->CreateAudioPlayer( engine, &playerObj, &src, &dstDataSink, sizeof( ids ) / sizeof( ids[0] ), ids, req );
+			(*data->engine)->CreateAudioPlayer(data->engine, &data->playerObj, &src, &data->dstDataSink, sizeof(ids) / sizeof(ids[0]), ids, req);
 		 
-			(*playerObj)->Realize( playerObj, SL_BOOLEAN_FALSE );
+			(*data->playerObj)->Realize(data->playerObj, SL_BOOLEAN_FALSE);
 	 
-			(*playerObj)->GetInterface( playerObj, SL_IID_PLAY, &player );
-			(*playerObj)->GetInterface( playerObj, SL_IID_VOLUME, &playerVol );
+			(*data->playerObj)->GetInterface(data->playerObj, SL_IID_PLAY, &data->player);
+			(*data->playerObj)->GetInterface(data->playerObj, SL_IID_VOLUME, &data->playerVol);
  
-			(*playerObj)->GetInterface( playerObj, SL_IID_ANDROIDSIMPLEBUFFERQUEUE, &playerBufferQueue );
+			(*data->playerObj)->GetInterface(data->playerObj, SL_IID_ANDROIDSIMPLEBUFFERQUEUE, &data->playerBufferQueue);
 		}
 
 		// Begin playing.
 		{
-			const int bufferSizeBytes = bufferSize * channels * sizeof(short);
-			(*playerBufferQueue)->Enqueue( playerBufferQueue, outputBuffers[0], bufferSizeBytes );
-			activeBuffer = (activeBuffer + 1) % NUM_BUFFERS;
+			const int bufferSizeBytes = data->bufferSize * data->channels * sizeof(short);
+			(*data->playerBufferQueue)->Enqueue(data->playerBufferQueue, data->outputBuffers[0], bufferSizeBytes);
+			data->activeBuffer = (data->activeBuffer + 1) % NUM_BUFFERS;
 
-			(*player)->RegisterCallback( player, soloud_opensles_play_callback, aSoloud );
-			(*player)->SetCallbackEventsMask( player, SL_PLAYEVENT_HEADATEND );
-			(*player)->SetPlayState( player, SL_PLAYSTATE_PLAYING );
+			(*data->player)->RegisterCallback(data->player, soloud_opensles_play_callback, aSoloud);
+			(*data->player)->SetCallbackEventsMask(data->player, SL_PLAYEVENT_HEADATEND);
+			(*data->player)->SetPlayState(data->player, SL_PLAYSTATE_PLAYING);
 
 		}
 		
 		//
-		aSoloud->postinit(aSamplerate,bufferSize,aFlags,2);
+		aSoloud->postinit(aSamplerate,data->bufferSize,aFlags,2);
+		aSoloud->mBackendData = data;
 		aSoloud->mBackendCleanupFunc = soloud_opensles_deinit;
 
 		LOG_ERROR( "Creating audio thread." );
 		Thread::createThread(opensles_thread, (void*)aSoloud);
 
-		aSoloud->mBackendString = "OpenSLES";
+		aSoloud->mBackendString = "OpenSL ES";
 		return SO_NO_ERROR;
 	}	
 };

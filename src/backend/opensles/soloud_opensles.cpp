@@ -72,33 +72,20 @@ static SLDataSink dstDataSink;
 static SLObjectItf playerObj = NULL;
 static SLPlayItf player = NULL;
 static SLVolumeItf playerVol = NULL;
-#if defined( __ANDROID__ )
 static SLAndroidSimpleBufferQueueItf playerBufferQueue = NULL;
-#endif
 
 static unsigned int bufferSize = 4096;
 static unsigned int channels = 2;
-static short *outputBuffer = NULL;
-int buffersQueued = 0;
-
+static short *outputBuffers[ NUM_BUFFERS ] = { NULL };
+static int buffersQueued = 0;
+static int activeBuffer = 0;
 static volatile int threadrun = 0;
 
-#if defined( __ANDROID__ )
 static SLDataLocator_AndroidSimpleBufferQueue inLocator;
-#endif
 
 namespace SoLoud
 {
-	static void SLAPIENTRY soloud_opensles_play_callback( SLPlayItf player, void *context, SLuint32 event )
-	{
-		//TODO: SL_PLAYEVENT_HEADATMARKER so we get a callback mid track.
-		if( event & SL_PLAYEVENT_HEADATEND )
-		{
-			--buffersQueued;
-		}
-	}
- 
-	void soloud_opensles_deinit(SoLoud::Soloud *aSoloud)
+ 	void soloud_opensles_deinit(SoLoud::Soloud *aSoloud)
 	{
 		threadrun++;
 		while (threadrun == 1)
@@ -120,20 +107,28 @@ namespace SoLoud
 		engineObj = NULL;
 		engine = NULL;
 
-		delete [] outputBuffer;
+		for(int idx = 0; idx < NUM_BUFFERS; ++idx)
+		{
+			delete [] outputBuffers[idx];
+		}
 	}
 
 	static void opensles_iterate(SoLoud::Soloud *aSoloud)
 	{
-		// If we haven't got atleast NUM_BUFFERS queued, make sure we have another one waiting.
-		if( buffersQueued < NUM_BUFFERS )
+		// If we have no buffered queued, queue one up for playback.
+		if(buffersQueued == 0)
 		{
-			aSoloud->mix_s16(outputBuffer,bufferSize);
-#if defined( __ANDROID__ )
+			// Get next output buffer, advance, next buffer.
+			short * outputBuffer = outputBuffers[activeBuffer];
+			activeBuffer = ( activeBuffer + 1 ) % NUM_BUFFERS;
+			short * nextBuffer = outputBuffers[activeBuffer];
+
+			// Mix this buffer. 
 			const int bufferSizeBytes = bufferSize * channels * sizeof(short);
 			(*playerBufferQueue)->Enqueue( playerBufferQueue, outputBuffer, bufferSizeBytes );
-#endif
 			++buffersQueued;
+
+			aSoloud->mix_s16(nextBuffer,bufferSize);
 		}
 	}
 
@@ -150,16 +145,29 @@ namespace SoLoud
 		threadrun++;
 	}
 
+	static void SLAPIENTRY soloud_opensles_play_callback( SLPlayItf player, void *context, SLuint32 event )
+	{
+		if( event & SL_PLAYEVENT_HEADATEND )
+		{
+			--buffersQueued;
+		}
+	}
+
 	result opensles_init(SoLoud::Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer, unsigned int aChannels)
 	{
 		// Allocate output buffer to mix into.
 		bufferSize = aBuffer;
 		channels = aChannels;
-		outputBuffer = new short[ bufferSize * channels ];
+		const int bufferSizeBytes = bufferSize * channels * sizeof(short);
+		for(int idx = 0; idx < NUM_BUFFERS; ++idx)
+		{
+			outputBuffers[idx] = new short[ bufferSize * channels ];
+			memset(outputBuffers[idx], 0, bufferSizeBytes);
+		}
 
 		// Create engine.
-		// TODO: Use channels, samplerate, etc..
-		if(slCreateEngine( &engineObj, 0, NULL, 0, NULL, NULL ) != SL_RESULT_SUCCESS)
+		const SLEngineOption opts[] = { SL_ENGINEOPTION_THREADSAFE, SL_BOOLEAN_TRUE };
+		if(slCreateEngine( &engineObj, 1, opts, 0, NULL, NULL ) != SL_RESULT_SUCCESS)
 		{
 			LOG_ERROR( "Failed to create engine." );
 			return UNKNOWN_ERROR;
@@ -189,12 +197,9 @@ namespace SoLoud
 			LOG_ERROR( "Failed to get output mix volume interface." );
 		}
 
-
 		// Create android buffer queue.
-#if defined( __ANDROID__ )
 		inLocator.locatorType = SL_DATALOCATOR_ANDROIDSIMPLEBUFFERQUEUE;
 		inLocator.numBuffers = NUM_BUFFERS;
-#endif
 
 		// Setup data format.
 		SLDataFormat_PCM format;
@@ -228,13 +233,8 @@ namespace SoLoud
 
 		// Setup player.
 		{
-#if defined( __ANDROID__ )
 			const SLInterfaceID ids[] = { SL_IID_VOLUME, SL_IID_ANDROIDSIMPLEBUFFERQUEUE };
 			const SLboolean req[] = { SL_BOOLEAN_TRUE, SL_BOOLEAN_TRUE };
-#else
-			const SLInterfaceID ids[] = { SL_IID_VOLUME };
-			const SLboolean req[] = { SL_BOOLEAN_TRUE };
-#endif
  
 			(*engine)->CreateAudioPlayer( engine, &playerObj, &src, &dstDataSink, sizeof( ids ) / sizeof( ids[0] ), ids, req );
 		 
@@ -243,23 +243,19 @@ namespace SoLoud
 			(*playerObj)->GetInterface( playerObj, SL_IID_PLAY, &player );
 			(*playerObj)->GetInterface( playerObj, SL_IID_VOLUME, &playerVol );
  
-#if defined( __ANDROID__ )
 			(*playerObj)->GetInterface( playerObj, SL_IID_ANDROIDSIMPLEBUFFERQUEUE, &playerBufferQueue );
-#endif
 		}
 
 		// Begin playing.
 		{
 			const int bufferSizeBytes = bufferSize * channels * sizeof(short);
-			memset(outputBuffer, 0, bufferSizeBytes);
-#if defined( __ANDROID__ )
-			(*playerBufferQueue)->Enqueue( playerBufferQueue, outputBuffer, bufferSizeBytes );
-#endif
+			(*playerBufferQueue)->Enqueue( playerBufferQueue, outputBuffers[0], bufferSizeBytes );
+			activeBuffer = (activeBuffer + 1) % NUM_BUFFERS;
 
 			(*player)->RegisterCallback( player, soloud_opensles_play_callback, aSoloud );
 			(*player)->SetCallbackEventsMask( player, SL_PLAYEVENT_HEADATEND );
-
 			(*player)->SetPlayState( player, SL_PLAYSTATE_PLAYING );
+
 		}
 		
 		//

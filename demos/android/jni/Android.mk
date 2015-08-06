@@ -16,8 +16,24 @@ LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
 
+SOLOUD_FILES	:= $(wildcard $(LOCAL_PATH)/../../../src/audiosource/monotone/*.cpp) 
+SOLOUD_FILES	+= $(wildcard $(LOCAL_PATH)/../../../src/audiosource/speech/*.cpp)
+SOLOUD_FILES	+= $(wildcard $(LOCAL_PATH)/../../../src/audiosource/sfxr/*.cpp)
+SOLOUD_FILES	+= $(wildcard $(LOCAL_PATH)/../../../src/audiosource/wav/*.cpp)
+SOLOUD_FILES	+= $(wildcard $(LOCAL_PATH)/../../../src/audiosource/wav/*.c)
+SOLOUD_FILES	+= $(wildcard $(LOCAL_PATH)/../../../src/backend/opensles/*.cpp)
+SOLOUD_FILES	+= $(wildcard $(LOCAL_PATH)/../../../src/core/*.cpp)
+SOLOUD_FILES	+= $(wildcard $(LOCAL_PATH)/../../../src/filter/*.cpp)
+SOLOUD_FILES	:= $(SOLOUD_FILES:$(LOCAL_PATH)/%=%)
+
 LOCAL_MODULE    := soloud-android
-LOCAL_SRC_FILES := main.c
+LOCAL_SRC_FILES := main.cpp
+LOCAL_SRC_FILES += $(SOLOUD_FILES)
+
+LOCAL_CPPFLAGS	+= -DWITH_OPENSLES=1
+
+LOCAL_C_INCLUDES := $(LOCAL_PATH)/../../../include
+
 LOCAL_LDLIBS    := -llog -landroid -lEGL -lGLESv1_CM -lOpenSLES
 LOCAL_STATIC_LIBRARIES := android_native_app_glue
 

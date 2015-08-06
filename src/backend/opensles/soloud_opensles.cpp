@@ -49,6 +49,8 @@ namespace SoLoud
 #  include <android/log.h>
 #  define LOG_ERROR( _msg ) \
    __android_log_print( ANDROID_LOG_ERROR, "SoLoud", _msg )
+#  define LOG_INFO( _msg ) \
+   __android_log_print( ANDROID_LOG_INFO, "SoLoud", _msg )
 
 #else
    printf( _msg )
@@ -218,7 +220,7 @@ namespace SoLoud
 
 		if((*data->outputMixObj)->GetInterface(data->outputMixObj, SL_IID_VOLUME, &data->outputMixVol) != SL_RESULT_SUCCESS)
 		{
-			LOG_ERROR( "Failed to get output mix volume interface." );
+			LOG_INFO( "Failed to get output mix volume interface." );
 		}
 
 		// Create android buffer queue.
@@ -287,7 +289,7 @@ namespace SoLoud
 		aSoloud->mBackendData = data;
 		aSoloud->mBackendCleanupFunc = soloud_opensles_deinit;
 
-		LOG_ERROR( "Creating audio thread." );
+		LOG_INFO( "Creating audio thread." );
 		Thread::createThread(opensles_thread, (void*)aSoloud);
 
 		aSoloud->mBackendString = "OpenSL ES";

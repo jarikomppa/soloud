@@ -30,7 +30,7 @@ freely, subject to the following restrictions:
 #include "soloud_fft.h"
 
 #ifdef SOLOUD_SSE_INTRINSICS
-#include <smmintrin.h>
+#include <xmmintrin.h>
 #endif
 
 //#define FLOATING_POINT_DEBUG

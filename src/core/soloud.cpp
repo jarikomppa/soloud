@@ -30,7 +30,7 @@ freely, subject to the following restrictions:
 #include "soloud_fft.h"
 
 #ifdef SOLOUD_SSE_INTRINSICS
-#include <smmintrin.h>
+#include <xmmintrin.h>
 #endif
 
 //#define FLOATING_POINT_DEBUG
@@ -42,7 +42,8 @@ freely, subject to the following restrictions:
 #if !defined(WITH_SDL2) && !defined(WITH_SDL) && !defined(WITH_PORTAUDIO) && \
    !defined(WITH_OPENAL) && !defined(WITH_XAUDIO2) && !defined(WITH_WINMM) && \
    !defined(WITH_WASAPI) && !defined(WITH_OSS) && !defined(WITH_SDL_STATIC) && \
-   !defined(WITH_SDL2_STATIC) && !defined(WITH_ALSA) && !defined(WITH_NULL)
+   !defined(WITH_SDL2_STATIC) && !defined(WITH_ALSA) && !defined(WITH_OPENSLES) && \
+   !defined(WITH_NULL)
 #error It appears you haven't enabled any of the back-ends. Please #define one or more of the WITH_ defines (or use premake) '
 #endif
 
@@ -368,6 +369,25 @@ namespace SoLoud
 			{
 				inited = 1;
 				mBackendID = Soloud::OPENAL;
+			}
+
+			if (ret != 0 && aBackend != Soloud::AUTO)
+				return ret;			
+		}
+#endif
+
+#if defined(WITH_OPENSLES)
+		if (!inited &&
+			(aBackend == Soloud::OPENSLES ||
+			aBackend == Soloud::AUTO))
+		{
+			if (aBufferSize == Soloud::AUTO) buffersize = 4096;
+
+			int ret = opensles_init(this, aFlags, samplerate, buffersize, aChannels);
+			if (ret == 0)
+			{
+				inited = 1;
+				mBackendID = Soloud::OPENSLES;
 			}
 
 			if (ret != 0 && aBackend != Soloud::AUTO)

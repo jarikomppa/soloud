@@ -328,7 +328,10 @@ solution "SoLoud"
 	--       doesn't do this well on it's own and is recommended to setup this
 	--       manually. See https://github.com/bkaradzic/bx/blob/master/scripts/toolchain.lua
 	configuration { "gmake" }
-		buildoptions { "-msse4.1" }
+		buildoptions { 
+			"-msse4.1", 
+			"-fPIC"
+		}
 
     configuration {}
 

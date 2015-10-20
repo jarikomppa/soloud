@@ -108,7 +108,7 @@ If the handle is invalid, the getPause will return 0.
 
 The setPauseAll function can be used to pause, or unpause, all sounds.
 
-    soloud.setPauseAll(h, 0); // resumes playback of all channels
+    soloud.setPauseAll(0); // resumes playback of all channels
 
 Note that this function will overwrite the pause state of all channels
 at once. If your game uses this to pause/unpause the sound while the

@@ -11,6 +11,7 @@ build/
 *.out
 *.gz
 *.toc
+*.o
 incoming/
 experiments/
 doc/*.html

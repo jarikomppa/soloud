@@ -50,6 +50,17 @@ namespace SoLoud
 
 	void VicInstance::getAudio(float *aBuffer, unsigned int aSamples)
 	{
+		unsigned int phaseAdder[4] = { 0, 0, 0, 0 };
+		for(int i = 0; i < 4; i++)
+		{
+			unsigned char reg = m_parent->getRegister(i);
+			if(reg >= 128)
+			{
+				float freq = m_parent->m_clocks[i] / (float)(reg < 255 ? 255 - reg : 1);
+				phaseAdder[i] = (unsigned int)(freq * 65536.0f / 44100.0f + 0.5f);
+			}
+		}
+
 		for(int i = 0; i < aSamples; i++)
 		{
 			float s = 0.0f;
@@ -57,25 +68,19 @@ namespace SoLoud
 			// square waves
 			for(int v = 0; v < 3; v++)
 			{
-				unsigned char reg = m_parent->getRegister(v);
-				if(reg >= 128)
+				if(phaseAdder[v] != 0)
 				{
 					s += (m_phase[v] < 32768 ? 0.5f : -0.5f);
-
-					float freq = m_parent->m_clocks[v] / (float)(reg < 255 ? 255 - reg : 1);
-					m_phase[v] += (freq * 65536.0f / 44100.0f + 0.5f);
-					m_phase[v] &= 65535;
+					m_phase[v] = (m_phase[v] + phaseAdder[v]) & 65535;
 				}
 			}
 
 			// noise
-			unsigned char reg = m_parent->getRegister(3);
-			if(reg >= 128)
+			if(phaseAdder[3] != 0)
 			{
 				s += (float)m_parent->m_noise[m_noisePos] / 255.0f - 0.5f;
 
-				float freq = m_parent->m_clocks[3] / (float)(reg < 255 ? 255 - reg : 1);
-				m_phase[3] += (freq * 65536.0f / 44100.0f + 0.5f);
+				m_phase[3] += phaseAdder[3];
 
 				if(m_phase[3] >= 32768)
 				{

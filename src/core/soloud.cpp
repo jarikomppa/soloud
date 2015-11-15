@@ -43,7 +43,7 @@ freely, subject to the following restrictions:
    !defined(WITH_OPENAL) && !defined(WITH_XAUDIO2) && !defined(WITH_WINMM) && \
    !defined(WITH_WASAPI) && !defined(WITH_OSS) && !defined(WITH_SDL_STATIC) && \
    !defined(WITH_SDL2_STATIC) && !defined(WITH_ALSA) && !defined(WITH_OPENSLES) && \
-   !defined(WITH_NULL)
+   !defined(WITH_NULL) && !defined(WITH_COREAUDIO)
 #error It appears you haven't enabled any of the back-ends. Please #define one or more of the WITH_ defines (or use premake) '
 #endif
 
@@ -369,6 +369,25 @@ namespace SoLoud
 			{
 				inited = 1;
 				mBackendID = Soloud::OPENAL;
+			}
+
+			if (ret != 0 && aBackend != Soloud::AUTO)
+				return ret;			
+		}
+#endif
+
+#if defined(WITH_COREAUDIO)
+		if (!inited &&
+			(aBackend == Soloud::COREAUDIO ||
+			aBackend == Soloud::AUTO))
+		{
+			if (aBufferSize == Soloud::AUTO) buffersize = 2048;
+
+			int ret = coreaudio_init(this, aFlags, samplerate, buffersize, aChannels);
+			if (ret == 0)
+			{
+				inited = 1;
+				mBackendID = Soloud::COREAUDIO;
 			}
 
 			if (ret != 0 && aBackend != Soloud::AUTO)

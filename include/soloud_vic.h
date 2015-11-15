@@ -59,9 +59,9 @@ namespace SoLoud
 		virtual bool hasEnded();
 
 	private:
-		Vic*		m_parent;
-		int			m_phase[4];
-		int			m_noisePos;
+		Vic*			m_parent;
+		unsigned int	m_phase[4];
+		unsigned int	m_noisePos;
 	};
 
 	class Vic : public AudioSource

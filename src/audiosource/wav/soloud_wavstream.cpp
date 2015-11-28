@@ -110,13 +110,13 @@ namespace SoLoud
 				{
 					if (j == 0)
 					{
-						aBuffer[i] = ((signed char)aFile->read8()) / (float)0x80;
+						aBuffer[i] = ((signed)aFile->read8() - 128) / (float)0x80;
 					}
 					else
 					{
 						if (aChannels > 1 && j == 1)
 						{
-							aBuffer[i + aPitch] = ((signed char)aFile->read8()) / (float)0x80;
+							aBuffer[i + aPitch] = ((signed)aFile->read8() - 128) / (float)0x80;
 						}
 						else
 						{

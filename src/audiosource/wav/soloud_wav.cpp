@@ -189,13 +189,13 @@ namespace SoLoud
 				{
 					if (j == 0)
 					{
-						mData[i] = ((signed char)aReader->read8()) / (float)0x80;
+						mData[i] = ((signed)aReader->read8() - 128) / (float)0x80;
 					}
 					else
 					{
 						if (readchannels > 1 && j == 1)
 						{
-							mData[i + samples] = ((signed char)aReader->read8()) / (float)0x80;
+							mData[i + samples] = ((signed)aReader->read8() - 128) / (float)0x80;
 						}
 						else
 						{

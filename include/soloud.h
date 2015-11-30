@@ -134,6 +134,7 @@ namespace SoLoud
 			ALSA,
 			OSS,
 			OPENAL,
+			COREAUDIO,
 			OPENSLES,
 			NULLDRIVER,
 			BACKEND_MAX,

@@ -48,30 +48,36 @@ namespace SoLoud
 #endif
 
 #define NUM_BUFFERS 2
-#define BUFFER_SIZE 4096
 
 static ALCdevice* device = NULL;
 static ALCcontext* context = NULL;
 static ALenum format = 0;
+static ALuint buffers[NUM_BUFFERS];
 static ALuint source = 0;
 static int frequency = 0;
 static volatile int threadrun = 0;
+static int buffersize = 0;
+static short* bufferdata = 0;
 
 extern "C"
 {
 	int dll_al_found();
 	ALCdevice* dll_alc_OpenDevice(const ALCchar *devicename);
+	void dll_alc_CloseDevice(ALCdevice *device);
 	ALCcontext* dll_alc_CreateContext(ALCdevice *device, const ALCint* attrlist);
+	void dll_alc_DestroyContext(ALCcontext *context);
 	ALCboolean dll_alc_MakeContextCurrent(ALCcontext *context);
 	void dll_al_GetSourcei(ALuint source, ALenum param, ALint *value);
 	void dll_al_SourceQueueBuffers(ALuint source, ALsizei nb, const ALuint *buffers);
 	void dll_al_SourceUnqueueBuffers(ALuint source, ALsizei nb, ALuint *buffers);
 	void dll_al_BufferData(ALuint buffer, ALenum format, const ALvoid *data, ALsizei size, ALsizei freq);
 	void dll_al_SourcePlay(ALuint source);
+	void dll_al_SourceStop(ALuint source);
 	void dll_al_GenBuffers(ALsizei n, ALuint *buffers);
+	void dll_al_DeleteBuffers(ALsizei n, ALuint *buffers);
 	void dll_al_GenSources(ALsizei n, ALuint *sources);
+	void dll_al_DeleteSources(ALsizei n, ALuint *sources);
 }
-
 
 namespace SoLoud
 {
@@ -82,6 +88,25 @@ namespace SoLoud
 		{
 			Thread::sleep(10);
 		}
+
+		dll_al_SourceStop(source);
+		dll_al_DeleteSources(1, &source);
+		dll_al_DeleteBuffers(NUM_BUFFERS, buffers);
+
+		dll_alc_MakeContextCurrent(NULL);
+		dll_alc_DestroyContext(context);
+		dll_alc_CloseDevice(device);
+		
+		free(bufferdata);
+
+		device = NULL;
+		context = NULL;
+		format = 0;
+		source = 0;
+		frequency = 0;
+		threadrun = 0;
+		buffersize = 0;
+		bufferdata = 0;
 	}
 	
 	static void openal_mutex_lock(void * mutex)
@@ -101,15 +126,13 @@ namespace SoLoud
 		ALint state;
 		dll_al_GetSourcei(source, AL_BUFFERS_PROCESSED, &buffersProcessed);
 
-		short downbuf[BUFFER_SIZE*2];
-
 		while (buffersProcessed--) 
 		{
-			aSoloud->mix_s16(downbuf,BUFFER_SIZE);
+			aSoloud->mix_s16(bufferdata,buffersize);
 
 			dll_al_SourceUnqueueBuffers(source, 1, &buffer);
 
-			dll_al_BufferData(buffer, format, downbuf, BUFFER_SIZE*4, frequency);
+			dll_al_BufferData(buffer, format, bufferdata, buffersize*4, frequency);
 
 			dll_al_SourceQueueBuffers(source, 1, &buffer);
 		}
@@ -142,19 +165,19 @@ namespace SoLoud
 		context = dll_alc_CreateContext(device, NULL);
 		dll_alc_MakeContextCurrent(context);
 		format = AL_FORMAT_STEREO16;
-		ALuint buffers[NUM_BUFFERS];
 		dll_al_GenBuffers(NUM_BUFFERS, buffers);
 		dll_al_GenSources(1, &source);
+		buffersize = aBuffer;
+		bufferdata = (short*)malloc(buffersize*2*2);
 
 		frequency = aSamplerate;
 
 		int i;
-		short data[BUFFER_SIZE * 2];
-		for (i = 0; i < BUFFER_SIZE*2; i++)
-			data[i] = 0;
+		for (i = 0; i < buffersize*2; i++)
+			bufferdata[i] = 0;
 		for (i = 0; i < NUM_BUFFERS; i++)
 		{
-			dll_al_BufferData(buffers[i], format, data, BUFFER_SIZE, frequency);
+			dll_al_BufferData(buffers[i], format, bufferdata, buffersize, frequency);
 			dll_al_SourceQueueBuffers(source, 1, &buffers[i]);
 		}
 

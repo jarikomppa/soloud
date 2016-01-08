@@ -347,6 +347,8 @@ namespace SoLoud
 
 		int readchannels = 1;
 
+		mChannels = channels;
+
 		if (channels > 1)
 		{
 			readchannels = 2;
@@ -359,7 +361,6 @@ namespace SoLoud
 		
 		mDataOffset = fp->pos();
 		mBits = bitspersample;
-		mChannels = channels;	
 		mBaseSamplerate = (float)samplerate;
 		mSampleCount = samples;
 		mOgg = 0;

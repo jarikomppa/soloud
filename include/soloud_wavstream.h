@@ -64,7 +64,6 @@ namespace SoLoud
 		File *mStreamFile;
 		unsigned int mDataOffset;
 		unsigned int mBits;
-		unsigned int mChannels;
 		unsigned int mSampleCount;
 
 		WavStream();

@@ -242,11 +242,12 @@ namespace SoLoud
 					mLoopCount++;
 				}
 				else
-				{
+				{					
 					unsigned int i;
 					for (i = 0; i < channels; i++)
 						memset(aBuffer + copysize + i * aSamples, 0, sizeof(float) * (aSamples - copysize));
-					mOffset += aSamples - copysize;
+						
+					mOffset += aSamples;
 				}
 			}
 			else

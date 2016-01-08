@@ -8,6 +8,7 @@ local WITH_WINMM = 0
 local WITH_WASAPI = 0
 local WITH_ALSA = 0
 local WITH_OSS = 0
+local WITH_COREAUDIO = 0
 local WITH_NULL = 1
 local WITH_LIBMODPLUG = 0
 local WITH_PORTMIDI = 0
@@ -15,6 +16,8 @@ local WITH_TOOLS = 0
 
 if (os.is("Windows")) then
 	WITH_WINMM = 1
+elseif (os.is("macosx")) then
+	WITH_COREAUDIO = 1
 else
 	WITH_ALSA = 1
 	WITH_OSS = 1
@@ -113,6 +116,11 @@ newoption {
 }
 
 newoption {
+	trigger		  = "with-coreaudio",
+	description = "Include OS X CoreAudio backend in build"
+}
+
+newoption {
 	trigger		  = "with-libmodplug",
 	description = "Include libmodplug in build"
 }
@@ -177,6 +185,10 @@ end
 
 if _OPTIONS["with-portaudio"] then
 	WITH_PORTAUDIO = 1
+end
+
+if _OPTIONS["with-coreaudio"] then
+	WITH_COREAUDIO = 1
 end
 
 if _OPTIONS["with-sdl"] then
@@ -262,6 +274,8 @@ if _OPTIONS["with-native-only"] then
 	WITH_OSS = 0
 	if (os.is("Windows")) then
 		WITH_WINMM = 1
+	elseif (os.is("macosx")) then
+		WITH_COREAUDIO = 1
 	else
 	  WITH_OSS = 1
 	end
@@ -289,6 +303,7 @@ print ("WITH_WINMM      = ", WITH_WINMM)
 print ("WITH_WASAPI     = ", WITH_WASAPI)
 print ("WITH_ALSA       = ", WITH_ALSA)
 print ("WITH_OSS        = ", WITH_OSS)
+print ("WITH_COREAUDIO  = ", WITH_COREAUDIO)
 print ("WITH_LIBMODPLUG = ", WITH_LIBMODPLUG)
 print ("WITH_PORTMIDI   = ", WITH_PORTMIDI)
 print ("WITH_TOOLS      = ", WITH_TOOLS)
@@ -349,6 +364,9 @@ solution "SoLoud"
 if (WITH_ALSA == 1) then
 	links {"asound"}
 end
+if (WITH_COREAUDIO == 1) then
+	links {"AudioToolbox.framework"}
+end
 
 		links {"SoloudStatic"}
 		if (not os.is("windows")) then
@@ -373,6 +391,9 @@ end
 	}
 if (WITH_ALSA == 1) then
 	links {"asound"}
+end
+if (WITH_COREAUDIO == 1) then
+	links {"AudioToolbox.framework"}
 end
 
 		links {"SoloudStatic"}
@@ -399,6 +420,10 @@ end
 if (WITH_ALSA == 1) then
 	links {"asound"}
 end
+if (WITH_COREAUDIO == 1) then
+	links {"AudioToolbox.framework"}
+end
+
 
 		links {"SoloudStatic"}
 		if (not os.is("windows")) then
@@ -420,6 +445,9 @@ end
 	}
 if (WITH_ALSA == 1) then
 	links {"asound"}
+end
+if (WITH_COREAUDIO == 1) then
+	links {"AudioToolbox.framework"}
 end
 
 		links {"SoloudStatic"}
@@ -528,6 +556,16 @@ if (WITH_OSS == 1) then
 	defines {"WITH_OSS"}
 	files {
 	  "../src/backend/oss/**.c*"
+	  }
+	includedirs {
+	  "../include"
+	}
+end
+
+if (WITH_COREAUDIO == 1) then
+	defines {"WITH_COREAUDIO"}
+	files {
+	  "../src/backend/coreaudio/**.c*"
 	  }
 	includedirs {
 	  "../include"
@@ -703,6 +741,9 @@ end
 if (WITH_ALSA == 1) then
 	links {"asound"}
 end
+if (WITH_COREAUDIO == 1) then
+	links {"AudioToolbox.framework"}
+end
 
 
 		targetname "c_test"
@@ -774,6 +815,9 @@ function CommonDemo(_name)
 if (WITH_ALSA == 1) then
 	links {"asound"}
 end
+if (WITH_COREAUDIO == 1) then
+	links {"AudioToolbox.framework"}
+end
 
 		links {"SoloudStatic", "SoloudDemoCommon", "SDL2main", "SDL2", "opengl32"}
 
@@ -838,6 +882,9 @@ end
 
 if (WITH_ALSA == 1) then
 	links {"asound"}
+end
+if (WITH_COREAUDIO == 1) then
+	links {"AudioToolbox.framework"}
 end
 
 	if (WITH_PORTMIDI == 1) then

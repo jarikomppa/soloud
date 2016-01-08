@@ -288,7 +288,6 @@ namespace SoLoud
 		mOgg = 0;
 		mDataOffset = 0;
 		mBits = 0;
-		mChannels = 0;
 		mMemFile = 0;
 		mStreamFile = 0;
 	}
@@ -377,6 +376,7 @@ namespace SoLoud
 		if (v == NULL)
 			return FILE_LOAD_FAILED;
 		stb_vorbis_info info = stb_vorbis_get_info(v);
+		mChannels = 1;
 		if (info.channels > 1)
 		{
 			mChannels = 2;

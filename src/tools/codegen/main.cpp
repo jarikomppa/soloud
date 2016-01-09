@@ -202,7 +202,7 @@ void parse_params(Method *m, char *b, int &ofs)
 		string pt = "";
 		if (s == "const")
 		{
-			pt = s;
+			pt += s;
 			NEXTTOKEN;
 		}
 		if (s == "unsigned")
@@ -460,6 +460,13 @@ void parse(const char *aFilename, int aPrintProgress = 0)
 				{
 					// possibly function
 					string vt1 = s;
+
+					if (s == "volatile")
+					{
+						vt1 += s;
+						NEXTTOKEN;
+					}
+
 
 					if (s == "const")
 					{

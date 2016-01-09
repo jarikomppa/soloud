@@ -61,7 +61,7 @@ namespace SoLoud
 			}
 		}
 
-		for(int i = 0; i < aSamples; i++)
+		for(int i = 0; i < (signed)aSamples; i++)
 		{
 			float s = 0.0f;
 

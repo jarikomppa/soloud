@@ -208,17 +208,17 @@ void DemoMainloop()
 					// some keyboards send volume 0 play instead of note off..
 					if (Pm_MessageData2(buffer[0].message) != 0)
 					{
-						plonk(pow(0.943875f, 0x3c - Pm_MessageData1(buffer[0].message)), (float)Pm_MessageData2(buffer[0].message));
+						plonk((float)pow(0.943875f, 0x3c - Pm_MessageData1(buffer[0].message)), (float)Pm_MessageData2(buffer[0].message));
 					}
 					else
 					{
-						unplonk(pow(0.943875f, 0x3c - Pm_MessageData1(buffer[0].message)));
+						unplonk((float)pow(0.943875f, 0x3c - Pm_MessageData1(buffer[0].message)));
 					}
 				}
 				// note off
 				if (Pm_MessageStatus(buffer[0].message) == 0x80)
 				{
-					unplonk(pow(0.943875f, 0x3c - Pm_MessageData1(buffer[0].message)));
+					unplonk((float)pow(0.943875f, 0x3c - Pm_MessageData1(buffer[0].message)));
 				}
 				// aftertouch
 				if (Pm_MessageStatus(buffer[0].message) == 0xd0)
@@ -230,8 +230,8 @@ void DemoMainloop()
 	}
 #endif
 #define NOTEKEY(x, p)\
-	if (gPressed[x] && !gWasPressed[x]) { plonk(pow(0.943875f, p)); gWasPressed[x] = 1; } \
-	if (!gPressed[x] && gWasPressed[x]) { unplonk(pow(0.943875f, p)); gWasPressed[x] = 0; }
+	if (gPressed[x] && !gWasPressed[x]) { plonk((float)pow(0.943875f, p)); gWasPressed[x] = 1; } \
+	if (!gPressed[x] && gWasPressed[x]) { unplonk((float)pow(0.943875f, p)); gWasPressed[x] = 0; }
 
 	NOTEKEY('1', 18); // F#
 	NOTEKEY('q', 17); // G

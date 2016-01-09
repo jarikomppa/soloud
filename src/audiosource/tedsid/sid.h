@@ -91,7 +91,7 @@ private:
 	int dcVoice;
 	int dcWave;
 	int dcDigiBlaster;
-	int extIn;
+	//int extIn;
 	//
 	unsigned int clock();
 	// Wave generator functions

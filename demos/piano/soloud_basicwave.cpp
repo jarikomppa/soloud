@@ -55,28 +55,28 @@ namespace SoLoud
 			case Basicwave::SAW:
 				for (i = 0; i < aSamples; i++)
 				{
-					aBuffer[i] = (1 - fmod(mParent->mFreq * mOffset, 1)) * 2 - 1;
+					aBuffer[i] = (1 - (float)fmod(mParent->mFreq * mOffset, 1)) * 2 - 1;
 					mOffset++;
 				}
 				break;				
 			case Basicwave::INVERSESAW:
 				for (i = 0; i < aSamples; i++)
 				{
-					aBuffer[i] = (fmod(mParent->mFreq * mOffset, 1)) * 2 - 1;
+					aBuffer[i] = ((float)fmod(mParent->mFreq * mOffset, 1)) * 2 - 1;
 					mOffset++;
 				}
 				break;				
 			case Basicwave::SQUARE:
 				for (i = 0; i < aSamples; i++)
 				{
-					aBuffer[i] = (fmod(mParent->mFreq * mOffset, 1.0f) > 0.5f) ? -1.0f : 1.0f;
+					aBuffer[i] = ((float)fmod(mParent->mFreq * mOffset, 1.0f) > 0.5f) ? -1.0f : 1.0f;
 					mOffset++;
 				}
 				break;
 			case Basicwave::TRIANGLE:
 				for (i = 0; i < aSamples; i++)
 				{
-					aBuffer[i] = my_fabs(0.5f - fmod(mParent->mFreq * mOffset, 1)) * 4 - 1;
+					aBuffer[i] = my_fabs(0.5f - (float)fmod(mParent->mFreq * mOffset, 1)) * 4 - 1;
 					mOffset++;
 				}
 				break;

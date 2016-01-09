@@ -49,7 +49,7 @@ namespace SoLoud
 
 		float mag()
 		{
-			return sqrt(mX * mX + mY * mY + mZ * mZ);
+			return (float)sqrt(mX * mX + mY * mY + mZ * mZ);
 		}
 		
 		void normalize()
@@ -171,7 +171,7 @@ namespace SoLoud
 	{
 		float distance = MAX(aDistance, aMinDistance);
 		distance = MIN(distance, aMaxDistance);
-		return pow(distance / aMinDistance, -aRolloffFactor);
+		return (float)pow(distance / aMinDistance, -aRolloffFactor);
 	}
 
 	void Soloud::update3dVoices(unsigned int *aVoiceArray, unsigned int aVoiceCount)

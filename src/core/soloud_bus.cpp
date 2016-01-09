@@ -267,7 +267,7 @@ namespace SoLoud
 			{
 				float real = temp[i];
 				float imag = temp[i+512];
-				mFFTData[i] = sqrt(real*real+imag*imag);
+				mFFTData[i] = (float)sqrt(real*real+imag*imag);
 			}
 		}
 

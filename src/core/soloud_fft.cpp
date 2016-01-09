@@ -76,7 +76,7 @@ static void do_fft_8(float *f, const float *x)
         /* Third pass */
         {
             coef_index = 0;
-            float sqrt2_2 = sqrt(2.0f) * 0.5f;
+            float sqrt2_2 = (float)sqrt(2.0f) * 0.5f;
             do
             {
                 float v;
@@ -199,7 +199,7 @@ static void do_fft_10(float *f, const float *x)
         /* Third pass */
         {
             coef_index = 0;
-            float sqrt2_2 = sqrt(2.0f) * 0.5f;
+            float sqrt2_2 = (float)sqrt(2.0f) * 0.5f;
             do
             {
                 float v;
@@ -353,7 +353,7 @@ static void do_ifft_8(float *f, float *x)
 
         /* Antepenultimate pass */
         {
-            float sqrt2_2 = sqrt(2.0f) * 0.5f;
+            float sqrt2_2 = (float)sqrt(2.0f) * 0.5f;
             coef_index = 0;
             do
             {

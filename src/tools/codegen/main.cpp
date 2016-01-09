@@ -104,6 +104,17 @@ string subs_str(string &aSrc)
 	return aSrc;
 }
 
+int is_banned(string aName)
+{	
+	if (aName.find("Instance") != string::npos) return 1;
+	if (aName == "AudioCollider") return 1;
+	if (aName == "Filter")  return 1;
+	if (aName == "AudioSource") return 1;
+	if (aName == "Fader") return 1;
+	if (aName == "AlignedFloatBuffer")	return 1;
+	return 0;
+}
+
 char * loadfile(const char *aFilename)
 {
 	FILE * f;
@@ -378,7 +389,7 @@ void parse(const char *aFilename, int aPrintProgress = 0)
 					c = new Class;
 					c->mName = classname;
 					c->mParent = parentname;
-					omit = 1;
+					omit = 1;						
 				}
 			}
 			else
@@ -575,7 +586,7 @@ void fileheader(FILE * f)
 		"\n"
 		"/*\n"
 		"SoLoud audio engine\n"
-		"Copyright (c) 2013-2015 Jari Komppa\n"
+		"Copyright (c) 2013-2016 Jari Komppa\n"
 		"\n"
 		"This software is provided 'as-is', without any express or implied\n"
 		"warranty. In no event will the authors be held liable for any damages\n"
@@ -905,11 +916,7 @@ void generate()
 
 	for (i = 0; i < (signed)gClass.size(); i++)
 	{
-		if (gClass[i]->mName != "AudioCollider" &&
-			gClass[i]->mName.find("Instance") == string::npos &&
-			gClass[i]->mName != "Filter" &&
-			gClass[i]->mName != "AudioSource" &&
-			gClass[i]->mName != "Fader")
+		if (!is_banned(gClass[i]->mName))
 		{
 			fprintf(f,
 				"\n"

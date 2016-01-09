@@ -15,7 +15,8 @@ C_TO_CS_TYPES = {
     "double":"double",
     "float *":"float[]",
     "File *":"SoloudObject",
-    "unsigned char *":"IntPtr"
+    "unsigned char *":"IntPtr",
+    "short *":"IntPtr"
 }
 
 for soloud_type in soloud_codegen.soloud_type:

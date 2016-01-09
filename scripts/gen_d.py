@@ -15,7 +15,8 @@ C_TO_D_TYPES = {
     "double":"double",
     "float *":"float[]",
     "File *":"SoloudObject",
-    "unsigned char *":"ubyte*"
+    "unsigned char *":"ubyte*",
+    "short *":"short[]"
 }
 
 for soloud_type in soloud_codegen.soloud_type:

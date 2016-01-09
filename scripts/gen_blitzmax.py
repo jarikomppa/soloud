@@ -25,7 +25,8 @@ C_TO_BMX_TYPES = {
     "double":"Double",
     "float *":"Float Ptr",
     "File *":"Byte Ptr",
-    "unsigned char *":"Byte Ptr"
+    "unsigned char *":"Byte Ptr",
+    "short *":"Byte Ptr"
 }
 
 for soloud_type in soloud_codegen.soloud_type:

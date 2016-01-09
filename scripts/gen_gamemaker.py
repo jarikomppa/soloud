@@ -17,7 +17,8 @@ UNSUPPORTED_TYPES = {
     "double":0,
     "float *":1,
     "File *":1,
-    "unsigned char *":1
+    "unsigned char *":1,
+    "short *":1
 }
 
 for soloud_type in soloud_codegen.soloud_type:

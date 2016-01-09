@@ -23,7 +23,8 @@ C_TO_PY_TYPES = {
     "double":"ctypes.c_double",
     "float *":"ctypes.POINTER(ctypes.c_float * 256)",
     "File *":"ctypes.c_void_p",
-    "unsigned char *":"ctypes.POINTER(ctypes.c_ubyte)"
+    "unsigned char *":"ctypes.POINTER(ctypes.c_ubyte)",
+    "short *":"ctypes.POINTER(ctypes.c_short)"
 }
 
 for soloud_type in soloud_codegen.soloud_type:

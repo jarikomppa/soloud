@@ -48,7 +48,7 @@ char *gIncludeFile[] =
 	"../include/soloud_bassboostfilter.h",
 	"../include/soloud_filter.h",
 	"../include/soloud_speech.h",
-	"../include/soloud_thread.h",
+//	"../include/soloud_thread.h",
 	"../include/soloud_wav.h",
 	"../include/soloud_wavstream.h",
 	"../include/soloud_sfxr.h",

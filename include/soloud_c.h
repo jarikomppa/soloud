@@ -5,7 +5,7 @@
 
 /*
 SoLoud audio engine
-Copyright (c) 2013-2015 Jari Komppa
+Copyright (c) 2013-2016 Jari Komppa
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -48,8 +48,10 @@ enum SOLOUD_ENUMS
 	SOLOUD_ALSA = 7,
 	SOLOUD_OSS = 8,
 	SOLOUD_OPENAL = 9,
-	SOLOUD_NULLDRIVER = 10,
-	SOLOUD_BACKEND_MAX = 11,
+	SOLOUD_COREAUDIO = 10,
+	SOLOUD_OPENSLES = 11,
+	SOLOUD_NULLDRIVER = 12,
+	SOLOUD_BACKEND_MAX = 13,
 	SOLOUD_CLIP_ROUNDOFF = 1,
 	SOLOUD_ENABLE_VISUALIZATION = 2,
 	SOLOUD_LEFT_HANDED_3D = 4,
@@ -83,6 +85,7 @@ enum SOLOUD_ENUMS
 };
 
 // Object handle typedefs
+typedef void * AlignedFloatBuffer;
 typedef void * Soloud;
 typedef void * AudioCollider;
 typedef void * AudioAttenuator;
@@ -113,7 +116,7 @@ typedef void * File;
 void Soloud_destroy(Soloud * aSoloud);
 Soloud * Soloud_create();
 int Soloud_init(Soloud * aSoloud);
-int Soloud_initEx(Soloud * aSoloud, unsigned int aFlags /* = Soloud::CLIP_ROUNDOFF */, unsigned int aBackend /* = Soloud::AUTO */, unsigned int aSamplerate /* = Soloud::AUTO */, unsigned int aBufferSize /* = Soloud::AUTO */);
+int Soloud_initEx(Soloud * aSoloud, unsigned int aFlags /* = Soloud::CLIP_ROUNDOFF */, unsigned int aBackend /* = Soloud::AUTO */, unsigned int aSamplerate /* = Soloud::AUTO */, unsigned int aBufferSize /* = Soloud::AUTO */, unsigned int aChannels /* = 2 */);
 void Soloud_deinit(Soloud * aSoloud);
 unsigned int Soloud_getVersion(Soloud * aSoloud);
 const char * Soloud_getErrorString(Soloud * aSoloud, int aErrorCode);
@@ -122,6 +125,7 @@ const char * Soloud_getBackendString(Soloud * aSoloud);
 unsigned int Soloud_getBackendChannels(Soloud * aSoloud);
 unsigned int Soloud_getBackendSamplerate(Soloud * aSoloud);
 unsigned int Soloud_getBackendBufferSize(Soloud * aSoloud);
+int Soloud_setSpeakerPosition(Soloud * aSoloud, unsigned int aChannel, float aX, float aY, float aZ);
 unsigned int Soloud_play(Soloud * aSoloud, AudioSource * aSound);
 unsigned int Soloud_playEx(Soloud * aSoloud, AudioSource * aSound, float aVolume /* = -1.0f */, float aPan /* = 0.0f */, int aPaused /* = 0 */, unsigned int aBus /* = 0 */);
 unsigned int Soloud_playClocked(Soloud * aSoloud, double aSoundTime, AudioSource * aSound);
@@ -141,6 +145,7 @@ void Soloud_oscillateFilterParameter(Soloud * aSoloud, unsigned int aVoiceHandle
 double Soloud_getStreamTime(Soloud * aSoloud, unsigned int aVoiceHandle);
 int Soloud_getPause(Soloud * aSoloud, unsigned int aVoiceHandle);
 float Soloud_getVolume(Soloud * aSoloud, unsigned int aVoiceHandle);
+float Soloud_getOverallVolume(Soloud * aSoloud, unsigned int aVoiceHandle);
 float Soloud_getPan(Soloud * aSoloud, unsigned int aVoiceHandle);
 float Soloud_getSamplerate(Soloud * aSoloud, unsigned int aVoiceHandle);
 int Soloud_getProtectVoice(Soloud * aSoloud, unsigned int aVoiceHandle);
@@ -164,6 +169,7 @@ void Soloud_setProtectVoice(Soloud * aSoloud, unsigned int aVoiceHandle, int aPr
 void Soloud_setSamplerate(Soloud * aSoloud, unsigned int aVoiceHandle, float aSamplerate);
 void Soloud_setPan(Soloud * aSoloud, unsigned int aVoiceHandle, float aPan);
 void Soloud_setPanAbsolute(Soloud * aSoloud, unsigned int aVoiceHandle, float aLVolume, float aRVolume);
+void Soloud_setPanAbsoluteEx(Soloud * aSoloud, unsigned int aVoiceHandle, float aLVolume, float aRVolume, float aLBVolume /* = 0 */, float aRBVolume /* = 0 */, float aCVolume /* = 0 */, float aSVolume /* = 0 */);
 void Soloud_setVolume(Soloud * aSoloud, unsigned int aVoiceHandle, float aVolume);
 void Soloud_setDelaySamples(Soloud * aSoloud, unsigned int aVoiceHandle, unsigned int aSamples);
 void Soloud_fadeVolume(Soloud * aSoloud, unsigned int aVoiceHandle, float aTo, double aTime);
@@ -204,6 +210,7 @@ void Soloud_set3dSourceMinMaxDistance(Soloud * aSoloud, unsigned int aVoiceHandl
 void Soloud_set3dSourceAttenuation(Soloud * aSoloud, unsigned int aVoiceHandle, unsigned int aAttenuationModel, float aAttenuationRolloffFactor);
 void Soloud_set3dSourceDopplerFactor(Soloud * aSoloud, unsigned int aVoiceHandle, float aDopplerFactor);
 void Soloud_mix(Soloud * aSoloud, float * aBuffer, unsigned int aSamples);
+void Soloud_mixSigned16(Soloud * aSoloud, short * aBuffer, unsigned int aSamples);
 
 /*
  * AudioAttenuator
@@ -239,6 +246,7 @@ unsigned int Bus_play3d(Bus * aBus, AudioSource * aSound, float aPosX, float aPo
 unsigned int Bus_play3dEx(Bus * aBus, AudioSource * aSound, float aPosX, float aPosY, float aPosZ, float aVelX /* = 0.0f */, float aVelY /* = 0.0f */, float aVelZ /* = 0.0f */, float aVolume /* = 1.0f */, int aPaused /* = 0 */);
 unsigned int Bus_play3dClocked(Bus * aBus, double aSoundTime, AudioSource * aSound, float aPosX, float aPosY, float aPosZ);
 unsigned int Bus_play3dClockedEx(Bus * aBus, double aSoundTime, AudioSource * aSound, float aPosX, float aPosY, float aPosZ, float aVelX /* = 0.0f */, float aVelY /* = 0.0f */, float aVelZ /* = 0.0f */, float aVolume /* = 1.0f */);
+int Bus_setChannels(Bus * aBus, unsigned int aChannels);
 void Bus_setVisualizationEnable(Bus * aBus, int aEnable);
 float * Bus_calcFFT(Bus * aBus);
 float * Bus_getWave(Bus * aBus);

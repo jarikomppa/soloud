@@ -11,6 +11,7 @@ EXPORTS
 	Soloud_getBackendChannels
 	Soloud_getBackendSamplerate
 	Soloud_getBackendBufferSize
+	Soloud_setSpeakerPosition
 	Soloud_play
 	Soloud_playEx
 	Soloud_playClocked
@@ -30,6 +31,7 @@ EXPORTS
 	Soloud_getStreamTime
 	Soloud_getPause
 	Soloud_getVolume
+	Soloud_getOverallVolume
 	Soloud_getPan
 	Soloud_getSamplerate
 	Soloud_getProtectVoice
@@ -53,6 +55,7 @@ EXPORTS
 	Soloud_setSamplerate
 	Soloud_setPan
 	Soloud_setPanAbsolute
+	Soloud_setPanAbsoluteEx
 	Soloud_setVolume
 	Soloud_setDelaySamples
 	Soloud_fadeVolume
@@ -93,6 +96,7 @@ EXPORTS
 	Soloud_set3dSourceAttenuation
 	Soloud_set3dSourceDopplerFactor
 	Soloud_mix
+	Soloud_mixSigned16
 	AudioAttenuator_destroy
 	AudioAttenuator_attenuate
 	BiquadResonantFilter_destroy
@@ -112,6 +116,7 @@ EXPORTS
 	Bus_play3dEx
 	Bus_play3dClocked
 	Bus_play3dClockedEx
+	Bus_setChannels
 	Bus_setVisualizationEnable
 	Bus_calcFFT
 	Bus_getWave

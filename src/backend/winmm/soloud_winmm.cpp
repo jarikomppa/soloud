@@ -74,7 +74,7 @@ namespace SoLoud
                 }
                 short *tgtBuf = data->sampleBuffer[i];
 				
-				data->soloud->mix_s16(tgtBuf, data->samples);
+				data->soloud->mixSigned16(tgtBuf, data->samples);
 
 				if (MMSYSERR_NOERROR != waveOutWrite(data->waveOut, &data->header[i], 
                                                      sizeof(WAVEHDR))) 

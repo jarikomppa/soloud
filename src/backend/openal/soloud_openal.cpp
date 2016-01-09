@@ -128,7 +128,7 @@ namespace SoLoud
 
 		while (buffersProcessed--) 
 		{
-			aSoloud->mix_s16(bufferdata,buffersize);
+			aSoloud->mixSigned16(bufferdata,buffersize);
 
 			dll_al_SourceUnqueueBuffers(source, 1, &buffer);
 

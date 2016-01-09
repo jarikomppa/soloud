@@ -71,7 +71,7 @@ namespace SoLoud
         {
             return;
         }
-        aData->soloud->mix_s16((short *)buffer, aFrames);
+		aData->soloud->mixSigned16((short *)buffer, aFrames);
         aData->renderClient->ReleaseBuffer(aFrames, 0);
     }
 

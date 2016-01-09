@@ -5,7 +5,7 @@
 
 /*
 SoLoud audio engine
-Copyright (c) 2013-2015 Jari Komppa
+Copyright (c) 2013-2016 Jari Komppa
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -40,7 +40,6 @@ freely, subject to the following restrictions:
 #include "../include/soloud_bassboostfilter.h"
 #include "../include/soloud_filter.h"
 #include "../include/soloud_speech.h"
-#include "../include/soloud_thread.h"
 #include "../include/soloud_wav.h"
 #include "../include/soloud_wavstream.h"
 #include "../include/soloud_sfxr.h"
@@ -71,10 +70,10 @@ int Soloud_init(void * aClassPtr)
 	return cl->init();
 }
 
-int Soloud_initEx(void * aClassPtr, unsigned int aFlags, unsigned int aBackend, unsigned int aSamplerate, unsigned int aBufferSize)
+int Soloud_initEx(void * aClassPtr, unsigned int aFlags, unsigned int aBackend, unsigned int aSamplerate, unsigned int aBufferSize, unsigned int aChannels)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
-	return cl->init(aFlags, aBackend, aSamplerate, aBufferSize);
+	return cl->init(aFlags, aBackend, aSamplerate, aBufferSize, aChannels);
 }
 
 void Soloud_deinit(void * aClassPtr)
@@ -123,6 +122,12 @@ unsigned int Soloud_getBackendBufferSize(void * aClassPtr)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
 	return cl->getBackendBufferSize();
+}
+
+int Soloud_setSpeakerPosition(void * aClassPtr, unsigned int aChannel, float aX, float aY, float aZ)
+{
+	Soloud * cl = (Soloud *)aClassPtr;
+	return cl->setSpeakerPosition(aChannel, aX, aY, aZ);
 }
 
 unsigned int Soloud_play(void * aClassPtr, AudioSource * aSound)
@@ -237,6 +242,12 @@ float Soloud_getVolume(void * aClassPtr, unsigned int aVoiceHandle)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
 	return cl->getVolume(aVoiceHandle);
+}
+
+float Soloud_getOverallVolume(void * aClassPtr, unsigned int aVoiceHandle)
+{
+	Soloud * cl = (Soloud *)aClassPtr;
+	return cl->getOverallVolume(aVoiceHandle);
 }
 
 float Soloud_getPan(void * aClassPtr, unsigned int aVoiceHandle)
@@ -375,6 +386,12 @@ void Soloud_setPanAbsolute(void * aClassPtr, unsigned int aVoiceHandle, float aL
 {
 	Soloud * cl = (Soloud *)aClassPtr;
 	cl->setPanAbsolute(aVoiceHandle, aLVolume, aRVolume);
+}
+
+void Soloud_setPanAbsoluteEx(void * aClassPtr, unsigned int aVoiceHandle, float aLVolume, float aRVolume, float aLBVolume, float aRBVolume, float aCVolume, float aSVolume)
+{
+	Soloud * cl = (Soloud *)aClassPtr;
+	cl->setPanAbsolute(aVoiceHandle, aLVolume, aRVolume, aLBVolume, aRBVolume, aCVolume, aSVolume);
 }
 
 void Soloud_setVolume(void * aClassPtr, unsigned int aVoiceHandle, float aVolume)
@@ -617,6 +634,12 @@ void Soloud_mix(void * aClassPtr, float * aBuffer, unsigned int aSamples)
 	cl->mix(aBuffer, aSamples);
 }
 
+void Soloud_mixSigned16(void * aClassPtr, short * aBuffer, unsigned int aSamples)
+{
+	Soloud * cl = (Soloud *)aClassPtr;
+	cl->mixSigned16(aBuffer, aSamples);
+}
+
 void AudioAttenuator_destroy(void * aClassPtr)
 {
   delete (AudioAttenuator *)aClassPtr;
@@ -722,6 +745,12 @@ unsigned int Bus_play3dClockedEx(void * aClassPtr, double aSoundTime, AudioSourc
 {
 	Bus * cl = (Bus *)aClassPtr;
 	return cl->play3dClocked(aSoundTime, *aSound, aPosX, aPosY, aPosZ, aVelX, aVelY, aVelZ, aVolume);
+}
+
+int Bus_setChannels(void * aClassPtr, unsigned int aChannels)
+{
+	Bus * cl = (Bus *)aClassPtr;
+	return cl->setChannels(aChannels);
 }
 
 void Bus_setVisualizationEnable(void * aClassPtr, int aEnable)

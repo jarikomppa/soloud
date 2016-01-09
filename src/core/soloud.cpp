@@ -1517,7 +1517,7 @@ namespace SoLoud
 		interlace_samples_float(mScratch.mData, aBuffer, aSamples, mChannels);
 	}
 
-	void Soloud::mix_s16(short *aBuffer, unsigned int aSamples)
+	void Soloud::mixSigned16(short *aBuffer, unsigned int aSamples)
 	{
 		mix_internal(aSamples);
 		interlace_samples_s16(mScratch.mData, aBuffer, aSamples, mChannels);

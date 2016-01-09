@@ -14,6 +14,14 @@ quiet than a scream, even if both are played at the same volume setting.
 
 If an invalid handle is given to getVolume, it will return 0.
 
+### Soloud.getOverallVolume()
+
+For 3d sounds, returns the current volume based on the audio sources'
+set volume and the calculated 3d volume.
+
+    float v = soloud.getOverallVolume(foghorn);
+    if (v < 0.1) foghornTooFarToHear();
+
 ### Soloud.getPan() / Soloud.setPan()
 
 These functions can be used to get and set a sound's current pan

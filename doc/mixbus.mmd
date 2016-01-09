@@ -28,6 +28,12 @@ To play a stream through the mixing bus, use the bus play() command.
     int fxhandle = gBus.play(gSoundEffect); // Play sound effect through bus
     gSoloud.setVolume(fxhandle, 0.5f); // set sound effect volume
 
+### Bus.setChannels()
+
+Set the number of channels this bus should handle. Defaults to 2 (stereo).
+
+    gBus.setChannels(1); // set to mono
+
 ### Bus.play()
 
 Equivalent of soloud.play(), but plays the sound source through the bus

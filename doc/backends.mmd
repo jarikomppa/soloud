@@ -40,6 +40,17 @@ format.
 If the number of samples exceeds the buffer size set at init, the result
 is undefined (most likely a crash).
 
+
+Soloud.mixSigned16()
+----------------
+
+Since so many back-ends prefer 16 bit signed data instead of float
+data, SoLoud also provides a mix call that outputs signed 16 bit data.
+
+    void mixSigned16(short *aBuffer, // Destination buffer
+                     int aSamples);  // Number of requested stereo samples
+
+
 Soloud.mBackendData
 -------------------
 

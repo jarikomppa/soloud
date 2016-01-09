@@ -476,7 +476,8 @@ void DemoTexQuad(int tex, float x0, float y0, float x1, float y1)
 		1, 1
 	};
 
-
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glVertexAttribPointer(tex_position_location, 2, GL_FLOAT, GL_FALSE, 0, buf);
 	glVertexAttribPointer(tex_uv_location, 2, GL_FLOAT, GL_FALSE, 0, uvbuf);
 	glActiveTexture(GL_TEXTURE0);
@@ -488,6 +489,7 @@ void DemoTexQuad(int tex, float x0, float y0, float x1, float y1)
 	glDisableVertexAttribArray(tex_position_location);
 	glDisableVertexAttribArray(tex_uv_location);
 	glUseProgram(0);
+	glDisable(GL_BLEND);
 }
 
 

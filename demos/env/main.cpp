@@ -42,17 +42,17 @@ int gRainHandle, gWindHandle, gMusicHandle;
 
 void drawbg(int x, int y)
 {
-	DemoTexQuad(gBackground, x, y+100, x + 800, y + 600+100);
+	DemoTexQuad(gBackground, (float)x, (float)y + 100, (float)x + 800, (float)y + 600 + 100);
 }
 
 void drawwalker(int frame, int x, int y)
 {
-	DemoTexQuad(gWalker, x-12, y + frame + 100, x + 60-12, y + 60 + frame + 100);
+	DemoTexQuad(gWalker, (float)x - 12, (float)y + frame + 100, (float)x + 60 - 12, (float)y + 60 + frame + 100);
 }
 
 void drawrect(int x, int y, int w, int h, int c)
 {
-	DemoQuad(x, y + 100, x + w, y + h + 100, c);
+	DemoQuad((float)x, (float)y + 100, (float)x + w, (float)y + h + 100, c);
 }
 
 float render()

@@ -317,7 +317,7 @@ namespace SoLoud
 		// Step 3 - update SoLoud voices
 
 		lockAudioMutex();
-		for (i = 0; i < voicecount; i++)
+		for (i = 0; i < (int)voicecount; i++)
 		{
 			AudioSourceInstance3dData * v = &m3dData[voices[i]];
 			AudioSourceInstance * vi = mVoice[voices[i]];

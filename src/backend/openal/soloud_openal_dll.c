@@ -194,7 +194,7 @@ ALCdevice* dll_alc_OpenDevice(const ALCchar *devicename)
 void dll_alc_CloseDevice(ALCdevice *device)
 {
 	if (load_dll())
-		return dAlcCloseDevice(device);
+		dAlcCloseDevice(device);
 }
 
 ALCcontext* dll_alc_CreateContext(ALCdevice *device, const ALCint* attrlist)
@@ -207,7 +207,7 @@ ALCcontext* dll_alc_CreateContext(ALCdevice *device, const ALCint* attrlist)
 void dll_alc_DestroyContext(ALCcontext *context)
 {
 	if (load_dll())
-		return dAlcDestroyContext(context);
+		dAlcDestroyContext(context);
 }
 
 ALCboolean dll_alc_MakeContextCurrent(ALCcontext *context)

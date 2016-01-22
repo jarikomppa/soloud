@@ -123,7 +123,7 @@ namespace SoLoud
 			LISTENER_RELATIVE = 16,
 			// Currently inaudible
 			INAUDIBLE = 32,
-			// If inaudible, should be killed (default)
+			// If inaudible, should be killed (default = don't kill kill)
 			INAUDIBLE_KILL = 64,
 			// If inaudible, should still be ticked (default = pause)
 			INAUDIBLE_TICK = 128

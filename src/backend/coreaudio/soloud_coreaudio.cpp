@@ -69,7 +69,7 @@ namespace SoLoud
 	static void coreaudio_fill_buffer(void *context, AudioQueueRef queue, AudioQueueBufferRef buffer)
 	{
 		SoLoud::Soloud *aSoloud = (SoLoud::Soloud*)context;
-		aSoloud->mix_s16((short*)buffer->mAudioData, buffer->mAudioDataByteSize / 4);
+		aSoloud->mixSigned16((short*)buffer->mAudioData, buffer->mAudioDataByteSize / 4);
 		AudioQueueEnqueueBuffer(queue, buffer, 0, NULL);
 	}
 

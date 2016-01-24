@@ -149,7 +149,7 @@ namespace SoLoud
 			(*data->playerBufferQueue)->Enqueue(data->playerBufferQueue, outputBuffer, bufferSizeBytes);
 			++data->buffersQueued;
 
-			aSoloud->mix_s16(nextBuffer,data->bufferSize);
+			aSoloud->mixSigned16(nextBuffer,data->bufferSize);
 		}
 	}
 

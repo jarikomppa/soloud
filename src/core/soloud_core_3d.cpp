@@ -212,7 +212,7 @@ namespace SoLoud
 
 		for (i = 0; i < (signed)aVoiceCount; i++)
 		{
-			AudioSourceInstance3dData * v = &m3dData[i];
+			AudioSourceInstance3dData * v = &m3dData[aVoiceArray[i]];
 
 			float vol = 1;
 

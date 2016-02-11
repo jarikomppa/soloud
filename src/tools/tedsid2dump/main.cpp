@@ -18,7 +18,7 @@ static void printUsage()
 	printf("Usage:\n"
 		"tedsid2dump filename msecs [-s speed] [-m sid model] [-t tune number] [-i]\n\n"
 		"Where:\n"
-		"-s 1-5, song speed. 3 = single, 5 = double. Default 3\n"
+		"-s 1-6, song speed. 3 = single, 5 = double. Default 3\n"
 		"-m model 0:6581 1:8580 2:8580DB 3:6581R1. Default 1\n"
 		"-t the number of sub-tune to play. Default 1\n"
 		"-i Show information and quit\n"

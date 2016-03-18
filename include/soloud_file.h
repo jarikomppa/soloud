@@ -50,8 +50,8 @@ namespace SoLoud
 
 	class DiskFile : public File
 	{
-	public:
 		FILE *mFileHandle;
+	public:
 
 		virtual int eof();
 		virtual unsigned int read(unsigned char *aDst, unsigned int aBytes);

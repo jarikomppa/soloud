@@ -37,8 +37,8 @@ namespace SoLoud
 //this class is used for reading from and writing into physics FS files
 class PhysfsFile: public File
 {
-public:
 PHYSFS_File *mFileHandle;
+public:
 
 virtual int eof();
 virtual unsigned int read(unsigned char *aDst, unsigned int aBytes);

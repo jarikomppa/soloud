@@ -13,16 +13,16 @@ Permission is granted to anyone to use this software for any purpose,
 including commercial applications, and to alter it and redistribute it
 freely, subject to the following restrictions:
 
-   1. The origin of this software must not be misrepresented; you must not
-   claim that you wrote the original software. If you use this software
-   in a product, an acknowledgment in the product documentation would be
-   appreciated but is not required.
+   1. The origin of this software must not be misrepresented; you must not
+   claim that you wrote the original software. If you use this software
+   in a product, an acknowledgment in the product documentation would be
+   appreciated but is not required.
 
-   2. Altered source versions must be plainly marked as such, and must not be
-   misrepresented as being the original software.
+   2. Altered source versions must be plainly marked as such, and must not be
+   misrepresented as being the original software.
 
-   3. This notice may not be removed or altered from any source
-   distribution.
+   3. This notice may not be removed or altered from any source
+   distribution.
 */
 
 #include "soloud_error.h"
@@ -33,10 +33,7 @@ namespace SoLoud
 
 PhysfsFile::PhysfsFile()
 {
-if(mFileHandle)
-{
-PHYSFS_close(mFileHandle);
-}
+mFileHandle=0;
 }
 
 PhysfsFile::PhysfsFile(const char* aFilename)
@@ -52,7 +49,7 @@ mFileHandle(fp)
 
 int PhysfsFile::eof()
 {
-return PHYSFS_eof(mFileHandle);
+return PHYSFS_eof(mFileHandle); //weather we received at the end of the file
 }
 
 unsigned int PhysfsFile::read(unsigned char *aDst, unsigned int aBytes)
@@ -62,30 +59,34 @@ return (unsigned int) PHYSFS_read(mFileHandle, aDst, aBytes, 1);
 
 unsigned int PhysfsFile::length()
 {
-return PHYSFS_fileLength(mFileHandle);
+int pos=PHYSFS_tell(mFileHandle); //determine our position in the file
+PHYSFS_seek(mFileHandle, PHYSFS_fileLength(mFileHandle)+pos); //go to the end of file
+int len=PHYSFS_tell(mFileHandle); //get the length of file
+PHYSFS_seek(mFileHandle, len-pos); //go back to our previous position in the file
+return len;
 }
 
 void PhysfsFile::seek(int aOffset)
 {
-PHYSFS_seek(mFileHandle, aOffset);
+PHYSFS_seek(mFileHandle, aOffset); //move to aOffset
 }
 
 unsigned int PhysfsFile::pos()
 {
-return PHYSFS_tell(mFileHandle);
+return PHYSFS_tell(mFileHandle); //get the position of the file
 }
 
 PhysfsFile::~PhysfsFile()
 {
 if(mFileHandle)
 {
-PHYSFS_close(mFileHandle);
+PHYSFS_close(mFileHandle); //close it
 }
 }
 
 result PhysfsFile::open(const char *aFilename)
 {
-if(!PHYSFS_exists(aFilename))
+if(PHYSFS_exists(aFilename)==0)
 {
 return FILE_NOT_FOUND;
 }

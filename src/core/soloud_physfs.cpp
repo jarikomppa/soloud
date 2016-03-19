@@ -57,7 +57,7 @@ return PHYSFS_eof(mFileHandle);
 
 unsigned int PhysfsFile::read(unsigned char *aDst, unsigned int aBytes)
 {
-return PHYSFS_read(mFileHandle, aDst, aBytes, 1);
+return (unsigned int) PHYSFS_read(mFileHandle, aDst, aBytes, 1);
 }
 
 unsigned int PhysfsFile::length()

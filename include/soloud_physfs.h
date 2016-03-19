@@ -47,6 +47,7 @@ virtual void seek(int aOffset);
 virtual unsigned int pos();
 virtual ~PhysfsFile();
 PhysfsFile();
+PhysfsFile(const char* aFilename);
 PhysfsFile(PHYSFS_File *fp);
 result open(const char *aFilename);
 virtual PHYSFS_File *getPhysfsFilePtr();

@@ -36,6 +36,11 @@ PhysfsFile::PhysfsFile()
 PHYSFS_close(mFileHandle);
 }
 
+PhysfsFile::PhysfsFile(const char* aFilename)
+{
+open(aFilename);
+}
+
 PhysfsFile::PhysfsFile(PHYSFS_File *fp):
 mFileHandle(fp)
 {

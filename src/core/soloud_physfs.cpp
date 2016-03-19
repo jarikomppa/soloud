@@ -33,7 +33,10 @@ namespace SoLoud
 
 PhysfsFile::PhysfsFile()
 {
+if(mFileHandle)
+{
 PHYSFS_close(mFileHandle);
+}
 }
 
 PhysfsFile::PhysfsFile(const char* aFilename)
@@ -74,7 +77,10 @@ return PHYSFS_tell(mFileHandle);
 
 PhysfsFile::~PhysfsFile()
 {
+if(mFileHandle)
+{
 PHYSFS_close(mFileHandle);
+}
 }
 
 result PhysfsFile::open(const char *aFilename)

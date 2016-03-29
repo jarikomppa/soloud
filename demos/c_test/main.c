@@ -42,10 +42,11 @@ int main(int parc, char ** pars)
 
 	while (Soloud_getVoiceCount(soloud) > 0)
 	{
+		int p;
 		float * v = Soloud_calcFFT(soloud);
 		printf("\r%c ", (int)("|\\-/"[spin & 3]));
 		spin++;
-		int p = (int)(v[10] * 30);
+		p = (int)(v[10] * 30);
 		if (p > 59) p = 59;
 		for (i = 0; i < p; i++)
 			printf("=");

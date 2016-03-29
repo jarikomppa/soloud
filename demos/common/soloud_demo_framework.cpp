@@ -493,8 +493,23 @@ void DemoTexQuad(int tex, float x0, float y0, float x1, float y1)
 }
 
 
+struct UIState
+{
+	int mousex;
+	int mousey;
+	int mousedown;
+	int scroll;
+
+	char textinput[32];
+};
+
+static UIState gUIState;
+
 void InitImGui()
 {
+	gUIState.mousex = gUIState.mousey = gUIState.mousedown = gUIState.scroll = 0;
+	memset(gUIState.textinput, 0, sizeof(gUIState.textinput));
+
 	ImGuiIO& io = ImGui::GetIO();
 	io.DeltaTime = 1.0f / 60.0f;                     
 	io.KeyMap[ImGuiKey_Tab] = SDLK_TAB;
@@ -523,18 +538,6 @@ void InitImGui()
 	s.Colors[ImGuiCol_WindowBg] = ImVec4(0.00f, 0.00f, 0.50f, 1.00f);
 }
 
-struct UIState
-{
-	int mousex;
-	int mousey;
-	int mousedown;
-	int scroll;
-
-	int keychar;
-};
-
-static UIState gUIState;
-
 
 void UpdateImGui()
 {
@@ -561,11 +564,17 @@ void UpdateImGui()
 		gUIState.scroll = 0;
 	}
 
-	if (gUIState.keychar)
+	if (gUIState.textinput[0])
 	{
-		io.AddInputCharacter(gUIState.keychar);
-		gUIState.keychar = 0;
+		io.AddInputCharactersUTF8(gUIState.textinput);
+		gUIState.textinput[0] = 0;
 	}
+
+	for (int n = 0; n < 256; n++)
+		io.KeysDown[n] = gPressed[n] != 0;
+    io.KeyShift = ((SDL_GetModState() & KMOD_SHIFT) != 0);
+    io.KeyCtrl = ((SDL_GetModState() & KMOD_CTRL) != 0);
+    io.KeyAlt = ((SDL_GetModState() & KMOD_ALT) != 0);
 }
 
 
@@ -650,6 +659,10 @@ void DemoUpdateStart()
 				gPressed[event.key.keysym.sym] = 0;
 			//			handle_key(event.key.keysym.sym, 0);
 			break;
+	    case SDL_TEXTINPUT:
+			strncpy(gUIState.textinput, event.text.text, sizeof(gUIState.textinput));
+			gUIState.textinput[sizeof(gUIState.textinput)-1] = 0;
+			break;
 		case SDL_MOUSEMOTION:
 			// update mouse position
 			gUIState.mousex = event.motion.x;
@@ -677,6 +690,16 @@ void DemoUpdateStart()
 				gUIState.mousedown = 0;
 			}
 			break;
+		case SDL_MOUSEWHEEL:
+			if (event.wheel.y > 0)
+			{
+				gUIState.scroll += 1;
+			}
+			else if (event.wheel.y < 0)
+			{
+				gUIState.scroll -= 1;
+			}
+			break;
 		case SDL_QUIT:
 			SDL_Quit();
 			exit(0);
@@ -693,6 +716,7 @@ void DemoUpdateStart()
 
 	// Start the frame
 	ImGui::NewFrame();
+	//ImGui::ShowTestWindow();
 }
 
 void DemoUpdateEnd()
@@ -727,6 +751,9 @@ int main(int argc, char *argv[])
 #else
 	while (1)
 	{
+		if (ImGui::IsKeyPressed(SDLK_ESCAPE) && !ImGui::GetIO().WantCaptureKeyboard)
+			break;
+
 		DemoMainloop();
 	}
 #endif

@@ -54,6 +54,12 @@ namespace SoLoud
 	}
 
 
+DiskFile::DiskFile(FILE *fp):
+mFileHandle(fp)
+{
+
+}
+
 	unsigned int DiskFile::read(unsigned char *aDst, unsigned int aBytes)
 	{
 		return (unsigned int)fread(aDst, 1, aBytes, mFileHandle);

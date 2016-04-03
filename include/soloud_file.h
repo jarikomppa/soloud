@@ -60,6 +60,7 @@ namespace SoLoud
 		virtual unsigned int pos();
 		virtual ~DiskFile();
 		DiskFile();
+		DiskFile(FILE *fp);
 		result open(const char *aFilename);
 		virtual FILE * getFilePtr();
 	};

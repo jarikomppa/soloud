@@ -22,12 +22,16 @@ doc/*.mobi
 doc/*.epub
 bin/audio/
 bin/
+lib/*.ilk
+lib/*.lib
+lib/*.dll
 out/
 *.pyc
 *.exp
 doc/xelatex_output.txt
 doc/kindlegen_output.txt
 *.idb
+*.pdb
 doc/20*
 glue/soloud*
 scripts/soloud_codegen.py

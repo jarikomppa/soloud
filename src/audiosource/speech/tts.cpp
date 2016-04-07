@@ -872,6 +872,7 @@ static int leftmatch(
 	{
 		/* First check for simple text or space */
 		if (isalpha(*pat) || *pat == '\'' || *pat == ' ')
+		{
 			if (*pat != *text)
 				return 0;
 			else
@@ -879,62 +880,63 @@ static int leftmatch(
 				text--;
 				continue;
 			}
+		}
 
-			switch (*pat)
-			{
+		switch (*pat)
+		{
 
-			case '#':                   /* One or more vowels */
+		case '#':                   /* One or more vowels */
 
-				if (!isvowel(*text))
-					return 0;
-
-				text--;
-
-				while (isvowel(*text))
-					text--;
-
-				break;
-
-			case ':':                   /* Zero or more consonants */
-				while (isconsonant(*text))
-					text--;
-
-				break;
-
-			case '^':                   /* One consonant */
-				if (!isconsonant(*text))
-					return 0;
-
-				text--;
-
-				break;
-
-			case '.':                   /* B, D, V, G, J, L, M, N, R, W, Z */
-				if (*text != 'B' && *text != 'D' && *text != 'V'
-					&& *text != 'G' && *text != 'J' && *text != 'L'
-					&& *text != 'M' && *text != 'N' && *text != 'R'
-					&& *text != 'W' && *text != 'Z')
-					return 0;
-
-				text--;
-
-				break;
-
-			case '+':                   /* E, I or Y (front vowel) */
-				if (*text != 'E' && *text != 'I' && *text != 'Y')
-					return 0;
-
-				text--;
-
-				break;
-
-			case '%':
-
-			default:
-				fprintf(stderr, "Bad char in left rule: '%c'\n", *pat);
-
+			if (!isvowel(*text))
 				return 0;
-			}
+
+			text--;
+
+			while (isvowel(*text))
+				text--;
+
+			break;
+
+		case ':':                   /* Zero or more consonants */
+			while (isconsonant(*text))
+				text--;
+
+			break;
+
+		case '^':                   /* One consonant */
+			if (!isconsonant(*text))
+				return 0;
+
+			text--;
+
+			break;
+
+		case '.':                   /* B, D, V, G, J, L, M, N, R, W, Z */
+			if (*text != 'B' && *text != 'D' && *text != 'V'
+				&& *text != 'G' && *text != 'J' && *text != 'L'
+				&& *text != 'M' && *text != 'N' && *text != 'R'
+				&& *text != 'W' && *text != 'Z')
+				return 0;
+
+			text--;
+
+			break;
+
+		case '+':                   /* E, I or Y (front vowel) */
+			if (*text != 'E' && *text != 'I' && *text != 'Y')
+				return 0;
+
+			text--;
+
+			break;
+
+		case '%':
+
+		default:
+			fprintf(stderr, "Bad char in left rule: '%c'\n", *pat);
+
+			return 0;
+		}
 	}
 
 	return 1;
@@ -959,6 +961,7 @@ static int rightmatch(
 	{
 		/* First check for simple text or space */
 		if (isalpha(*pat) || *pat == '\'' || *pat == ' ')
+		{
 			if (*pat != *text)
 				return 0;
 			else
@@ -966,111 +969,112 @@ static int rightmatch(
 				text++;
 				continue;
 			}
+		}
 
-			switch (*pat)
+		switch (*pat)
+		{
+
+		case '#':                   /* One or more vowels */
+
+			if (!isvowel(*text))
+				return 0;
+
+			text++;
+
+			while (isvowel(*text))
+				text++;
+
+			break;
+
+		case ':':                   /* Zero or more consonants */
+			while (isconsonant(*text))
+				text++;
+
+			break;
+
+		case '^':                   /* One consonant */
+			if (!isconsonant(*text))
+				return 0;
+
+			text++;
+
+			break;
+
+		case '.':                   /* B, D, V, G, J, L, M, N, R, W, Z */
+			if (*text != 'B' && *text != 'D' && *text != 'V'
+				&& *text != 'G' && *text != 'J' && *text != 'L'
+				&& *text != 'M' && *text != 'N' && *text != 'R'
+				&& *text != 'W' && *text != 'Z')
+				return 0;
+
+			text++;
+
+			break;
+
+		case '+':                   /* E, I or Y (front vowel) */
+			if (*text != 'E' && *text != 'I' && *text != 'Y')
+				return 0;
+
+			text++;
+
+			break;
+
+		case '%':                   /* ER, E, ES, ED, ING, ELY (a suffix) */
+			if (*text == 'E')
 			{
-
-			case '#':                   /* One or more vowels */
-
-				if (!isvowel(*text))
-					return 0;
-
 				text++;
 
-				while (isvowel(*text))
-					text++;
-
-				break;
-
-			case ':':                   /* Zero or more consonants */
-				while (isconsonant(*text))
-					text++;
-
-				break;
-
-			case '^':                   /* One consonant */
-				if (!isconsonant(*text))
-					return 0;
-
-				text++;
-
-				break;
-
-			case '.':                   /* B, D, V, G, J, L, M, N, R, W, Z */
-				if (*text != 'B' && *text != 'D' && *text != 'V'
-					&& *text != 'G' && *text != 'J' && *text != 'L'
-					&& *text != 'M' && *text != 'N' && *text != 'R'
-					&& *text != 'W' && *text != 'Z')
-					return 0;
-
-				text++;
-
-				break;
-
-			case '+':                   /* E, I or Y (front vowel) */
-				if (*text != 'E' && *text != 'I' && *text != 'Y')
-					return 0;
-
-				text++;
-
-				break;
-
-			case '%':                   /* ER, E, ES, ED, ING, ELY (a suffix) */
-				if (*text == 'E')
+				if (*text == 'L')
 				{
 					text++;
 
-					if (*text == 'L')
+					if (*text == 'Y')
 					{
 						text++;
-
-						if (*text == 'Y')
-						{
-							text++;
-							break;
-						}
-
-						else
-						{
-							text--;               /* Don't gobble L */
-							break;
-						}
+						break;
 					}
 
 					else
-						if (*text == 'R' || *text == 'S' || *text == 'D')
-							text++;
-
-					break;
+					{
+						text--;               /* Don't gobble L */
+						break;
+					}
 				}
 
 				else
-					if (*text == 'I')
+					if (*text == 'R' || *text == 'S' || *text == 'D')
+						text++;
+
+				break;
+			}
+
+			else
+				if (*text == 'I')
+				{
+					text++;
+
+					if (*text == 'N')
 					{
 						text++;
 
-						if (*text == 'N')
+						if (*text == 'G')
 						{
 							text++;
-
-							if (*text == 'G')
-							{
-								text++;
-								break;
-							}
+							break;
 						}
-
-						return 0;
 					}
 
-					else
-						return 0;
+					return 0;
+				}
 
-			default:
-				fprintf(stderr, "Bad char in right rule:'%c'\n", *pat);
+				else
+					return 0;
 
-				return 0;
-			}
+		default:
+			fprintf(stderr, "Bad char in right rule:'%c'\n", *pat);
+
+			return 0;
+		}
 	}
 
 	return 1;

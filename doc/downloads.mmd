@@ -5,9 +5,9 @@ This page lists SoLoud downloads, as well as other relevant information.
 
 Latest stable release
 ---------------------
-[soloud_20150512.zip](soloud_20150512.zip) <<- Download here
+[soloud_20160109.zip](soloud_20160109.zip) <<- Download here
 
-Documentation: [PDF](soloud_20150512.pdf) | [EPUB](soloud_20150512.epub) | [MOBI](soloud_20150512.mobi) | [HTML](soloud_20150512.html) 
+Documentation: [PDF](soloud_20160109.pdf) | [EPUB](soloud_20160109.epub) | [MOBI](soloud_20160109.mobi) | [HTML](soloud_20160109.html) 
 
 Milestones
 ----------
@@ -47,6 +47,33 @@ Additional files
 
 Release history
 ---------------
+
+[soloud_20160109.zip](soloud_20160109.zip) 
+
+Documentation: [PDF](soloud_20160109.pdf) | [EPUB](soloud_20160109.epub) | [MOBI](soloud_20160109.mobi) | [HTML](soloud_20160109.html) 
+
+- Refresh release after 6+ months of no releases
+- Hilights:
+    - Various bugfixes
+    - Work on multiple speaker systems
+    - Separate volume and play speed for 3d; 3d no longer overwrites 2d settings
+    - Moved examples to SDL2
+    - A lot of build system tweaks
+    - All examples use new demo framework based on SDL2 and ImGui
+    - Some backends use float samples directly
+    - Backends no longer responsible for mutex creation/deletion
+    - Virtual voices now default to "kill inaudible"
+    - Demo framework shaders are now es2 compatible (for webgl etc)
+    - Emscripten builds included
+    - Thread pool code added (not used as of yet)
+    - SSE optimized clipping
+    - Signed 16 bit mix function api added for backends that prefer int data
+    - Linux and Android work by Neil Richardson
+    - Mac OSX work by Petri Hakkinen
+    - New backend: OpenSL ES
+    - New backend: Core Audio
+    - New audio source: VIC-20 sound emulator
+    
 
 [soloud_20150512.zip](soloud_20150512.zip) 
 

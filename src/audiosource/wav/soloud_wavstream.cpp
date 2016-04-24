@@ -310,7 +310,20 @@ namespace SoLoud
 		{
 			return FILE_LOAD_FAILED;
 		}
-		if (fp->read32() != MAKEDWORD('f', 'm', 't', ' '))
+		int chunk = fp->read32();
+		if (chunk == MAKEDWORD('J', 'U', 'N', 'K'))
+		{
+			int size = fp->read32();
+			if (size & 1)
+			{
+				size += 1;
+			}
+			int i;
+			for (i = 0; i < size; i++)
+				fp->read8();
+			chunk = fp->read32();
+		}
+		if (chunk != MAKEDWORD('f', 'm', 't', ' '))
 		{
 			return FILE_LOAD_FAILED;
 		}
@@ -329,7 +342,7 @@ namespace SoLoud
 			return FILE_LOAD_FAILED;
 		}
 		
-		int chunk = fp->read32();
+		chunk = fp->read32();
 		
 		if (chunk == MAKEDWORD('L','I','S','T'))
 		{

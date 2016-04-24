@@ -32,14 +32,14 @@ freely, subject to the following restrictions:
 
 #include "soloud.h"
 #include "soloud_speech.h"
-#include "soloud_modplug.h"
+#include "soloud_openmpt.h"
 #include "soloud_flangerfilter.h"
 #include "soloud_lofifilter.h"
 #include "soloud_biquadresonantfilter.h"
 
 SoLoud::Soloud gSoloud;			// SoLoud engine core
 SoLoud::Speech gSpeech;
-SoLoud::Modplug gMod;
+SoLoud::Openmpt gMod;
 
 SoLoud::Bus gMusicBus;
 SoLoud::Bus gSpeechBus;

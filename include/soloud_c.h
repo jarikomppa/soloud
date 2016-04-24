@@ -27,7 +27,7 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-/* SoLoud C-Api Code Generator (c)2013-2015 Jari Komppa http://iki.fi/sol/ */
+/* SoLoud C-Api Code Generator (c)2013-2016 Jari Komppa http://iki.fi/sol/ */
 
 #ifndef SOLOUD_C_H_INCLUDED
 #define SOLOUD_C_H_INCLUDED
@@ -105,7 +105,7 @@ typedef void * Prg;
 typedef void * Sfxr;
 typedef void * FlangerFilter;
 typedef void * DCRemovalFilter;
-typedef void * Modplug;
+typedef void * Openmpt;
 typedef void * Monotone;
 typedef void * TedSid;
 typedef void * File;
@@ -408,28 +408,28 @@ int DCRemovalFilter_setParams(DCRemovalFilter * aDCRemovalFilter);
 int DCRemovalFilter_setParamsEx(DCRemovalFilter * aDCRemovalFilter, float aLength /* = 0.1f */);
 
 /*
- * Modplug
+ * Openmpt
  */
-void Modplug_destroy(Modplug * aModplug);
-Modplug * Modplug_create();
-int Modplug_load(Modplug * aModplug, const char * aFilename);
-int Modplug_loadMem(Modplug * aModplug, unsigned char * aMem, unsigned int aLength);
-int Modplug_loadMemEx(Modplug * aModplug, unsigned char * aMem, unsigned int aLength, int aCopy /* = false */, int aTakeOwnership /* = true */);
-int Modplug_loadFile(Modplug * aModplug, File * aFile);
-void Modplug_setVolume(Modplug * aModplug, float aVolume);
-void Modplug_setLooping(Modplug * aModplug, int aLoop);
-void Modplug_set3dMinMaxDistance(Modplug * aModplug, float aMinDistance, float aMaxDistance);
-void Modplug_set3dAttenuation(Modplug * aModplug, unsigned int aAttenuationModel, float aAttenuationRolloffFactor);
-void Modplug_set3dDopplerFactor(Modplug * aModplug, float aDopplerFactor);
-void Modplug_set3dProcessing(Modplug * aModplug, int aDo3dProcessing);
-void Modplug_set3dListenerRelative(Modplug * aModplug, int aListenerRelative);
-void Modplug_set3dDistanceDelay(Modplug * aModplug, int aDistanceDelay);
-void Modplug_set3dCollider(Modplug * aModplug, AudioCollider * aCollider);
-void Modplug_set3dColliderEx(Modplug * aModplug, AudioCollider * aCollider, int aUserData /* = 0 */);
-void Modplug_set3dAttenuator(Modplug * aModplug, AudioAttenuator * aAttenuator);
-void Modplug_setInaudibleBehavior(Modplug * aModplug, int aMustTick, int aKill);
-void Modplug_setFilter(Modplug * aModplug, unsigned int aFilterId, Filter * aFilter);
-void Modplug_stop(Modplug * aModplug);
+void Openmpt_destroy(Openmpt * aOpenmpt);
+Openmpt * Openmpt_create();
+int Openmpt_load(Openmpt * aOpenmpt, const char * aFilename);
+int Openmpt_loadMem(Openmpt * aOpenmpt, unsigned char * aMem, unsigned int aLength);
+int Openmpt_loadMemEx(Openmpt * aOpenmpt, unsigned char * aMem, unsigned int aLength, int aCopy /* = false */, int aTakeOwnership /* = true */);
+int Openmpt_loadFile(Openmpt * aOpenmpt, File * aFile);
+void Openmpt_setVolume(Openmpt * aOpenmpt, float aVolume);
+void Openmpt_setLooping(Openmpt * aOpenmpt, int aLoop);
+void Openmpt_set3dMinMaxDistance(Openmpt * aOpenmpt, float aMinDistance, float aMaxDistance);
+void Openmpt_set3dAttenuation(Openmpt * aOpenmpt, unsigned int aAttenuationModel, float aAttenuationRolloffFactor);
+void Openmpt_set3dDopplerFactor(Openmpt * aOpenmpt, float aDopplerFactor);
+void Openmpt_set3dProcessing(Openmpt * aOpenmpt, int aDo3dProcessing);
+void Openmpt_set3dListenerRelative(Openmpt * aOpenmpt, int aListenerRelative);
+void Openmpt_set3dDistanceDelay(Openmpt * aOpenmpt, int aDistanceDelay);
+void Openmpt_set3dCollider(Openmpt * aOpenmpt, AudioCollider * aCollider);
+void Openmpt_set3dColliderEx(Openmpt * aOpenmpt, AudioCollider * aCollider, int aUserData /* = 0 */);
+void Openmpt_set3dAttenuator(Openmpt * aOpenmpt, AudioAttenuator * aAttenuator);
+void Openmpt_setInaudibleBehavior(Openmpt * aOpenmpt, int aMustTick, int aKill);
+void Openmpt_setFilter(Openmpt * aOpenmpt, unsigned int aFilterId, Filter * aFilter);
+void Openmpt_stop(Openmpt * aOpenmpt);
 
 /*
  * Monotone

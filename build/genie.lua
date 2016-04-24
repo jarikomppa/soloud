@@ -10,7 +10,6 @@ local WITH_ALSA = 0
 local WITH_OSS = 0
 local WITH_COREAUDIO = 0
 local WITH_NULL = 1
-local WITH_LIBMODPLUG = 0
 local WITH_PORTMIDI = 0
 local WITH_TOOLS = 0
 
@@ -121,11 +120,6 @@ newoption {
 }
 
 newoption {
-	trigger		  = "with-libmodplug",
-	description = "Include libmodplug in build"
-}
-
-newoption {
 	trigger		  = "with-tools",
 	description = "Include (optional) tools in build"
 }
@@ -152,7 +146,6 @@ if _OPTIONS["soloud-devel"] then
     	WITH_OSS = 0
     end
     WITH_TOOLS = 1
-    WITH_LIBMODPLUG = 1
     WITH_PORTMIDI = 1
 end
 
@@ -281,10 +274,6 @@ if _OPTIONS["with-native-only"] then
 	end
 end
 
-if _OPTIONS["with-libmodplug"] then
-	WITH_LIBMODPLUG = 1
-end
-
 if _OPTIONS["with-portmidi"] then
 	WITH_PORTMIDI = 1
 end
@@ -304,7 +293,6 @@ print ("WITH_WASAPI     = ", WITH_WASAPI)
 print ("WITH_ALSA       = ", WITH_ALSA)
 print ("WITH_OSS        = ", WITH_OSS)
 print ("WITH_COREAUDIO  = ", WITH_COREAUDIO)
-print ("WITH_LIBMODPLUG = ", WITH_LIBMODPLUG)
 print ("WITH_PORTMIDI   = ", WITH_PORTMIDI)
 print ("WITH_TOOLS      = ", WITH_TOOLS)
 print ("")
@@ -372,9 +360,6 @@ end
 		if (not os.is("windows")) then
 		  links { "pthread" }
 		end
-if (WITH_LIBMODPLUG == 1) then
-		links {"libmodplug"}
-end
 
 		targetname "simplest"
 
@@ -400,9 +385,6 @@ end
 		if (not os.is("windows")) then
 		  links { "pthread" }
 		end
-if (WITH_LIBMODPLUG == 1) then
-		links {"libmodplug"}
-end
 
 		targetname "welcome"
 
@@ -454,36 +436,11 @@ end
 		if (not os.is("windows")) then
 		  links { "pthread" }
 		end
-if (WITH_LIBMODPLUG == 1) then
-		links {"libmodplug"}
-end
 
 		targetname "enumerate"
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 
-if (WITH_LIBMODPLUG == 1) then
-	project "libmodplug"
-		kind "StaticLib"
-		targetdir "../lib"
-		language "C++"
-
-		defines { "MODPLUG_STATIC" }
-
-		files
-		{
-		"../ext/libmodplug/src/**.cpp*"
-	  }
-
-		includedirs
-		{
-		"../ext/libmodplug/src/**"
-		}
-
-		targetname "libmodplug"
-end
-
--- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 if (WITH_SDL == 1) then
 
 	project "SoloudDemoCommon"
@@ -513,11 +470,6 @@ end
 		kind "StaticLib"
 		targetdir "../lib"
 		language "C++"
-
-		defines { "MODPLUG_STATIC" }
-if (WITH_LIBMODPLUG == 1) then
-		defines { "WITH_MODPLUG" }
-end
 
 		files
 		{
@@ -668,9 +620,6 @@ if (WITH_TOOLS == 1) then
 		files {
 		  "../src/tools/codegen/**.cpp"
 		}
-if (WITH_LIBMODPLUG == 1) then
-		defines { "WITH_MODPLUG" }
-end
 		targetname "codegen"
 end
 
@@ -684,9 +633,6 @@ if (WITH_TOOLS == 1) then
 		files {
 		  "../src/tools/tedsid2dump/**.cpp"
 		}
-if (WITH_LIBMODPLUG == 1) then
-		defines { "WITH_MODPLUG" }
-end
 		targetname "tedsid2dump"
 end
 
@@ -735,9 +681,6 @@ end
 		if (not os.is("windows")) then
 		  links { "pthread" }
 		end
-if (WITH_LIBMODPLUG == 1) then
-		links {"libmodplug"}
-end
 if (WITH_ALSA == 1) then
 	links {"asound"}
 end
@@ -766,9 +709,6 @@ end
 		}
 
 		links {"SoloudStatic"}
-if (WITH_LIBMODPLUG == 1) then
-		links {"libmodplug"}
-end
 
 if (os.is("Windows")) then
 	linkoptions { "/DEF:\"../../src/c_api/soloud.def\"" }
@@ -842,9 +782,7 @@ end
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 		
-   CommonDemo("space")
-	links {"libmodplug"}
-   
+   CommonDemo("space")  
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 

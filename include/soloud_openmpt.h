@@ -1,6 +1,6 @@
 /*
-libmodplug module for SoLoud audio engine
-Copyright (c) 2014 Jari Komppa
+Openmpt module for SoLoud audio engine
+Copyright (c) 2016 Jari Komppa
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -22,36 +22,36 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#ifndef MODPLUG_H
-#define MODPLUG_H
+#ifndef OPENMPT_H
+#define OPENMPT_H
 
 #include "soloud.h"
 
 namespace SoLoud
 {
-	class Modplug;
+	class Openmpt;
 	class File;
 
-	class ModplugInstance : public AudioSourceInstance
+	class OpenmptInstance : public AudioSourceInstance
 	{
-		Modplug *mParent;
-		void *mModplugfile;
+		Openmpt *mParent;
+		void *mModfile;
 		int mPlaying;
 
 	public:
-		ModplugInstance(Modplug *aParent);
-		virtual ~ModplugInstance();
+		OpenmptInstance(Openmpt *aParent);
+		virtual ~OpenmptInstance();
 		virtual void getAudio(float *aBuffer, unsigned int aSamples);
 		virtual bool hasEnded();
 	};
 
-	class Modplug : public AudioSource
+	class Openmpt : public AudioSource
 	{
 	public:
 		char *mData;
 		unsigned int mDataLen;
-		Modplug();
-		virtual ~Modplug();
+		Openmpt();
+		virtual ~Openmpt();
 		result load(const char* aFilename);
 		result loadMem(unsigned char *aMem, unsigned int aLength, bool aCopy = false, bool aTakeOwnership = true);
 		result loadFile(File *aFile);

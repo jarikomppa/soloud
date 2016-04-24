@@ -1,6 +1,6 @@
 ﻿/*
 SoLoud audio engine
-Copyright (c) 2013-2015 Jari Komppa
+Copyright (c) 2013-2016 Jari Komppa
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -28,7 +28,7 @@ freely, subject to the following restrictions:
 #include <vector>
 #include <string>
 
-#define VERSION "SoLoud C-Api Code Generator (c)2013-2015 Jari Komppa http://iki.fi/sol/"
+#define VERSION "SoLoud C-Api Code Generator (c)2013-2016 Jari Komppa http://iki.fi/sol/"
 
 #define OUTDIR "../src/c_api/"
 #define PYOUTDIR "../scripts/"
@@ -54,9 +54,7 @@ char *gIncludeFile[] =
 	"../include/soloud_sfxr.h",
 	"../include/soloud_flangerfilter.h",
 	"../include/soloud_dcremovalfilter.h",
-#if defined(WITH_MODPLUG)
-	"../include/soloud_modplug.h",
-#endif
+	"../include/soloud_openmpt.h",
 	"../include/soloud_monotone.h",
 	"../include/soloud_tedsid.h"
 };

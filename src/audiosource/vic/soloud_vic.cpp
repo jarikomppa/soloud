@@ -112,7 +112,7 @@ namespace SoLoud
 		{
 		    unsigned lsb = lfsr & 1;
 		    lfsr >>= 1;
-		    lfsr ^= (-lsb) & 0xB400u;
+		    lfsr ^= (unsigned)(-(signed)lsb) & 0xB400u;
 		    m_noise[i] = (lfsr & 0xff) ^ (lfsr >> 8);
 		}
 	}

@@ -1,39 +1,41 @@
-## SoLoud::Modplug
+## SoLoud::Openmpt
 
+Openmpt is a module-playing engine, capable of
+replaying wide variety of multichannel music 
+(669, amf, ams, dbm, digi, dmf, dsm, far, gdm, ice, imf, it, itp, j2b, m15, mdl, med, 
+mid, mo3, mod, mptm, mt2, mtm, okt, plm, psm, ptm, s3m, stm, ult, umx, wow, xm). 
+It also loads wav files, and may support wider support for wav files than the 
+stand-alone wav audio source. 
 
-The SoLoud::Modplug is a module-playing engine, capable of
-replaying wide variety of multichannel music (669, abc, 
-amf, ams, dbm, dmf, dsm, far, it, j2b, mdl, med, mid, mod, mt2, mtm, okt, 
-pat, psm, ptm, s3m, stm, ult, umx, xm). It also loads wav files, and
-may support wider support for wav files than the stand-alone wav audio source. 
-
-Due to its size, it's possible to compile SoLoud without the modplug
-support.
+SoLoud uses Openmpt through DLL, available from https://lib.openmpt.org/. Note
+that Openmpt has a more restrictive license than SoLoud, so be sure to check
+the license.
 
 The midi formats (.mid and .abc) require a library of instruments (patches) to be
-available. One free set can be downloaded from the SoLoud downloads page. By default, 
-the patches are loaded from pat/ directory.
+available. One free set can be downloaded from the SoLoud downloads page.
+
+If the DLL is not available, the SoLoud::Openmpt interfaces will silently fail.
 
 
-### Modplug.load()
+### Openmpt.load()
 
 
-You tell modplug to load a file with the load function:
+You tell Openmpt to load a file with the load function:
 
     result load(const char *aFilename); // File to load
 
 If loading fails, the function returns an error code.
 
-    SoLoud::Modplug spacedeb;
+    SoLoud::Openmpt spacedeb;
     spacedeb.load("spacedeb.mod");
 
-### Modplug.loadFile()
+### Openmpt.loadFile()
 
 The loadFile() can be used to load audio from a SoLoud::File object. This
 is useful for integrating with virtual filesystems / packfiles, such as
 PhysFS.
 
-### Modplug.loadMem()
+### Openmpt.loadMem()
 
 Alternate way of loading the file is to read from a memory buffer.
 
@@ -45,31 +47,31 @@ once it's done with it. The aCopy parameter is here for compatibility with
 the other loadMem functions.
 
 
-### Modplug.setLooping()
+### Openmpt.setLooping()
 
 
-Adjusting the looping of a modplug sound does not currently
+Adjusting the looping of a Openmpt sound does not currently
 have any effect. All music is set to loop by default. 
 
-### Modplug.setFilter()
+### Openmpt.setFilter()
 
 
 As with any other audio source, you can attach filters to 
-Modplug audio sources.
+Openmpt audio sources.
 
     gMusic.setFilter(0, &gLofi);
 
-### Modplug.stop()
+### Openmpt.stop()
 
 
-You can stop all instances of a modplug sound source with
+You can stop all instances of a Openmpt sound source with
 stop(). This is equivalent of calling soloud.stopAudioSource()
 with the sound source.
 
     gMusic.stop();
     
     
-### Modplug.setInaudibleBehavior()
+### Openmpt.setInaudibleBehavior()
 
 Set the inaudible behavior of the sound. By default, if a sound is
 inaudible, it's paused, and will resume when it becomes audible again.
@@ -80,7 +82,7 @@ inaudible.
 	// Keep on talking even if I'm not around
 	gSpeech.setInaudibleBehavior(true, false);
 
-### Modplug.setVolume()
+### Openmpt.setVolume()
 
 Set the default volume of the instances created from this audio source.
 
@@ -88,13 +90,13 @@ Set the default volume of the instances created from this audio source.
        
 ### Inherited 3d audio interfaces
 
-Like all other audio sources, Modplug inherits the 3d audio interfaces. Please refer to the 3d audio chapter for details on:
+Like all other audio sources, Openmpt inherits the 3d audio interfaces. Please refer to the 3d audio chapter for details on:
 
-- Modplug.set3dMinMaxDistance()
-- Modplug.set3dAttenuation()
-- Modplug.set3dDopplerFactor()
-- Modplug.set3dProcessing()
-- Modplug.set3dListenerRelative()
-- Modplug.set3dDistanceDelay()
-- Modplug.set3dCollider()
-- Modplug.set3dAttenuator()
+- Openmpt.set3dMinMaxDistance()
+- Openmpt.set3dAttenuation()
+- Openmpt.set3dDopplerFactor()
+- Openmpt.set3dProcessing()
+- Openmpt.set3dListenerRelative()
+- Openmpt.set3dDistanceDelay()
+- Openmpt.set3dCollider()
+- Openmpt.set3dAttenuator()

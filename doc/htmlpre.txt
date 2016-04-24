@@ -68,7 +68,7 @@ ga('send', 'pageview');
 <a href="wavstream.html">SoLoud::WavStream</a><br>
 <a href="speech.html">SoLoud::Speech</a><br>
 <a href="sfxr.html">SoLoud::Sfxr</a><br>
-<a href="modplug.html">SoLoud::Modplug</a><br>
+<a href="modplug.html">SoLoud::Openmpt</a><br>
 <a href="monotone.html">SoLoud::Monotone</a><br>
 <a href="tedsid.html">SoLoud::TedSid</a><br>
 <br>

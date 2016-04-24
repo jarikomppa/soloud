@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <string.h>
 #include "darray.h"
 
 darray::darray()
@@ -43,6 +44,10 @@ char * darray::getDataInPos(int aPosition)
 			mData = NULL;
 			mAllocated = mUsed = 0;
 			return NULL;
+		}
+		else
+		{
+			memset(newdata + mAllocated, 0, newsize - mAllocated);
 		}
 
 		mData = newdata;

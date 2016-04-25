@@ -22,8 +22,10 @@ freely, subject to the following restrictions:
    distribution.
 */
 #include <stdlib.h>
-#if defined(_MSC_VER)
+#if defined(_WIN32)||defined(_WIN64)
 #define WINDOWS_VERSION
+#endif // __WINDOWS__
+#if defined(_MSC_VER)
 #include "SDL.h"
 #else
 #include "SDL/SDL.h"

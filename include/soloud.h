@@ -32,7 +32,7 @@ freely, subject to the following restrictions:
 #define M_PI 3.14159265359
 #endif
 
-#ifdef _MSC_VER
+#if defined(_WIN32)||defined(_WIN64)
 #define WINDOWS_VERSION
 #endif
 
@@ -67,7 +67,7 @@ freely, subject to the following restrictions:
 /////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////
 
-// Typedefs have to be made before the includes, as the 
+// Typedefs have to be made before the includes, as the
 // includes depend on them.
 namespace SoLoud
 {
@@ -173,7 +173,7 @@ namespace SoLoud
 
 		// Set speaker position in 3d space
 		result setSpeakerPosition(unsigned int aChannel, float aX, float aY, float aZ);
-		
+
 		// Start playing a sound. Returns voice handle, which can be ignored or used to alter the playing sound's parameters. Negative volume means to use default.
 		handle play(AudioSource &aSound, float aVolume = -1.0f, float aPan = 0.0f, bool aPaused = 0, unsigned int aBus = 0);
 		// Start playing a sound delayed in relation to other sounds called via this function. Negative volume means to use default.
@@ -216,7 +216,7 @@ namespace SoLoud
 		// Get current voice protection state.
 		bool getProtectVoice(handle aVoiceHandle);
 		// Get the current number of busy voices.
-		unsigned int getActiveVoiceCount(); 
+		unsigned int getActiveVoiceCount();
 		// Get the current number of voices in SoLoud
 		unsigned int getVoiceCount();
 		// Check if the handle is still valid, or if the sound has stopped.
@@ -231,7 +231,7 @@ namespace SoLoud
 		unsigned int getMaxActiveVoiceCount() const;
 		// Query whether a voice is set to loop.
 		bool getLooping(handle aVoiceHandle);
-		
+
 		// Set voice's loop state
 		void setLooping(handle aVoiceHandle, bool aLooping);
 		// Set current maximum active voice setting
@@ -288,7 +288,7 @@ namespace SoLoud
 
 		// Enable or disable visualization data gathering
 		void setVisualizationEnable(bool aEnable);
-		
+
 		// Calculate and get 256 floats of FFT data for visualization. Visualization has to be enabled before use.
 		float *calcFFT();
 
@@ -297,13 +297,13 @@ namespace SoLoud
 
 		// Get current loop count. Returns 0 if handle is not valid. (All audio sources may not update loop count)
 		unsigned int getLoopCount(handle aVoiceHandle);
-		
-		// Get audiosource-specific information from a voice. 
+
+		// Get audiosource-specific information from a voice.
 		float getInfo(handle aVoiceHandle, unsigned int aInfoKey);
 
 		// Create a voice group. Returns 0 if unable (out of voice groups / out of memory)
 		handle createVoiceGroup();
-		// Destroy a voice group. 
+		// Destroy a voice group.
 		result destroyVoiceGroup(handle aVoiceGroupHandle);
 		// Add a voice handle to a voice group
 		result addVoiceToGroup(handle aVoiceGroupHandle, handle aVoiceHandle);
@@ -314,7 +314,7 @@ namespace SoLoud
 
 		// Perform 3d audio parameter update
 		void update3dAudio();
-		
+
 		// Set the speed of sound constant for doppler
 		result set3dSoundSpeed(float aSpeed);
 		// Get the current speed of sound constant for doppler
@@ -350,7 +350,7 @@ namespace SoLoud
 		// Returns mixed 16-bit signed integer samples in buffer. Called by the back-end, or user with null driver.
 		void mixSigned16(short *aBuffer, unsigned int aSamples);
 	public:
-		// Mix N samples * M channels. Called by other mix_ functions. 
+		// Mix N samples * M channels. Called by other mix_ functions.
 		void mix_internal(unsigned int aSamples);
 
 		// Handle rest of initialization (called from backend)
@@ -396,7 +396,7 @@ namespace SoLoud
 		unsigned int mAudioSourceID;
 		// Fader for the global volume.
 		Fader mGlobalVolumeFader;
-		// Global stream time, for the global volume fader. 
+		// Global stream time, for the global volume fader.
 		time mStreamTime;
 		// Last time seen by the playClocked call
 		time mLastClockedTime;
@@ -451,7 +451,7 @@ namespace SoLoud
 
 		// Data related to 3d processing, separate from AudioSource so we can do 3d calculations without audio mutex.
 		AudioSourceInstance3dData m3dData[VOICE_COUNT];
-		
+
 		// For each voice group, first int is number of ints alocated.
 		unsigned int **mVoiceGroup;
 		unsigned int mVoiceGroupCount;
@@ -475,4 +475,4 @@ namespace SoLoud
 	};
 };
 
-#endif 
+#endif

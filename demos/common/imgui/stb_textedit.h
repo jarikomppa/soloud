@@ -1,4 +1,4 @@
-// stb_textedit.h - v1.7  - public domain - Sean Barrett
+// stb_textedit.h - v1.8  - public domain - Sean Barrett
 // Development of this library was sponsored by RAD Game Tools
 //
 // This C header file implements the guts of a multi-line text-editing
@@ -17,9 +17,9 @@
 //
 // LICENSE
 //
-//   This software is in the public domain. Where that dedication is not
-//   recognized, you are granted a perpetual, irrevocable license to copy,
-//   distribute, and modify this file as you see fit.
+//   This software is dual-licensed to the public domain and under the following
+//   license: you are granted a perpetual, irrevocable license to copy, modify,
+//   publish, and distribute this file as you see fit.
 //
 //
 // DEPENDENCIES
@@ -31,6 +31,7 @@
 //
 // VERSION HISTORY
 //
+//   1.8  (2016-04-02) better keyboard handling when mouse button is down
 //   1.7  (2015-09-13) change y range handling in case baseline is non-0
 //   1.6  (2015-04-15) allow STB_TEXTEDIT_memmove
 //   1.5  (2014-09-10) add support for secondary keys for OS X
@@ -451,6 +452,8 @@ static void stb_textedit_click(STB_TEXTEDIT_STRING *str, STB_TexteditState *stat
 static void stb_textedit_drag(STB_TEXTEDIT_STRING *str, STB_TexteditState *state, float x, float y)
 {
    int p = stb_text_locate_coord(str, x, y);
+   if (state->select_start == state->select_end)
+      state->select_start = state->cursor;
    state->cursor = state->select_end = p;
 }
 

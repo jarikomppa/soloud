@@ -25,11 +25,6 @@ freely, subject to the following restrictions:
 #if defined(_WIN32)||defined(_WIN64)
 #define WINDOWS_VERSION
 #endif // __WINDOWS__
-#if defined(_MSC_VER)
-#include "SDL.h"
-#else
-#include "SDL/SDL.h"
-#endif
 #include <math.h>
 
 typedef void * (*dll_openmpt_module_create_from_memory)(const void * filedata, size_t filesize, void *logfunc, void * user, void * ctls);

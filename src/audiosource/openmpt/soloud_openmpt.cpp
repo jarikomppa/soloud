@@ -24,7 +24,7 @@ freely, subject to the following restrictions:
 
 #include <stdlib.h>
 #include <stdio.h>
-#include "soloud_Openmpt.h"
+#include "soloud_openmpt.h"
 #include "soloud_file.h"
 
 extern "C"

@@ -134,6 +134,13 @@ namespace SoLoud
 		return h;
 	}
 
+	handle Soloud::playBackground(AudioSource &aSound, float aVolume, bool aPaused, unsigned int aBus)
+	{
+		handle h = play(aSound, aVolume, 0.0f, aPaused, aBus);
+		setPanAbsolute(h, 1.0f, 1.0f);
+		return h;
+	}
+
 	void Soloud::seek(handle aVoiceHandle, time aSeconds)
 	{
 		FOR_ALL_VOICES_PRE

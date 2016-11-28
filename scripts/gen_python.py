@@ -129,6 +129,10 @@ def fix_default_param(defparam, classname):
         return defparam[len(classname)+2::]
     if defparam[len(defparam)-1] == "f":
         return defparam[0:len(defparam)-1]
+    if defparam == "false":
+        return "False"
+    elif defparam == "true":
+        return "True"
     return defparam
 
 for x in soloud_codegen.soloud_type:

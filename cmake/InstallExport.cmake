@@ -1,0 +1,36 @@
+# Installs export targets (i.e. cmake config files) into location
+# specified for OS.
+# Installs ${PROJECT_NAME}-SetThirdParties.cmake too if such file
+# is found in ${PROJECT_SOURCE_DIR}.
+
+SET (EV_CMAKE_EXPORT_DIR share/${PROJECT_NAME}/cmake)
+
+IF (WIN32)
+	SET (EV_CMAKE_EXPORT_DIR cmake)
+ENDIF ()
+
+INSTALL (
+	EXPORT ${PROJECT_NAME}-config
+	DESTINATION ${EV_CMAKE_EXPORT_DIR}
+)
+
+SET (EV_STP_FILENAME ${PROJECT_SOURCE_DIR}/${PROJECT_NAME}-SetThirdParties.cmake)
+IF (EXISTS ${EV_STP_FILENAME})
+	INSTALL (
+		FILES ${EV_STP_FILENAME}
+		DESTINATION ${EV_CMAKE_EXPORT_DIR}
+	)
+ENDIF ()
+
+SET (EV_SETTINGS_FILENAME ${PROJECT_SOURCE_DIR}/${PROJECT_NAME}-Settings.cmake)
+IF (NOT EXISTS ${EV_SETTINGS_FILENAME})
+	# This file may be configured => it placed in binary dir
+	SET (EV_SETTINGS_FILENAME ${PROJECT_BINARY_DIR}/${PROJECT_NAME}-Settings.cmake)
+ENDIF ()
+
+IF (EXISTS ${EV_SETTINGS_FILENAME})
+	INSTALL (
+		FILES ${EV_SETTINGS_FILENAME}
+		DESTINATION ${EV_CMAKE_EXPORT_DIR}
+	)
+ENDIF ()

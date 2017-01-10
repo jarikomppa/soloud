@@ -106,6 +106,25 @@ if (SOLOUD_BACKEND_SDL2)
 
 endif()
 
+if (SOLOUD_BACKEND_COREAUDIO)
+	if (NOT APPLE)
+		message (FATAL_ERROR "CoreAudio backend can be enabled only on Apple!")
+	endif ()
+
+	add_definitions (-DWITH_COREAUDIO)
+
+	set (BACKENDS_SOURCES
+		${BACKENDS_SOURCES}
+		backend/coreaudio/soloud_coreaudio.cpp
+	)
+
+	find_library (AUDIOTOOLBOX_FRAMEWORK AudioToolbox)
+	set (LINK_LIBRARIES
+		${LINK_LIBRARIES}
+		${AUDIOTOOLBOX_FRAMEWORK}
+	)
+endif()
+
 
 # Filters
 set (FILTERS_SOURCES

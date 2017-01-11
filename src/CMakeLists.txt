@@ -126,6 +126,22 @@ if (SOLOUD_BACKEND_COREAUDIO)
 endif()
 
 
+if (SOLOUD_BACKEND_OPENSLES)
+	add_definitions (-DWITH_OPENSLES)
+
+	set (BACKENDS_SOURCES
+		${BACKENDS_SOURCES}
+		backend/opensles/soloud_opensles.cpp
+	)
+
+	find_library (OPENSLES_LIBRARY OpenSLES)
+	set (LINK_LIBRARIES
+		${LINK_LIBRARIES}
+		${OPENSLES_LIBRARY}
+	)
+endif()
+
+
 # Filters
 set (FILTERS_SOURCES
 	filter/soloud_bassboostfilter.cpp

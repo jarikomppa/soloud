@@ -1,12 +1,13 @@
-CMAKE_MINIMUM_REQUIRED (VERSION 2.8)
+cmake_minimum_required (VERSION 2.8)
 
-PROJECT (SoLoud)
+project (SoLoud)
 
-SET (CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake;${CMAKE_MODULE_PATH}")
+set (CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake;${CMAKE_MODULE_PATH}")
+set (CMAKE_POSITION_INDEPENDENT_CODE ON)
 #INCLUDE (StandartIncludes)
 
-INCLUDE_DIRECTORIES (include)
-INCLUDE (Configure.cmake)
+include_directories (include)
+include (Configure.cmake)
 #INCLUDE (InstallIncludes.cmake)
 #INCLUDE (InstallStaticData.cmake)
 

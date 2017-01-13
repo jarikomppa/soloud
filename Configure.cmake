@@ -2,10 +2,10 @@ include (OptionDependentOnPackage)
 include (PrintOptionStatus)
 
 option (SOLOUD_DYNAMIC "Set to ON to build dynamic SoLoud" OFF)
-print_option_status (SOLOUD_LIBRARY_DUNAMIC "Build dynamic library")
+print_option_status (SOLOUD_DYNAMIC "Build dynamic library")
 
 option (SOLOUD_STATIC "Set to ON to build static SoLoud" ON)
-print_option_status (SOLOUD_LIBRARY_STATIC "Build static library")
+print_option_status (SOLOUD_STATIC "Build static library")
 
 # TODO:
 option (SOLOUD_BUILD_DEMOS "Set to ON for building demos" OFF)

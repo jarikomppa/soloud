@@ -142,6 +142,30 @@ if (SOLOUD_BACKEND_OPENSLES)
 endif()
 
 
+if (SOLOUD_BACKEND_WASAPI)
+	add_definitions (-DWITH_WASAPI)
+
+	set (BACKENDS_SOURCES
+		${BACKENDS_SOURCES}
+		backend/wasapi/soloud_wasapi.cpp
+	)
+endif()
+
+if (SOLOUD_BACKEND_XAUDIO2)
+	add_definitions (-DWITH_XAUDIO2)
+
+	set (BACKENDS_SOURCES
+		${BACKENDS_SOURCES}
+		backend/xaudio2/soloud_xaudio2.cpp
+	)
+
+	# FIXME
+	# set (LINK_LIBRARIES
+	# 	${LINK_LIBRARIES}
+	# 	XAUDIO2_8.LIB
+	# )
+endif()
+
 # Filters
 set (FILTERS_SOURCES
 	filter/soloud_bassboostfilter.cpp

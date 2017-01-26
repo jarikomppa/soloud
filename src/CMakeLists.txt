@@ -142,15 +142,6 @@ if (SOLOUD_BACKEND_OPENSLES)
 endif()
 
 
-if (SOLOUD_BACKEND_WASAPI)
-	add_definitions (-DWITH_WASAPI)
-
-	set (BACKENDS_SOURCES
-		${BACKENDS_SOURCES}
-		backend/wasapi/soloud_wasapi.cpp
-	)
-endif()
-
 if (SOLOUD_BACKEND_XAUDIO2)
 	add_definitions (-DWITH_XAUDIO2)
 
@@ -158,12 +149,24 @@ if (SOLOUD_BACKEND_XAUDIO2)
 		${BACKENDS_SOURCES}
 		backend/xaudio2/soloud_xaudio2.cpp
 	)
+endif()
 
-	# FIXME
-	# set (LINK_LIBRARIES
-	# 	${LINK_LIBRARIES}
-	# 	XAUDIO2_8.LIB
-	# )
+if (SOLOUD_BACKEND_WINMM)
+	add_definitions (-DWITH_WINMM)
+
+	set (BACKENDS_SOURCES
+		${BACKENDS_SOURCES}
+		backend/winmm/soloud_winmm.cpp
+	)
+endif()
+
+if (SOLOUD_BACKEND_WASAPI)
+	add_definitions (-DWITH_WASAPI)
+
+	set (BACKENDS_SOURCES
+		${BACKENDS_SOURCES}
+		backend/wasapi/soloud_wasapi.cpp
+	)
 endif()
 
 # Filters

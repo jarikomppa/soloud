@@ -26,5 +26,8 @@ print_option_status (SOLOUD_BACKEND_OPENSLES "OpenSLES backend")
 option (SOLOUD_BACKEND_XAUDIO2 "Set to ON for building XAudio2 backend" OFF)
 print_option_status (SOLOUD_BACKEND_XAUDIO2 "XAudio2 backend")
 
+option (SOLOUD_BACKEND_WINMM "Set to ON for building WINMM backend" OFF)
+print_option_status (SOLOUD_BACKEND_WINMM "WINMM backend")
+
 option (SOLOUD_BACKEND_WASAPI "Set to ON for building WASAPI backend" OFF)
 print_option_status (SOLOUD_BACKEND_WASAPI "WASAPI backend")

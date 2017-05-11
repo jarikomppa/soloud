@@ -70,8 +70,6 @@
 #include <stdio.h>
 #endif
 
-#include "soloud_file_hack_on.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif

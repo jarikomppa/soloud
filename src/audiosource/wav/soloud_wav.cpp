@@ -252,12 +252,12 @@ namespace SoLoud
 	result Wav::loadogg(File *aReader)
 	{
 		aReader->seek(0);
-        MemoryFile memoryFile;
-        memoryFile.openFileToMem(aReader);
-        
-        int e = 0;
-        stb_vorbis *vorbis = 0;
-        vorbis = stb_vorbis_open_memory(memoryFile.getMemPtr(), memoryFile.length(), &e, 0);
+		MemoryFile memoryFile;
+		memoryFile.openFileToMem(aReader);
+		
+		int e = 0;
+		stb_vorbis *vorbis = 0;
+		vorbis = stb_vorbis_open_memory(memoryFile.getMemPtr(), memoryFile.length(), &e, 0);
 
 		if (0 == vorbis)
 		{

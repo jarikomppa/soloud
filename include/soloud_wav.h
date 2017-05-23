@@ -48,7 +48,7 @@ namespace SoLoud
 	class Wav : public AudioSource
 	{
 		result loadwav(File *aReader);
-		result loadogg(stb_vorbis *aVorbis);
+		result loadogg(File *aReader);
 		result testAndLoadFile(File *aReader);
 	public:
 		float *mData;

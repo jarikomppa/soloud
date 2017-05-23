@@ -249,11 +249,24 @@ namespace SoLoud
 		return 0;
 	}
 
-	result Wav::loadogg(stb_vorbis *aVorbis)
+	result Wav::loadogg(File *aReader)
 	{
-        stb_vorbis_info info = stb_vorbis_get_info(aVorbis);
+		aReader->seek(0);
+		MemoryFile memoryFile;
+		memoryFile.openFileToMem(aReader);
+		
+		int e = 0;
+		stb_vorbis *vorbis = 0;
+		vorbis = stb_vorbis_open_memory(memoryFile.getMemPtr(), memoryFile.length(), &e, 0);
+
+		if (0 == vorbis)
+		{
+			return FILE_LOAD_FAILED;
+		}
+
+        stb_vorbis_info info = stb_vorbis_get_info(vorbis);
 		mBaseSamplerate = (float)info.sample_rate;
-        int samples = stb_vorbis_stream_length_in_samples(aVorbis);
+        int samples = stb_vorbis_stream_length_in_samples(vorbis);
 
 		int readchannels = 1;
 		if (info.channels > 1)
@@ -267,7 +280,7 @@ namespace SoLoud
 		while(1)
 		{
 			float **outputs;
-            int n = stb_vorbis_get_frame_float(aVorbis, NULL, &outputs);
+            int n = stb_vorbis_get_frame_float(vorbis, NULL, &outputs);
 			if (n == 0)
             {
 				break;
@@ -283,7 +296,7 @@ namespace SoLoud
 			}
 			samples += n;
 		}
-        stb_vorbis_close(aVorbis);
+        stb_vorbis_close(vorbis);
 
 		return 0;
 	}
@@ -296,16 +309,8 @@ namespace SoLoud
         int tag = aReader->read32();
 		if (tag == MAKEDWORD('O','g','g','S')) 
         {
-		 	aReader->seek(0);
-			int e = 0;
-			stb_vorbis *v = 0;
-			v = stb_vorbis_open_file((Soloud_Filehack*)aReader, 0, &e, 0);
+			return loadogg(aReader);
 
-			if (0 != v)
-            {
-				return loadogg(v);
-            }
-			return FILE_LOAD_FAILED;
 		} 
         else if (tag == MAKEDWORD('R','I','F','F')) 
         {

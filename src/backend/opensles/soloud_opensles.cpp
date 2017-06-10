@@ -23,6 +23,7 @@ freely, subject to the following restrictions:
 */
 #include <stdlib.h>
 #include <math.h>
+#include <memory.h>
 
 #include "soloud.h"
 #include "soloud_thread.h"

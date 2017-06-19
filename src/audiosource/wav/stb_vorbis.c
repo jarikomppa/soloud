@@ -70,6 +70,8 @@
 #include <stdio.h>
 #endif
 
+#include "soloud_file_hack_on.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -5395,3 +5397,5 @@ int stb_vorbis_get_samples_float(stb_vorbis *f, int channels, float **buffer, in
 */
 
 #endif // STB_VORBIS_HEADER_ONLY
+
+#include "soloud_file_hack_on.h"

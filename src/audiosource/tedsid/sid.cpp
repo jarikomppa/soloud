@@ -6,7 +6,9 @@
 //  - probably many more
 
 #include <math.h>
+#ifndef __vita__
 #include <memory.h>
+#endif
 #include "sid.h"
 //#include "Tedmem.h"
 

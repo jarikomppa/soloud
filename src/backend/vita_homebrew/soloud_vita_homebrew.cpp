@@ -1,5 +1,5 @@
 /*
-SoLoud Vita output backend
+SoLoud Vita homebrew output backend
 Copyright (c) 2017 Ilya Zhuravlev
 
 This software is provided 'as-is', without any express or implied
@@ -32,11 +32,11 @@ freely, subject to the following restrictions:
 #include <psp2/kernel/threadmgr.h>
 #include <stdio.h>
 
-#if !defined(WITH_VITA)
+#if !defined(WITH_VITA_HOMEBREW)
 
 namespace SoLoud
 {
-	result vita_init(Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer)
+	result vita_homebrew_init(Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer)
 	{
 		return NOT_IMPLEMENTED;
 	}
@@ -88,7 +88,7 @@ namespace SoLoud
 		return 0;
 	}
 
-	result vita_init(Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer, unsigned int aChannels)
+	result vita_homebrew_init(Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer, unsigned int aChannels)
 	{
 		if (aSamplerate != 44100 || aChannels != 2)
 			return INVALID_PARAMETER;

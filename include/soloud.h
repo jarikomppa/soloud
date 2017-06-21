@@ -136,7 +136,7 @@ namespace SoLoud
 			OPENAL,
 			COREAUDIO,
 			OPENSLES,
-			VITA,
+			VITA_HOMEBREW,
 			NULLDRIVER,
 			BACKEND_MAX,
 		};

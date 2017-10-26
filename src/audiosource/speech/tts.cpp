@@ -1376,10 +1376,9 @@ int xlate_string(const char *string, darray *phone)
 										phone->put(*s++);
 
 									s = e + 1;
-
-									break;
 								}
 							}
+							break;
 
 						default:
 							nph += spell_out(word, 1, phone);

@@ -321,7 +321,7 @@ namespace SoLoud
 	}
 
 
-#define rnd(n) (mRand.rand()%(n+1))
+#define rnd(n) (mRand.rand()%((n)+1))
 #undef frnd
 #define frnd(x) ((float)(mRand.rand()%10001)/10000*(x))
 

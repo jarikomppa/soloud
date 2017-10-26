@@ -517,7 +517,8 @@ inline int SIDsound::doEnvelopeGenerator(unsigned int cycles, SIDVoice &v)
 
 				case EG_DECAY:
 					if (v.envCurrLevel != v.envSustainLevel) {
-						--v.envCurrLevel &= 0xFF;
+						--v.envCurrLevel;
+						v.envCurrLevel &= 0xFF;
 						if (!v.envCurrLevel)
 							v.egState = EG_FROZEN;
 					}

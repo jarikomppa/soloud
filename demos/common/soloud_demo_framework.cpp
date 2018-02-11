@@ -510,6 +510,7 @@ void InitImGui()
 	gUIState.mousex = gUIState.mousey = gUIState.mousedown = gUIState.scroll = 0;
 	memset(gUIState.textinput, 0, sizeof(gUIState.textinput));
 
+	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO();
 	io.DeltaTime = 1.0f / 60.0f;                     
 	io.KeyMap[ImGuiKey_Tab] = SDLK_TAB;

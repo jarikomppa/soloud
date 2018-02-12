@@ -1073,8 +1073,8 @@ static int compute_codewords(Codebook *c, uint8 *len, int n, uint32 *values)
       // fires, so!
       while (z > 0 && !available[z]) --z;
       if (z == 0) { return FALSE; }
-      res = available[z];
       assert(z >= 0 && z < 32);
+      res = available[z];
       available[z] = 0;
       add_entry(c, bit_reverse(res), i, m++, len[i], values);
       // propogate availability up the tree
@@ -3536,7 +3536,7 @@ static int is_whole_packet_present(stb_vorbis *f, int end_page)
       // check that we have the page header ready
       if (p + 26 >= f->stream_end)               return error(f, VORBIS_need_more_data);
       // validate the page
-      if (memcmp(p, ogg_page_header, 4))         return error(f, VORBIS_invalid_stream);
+      if (memcmp(p, ogg_page_header, 4) != 0)    return error(f, VORBIS_invalid_stream);
       if (p[4] != 0)                             return error(f, VORBIS_invalid_stream);
       if (first) { // the first segment must NOT have 'continued_packet', later ones MUST
          if (f->previous_length)
@@ -5037,8 +5037,8 @@ static int8 channel_position[7][6] =
    typedef char stb_vorbis_float_size_test[sizeof(float)==4 && sizeof(int) == 4];
    #define FASTDEF(x) float_conv x
    // add (1<<23) to convert to int, then divide by 2^SHIFT, then add 0.5/2^SHIFT to round
-   #define MAGIC(SHIFT) (1.5f * (1 << (23-SHIFT)) + 0.5f/(1 << SHIFT))
-   #define ADDEND(SHIFT) (((150-SHIFT) << 23) + (1 << 22))
+   #define MAGIC(SHIFT) (1.5f * (1 << (23-(SHIFT))) + 0.5f/(1 << (SHIFT)))
+   #define ADDEND(SHIFT) (((150-(SHIFT)) << 23) + (1 << 22))
    #define FAST_SCALED_FLOAT_TO_INT(temp,x,s) (temp.f = (x) + MAGIC(s), temp.i - ADDEND(s))
    #define check_endianness()  
 #else

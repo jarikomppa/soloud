@@ -431,7 +431,14 @@ void parse(const char *aFilename, int aPrintProgress = 0)
 							ALLOW(",");
 							ALLOW("\n");
 							NEXTTOKEN;	
-							c->mEnum.push_back(e);
+							if (c)
+							{
+								c->mEnum.push_back(e);
+							}
+							else
+							{
+								PARSEERROR;
+							}
 						}
 					}
 					EXPECT(";");
@@ -440,7 +447,14 @@ void parse(const char *aFilename, int aPrintProgress = 0)
 				if (s == "~")
 				{
 					// non-virtual DTor
-					EXPECT(c->mName);
+					if (c)
+					{
+						EXPECT(c->mName);
+					}
+					else
+					{
+						PARSEERROR;
+					}
 					EXPECT("(");
 					EXPECT(")");
 					EXPECT(";");
@@ -491,7 +505,14 @@ void parse(const char *aFilename, int aPrintProgress = 0)
 					if (s == "~")
 					{
 						// virtual dtor
-						EXPECT(c->mName);
+						if (c)
+						{
+							EXPECT(c->mName);
+						}
+						else
+						{
+							PARSEERROR;
+						}
 						EXPECT("(");
 						EXPECT(")");
 						ALLOW("const");

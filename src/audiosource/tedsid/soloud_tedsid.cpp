@@ -163,7 +163,10 @@ namespace SoLoud
 		if (!df) return OUT_OF_MEMORY;
 		int res = df->open(aFilename);
 		if (res != SO_NO_ERROR)
+		{
+			delete df;
 			return res;
+		}
 		res = loadFile(df);
 		if (res != SO_NO_ERROR)
 		{

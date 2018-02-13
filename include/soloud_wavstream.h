@@ -77,10 +77,12 @@ namespace SoLoud
 		result loadFileToMem(File *aFile);		
 		virtual AudioSourceInstance *createInstance();
 		time getLength();
-		result parse(File *aFile);
 
 		// Set the loop start and end points
 		void setLoopRange(time aStart, time aEnd);
+
+	public:
+		result parse(File *aFile);
 	};
 };
 

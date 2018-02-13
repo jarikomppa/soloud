@@ -561,8 +561,8 @@ static void smbFft(float *fftBuffer, int fftFrameSizeLog, int sign)
 		ur = 1.0;
 		ui = 0.0;
 		arg = (float)(M_PI / (le2 >> 1));
-		wr = cos(arg);
-		wi = sign * sin(arg);
+		wr = (float)cos(arg);
+		wi = sign * (float)sin(arg);
 		for (j = 0; j < le2; j += 2) 
 		{
 			p1r = fftBuffer + j; 
@@ -728,7 +728,7 @@ void plot_diff(const char *aFilename, int aSampleCount, int aHeight, float *aSrc
 	{
 		float d1 = aSrc1[i+aSampleCount/4 + 1] - aSrc1[i+aSampleCount/4];
 		float d2 = aSrc2[i+aSampleCount/4 + 1] - aSrc2[i+aSampleCount/4];
-		float diff = fabs(d1 - d2);
+		float diff = (float)fabs(d1 - d2);
 		if (diff > maxdiff_d) maxdiff_d = diff;
 		diffsum_d += diff;
 	}
@@ -758,7 +758,7 @@ void plot_diff(const char *aFilename, int aSampleCount, int aHeight, float *aSrc
 	{
 		float real = temp[i*2];
 		float imag = temp[i*2+1];
-		fftdata[i] = sqrt(real*real+imag*imag);
+		fftdata[i] = (float)sqrt(real*real+imag*imag);
 	}
 	
 	for (i = 0; i < 512; i++)
@@ -791,7 +791,7 @@ void plot_diff(const char *aFilename, int aSampleCount, int aHeight, float *aSrc
 	{
 		float real = temp[i*2];
 		float imag = temp[i*2+1];
-		fftdata[i] = sqrt(real*real+imag*imag);
+		fftdata[i] = (float)sqrt(real*real+imag*imag);
 	}
 	
 	for (i = 0; i < 512; i++)
@@ -814,14 +814,14 @@ void plot_diff(const char *aFilename, int aSampleCount, int aHeight, float *aSrc
 float saw(float v)
 {
 	float t = v / TAU;
-	t = t - floor(t);
+	t = t - (float)floor(t);
 	return (float)(t-0.5)*2;
 }
 
 float square(float v)
 {
 	float t = v / TAU;
-	t = t - floor(t);
+	t = t - (float)floor(t);
 	if (t > 0.5) return 1;
 	return -1;
 }
@@ -856,11 +856,11 @@ void upsampletest(int aResampler, int aFunction, float aMultiplier, FILE *aIndex
 		func = "sin";
 		for (i = 0; i < 512; i++)
 		{
-			a[i] = sin(4 * i / 512.0f * TAU);
+			a[i] = (float)sin(4 * i / 512.0f * TAU);
 		}
 		for (i = 0; i < src_samples; i++)
 		{
-			temp[i] = sin(4 * i / 512.0f * TAU * aMultiplier);
+			temp[i] = (float)sin(4 * i / 512.0f * TAU * aMultiplier);
 		}
 		break;
 	case 1:

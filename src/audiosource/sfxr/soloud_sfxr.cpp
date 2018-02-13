@@ -189,8 +189,8 @@ namespace SoLoud
 					//				phase=0;
 					phase%=period;
 					if(mParams.wave_type==3)
-						for(int i=0;i<32;i++)
-							noise_buffer[i]=frnd(2.0f)-1.0f;
+						for(int k=0;k<32;k++)
+							noise_buffer[k]=frnd(2.0f)-1.0f;
 				}
 				// base waveform
 				float fp=(float)phase/period;

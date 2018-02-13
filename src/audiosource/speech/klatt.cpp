@@ -640,8 +640,7 @@ void klatt::parwave(klatt_frame *frame, short int *jwave)
 		*/
 		seed = seed * 1664525 + 1;
 
-		if (8 * sizeof(unsigned int) > 32)
-			seed &= 0xFFFFFFFF;
+		seed &= 0xFFFFFFFF;
 
 		/* Shift top bits of seed up to top of int then back down to LS 14 bits */
 		/* Assumes 8 bits per sizeof unit i.e. a "byte" */

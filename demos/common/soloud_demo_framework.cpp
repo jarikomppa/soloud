@@ -93,7 +93,7 @@ GLuint loadShader(GLenum aShaderType, const char* aSource)
 				if (buf)
 				{
 					glGetShaderInfoLog(shader, infoLen, NULL, buf);
-					printf("Could not compile shader %d:\n%s\n", aShaderType, buf);
+					printf("Could not compile shader %d:\n%s\n", (int)aShaderType, buf);
 					free(buf);
 				}
 				glDeleteShader(shader);

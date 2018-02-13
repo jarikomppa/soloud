@@ -178,7 +178,8 @@ SIDsound::SIDsound(unsigned int model, unsigned int chnlDisableMask) : enableDig
 		voice[i].modulatesThis = &voice[(i+1)%3]; // next voice
 		voice[i].disabled = !!((chnlDisableMask >> i) & 1);
 	}
-
+	
+	extIn = 0;
 	filterCutoff = 0;
 	setModel(model);
 	setFrequency(0);

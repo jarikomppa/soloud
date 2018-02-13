@@ -136,13 +136,15 @@ void CPU::process()
 		static FILE *f = fopen("disasm.txt", "a");
 		//unsigned char t = mem->Read(PC+1);
 		if (f)
+		{
 			fprintf(f, ". %04X %s", PC, ins[currins].name);
-		int i = 1;
-		while (i < typlen[ins[currins].type] && f) {
-			fprintf(f, " %02X", mem->Read(PC+i++));
+			int i = 1;
+			while (i < typlen[ins[currins].type] && f) {
+				fprintf(f, " %02X", mem->Read(PC+i++));
+			}
+			fprintf(f, "\n");
+			fflush(f);
 		}
-		fprintf(f, "\n");
-		fflush(f);
 #endif
 		PC=(PC+1)&0xFFFF;
 	}

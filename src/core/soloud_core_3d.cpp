@@ -186,6 +186,12 @@ namespace SoLoud
 			speaker[i].mZ = m3dSpeakerPosition[3 * i + 2];
 			speaker[i].normalize();
 		}
+		for (; i < MAX_CHANNELS; i++)
+		{
+			speaker[i].mX = 0;
+			speaker[i].mY = 0;
+			speaker[i].mZ = 0;
+		}
 
 		vec3 lpos, lvel, at, up;
 		at.mX = m3dAt[0];
@@ -276,7 +282,7 @@ namespace SoLoud
 
 			// Apply volume to channels based on speaker vectors
 			int j;
-			for (j = 0; j < MAX_CHANNELS; j++)
+			for (j = 0; j < (signed)mChannels; j++)
 			{
 				float speakervol = (speaker[j].dot(pos) + 1) / 2;
 				if (speaker[j].null())
@@ -285,6 +291,10 @@ namespace SoLoud
 				//speakervol = (speakervol * speakervol + speakervol) / 2;
 				//speakervol = speakervol * speakervol;
 				v->mChannelVolume[j] = vol * speakervol;
+			}
+			for (; j < MAX_CHANNELS; j++)
+			{
+				v->mChannelVolume[j] = 0;
 			}
 
 			v->m3dVolume = vol;

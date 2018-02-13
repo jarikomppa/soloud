@@ -170,6 +170,9 @@ namespace SoLoud
 		buffersize = aBuffer;
 		bufferdata = (short*)malloc(buffersize*2*2);
 
+		if (!bufferdata)
+			return OUT_OF_MEMORY;
+
 		frequency = aSamplerate;
 
 		int i;

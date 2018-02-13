@@ -198,36 +198,61 @@ namespace SoLoud
 			{
 				mOggFrameSize = stb_vorbis_get_frame_float(mOgg, NULL, &mOggOutputs);
 				mOggFrameOffset = 0;
-				int b;
-				b = getOggData(mOggOutputs, aBuffer + offset, aSamples - offset, aSamples, mOggFrameSize, mOggFrameOffset, channels);
+				int b = getOggData(mOggOutputs, aBuffer + offset, aSamples - offset, aSamples, mOggFrameSize, mOggFrameOffset, channels);
 				mOffset += b;
 				offset += b;
 				mOggFrameOffset += b;
-				if (mOffset >= mParent->mSampleCount)
+
+				if (mFlags & AudioSourceInstance::LOOPING)
 				{
-					if (mFlags & AudioSourceInstance::LOOPING)
+					unsigned int maxSamples = mParent->mSampleCount;
+
+					if (mParent->mLoopEnd > 0)
 					{
-						stb_vorbis_seek_start(mOgg);
-						mOffset = aSamples - offset;
+						unsigned int loopEnd = (unsigned int)(mParent->mLoopEnd * mBaseSamplerate);
+						if (loopEnd < maxSamples)
+							maxSamples = loopEnd;
+					}
+
+					if (mOffset >= maxSamples || b == 0)
+					{
+						unsigned int loopStartSample = (unsigned int)(mParent->mLoopStart * mBaseSamplerate);
+						unsigned int newOffset = loopStartSample < mParent->mSampleCount ? loopStartSample : 0;
+
+						if (newOffset > 0)
+							stb_vorbis_seek(mOgg, newOffset);							
+						else
+							stb_vorbis_seek_start(mOgg);
+
+						mOffset = newOffset;
 						mLoopCount++;
 					}
-					else
-					{
-						unsigned int i;
-						for (i = 0; i < channels; i++)
-							memset(aBuffer + offset + i * aSamples, 0, sizeof(float) * (aSamples - offset));
-						mOffset += aSamples - offset;
-						offset = aSamples;
-					}
+				}
+				else if (mOffset >= mParent->mSampleCount || b == 0)
+				{
+					unsigned int i;
+					for (i = 0; i < channels; i++)
+						memset(aBuffer + offset + i * aSamples, 0, sizeof(float) * (aSamples - offset));
+					mOffset += aSamples - offset;
+					offset = aSamples;
 				}
 			}
 		}
 		else
 		{
 			unsigned int copysize = aSamples;
-			if (copysize + mOffset > mParent->mSampleCount)
+			unsigned int maxSamples = mParent->mSampleCount;
+
+			if (mFlags & AudioSourceInstance::LOOPING && mParent->mLoopEnd > 0)
 			{
-				copysize = mParent->mSampleCount - mOffset;
+				unsigned int loopEnd = (unsigned int)(mParent->mLoopEnd * mBaseSamplerate);
+				if (loopEnd < maxSamples)
+					maxSamples = loopEnd;
+			}
+
+			if (copysize + mOffset > maxSamples)
+			{
+				copysize = maxSamples - mOffset;
 			}
 
 			getWavData(mFile, aBuffer, copysize, aSamples, channels, mParent->mChannels, mParent->mBits);
@@ -236,9 +261,13 @@ namespace SoLoud
 			{
 				if (mFlags & AudioSourceInstance::LOOPING)
 				{
-					mFile->seek(mParent->mDataOffset);
+					unsigned int loopStartSample = (unsigned int)(mParent->mLoopStart * mBaseSamplerate);
+					unsigned int newOffset = loopStartSample < mParent->mSampleCount ? loopStartSample : 0;
+
+					mFile->seek(mParent->mDataOffset + newOffset * mChannels * mParent->mBits / 8);
 					getWavData(mFile, aBuffer + copysize, aSamples - copysize, aSamples, channels, mParent->mChannels, mParent->mBits);
-					mOffset = aSamples - copysize;
+					mOffset = newOffset + aSamples - copysize;
+
 					mLoopCount++;
 				}
 				else
@@ -291,6 +320,8 @@ namespace SoLoud
 		mBits = 0;
 		mMemFile = 0;
 		mStreamFile = 0;
+		mLoopStart = 0;
+		mLoopEnd = 0;
 	}
 	
 	WavStream::~WavStream()
@@ -562,4 +593,9 @@ namespace SoLoud
 		return mSampleCount / mBaseSamplerate;
 	}
 
+	void WavStream::setLoopRange(time aStart, time aEnd)
+	{		
+		mLoopStart = aStart >= 0 ? aStart : 0;
+		mLoopEnd = aEnd >= 0 ? aEnd : 0;
+	}
 };

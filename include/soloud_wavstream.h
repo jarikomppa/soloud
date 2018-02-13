@@ -65,6 +65,8 @@ namespace SoLoud
 		unsigned int mDataOffset;
 		unsigned int mBits;
 		unsigned int mSampleCount;
+		time mLoopStart;
+		time mLoopEnd;
 
 		WavStream();
 		virtual ~WavStream();
@@ -75,8 +77,10 @@ namespace SoLoud
 		result loadFileToMem(File *aFile);		
 		virtual AudioSourceInstance *createInstance();
 		time getLength();
-	public:
 		result parse(File *aFile);
+
+		// Set the loop start and end points
+		void setLoopRange(time aStart, time aEnd);
 	};
 };
 

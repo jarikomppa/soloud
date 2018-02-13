@@ -124,7 +124,9 @@ TED::TED() : filter(0), sidCard(0)
 void TED::Reset()
 {
 	// clear RAM with powerup pattern
-	for (int i=0;i<RAMSIZE;Ram[i++] = (i>>1)<<1==i ? 0 : 0xFF);
+	int i;
+	for (i = 0; i < RAMSIZE; i++)
+		Ram[i] = ((i >> 1) << 1 == i) ? 0 : 0xff;
 	// reset oscillators
 	oscillatorReset();
 	if (sidCard) sidCard->reset();
@@ -139,10 +141,13 @@ void TED::forcedReset()
 
 void TED::texttoscreen(int x,int y, const char *scrtxt)
 {
-	register int i =0;
-
-	while (scrtxt[i]!=0)
-		chrtoscreen(x+i*8,y,scrtxt[i++]);
+	int i = 0;
+	
+	while (scrtxt[i] != 0)
+	{
+		chrtoscreen(x + i * 8, y, scrtxt[i]);
+		i++;
+	}
 }
 
 void TED::chrtoscreen(int x,int y, char scrchr)

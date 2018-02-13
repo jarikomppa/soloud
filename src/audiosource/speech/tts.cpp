@@ -1380,7 +1380,7 @@ int xlate_string(const char *string, darray *phone)
 									break;
 								}
 							}
-
+							// fallthrough
 						default:
 							nph += spell_out(word, 1, phone);
 							s++;

@@ -35,7 +35,7 @@ freely, subject to the following restrictions:
 #include "soloud_speech.h"
 
 #define VOICEGRID 24
-#define VOICES VOICEGRID*VOICEGRID
+#define VOICES (VOICEGRID * VOICEGRID)
 SoLoud::Soloud gSoloud;
 SoLoud::Sfxr gSfx[VOICES];
 

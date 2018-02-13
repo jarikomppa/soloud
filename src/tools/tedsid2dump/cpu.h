@@ -36,7 +36,7 @@ class CPU {
 
 	public:
 		CPU(MemoryHandler *memhandler, unsigned char *irqreg, unsigned char *cpustack);
-		~CPU();
+		virtual ~CPU();
 		void Reset(void);
 		void softreset(void);
 		void setPC(unsigned int addr);

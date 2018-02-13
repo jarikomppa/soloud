@@ -302,6 +302,7 @@ namespace SoLoud
 		delete[] mData;
 		mData = 0;
 		mSampleCount = 0;
+		mChannels = 1;
         int tag = aReader->read32();
 		if (tag == MAKEDWORD('O','g','g','S')) 
         {

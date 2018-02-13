@@ -124,127 +124,123 @@ namespace SoLoud
 
 #define MAKEDWORD(a,b,c,d) (((d) << 24) | ((c) << 16) | ((b) << 8) | (a))
 
-    result Wav::loadwav(File *aReader)
+	result Wav::loadwav(File *aReader)
 	{
-		/*int wavsize =*/ aReader->read32();
-		if (aReader->read32() != MAKEDWORD('W','A','V','E'))
+		int filesize = aReader->read32();
+		if (aReader->read32() != MAKEDWORD('W', 'A', 'V', 'E'))
 		{
 			return FILE_LOAD_FAILED;
 		}
-		int chunk = aReader->read32();
-		if (chunk == MAKEDWORD('J', 'U', 'N', 'K'))
+		filesize -= 4;
+
+		int channels = 0;
+		int bitspersample = 0;
+
+		while (filesize > 0)
 		{
-			int size = aReader->read32();
-			if (size & 1)
+			int id = aReader->read32();
+			int chunkSize = aReader->read32();
+			if (chunkSize & 1)
 			{
-				size += 1;
+				chunkSize++;
 			}
-			int i;
-			for (i = 0; i < size; i++)
-				aReader->read8();
-			chunk = aReader->read32();
-		}
-		if (chunk != MAKEDWORD('f', 'm', 't', ' '))
-		{
-			return FILE_LOAD_FAILED;
-		}
-		int subchunk1size = aReader->read32();
-		int audioformat = aReader->read16();
-		int channels = aReader->read16();
-		int samplerate = aReader->read32();
-		/*int byterate =*/ aReader->read32();
-		/*int blockalign =*/ aReader->read16();
-		int bitspersample = aReader->read16();
+			filesize -= 8;
 
-		if (audioformat != 1 ||
-			subchunk1size != 16 ||
-			(bitspersample != 8 && bitspersample != 16))
-		{
-			return FILE_LOAD_FAILED;
-		}
-		
-		chunk = aReader->read32();
-		
-		if (chunk == MAKEDWORD('L','I','S','T'))
-		{
-			int size = aReader->read32();
-			int i;
-			for (i = 0; i < size; i++)
-				aReader->read8();
-			chunk = aReader->read32();
-		}
-		
-		if (chunk != MAKEDWORD('d','a','t','a'))
-		{
-			return FILE_LOAD_FAILED;
-		}
+			int chunkStart = aReader->pos();
 
-		int readchannels = 1;
-
-		if (channels > 1)
-		{
-			readchannels = 2;
-			mChannels = 2;
-		}
-
-		int subchunk2size = aReader->read32();
-		
-		int samples = (subchunk2size / (bitspersample / 8)) / channels;
-		
-		mData = new float[samples * readchannels];
-		
-		int i, j;
-		if (bitspersample == 8)
-		{
-			for (i = 0; i < samples; i++)
+			if (id == MAKEDWORD('f', 'm', 't', ' '))
 			{
-				for (j = 0; j < channels; j++)
+				int audioformat = aReader->read16();
+				channels = aReader->read16();
+				mBaseSamplerate = (float)aReader->read32();
+				/*int byterate =*/ aReader->read32();
+				/*int blockalign =*/ aReader->read16();
+				bitspersample = aReader->read16();
+
+				if (audioformat != 1 || (bitspersample != 8 && bitspersample != 16))
 				{
-					if (j == 0)
+					return FILE_LOAD_FAILED;
+				}
+			}
+			else if (id == MAKEDWORD('d', 'a', 't', 'a'))
+			{
+				if (channels == 0 || bitspersample == 0)
+					return FILE_LOAD_FAILED;
+
+				int readchannels = 1;
+
+				if (channels > 1)
+				{
+					readchannels = 2;
+					mChannels = 2;
+				}
+
+				int samples = (chunkSize / (bitspersample / 8)) / channels;
+
+				mData = new float[samples * readchannels];
+				mSampleCount = samples;
+
+				int i, j;
+				if (bitspersample == 8)
+				{
+					for (i = 0; i < samples; i++)
 					{
-						mData[i] = ((signed)aReader->read8() - 128) / (float)0x80;
-					}
-					else
-					{
-						if (readchannels > 1 && j == 1)
+						for (j = 0; j < channels; j++)
 						{
-							mData[i + samples] = ((signed)aReader->read8() - 128) / (float)0x80;
+							if (j == 0)
+							{
+								mData[i] = ((signed)aReader->read8() - 128) / (float)0x80;
+							}
+							else
+							{
+								if (readchannels > 1 && j == 1)
+								{
+									mData[i + samples] = ((signed)aReader->read8() - 128) / (float)0x80;
+								}
+								else
+								{
+									aReader->read8();
+								}
+							}
 						}
-						else
+					}
+				}
+				else if (bitspersample == 16)
+				{
+					for (i = 0; i < samples; i++)
+					{
+						for (j = 0; j < channels; j++)
 						{
-							aReader->read8();
+							if (j == 0)
+							{
+								mData[i] = ((signed short)aReader->read16()) / (float)0x8000;
+							}
+							else
+							{
+								if (readchannels > 1 && j == 1)
+								{
+									mData[i + samples] = ((signed short)aReader->read16()) / (float)0x8000;
+								}
+								else
+								{
+									aReader->read16();
+								}
+							}
 						}
 					}
 				}
 			}
-		}
-		else
-		if (bitspersample == 16)
-		{
-			for (i = 0; i < samples; i++)
+
+			// skip rest of chunk
+			int bytesRead = aReader->pos() - chunkStart;
+			if ((int)chunkSize > bytesRead)
 			{
-				for (j = 0; j < channels; j++)
-				{
-					if (j == 0)
-					{
-						mData[i] = ((signed short)aReader->read16()) / (float)0x8000;
-					}
-					else
-					{
-						if (readchannels > 1 && j == 1)
-						{
-							mData[i + samples] = ((signed short)aReader->read16()) / (float)0x8000;
-						}
-						else
-						{
-							aReader->read16();
-						}
-					}
-				}
+				for (int i = 0; i < chunkSize - bytesRead; i++)
+					aReader->read8();
 			}
+
+			filesize -= chunkSize;
 		}
-		mBaseSamplerate = (float)samplerate;
-		mSampleCount = samples;
 
 		return 0;
 	}

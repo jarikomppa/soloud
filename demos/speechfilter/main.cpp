@@ -36,6 +36,7 @@ freely, subject to the following restrictions:
 #include "soloud_echofilter.h"
 #include "soloud_dcremovalfilter.h"
 #include "soloud_waveshaperfilter.h"
+#include "soloud_robotizefilter.h"
 
 SoLoud::Soloud gSoloud;
 SoLoud::Speech gSpeech;
@@ -44,11 +45,12 @@ SoLoud::LofiFilter gLofi;
 SoLoud::EchoFilter gEcho;
 SoLoud::WaveShaperFilter gWaveShaper;
 SoLoud::DCRemovalFilter gDCRemoval;
+SoLoud::RobotizeFilter gRobotize;
 int gSpeechhandle;
 
-float filter_param0[5] = { 0, 0, 0, 0, 0 };
-float filter_param1[5] = { 1000, 8000, 0, 0, 0 };
-float filter_param2[5] = { 2, 3,  0, 0, 0 };
+float filter_param0[6] = { 0, 0, 0, 0, 0, 0 };
+float filter_param1[6] = { 1000, 8000, 0, 0, 0 ,0 };
+float filter_param2[6] = { 2, 3,  0, 0, 0, 0 };
 
 int hwchannels = 4;
 int waveform = 0;
@@ -65,7 +67,7 @@ void initspeech()
 		"Are those shy Eurasian footwear, cowboy chaps, or jolly earthmoving headgear? "
 		"Shaw, those twelve beige hooks are joined if I patch a young, gooey mouth. "
 		"With tenure, Suzie'd have all the more leisure for yachting, but her publications are no good.");
-	gSpeech.setParams(basefreq, basespeed, basedeclination);
+	gSpeech.setParams((unsigned int)floor(basefreq), basespeed, basedeclination);
 	gSpeechhandle = gSoloud.play(gSpeech);
 }
 
@@ -76,6 +78,7 @@ void DemoMainloop()
 	gSoloud.setFilterParameter(gSpeechhandle, 3, 0, filter_param0[2]);
 	gSoloud.setFilterParameter(gSpeechhandle, 4, 0, filter_param0[3]);
 	gSoloud.setFilterParameter(gSpeechhandle, 0, 0, filter_param0[4]);
+	gSoloud.setFilterParameter(gSpeechhandle, 5, 0, filter_param0[5]);
 
 	gSoloud.setFilterParameter(gSpeechhandle, 1, 2, filter_param1[0]);
 	gSoloud.setFilterParameter(gSpeechhandle, 1, 3, filter_param2[0]);
@@ -98,29 +101,40 @@ void DemoMainloop()
 	ImGui::End();
 
 	ONCE(ImGui::SetNextWindowPos(ImVec2(20, 20)));
+	ONCE(ImGui::SetNextWindowContentSize(ImVec2(200, 300)));
 	ImGui::Begin("Filters");
-	ImGui::Text("WaveShaper filter");
-	ImGui::SliderFloat("Wet##5", &filter_param0[4], 0, 1);
-	ImGui::SliderFloat("Amount##5", &filter_param1[4], -1, 1);
-	ImGui::Separator();
-	ImGui::Text("Biquad filter (lowpass)");
-	ImGui::SliderFloat("Wet##4", &filter_param0[0], 0, 1);
-	ImGui::SliderFloat("Frequency##4", &filter_param1[0], 0, 8000);
-	ImGui::SliderFloat("Resonance##4", &filter_param2[0], 1, 20);
-	ImGui::Separator();
-	ImGui::Text("Lofi filter");
-	ImGui::SliderFloat("Wet##2", &filter_param0[1], 0, 1);
-	ImGui::SliderFloat("Rate##2", &filter_param1[1], 1000, 8000);
-	ImGui::SliderFloat("Bit depth##2", &filter_param2[1], 0, 8);
-	ImGui::Separator();
-	ImGui::Text("Echo filter");
-	ImGui::SliderFloat("Wet##3", &filter_param0[2], 0, 1);
-	ImGui::Separator();
-	ImGui::Text("DC removal filter");
-	ImGui::SliderFloat("Wet##1", &filter_param0[3], 0, 1);
+	if (ImGui::CollapsingHeader("WaveShaper", (const char*)0, true, false))
+	{
+		ImGui::SliderFloat("Wet##5", &filter_param0[4], 0, 1);
+		ImGui::SliderFloat("Amount##5", &filter_param1[4], -1, 1);
+	}
+	if (ImGui::CollapsingHeader("Biquad (lowpass)", (const char*)0, true, false))
+	{
+		ImGui::SliderFloat("Wet##4", &filter_param0[0], 0, 1);
+		ImGui::SliderFloat("Frequency##4", &filter_param1[0], 0, 8000);
+		ImGui::SliderFloat("Resonance##4", &filter_param2[0], 1, 20);
+	}
+	if (ImGui::CollapsingHeader("LoFi", (const char*)0, true, false))
+	{
+		ImGui::SliderFloat("Wet##2", &filter_param0[1], 0, 1);
+		ImGui::SliderFloat("Rate##2", &filter_param1[1], 1000, 8000);
+		ImGui::SliderFloat("Bit depth##2", &filter_param2[1], 0, 8);
+	}
+	if (ImGui::CollapsingHeader("Echo", (const char*)0, true, false))
+	{
+		ImGui::SliderFloat("Wet##3", &filter_param0[2], 0, 1);
+	}
+	if (ImGui::CollapsingHeader("DC removal", (const char*)0, true, false))
+	{
+		ImGui::SliderFloat("Wet##1", &filter_param0[3], 0, 1);
+	}
+	if (ImGui::CollapsingHeader("Robotize", (const char*)0, true, false))
+	{
+		ImGui::SliderFloat("Wet##5", &filter_param0[5], 0, 1);
+	}
 	ImGui::End();
 
-	ONCE(ImGui::SetNextWindowPos(ImVec2(200, 20)));
+	ONCE(ImGui::SetNextWindowPos(ImVec2(240, 20)));
 	ONCE(ImGui::SetNextWindowContentSize(ImVec2(200,300)));
 	ImGui::Begin("Speech params");
 	int changed = 0;
@@ -162,13 +176,16 @@ void DemoMainloop()
 			changed = 1;
 		}
 	}
-	if (ImGui::SliderFloat("Base freq", &basefreq, 0, 3000)) changed = 1;
-	if (ImGui::SliderFloat("Base speed", &basespeed, 0.1, 30)) changed = 1;
-	if (ImGui::SliderFloat("Base declination", &basedeclination, -3, 3)) changed = 1;
+	if (ImGui::CollapsingHeader("Base params", (const char*)0, true, false))
+	{
+		if (ImGui::SliderFloat("Base freq", &basefreq, 0, 3000)) changed = 1;
+		if (ImGui::SliderFloat("Base speed", &basespeed, 0.1f, 30)) changed = 1;
+		if (ImGui::SliderFloat("Base declination", &basedeclination, -3, 3)) changed = 1;
+	}
 	ImGui::End();
 	if (changed)
 	{
-		gSpeech.setParams(basefreq, basespeed, basedeclination, basewaveform);
+		gSpeech.setParams((unsigned int)floor(basefreq), basespeed, basedeclination, basewaveform);
 	}
 
 	DemoUpdateEnd();
@@ -187,6 +204,7 @@ int DemoEntry(int argc, char *argv[])
 	gSpeech.setFilter(2, &gLofi);
 	gSpeech.setFilter(3, &gEcho);
 	gSpeech.setFilter(4, &gDCRemoval);
+	gSpeech.setFilter(5, &gRobotize);
 
 	gSoloud.init(SoLoud::Soloud::CLIP_ROUNDOFF | SoLoud::Soloud::ENABLE_VISUALIZATION);
 

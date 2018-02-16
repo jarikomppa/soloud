@@ -1273,27 +1273,35 @@ int xlate_string(const char *string, darray *phone)
 		if (isalpha(ch))
 		{
 			while (isalpha(ch = *s) || ((ch == '\'' || ch == '-' || ch == '.') && isalpha(s[1])))
+			{
 				s++;
+			}
 
 			if (!ch || isspace(ch) || ispunct(ch) || (isdigit(ch) && !suspect_word(word, (int)(s - word))))
+			{
 				nph += xlate_word(word, (int)(s - word), phone);
+			}
 			else
 			{
 				while ((ch = *s) && !isspace(ch) && !ispunct(ch))
+				{
 					s++;
+				}
 
 				nph += spell_out(word, (int)(s - word), phone);
 			}
 		}
-
 		else
+		{
 			if (isdigit(ch) || (ch == '-' && isdigit(s[1])))
 			{
 				int sign = (ch == '-') ? -1 : 1;
 				int value = 0;
 
 				if (sign < 0)
+				{
 					ch = *++s;
+				}
 
 				while (isdigit(ch = *s))
 				{
@@ -1308,19 +1316,20 @@ int xlate_string(const char *string, darray *phone)
 					nph += xlate_string("point", phone);
 
 					while (isdigit(ch = *s))
+					{
 						s++;
+					}
 
 					nph += spell_out(word, (int)(s - word), phone);
 				}
-
 				else
 				{
 					/* check for ordinals, date, time etc. can go in here */
 					nph += xlate_cardinal(value * sign, phone);
 				}
 			}
-
 			else
+			{
 				if (ch == '[' && strchr(s, ']'))
 				{
 					const char *word = s;
@@ -1331,8 +1340,8 @@ int xlate_string(const char *string, darray *phone)
 
 					nph += xlate_word(word, (int)(s - word), phone);
 				}
-
 				else
+				{
 					if (ispunct(ch))
 					{
 						switch (ch)
@@ -1344,7 +1353,7 @@ int xlate_string(const char *string, darray *phone)
 
 						case '.':
 							s++;
-							phone->put(' ');
+							phone->put('.');// (' ');
 							break;
 
 						case '"':                 /* change pitch ? */
@@ -1365,39 +1374,43 @@ int xlate_string(const char *string, darray *phone)
 							break;
 
 						case '[':
+						{
+							const char *e = strchr(s, ']');
+
+							if (e)
 							{
-								const char *e = strchr(s, ']');
+								s++;
 
-								if (e)
-								{
-									s++;
+								while (s < e)
+									phone->put(*s++);
 
-									while (s < e)
-										phone->put(*s++);
+								s = e + 1;
 
-									s = e + 1;
-
-									break;
-								}
+								break;
 							}
-							// fallthrough
+						}
+						// fallthrough
 						default:
 							nph += spell_out(word, 1, phone);
 							s++;
 							break;
 						}
 					}
-
 					else
 					{
 						while ((ch = *s) && !isspace(ch))
+						{
 							s++;
+						}
 
 						nph += spell_out(word, (int)(s - word), phone);
 					}
+				}
+			}
 
-					while (isspace(ch = *s))
-						s++;
+			while (isspace(ch = *s))
+				s++;
+		}
 	}
 
 	return nph;

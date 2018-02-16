@@ -94,7 +94,7 @@ enum ELEMENTS
 	ELM_OA,	ELM_IA,	ELM_IB,	ELM_AIR,ELM_OOR,ELM_OR
 };
 
-#define PHONEME_COUNT 52
+#define PHONEME_COUNT 53
 #define AMP_ADJ 14
 #define StressDur(e,s) (s,((e->mDU + e->mUD)/2))
 
@@ -165,6 +165,7 @@ static PhonemeToElements phoneme_to_elements[PHONEME_COUNT] =
 /* O  */ 0x004f, 1, ELM_AW, 0, 0, 0, 0, 0, 0,
 /* u  */ 0x0075, 1, ELM_UU, 0, 0, 0, 0, 0, 0,
 /* o  */ 0x006f, 1, ELM_OI, 0, 0, 0, 0, 0, 0,
+/* .  */ 0x002e, 1, ELM_END,0, 0, 0, 0, 0, 0,
 };
 
 static Element gElement[] =
@@ -266,6 +267,9 @@ klatt_frame::klatt_frame() :
 
 
 klatt::klatt() : 
+	mBaseF0(1330),
+	mBaseSpeed(10.0f),
+	mBaseDeclination(0.5f),
 	mF0Flutter(0), 
 	mSampleRate(0), 
 	mNspFr(0),
@@ -283,9 +287,6 @@ klatt::klatt() :
 	mAmpFrica(0),
 	mAmpBreth(0),
 	mSkew(0),
-	mNatglotA(0),
-	mNatglotB(0),
-	mVWave(0),
 	mVLast(0),
 	mNLast(0),
 	mGlotLast(0),
@@ -311,9 +312,9 @@ female and male talkers" D.H. Klatt and L.C. Klatt JASA 87(2) February 1990.
 Flutter is added by applying a quasi-random element constructed from three
 slowly varying sine waves.
 */
-void klatt::flutter(klatt_frame *pars)
+void klatt::flutter()
 {
-	int original_f0 = pars->mF0FundamentalFreq / 10;
+	int original_f0 = mFrame.mF0FundamentalFreq / 10;
 	float fla = (float) mF0Flutter / 50;
 	float flb = (float) original_f0 / 100;
 	float flc = (float)sin(2 * PI * 12.7 * mTimeCount);
@@ -330,80 +331,39 @@ spectral zero around 800 Hz, magic constants a,b reset pitch-synch
 float klatt::natural_source(int aNper)
 {
 	// See if glottis open 
-
 	if (aNper < mNOpen)
 	{
-		float lgtemp;
-		mNatglotA -= mNatglotB;
-		mVWave += mNatglotA;
-		lgtemp = mVWave * 0.028f;        /* function of samp_rate ? */
-		return (lgtemp);
+		switch (mBaseWaveform)
+		{
+		case KW_TRIANGLE:
+			return ((aNper % 200) - 100) * 81.92f; // triangle
+		case KW_SIN:
+			return (float)(sin(aNper * 0.0314) * 8192); // sin
+		case KW_SQUARE:
+			return ((aNper % 200) - 100) > 0 ? 8192.0f : -8192.0f; // square
+		case KW_PULSE:
+			return ((aNper % 200) - 100) > 50 ? 8192.0f : -8192.0f; // pulse
+		case KW_NOISE:
+			return (int)mNLast & 1 ? -8192.0f : 8192.0f;
+		case KW_WARBLE:
+				return (int)mNLast & 7 ? -8192.0f : 8192.0f;
+		case KW_SAW: // fallthrough
+		default:
+			return (abs((aNper % 200) - 100) - 50) * 163.84f; // saw
+		}	
 	}
 	else
 	{
 		// Glottis closed 
-		mVWave = 0.0;
 		return (0.0);
 	}
+	
 }
 
 /* Reset selected parameters pitch-synchronously */
 
-void klatt::pitch_synch_par_reset(klatt_frame *frame, int ns)
-{
-	/*
-	* Constant natglot[] controls shape of glottal pulse as a function
-	* of desired duration of open phase N0
-	* (Note that N0 is specified in terms of 40,000 samples/sec of speech)
-	*
-	*    Assume voicing waveform V(t) has form: k1 t**2 - k2 t**3
-	*
-	*    If the radiation characterivative, a temporal derivative
-	*      is folded in, and we go from continuous time to discrete
-	*      integers n:  dV/dt = mVWave[n]
-	*                         = sum over i=1,2,...,n of { a - (i * b) }
-	*                         = a n  -  b/2 n**2
-	*
-	*      where the  constants a and b control the detailed shape
-	*      and amplitude of the voicing waveform over the open
-	*      potion of the voicing cycle "mNOpen".
-	*
-	*    Let integral of dV/dt have no net dc flow --> a = (b * mNOpen) / 3
-	*
-	*    Let maximum of dUg(n)/dn be constant --> b = gain / (mNOpen * mNOpen)
-	*      meaning as mNOpen gets bigger, V has bigger peak proportional to n
-	*
-	*    Thus, to generate the table below for 40 <= mNOpen <= 263:
-	*
-	*      natglot[mNOpen - 40] = 1920000 / (mNOpen * mNOpen)
-	*/
-	static const short natglot[224] =
-	{
-		1200, 1142, 1088, 1038, 991, 948, 907, 869, 833, 799,
-		768, 738, 710, 683, 658, 634, 612, 590, 570, 551,
-		533, 515, 499, 483, 468, 454, 440, 427, 415, 403,
-		391, 380, 370, 360, 350, 341, 332, 323, 315, 307,
-		300, 292, 285, 278, 272, 265, 259, 253, 247, 242,
-		237, 231, 226, 221, 217, 212, 208, 204, 199, 195,
-		192, 188, 184, 180, 177, 174, 170, 167, 164, 161,
-		158, 155, 153, 150, 147, 145, 142, 140, 137, 135,
-		133, 131, 128, 126, 124, 122, 120, 119, 117, 115,
-		113, 111, 110, 108, 106, 105, 103, 102, 100, 99,
-		97, 96, 95, 93, 92, 91, 90, 88, 87, 86,
-		85, 84, 83, 82, 80, 79, 78, 77, 76, 75,
-		75, 74, 73, 72, 71, 70, 69, 68, 68, 67,
-		66, 65, 64, 64, 63, 62, 61, 61, 60, 59,
-		59, 58, 57, 57, 56, 56, 55, 55, 54, 54,
-		53, 53, 52, 52, 51, 51, 50, 50, 49, 49,
-		48, 48, 47, 47, 46, 46, 45, 45, 44, 44,
-		43, 43, 42, 42, 41, 41, 41, 41, 40, 40,
-		39, 39, 38, 38, 38, 38, 37, 37, 36, 36,
-		36, 36, 35, 35, 35, 35, 34, 34, 33, 33,
-		33, 33, 32, 32, 32, 32, 31, 31, 31, 31,
-		30, 30, 30, 30, 29, 29, 29, 29, 28, 28,
-		28, 28, 27, 27
-	};
-
+void klatt::pitch_synch_par_reset(int ns)
+{	
 	if (mF0FundamentalFreq > 0)
 	{
 		mT0 = (40 * mSampleRate) / mF0FundamentalFreq;
@@ -421,12 +381,12 @@ void klatt::pitch_synch_par_reset(klatt_frame *frame, int ns)
 
 		/* Breathiness of voicing waveform */
 
-		mAmpBreth = DBtoLIN(frame->mVoicingBreathiness) * 0.1f;
+		mAmpBreth = DBtoLIN(mFrame.mVoicingBreathiness) * 0.1f;
 
 		/* Set open phase of glottal period */
 		/* where  40 <= open phase <= 263 */
 
-		mNOpen = 4 * frame->mNoSamplesInOpenPeriod;
+		mNOpen = 4 * mFrame.mNoSamplesInOpenPeriod;
 
 		if (mNOpen >= (mT0 - 1))
 		{
@@ -437,13 +397,6 @@ void klatt::pitch_synch_par_reset(klatt_frame *frame, int ns)
 		{
 			mNOpen = 40;                  /* F0 max = 1000 Hz */
 		}
-
-		/* Reset a & b, which determine shape of "natural" glottal waveform */
-
-		mNatglotB = natglot[mNOpen - 40];
-		mNatglotA = (mNatglotB * mNOpen) * .333f;
-
-		/* Reset width of "impulsive" glottal pulse */
 
 		int temp;
 		float temp1;
@@ -486,8 +439,6 @@ void klatt::pitch_synch_par_reset(klatt_frame *frame, int ns)
 		mAmpVoice = 0.0;
 		mNMod = mT0;
 		mAmpBreth = 0.0;
-		mNatglotA = 0.0;
-		mNatglotB = 0.0;
 	}
 
 	/* Reset these pars pitch synchronously or at update rate if f0=0 */
@@ -495,7 +446,7 @@ void klatt::pitch_synch_par_reset(klatt_frame *frame, int ns)
 	if ((mT0 != 4) || (ns == 0))
 	{
 		/* Set one-pole ELM_FEATURE_LOW-pass filter that tilts glottal source */
-		mDecay = (0.033f * frame->mVoicingSpectralTiltdb);	/* Function of samp_rate ? */
+		mDecay = (0.033f * mFrame.mVoicingSpectralTiltdb);	/* Function of samp_rate ? */
 
 		if (mDecay > 0.0f)
 		{
@@ -513,7 +464,7 @@ void klatt::pitch_synch_par_reset(klatt_frame *frame, int ns)
 initially also get definition of fixed pars
 */
 
-void klatt::frame_init(klatt_frame *frame)
+void klatt::frame_init()
 {
 	int mOverallGaindb;                       /* Overall gain, 60 dB is unity  0 to   60  */
 	float amp_parF1;                 /* mFormant1Ampdb converted to linear gain  */
@@ -530,59 +481,59 @@ void klatt::frame_init(klatt_frame *frame)
        to avoid waveform glitches).
 	 */
 
-	mF0FundamentalFreq = frame->mF0FundamentalFreq;
-	mVoicingAmpdb = frame->mVoicingAmpdb - 7;
+	mF0FundamentalFreq = mFrame.mF0FundamentalFreq;
+	mVoicingAmpdb = mFrame.mVoicingAmpdb - 7;
 
 	if (mVoicingAmpdb < 0) mVoicingAmpdb = 0;
 
-	mAmpAspir = DBtoLIN(frame->mAspirationAmpdb) * .05f;
-	mAmpFrica = DBtoLIN(frame->mFricationAmpdb) * 0.25f;
-	mSkewnessOfAlternatePeriods = frame->mSkewnessOfAlternatePeriods;
+	mAmpAspir = DBtoLIN(mFrame.mAspirationAmpdb) * .05f;
+	mAmpFrica = DBtoLIN(mFrame.mFricationAmpdb) * 0.25f;
+	mSkewnessOfAlternatePeriods = mFrame.mSkewnessOfAlternatePeriods;
 
 	/* Fudge factors (which comprehend affects of formants on each other?)
        with these in place ALL_PARALLEL should sound as close as
 	   possible to CASCADE_PARALLEL.
 	   Possible problem feeding in Holmes's amplitudes given this.
 	*/
-	amp_parF1 = DBtoLIN(frame->mFormant1Ampdb) * 0.4f;	/* -7.96 dB */
-	amp_parF2 = DBtoLIN(frame->mFormant2Ampdb) * 0.15f;	/* -16.5 dB */
-	amp_parF3 = DBtoLIN(frame->mFormant3Ampdb) * 0.06f;	/* -24.4 dB */
-	amp_parF4 = DBtoLIN(frame->mFormant4Ampdb) * 0.04f;	/* -28.0 dB */
-	amp_parF5 = DBtoLIN(frame->mFormant5Ampdb) * 0.022f;	/* -33.2 dB */
-	amp_parF6 = DBtoLIN(frame->mFormant6Ampdb) * 0.03f;	/* -30.5 dB */
-	amp_parFN = DBtoLIN(frame->mParallelNasalPoleAmpdb) * 0.6f;	/* -4.44 dB */
-	mAmpBypas = DBtoLIN(frame->mBypassFricationAmpdb) * 0.05f;	/* -26.0 db */
+	amp_parF1 = DBtoLIN(mFrame.mFormant1Ampdb) * 0.4f;	/* -7.96 dB */
+	amp_parF2 = DBtoLIN(mFrame.mFormant2Ampdb) * 0.15f;	/* -16.5 dB */
+	amp_parF3 = DBtoLIN(mFrame.mFormant3Ampdb) * 0.06f;	/* -24.4 dB */
+	amp_parF4 = DBtoLIN(mFrame.mFormant4Ampdb) * 0.04f;	/* -28.0 dB */
+	amp_parF5 = DBtoLIN(mFrame.mFormant5Ampdb) * 0.022f;	/* -33.2 dB */
+	amp_parF6 = DBtoLIN(mFrame.mFormant6Ampdb) * 0.03f;	/* -30.5 dB */
+	amp_parFN = DBtoLIN(mFrame.mParallelNasalPoleAmpdb) * 0.6f;	/* -4.44 dB */
+	mAmpBypas = DBtoLIN(mFrame.mBypassFricationAmpdb) * 0.05f;	/* -26.0 db */
 
 	// Set coeficients of nasal resonator and zero antiresonator 
-	mNasalPole.initResonator(frame->mNasalPoleFreq, frame->mNasalPoleBandwidth, mSampleRate);
+	mNasalPole.initResonator(mFrame.mNasalPoleFreq, mFrame.mNasalPoleBandwidth, mSampleRate);
 
-	mNasalZero.initAntiresonator(frame->mNasalZeroFreq, frame->mNasalZeroBandwidth, mSampleRate);
+	mNasalZero.initAntiresonator(mFrame.mNasalZeroFreq, mFrame.mNasalZeroBandwidth, mSampleRate);
 
 	// Set coefficients of parallel resonators, and amplitude of outputs 
-	mParallelFormant1.initResonator(frame->mFormant1Freq, frame->mFormant1ParallelBandwidth, mSampleRate);
+	mParallelFormant1.initResonator(mFrame.mFormant1Freq, mFrame.mFormant1ParallelBandwidth, mSampleRate);
 	mParallelFormant1.setGain(amp_parF1);
 
-	mParallelResoNasalPole.initResonator(frame->mNasalPoleFreq, frame->mNasalPoleBandwidth, mSampleRate);
+	mParallelResoNasalPole.initResonator(mFrame.mNasalPoleFreq, mFrame.mNasalPoleBandwidth, mSampleRate);
 	mParallelResoNasalPole.setGain(amp_parFN);
 
-	mParallelFormant2.initResonator(frame->mFormant2Freq, frame->mFormant2ParallelBandwidth, mSampleRate);
+	mParallelFormant2.initResonator(mFrame.mFormant2Freq, mFrame.mFormant2ParallelBandwidth, mSampleRate);
 	mParallelFormant2.setGain(amp_parF2);
 
-	mParallelFormant3.initResonator(frame->mFormant3Freq, frame->mFormant3ParallelBandwidth, mSampleRate);
+	mParallelFormant3.initResonator(mFrame.mFormant3Freq, mFrame.mFormant3ParallelBandwidth, mSampleRate);
 	mParallelFormant3.setGain(amp_parF3);
 
-	mParallelFormant4.initResonator(frame->mFormant4Freq, frame->mFormant4ParallelBandwidth, mSampleRate);
+	mParallelFormant4.initResonator(mFrame.mFormant4Freq, mFrame.mFormant4ParallelBandwidth, mSampleRate);
 	mParallelFormant4.setGain(amp_parF4);
 
-	mParallelFormant5.initResonator(frame->mFormant5Freq, frame->mFormant5ParallelBandwidth, mSampleRate);
+	mParallelFormant5.initResonator(mFrame.mFormant5Freq, mFrame.mFormant5ParallelBandwidth, mSampleRate);
 	mParallelFormant5.setGain(amp_parF5);
 
-	mParallelFormant6.initResonator(frame->mFormant6Freq, frame->mFormant6ParallelBandwidth, mSampleRate);
+	mParallelFormant6.initResonator(mFrame.mFormant6Freq, mFrame.mFormant6ParallelBandwidth, mSampleRate);
 	mParallelFormant6.setGain(amp_parF6);
 
 
 	/* fold overall gain into output resonator */
-	mOverallGaindb = frame->mOverallGaindb - 3;
+	mOverallGaindb = mFrame.mOverallGaindb - 3;
 
 	if (mOverallGaindb <= 0)
 		mOverallGaindb = 57;
@@ -591,7 +542,7 @@ void klatt::frame_init(klatt_frame *frame)
 	Thus 3db point is globals->mSampleRate/2 i.e. Nyquist limit.
 	Only 3db down seems rather mild...
 	*/
-	mOutputLowPassFilter.initResonator(0L, (int) mSampleRate, mSampleRate);
+	mOutputLowPassFilter.initResonator(0L, (int)mSampleRate, mSampleRate);
 	mOutputLowPassFilter.setGain(DBtoLIN(mOverallGaindb));
 }
 
@@ -602,19 +553,19 @@ CONVERT FRAME OF PARAMETER DATA TO A WAVEFORM CHUNK
 Synthesize globals->mNspFr samples of waveform and store in jwave[].
 */
 
-void klatt::parwave(klatt_frame *frame, short int *jwave)
+void klatt::parwave(short int *jwave)
 {
 	/* Output of cascade branch, also final output  */
 
 	/* Initialize synthesizer and get specification for current speech
 	frame from host microcomputer */
 
-	frame_init(frame);
+	frame_init();
 
 	if (mF0Flutter != 0)
 	{
 		mTimeCount++;                  /* used for f0 flutter */
-		flutter(frame);       /* add f0 flutter */
+		flutter();       /* add f0 flutter */
 	}
 
 	/* MAIN LOOP, for each output sample of current frame: */
@@ -682,7 +633,7 @@ void klatt::parwave(klatt_frame *frame, short int *jwave)
 			if (mNPer >= mT0)
 			{
 				mNPer = 0;
-				pitch_synch_par_reset(frame, ns);
+				pitch_synch_par_reset(ns);
 			}
 
 			/* Low-pass filter voicing waveform before downsampling from 4*globals->mSampleRate */
@@ -742,6 +693,7 @@ void klatt::parwave(klatt_frame *frame, short int *jwave)
 		out = mParallelFormant4.resonate(sourc) - out;
 		out = mParallelFormant3.resonate(sourc) - out;
 		out = mParallelFormant2.resonate(sourc) - out;
+
 		out = mAmpBypas * sourc - out;
 		out = mOutputLowPassFilter.resonate(out);
 
@@ -934,13 +886,13 @@ void klatt::initsynth(int aElementCount,unsigned char *aElement)
 	mLastElement = &gElement[0];
 	mTStress = 0;
 	mNTStress = 0;
-	mKlattFramePars.mF0FundamentalFreq = 1330;
-	mTop = 1.1f * mKlattFramePars.mF0FundamentalFreq;
-	mKlattFramePars.mNasalPoleFreq = (int)mLastElement->mInterpolator[ELM_FN].mSteady;
-	mKlattFramePars.mFormant1ParallelBandwidth = mKlattFramePars.mFormant1Bandwidth = 60;
-	mKlattFramePars.mFormant2ParallelBandwidth = mKlattFramePars.mFormant2Bandwidth = 90;
-	mKlattFramePars.mFormant3ParallelBandwidth = mKlattFramePars.mFormant3Bandwidth = 150;
-//	mKlattFramePars.mFormant4ParallelBandwidth = (default)
+	mFrame.mF0FundamentalFreq = mBaseF0;
+	mTop = 1.1f * mFrame.mF0FundamentalFreq;
+	mFrame.mNasalPoleFreq = (int)mLastElement->mInterpolator[ELM_FN].mSteady;
+	mFrame.mFormant1ParallelBandwidth = mFrame.mFormant1Bandwidth = 60;
+	mFrame.mFormant2ParallelBandwidth = mFrame.mFormant2Bandwidth = 90;
+	mFrame.mFormant3ParallelBandwidth = mFrame.mFormant3Bandwidth = 150;
+//	mFrame.mFormant4ParallelBandwidth = (default)
 
 	// Set stress attack/decay slope 
 	mStressS.mTime = 40;
@@ -958,6 +910,13 @@ int klatt::synth(int aSampleCount, short *aSamplePointer)
 	Element * currentElement = &gElement[mElement[mElementIndex++]];
 	int dur = mElement[mElementIndex++];
 	mElementIndex++; // skip stress 
+	
+	if (currentElement->mRK == 31) // "END"
+	{
+		// Reset the fundamental frequency top
+		mFrame.mF0FundamentalFreq = mBaseF0;
+		mTop = 1.1f * mFrame.mF0FundamentalFreq;
+	}
 
 	// Skip zero length elements which are only there to affect
 	// boundary values of adjacent elements		
@@ -1044,38 +1003,38 @@ int klatt::synth(int aSampleCount, short *aSamplePointer)
 
 			// Now call the synth for each frame 
 
-			mKlattFramePars.mF0FundamentalFreq = (int)(base + (mTop - base) * interpolate(&mStressS, &mStressE, (float) 0, mTStress, mNTStress));
-			mKlattFramePars.mVoicingAmpdb = mKlattFramePars.mPalallelVoicingAmpdb = (int)tp[ELM_AV];
-			mKlattFramePars.mFricationAmpdb = (int)tp[ELM_AF];
-			mKlattFramePars.mNasalZeroFreq = (int)tp[ELM_FN];
-			mKlattFramePars.mAspirationAmpdb = (int)tp[ELM_ASP];
-			mKlattFramePars.mVoicingBreathiness = (int)tp[ELM_AVC];
-			mKlattFramePars.mFormant1ParallelBandwidth = mKlattFramePars.mFormant1Bandwidth = (int)tp[ELM_B1];
-			mKlattFramePars.mFormant2ParallelBandwidth = mKlattFramePars.mFormant2Bandwidth = (int)tp[ELM_B2];
-			mKlattFramePars.mFormant3ParallelBandwidth = mKlattFramePars.mFormant3Bandwidth = (int)tp[ELM_B3];
-			mKlattFramePars.mFormant1Freq = (int)tp[ELM_F1];
-			mKlattFramePars.mFormant2Freq = (int)tp[ELM_F2];
-			mKlattFramePars.mFormant3Freq = (int)tp[ELM_F3];
+			mFrame.mF0FundamentalFreq = (int)(base + (mTop - base) * interpolate(&mStressS, &mStressE, (float)0, mTStress, mNTStress));
+			mFrame.mVoicingAmpdb = mFrame.mPalallelVoicingAmpdb = (int)tp[ELM_AV];
+			mFrame.mFricationAmpdb = (int)tp[ELM_AF];
+			mFrame.mNasalZeroFreq = (int)tp[ELM_FN];
+			mFrame.mAspirationAmpdb = (int)tp[ELM_ASP];
+			mFrame.mVoicingBreathiness = (int)tp[ELM_AVC];
+			mFrame.mFormant1ParallelBandwidth = mFrame.mFormant1Bandwidth = (int)tp[ELM_B1];
+			mFrame.mFormant2ParallelBandwidth = mFrame.mFormant2Bandwidth = (int)tp[ELM_B2];
+			mFrame.mFormant3ParallelBandwidth = mFrame.mFormant3Bandwidth = (int)tp[ELM_B3];
+			mFrame.mFormant1Freq = (int)tp[ELM_F1];
+			mFrame.mFormant2Freq = (int)tp[ELM_F2];
+			mFrame.mFormant3Freq = (int)tp[ELM_F3];
 
 			// AMP_ADJ + is a kludge to get amplitudes up to klatt-compatible levels
 				
 				
 			//pars.mParallelNasalPoleAmpdb  = AMP_ADJ + tp[ELM_AN];
 				
-			mKlattFramePars.mBypassFricationAmpdb = AMP_ADJ + (int)tp[ELM_AB];
-			mKlattFramePars.mFormant5Ampdb = AMP_ADJ + (int)tp[ELM_A5];
-			mKlattFramePars.mFormant6Ampdb = AMP_ADJ + (int)tp[ELM_A6];
-			mKlattFramePars.mFormant1Ampdb = AMP_ADJ + (int)tp[ELM_A1];
-			mKlattFramePars.mFormant2Ampdb = AMP_ADJ + (int)tp[ELM_A2];
-			mKlattFramePars.mFormant3Ampdb = AMP_ADJ + (int)tp[ELM_A3];
-			mKlattFramePars.mFormant4Ampdb = AMP_ADJ + (int)tp[ELM_A4];
+			mFrame.mBypassFricationAmpdb = AMP_ADJ + (int)tp[ELM_AB];
+			mFrame.mFormant5Ampdb = AMP_ADJ + (int)tp[ELM_A5];
+			mFrame.mFormant6Ampdb = AMP_ADJ + (int)tp[ELM_A6];
+			mFrame.mFormant1Ampdb = AMP_ADJ + (int)tp[ELM_A1];
+			mFrame.mFormant2Ampdb = AMP_ADJ + (int)tp[ELM_A2];
+			mFrame.mFormant3Ampdb = AMP_ADJ + (int)tp[ELM_A3];
+			mFrame.mFormant4Ampdb = AMP_ADJ + (int)tp[ELM_A4];
 
-			parwave(&mKlattFramePars, samp);
+			parwave(samp);
 
 			samp += mNspFr;
 
 			// Declination of f0 envelope 0.25Hz / cS 
-			mTop -= 0.5;
+			mTop -= mBaseDeclination;// 0.5;
 		}
 	}
 
@@ -1085,14 +1044,21 @@ int klatt::synth(int aSampleCount, short *aSamplePointer)
 }
 
 
-void klatt::init()
+void klatt::init(int aBaseFrequency, float aBaseSpeed, float aBaseDeclination, int aBaseWaveform)
 {
+	mBaseF0 = aBaseFrequency;
+	mBaseSpeed = aBaseSpeed;
+	mBaseDeclination = aBaseDeclination;
+	mBaseWaveform = aBaseWaveform;
+
     mSampleRate = 11025;
     mF0Flutter = 0;
+	mF0FundamentalFreq = mBaseF0;
+	mFrame.mF0FundamentalFreq = mBaseF0;
 
 	int FLPhz = (950 * mSampleRate) / 10000;
 	int BLPhz = (630 * mSampleRate) / 10000;
-	mNspFr = (int)(mSampleRate * 10) / 1000;
+	mNspFr = (int)(mSampleRate * mBaseSpeed) / 1000; 
 
 	mDownSampLowPassFilter.initResonator(FLPhz, BLPhz, mSampleRate);
 

@@ -1,6 +1,6 @@
 /*
 SoLoud audio engine
-Copyright (c) 2013-2015 Jari Komppa
+Copyright (c) 2013-2018 Jari Komppa
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -31,15 +31,15 @@ namespace SoLoud
 	SpeechInstance::SpeechInstance(Speech *aParent)
 	{
 		mParent = aParent;			
-		mSynth.init();
+		mSynth.init(mParent->mBaseFrequency, mParent->mBaseSpeed, mParent->mBaseDeclination, mParent->mBaseWaveform);
 		mSample = new short[mSynth.mNspFr * 100];
 		mSynth.initsynth(mParent->mElement.getSize(), (unsigned char *)mParent->mElement.getData());
 		mOffset = 10;
 		mSampleCount = 10;
 	}
 
-    SpeechInstance::~SpeechInstance(){
-
+    SpeechInstance::~SpeechInstance()
+	{
        delete[] mSample;
     }
 
@@ -54,6 +54,7 @@ namespace SoLoud
 
 	void SpeechInstance::getAudio(float *aBuffer, unsigned int aSamples)
 	{
+		mSynth.init(mParent->mBaseFrequency, mParent->mBaseSpeed, mParent->mBaseDeclination, mParent->mBaseWaveform);
 		unsigned int samples_out = 0;
 		if (mSampleCount > mOffset)
 		{
@@ -85,7 +86,7 @@ namespace SoLoud
 			else
 			if (mSampleCount < 0 && mFlags & AudioSourceInstance::LOOPING)
 			{
-				mSynth.init();
+				mSynth.init(mParent->mBaseFrequency, mParent->mBaseSpeed, mParent->mBaseDeclination, mParent->mBaseWaveform);
 				mSynth.initsynth(mParent->mElement.getSize(), (unsigned char *)mParent->mElement.getData());
 				mOffset = 10;
 				mSampleCount = 10;
@@ -101,7 +102,7 @@ namespace SoLoud
 
 	result SpeechInstance::rewind()
 	{
-		mSynth.init();
+		mSynth.init(mParent->mBaseFrequency, mParent->mBaseSpeed, mParent->mBaseDeclination, mParent->mBaseWaveform);
 		mSynth.initsynth(mParent->mElement.getSize(), (unsigned char *)mParent->mElement.getData());
 		mOffset = 10;
 		mSampleCount = 10;
@@ -110,12 +111,20 @@ namespace SoLoud
 	}
 
 	bool SpeechInstance::hasEnded()
-	{
-			
+	{			
 		if (mSampleCount < 0)
 			return 1;				
 		return 0;
 	}	
+
+	result Speech::setParams(unsigned int aBaseFrequency, float aBaseSpeed, float aBaseDeclination, int aBaseWaveform)
+	{
+		mBaseFrequency = aBaseFrequency;
+		mBaseSpeed = aBaseSpeed;
+		mBaseDeclination = aBaseDeclination;
+		mBaseWaveform = aBaseWaveform;
+		return 0;
+	}
 
 	result Speech::setText(const char *aText)
 	{

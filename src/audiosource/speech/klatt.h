@@ -69,6 +69,17 @@ public:
 };
 
 
+enum KLATT_WAVEFORM
+{
+	KW_SAW,
+	KW_TRIANGLE,
+	KW_SIN,
+	KW_SQUARE,
+	KW_PULSE,
+	KW_NOISE,
+	KW_WARBLE
+};
+
 class klatt
 {
 	// resonators
@@ -77,6 +88,11 @@ class klatt
 		      mParallelResoNasalPole, mNasalPole, mNasalZero, 
 			  mCritDampedGlotLowPassFilter, mDownSampLowPassFilter, mOutputLowPassFilter;
 public:
+	int mBaseF0;
+	float mBaseSpeed;
+	float mBaseDeclination;
+	int mBaseWaveform;
+
 	int mF0Flutter;
 	int mSampleRate;
 	int mNspFr;
@@ -100,9 +116,6 @@ public:
 	// State variables of sound sources
 
 	int mSkew;                  // Alternating jitter, in half-period units  
-	float mNatglotA;           // Makes waveshape of glottal pulse when open  
-	float mNatglotB;           // Makes waveshape of glottal pulse when open  
-	float mVWave;               // Ditto, but before multiplication by mVoicingAmpdb  
 	float mVLast;               // Previous output of voice  
 	float mNLast;               // Previous output of random number generator  
 	float mGlotLast;            // Previous value of glotout  
@@ -112,17 +125,17 @@ public:
 
 	float natural_source(int aNper);
 
-	void frame_init(klatt_frame *frame);
-	void flutter(klatt_frame *pars);
-	void pitch_synch_par_reset(klatt_frame *frame, int ns);
-	void parwave(klatt_frame *frame, short int *jwave);
-	void init();
+	void frame_init();
+	void flutter();
+	void pitch_synch_par_reset(int ns);
+	void parwave(short int *jwave);
+	void init(int aBaseFrequency = 1330, float aBaseSpeed = 10.0f, float aBaseDeclination = 0.5f, int aBaseWaveform = KW_SAW);
 	static int phone_to_elm(char *aPhoneme, int aCount, darray *aElement);
 
 	int mElementCount;
 	unsigned char *mElement;
 	int mElementIndex;
-	klatt_frame mKlattFramePars;
+	klatt_frame mFrame;
 	Element * mLastElement;
 	int mTStress;
 	int mNTStress;

@@ -36,10 +36,15 @@ namespace SoLoud
 	class Speech : public AudioSource
 	{
 	public:
+		int mBaseFrequency;
+		float mBaseSpeed;
+		float mBaseDeclination;
+		int mBaseWaveform;
 		int mFrames;
 		darray mElement;
 		Speech();
 		result setText(const char *aText);
+		result setParams(unsigned int aBaseFrequency = 1330, float aBaseSpeed = 10.0f, float aBaseDeclination = 0.5f, int aBaseWaveform = KW_TRIANGLE);
 		virtual ~Speech();
 		virtual AudioSourceInstance *createInstance();
 	};

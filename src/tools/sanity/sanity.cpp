@@ -22,15 +22,17 @@ misrepresented as being the original software.
 distribution.
 */
 
-/*
-Testing goal is primarily for sanity checks, to verify that everything did not
-blow up due to some innocent-looking change.
-
-In some cases this means that all we're testing is that yeah, there's noise, or
-that yeah, the noise changes when we changed a parameter.
-
-Some tests against known good values can also be done, for deterministic processes
-*/
+/*********************************************************************************
+*
+* Testing goal is primarily for sanity checks, to verify that everything did not
+* blow up due to some innocent-looking change.
+*
+* In some cases this means that all we're testing is that yeah, there's noise, or
+* that yeah, the noise changes when we changed a parameter.
+*
+* Some tests against known good values can also be done, for deterministic processes.
+*
+**********************************************************************************/
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -198,10 +200,89 @@ void testGetters()
 	soloud.deinit();
 }
 
+// Visualization API tests
+//
+// Soloud.setVisualizationEnable
+// Soloud.calcFFT
+// Soloud.getWave
+// Bus.setVisualizationEnable
+// Bus.calcFFT
+// Bus.getWave
+void testVis()
+{
+	float scratch[2048];
+	SoLoud::result res;
+	SoLoud::Soloud soloud;  // SoLoud engine core
+	SoLoud::Sfxr sfxr;
+	SoLoud::Bus bus;
+	res = soloud.init(SoLoud::Soloud::CLIP_ROUNDOFF, SoLoud::Soloud::NULLDRIVER);
+	CHECK_RES(res);
+	res = sfxr.loadPreset(4, 0);
+	CHECK_RES(res);
+
+	int bush = soloud.play(bus);
+	int h = bus.play(sfxr);
+	soloud.setVisualizationEnable(true);
+	bus.setVisualizationEnable(true);
+
+	soloud.mix(scratch, 1000);
+
+	float *w = soloud.getWave();
+	CHECK(w != NULL);
+	if (w)
+	{
+		int i;
+		int nonzero = 0;
+		for (i = 0; i < 256; i++)
+			if (w[i] != 0)
+				nonzero = 1;
+		CHECK(nonzero != 0);
+	}
+
+	w = bus.getWave();
+	CHECK(w != NULL);
+	if (w)
+	{
+		int i;
+		int nonzero = 0;
+		for (i = 0; i < 256; i++)
+			if (w[i] != 0)
+				nonzero = 1;
+		CHECK(nonzero != 0);
+	}
+
+	w = soloud.calcFFT();
+	CHECK(w != NULL);
+	if (w)
+	{
+		int i;
+		int nonzero = 0;
+		for (i = 0; i < 256; i++)
+			if (w[i] != 0)
+				nonzero = 1;
+		CHECK(nonzero != 0);
+	}
+
+	w = bus.calcFFT();
+	CHECK(w != NULL);
+	if (w)
+	{
+		int i;
+		int nonzero = 0;
+		for (i = 0; i < 256; i++)
+			if (w[i] != 0)
+				nonzero = 1;
+		CHECK(nonzero != 0);
+	}
+
+	soloud.deinit();
+}
+
 int main(int parc, char ** pars)
 {
 	testInfo();
 	testGetters();
+	testVis();
 
 	printf("\n%d tests, %d error(s)\n", tests, errorcount);
 	return 0;
@@ -248,9 +329,6 @@ Soloud.oscillatePan
 Soloud.oscillateRelativePlaySpeed
 Soloud.oscillateGlobalVolume
 Soloud.setGlobalFilter
-Soloud.setVisualizationEnable
-Soloud.calcFFT
-Soloud.getWave
 Soloud.getLoopCount
 Soloud.getInfo
 Soloud.createVoiceGroup
@@ -283,9 +361,6 @@ Bus.playClocked
 Bus.play3d
 Bus.play3dClocked
 Bus.setChannels
-Bus.setVisualizationEnable
-Bus.calcFFT
-Bus.getWave
 Bus.setVolume
 Bus.setLooping
 Bus.set3dMinMaxDistance

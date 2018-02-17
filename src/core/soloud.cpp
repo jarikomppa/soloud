@@ -107,6 +107,8 @@ namespace SoLoud
 		mAudioSourceID = 1;
 		mBackendString = 0;
 		mBackendID = 0;
+		mActiveVoiceDirty = 1;
+		mActiveVoiceCount = 0;
 		int i;
 		for (i = 0; i < FILTERS_PER_STREAM; i++)
 		{

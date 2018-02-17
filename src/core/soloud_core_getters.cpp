@@ -79,6 +79,8 @@ namespace SoLoud
 	unsigned int Soloud::getActiveVoiceCount()
 	{
 		lockAudioMutex();
+		if (mActiveVoiceDirty)
+			calcActiveVoices();
 		unsigned int c = mActiveVoiceCount;
 		unlockAudioMutex();
 		return c;

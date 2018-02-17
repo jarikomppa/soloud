@@ -143,6 +143,10 @@ namespace SoLoud
 	{
 		mBaseSamplerate = 11025;
 		mFrames = 0;
+		mBaseFrequency = 1330;
+		mBaseSpeed = 10;
+		mBaseDeclination = 0.5f;
+		mBaseWaveform = KW_SQUARE;
 	}
 
 	Speech::~Speech()

@@ -113,7 +113,9 @@ namespace SoLoud
 		if (mChannelHandle)
 		{
 			// We should be inside the mutex at the moment, so stop using the "internal" functions
-			mSoloud->stopVoice(mSoloud->getVoiceFromHandle(mChannelHandle));
+			int voice = mSoloud->getVoiceFromHandle(mChannelHandle);
+			if (voice != -1)
+				mSoloud->stopVoice(voice);
 			mChannelHandle = 0;
 			mInstance = 0;
 		}

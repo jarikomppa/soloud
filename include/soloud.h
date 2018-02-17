@@ -27,6 +27,7 @@ freely, subject to the following restrictions:
 
 #include <stdlib.h> // rand
 #include <math.h> // sin
+#include <assert.h> // assert
 
 #ifndef M_PI
 #define M_PI 3.14159265359

@@ -60,9 +60,41 @@ int errorcount = 0;
 int tests = 0;
 int verbose = 1;
 
-
 #define CHECK_RES(x) tests++; if ((x)) { errorcount++; printf("Error on line %d, %s(): %s\n",__LINE__,__FUNCTION__, soloud.getErrorString((x)));}
 #define CHECK(x) tests++; if (!(x)) { errorcount++; printf("Error on line %d, %s(): Check \"%s\" fail\n",__LINE__,__FUNCTION__,#x);}
+#define CHECK_BUF_NONZERO(x, n) tests++; { int i, zero = 1; for (i = 0; i < (n); i++) if ((x)[i] != 0) zero = 0; if (zero) { errorcount++; printf("Error on line %d, %s(): buffer not nonzero\n",__LINE__,__FUNCTION__);}}
+#define CHECK_BUF_ZERO(x, n) tests++; { int i, zero = 1; for (i = 0; i < (n); i++) if ((x)[i] != 0) zero = 0; if (!zero) { errorcount++; printf("Error on line %d, %s(): buffer not zero\n",__LINE__,__FUNCTION__);}}
+#define CHECK_BUF_DIFF(x, y, n) tests++; { int i, same = 1; for (i = 0; i < (n); i++) if (fabs((x)[i] - (y)[i]) > 0.00001) same = 0; if (same) { errorcount++; printf("Error on line %d, %s(): buffers are equal\n",__LINE__,__FUNCTION__);}}
+#define CHECK_BUF_SAME(x, y, n) tests++; { int i, same = 1; for (i = 0; i < (n); i++) if (fabs((x)[i] - (y)[i]) > 0.00001) same = 0; if (!same) { errorcount++; printf("Error on line %d, %s(): buffers differ\n",__LINE__,__FUNCTION__);}}
+#define CHECK_BUF_GTE(x, y, n) tests++; { int i, lt = 0; for (i = 0; i < (n); i++) if (fabs((x)[i]) - fabs((y)[i]) < 0) lt = 1; if (lt) { errorcount++; printf("Error on line %d, %s(): buffer %s magnitude not bigger than buffer %s \n",__LINE__,__FUNCTION__,#x, #y);}}
+
+
+void testWave(SoLoud::Wav &aWav)
+{
+	unsigned char buf[16044] = { 
+		0x52, 0x49, 0x46, 0x46, // RIFF
+		0xa4, 0x3e, 0x00, 0x00, // length of file - 8
+		0x57, 0x41, 0x56, 0x45, // WAVE
+		0x66, 0x6d, 0x74, 0x20, // fmt
+		0x10, 0x00, 0x00, 0x00, // PCM block
+		0x01, 0x00,             // Uncompressed PCM
+		0x01, 0x00,             // Channels (mono)
+		0x40, 0x1f, 0x00, 0x00, // 8000Hz
+		0x40, 0x1f, 0x00, 0x00, // 8000 bytes per sec
+		0x01, 0x00,             // Number of bytes per sample for all channels
+		0x08, 0x00,             // Bits per channel
+		0x64, 0x61, 0x74, 0x61, // data
+		0x80, 0x3e, 0x00, 0x00, // bytes of data
+		// 44 bytes up to this point
+	};
+	unsigned int buflen = sizeof(buf);
+	int i;
+	for (i = 0; i < 16000; i++)
+	{
+		buf[i + 44] = ((i&1)?1:-1)*(char)((sin(i * 0.001) * 0x7f) + i);
+	}
+	aWav.loadMem(buf, buflen, true, false);
+}
 
 void printinfo(const char * format, ...)
 {
@@ -278,11 +310,81 @@ void testVis()
 	soloud.deinit();
 }
 
+// Test various play-related calls
+// 
+// Soloud.play
+// Soloud.playClocked
+ // Soloud.play3d
+ // Soloud.play3dClocked
+ // Soloud.playBackground
+ // Soloud.seek
+// Soloud.stop
+// Soloud.stopAll
+// Soloud.stopAudioSource
+// Bus.play
+ // Bus.playClocked
+ // Bus.play3d
+ // Bus.play3dClocked
+void testPlay()
+{
+	float scratch[2048];
+	float ref[2048];
+	SoLoud::result res;
+	SoLoud::Soloud soloud;  // SoLoud engine core
+	SoLoud::Wav wav;
+	SoLoud::Bus bus;
+	testWave(wav);
+	res = soloud.init(SoLoud::Soloud::CLIP_ROUNDOFF, SoLoud::Soloud::NULLDRIVER);
+	CHECK_RES(res);
+
+	int h = soloud.play(wav);
+	soloud.mix(ref, 1000);
+	CHECK_BUF_NONZERO(ref, 2000);
+	soloud.stop(h);
+	soloud.mix(scratch, 1000);
+	CHECK_BUF_ZERO(scratch, 2000);
+	h = soloud.play(wav);
+	soloud.stopAudioSource(wav);
+	soloud.mix(scratch, 1000);
+	CHECK_BUF_ZERO(scratch, 2000);
+	h = soloud.play(wav);
+	soloud.stopAll();
+	soloud.mix(scratch, 1000);
+	CHECK_BUF_ZERO(scratch, 2000);
+
+	h = soloud.playClocked(0.01, wav);
+	soloud.stopAll();
+	h = soloud.playClocked(0.015, wav);
+	soloud.mix(scratch, 1000);
+	CHECK_BUF_NONZERO(scratch, 2000);
+	CHECK_BUF_DIFF(scratch, ref, 2000);
+	soloud.stopAll();
+
+	soloud.play(bus);
+	h = bus.play(wav);
+	soloud.mix(scratch, 1000);
+	CHECK_BUF_SAME(scratch, ref, 2000);
+
+	soloud.play(bus);
+	h = bus.playClocked(0.01, wav);
+	soloud.stopAll();
+	soloud.play(bus);
+	h = bus.playClocked(0.015, wav);
+	soloud.mix(scratch, 1000);
+	CHECK_BUF_NONZERO(scratch, 2000);
+	CHECK_BUF_DIFF(scratch, ref, 2000);
+	soloud.stopAll();
+
+
+	soloud.deinit();
+}
+
 int main(int parc, char ** pars)
 {
 	testInfo();
 	testGetters();
 	testVis();
+	testPlay();
 
 	printf("\n%d tests, %d error(s)\n", tests, errorcount);
 	return 0;
@@ -292,15 +394,6 @@ int main(int parc, char ** pars)
 TODO:
 
 Soloud.setSpeakerPosition
-Soloud.play
-Soloud.playClocked
-Soloud.play3d
-Soloud.play3dClocked
-Soloud.playBackground
-Soloud.seek
-Soloud.stop
-Soloud.stopAll
-Soloud.stopAudioSource
 Soloud.setFilterParameter
 Soloud.fadeFilterParameter
 Soloud.oscillateFilterParameter
@@ -355,14 +448,10 @@ Soloud.mixSigned16
 AudioAttenuator.attenuate
 BiquadResonantFilter.setParams
 LofiFilter.setParams
-Bus.setFilter
-Bus.play
-Bus.playClocked
-Bus.play3d
-Bus.play3dClocked
 Bus.setChannels
 Bus.setVolume
 Bus.setLooping
+Bus.setFilter
 Bus.set3dMinMaxDistance
 Bus.set3dAttenuation
 Bus.set3dDopplerFactor

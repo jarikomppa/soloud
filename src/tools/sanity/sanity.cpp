@@ -316,13 +316,13 @@ void testVis()
 // Soloud.playClocked
  // Soloud.play3d
  // Soloud.play3dClocked
- // Soloud.playBackground
- // Soloud.seek
+// Soloud.playBackground
+// Soloud.seek
 // Soloud.stop
 // Soloud.stopAll
 // Soloud.stopAudioSource
 // Bus.play
- // Bus.playClocked
+// Bus.playClocked
  // Bus.play3d
  // Bus.play3dClocked
 void testPlay()
@@ -375,6 +375,17 @@ void testPlay()
 	CHECK_BUF_DIFF(scratch, ref, 2000);
 	soloud.stopAll();
 
+	h = soloud.play(wav);
+	soloud.seek(h, 0.1);
+	soloud.mix(scratch, 1000);
+	CHECK_BUF_NONZERO(scratch, 2000);
+	CHECK_BUF_DIFF(scratch, ref, 2000);
+	soloud.stopAll();
+	
+	h = soloud.playBackground(wav);
+	soloud.mix(scratch, 1000);
+	CHECK_BUF_NONZERO(scratch, 2000);
+	CHECK_BUF_GTE(scratch, ref, 2000);
 
 	soloud.deinit();
 }

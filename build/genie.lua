@@ -652,6 +652,34 @@ end
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 if (WITH_TOOLS == 1) then
 
+	project "sanity"
+		kind "ConsoleApp"
+		language "C++"
+		includedirs {
+		  "../include"
+		}
+		files {
+		  "../src/tools/sanity/**.cpp"
+		}
+		if (WITH_ALSA == 1) then
+			links {"asound"}
+		end
+		if (WITH_COREAUDIO == 1) then
+			links {"AudioToolbox.framework"}
+		end
+
+
+		links {"SoloudStatic"}
+		if (not os.is("windows")) then
+		  links { "pthread" }
+		end
+
+		targetname "sanity"
+end
+
+-- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
+if (WITH_TOOLS == 1) then
+
 	project "codegen"
 		kind "ConsoleApp"
 		language "C++"

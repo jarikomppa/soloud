@@ -314,8 +314,6 @@ void testVis()
 // 
 // Soloud.play
 // Soloud.playClocked
- // Soloud.play3d
- // Soloud.play3dClocked
 // Soloud.playBackground
 // Soloud.seek
 // Soloud.stop
@@ -323,8 +321,6 @@ void testVis()
 // Soloud.stopAudioSource
 // Bus.play
 // Bus.playClocked
- // Bus.play3d
- // Bus.play3dClocked
 void testPlay()
 {
 	float scratch[2048];
@@ -363,7 +359,7 @@ void testPlay()
 	soloud.play(bus);
 	h = bus.play(wav);
 	soloud.mix(scratch, 1000);
-	CHECK_BUF_SAME(scratch, ref, 2000);
+	CHECK_BUF_SAME(scratch, ref, 2000); // TODO: fails, seems to offset by a sample when played through bus.
 
 	soloud.play(bus);
 	h = bus.playClocked(0.01, wav);
@@ -390,12 +386,59 @@ void testPlay()
 	soloud.deinit();
 }
 
+// Test various 3d functions
+// 
+// Soloud.play3d
+// Soloud.play3dClocked
+// Bus.play3d
+// Bus.play3dClocked
+// Soloud.set3dSoundSpeed
+// Soloud.get3dSoundSpeed
+// Soloud.set3dListenerParameters
+// Soloud.set3dListenerPosition
+// Soloud.set3dListenerAt
+// Soloud.set3dListenerUp
+// Soloud.set3dListenerVelocity
+// Soloud.set3dSourceParameters
+// Soloud.set3dSourcePosition
+// Soloud.set3dSourceVelocity
+// Soloud.set3dSourceMinMaxDistance
+// Soloud.set3dSourceAttenuation
+// Soloud.set3dSourceDopplerFactor
+// Wav.set3dMinMaxDistance
+// Wav.set3dAttenuation
+// Wav.set3dDopplerFactor
+// Wav.set3dProcessing
+// Wav.set3dListenerRelative
+// Wav.set3dDistanceDelay
+// Wav.set3dCollider
+// Wav.set3dAttenuator
+void test3d()
+{
+	// TODO
+}
+
+// Test various filter options
+//
+// BiquadResonantFilter.setParams
+// LofiFilter.setParams
+// EchoFilter.setParams
+// BassboostFilter.setParams
+// FlangerFilter.setParams
+// DCRemovalFilter.setParams
+void testFilters()
+{
+	// TODO (basically check if filter does anything)
+}
+
 int main(int parc, char ** pars)
 {
 	testInfo();
 	testGetters();
 	testVis();
 	testPlay();
+	test3d();
+	testFilters();
 
 	printf("\n%d tests, %d error(s)\n", tests, errorcount);
 	return 0;
@@ -441,24 +484,9 @@ Soloud.addVoiceToGroup
 Soloud.isVoiceGroup
 Soloud.isVoiceGroupEmpty
 Soloud.update3dAudio
-Soloud.set3dSoundSpeed
-Soloud.get3dSoundSpeed
-Soloud.set3dListenerParameters
-Soloud.set3dListenerPosition
-Soloud.set3dListenerAt
-Soloud.set3dListenerUp
-Soloud.set3dListenerVelocity
-Soloud.set3dSourceParameters
-Soloud.set3dSourcePosition
-Soloud.set3dSourceVelocity
-Soloud.set3dSourceMinMaxDistance
-Soloud.set3dSourceAttenuation
-Soloud.set3dSourceDopplerFactor
 Soloud.mix
 Soloud.mixSigned16
 AudioAttenuator.attenuate
-BiquadResonantFilter.setParams
-LofiFilter.setParams
 Bus.setChannels
 Bus.setVolume
 Bus.setLooping
@@ -473,8 +501,6 @@ Bus.set3dCollider
 Bus.set3dAttenuator
 Bus.setInaudibleBehavior
 Bus.stop
-EchoFilter.setParams
-BassboostFilter.setParams
 Speech.setText
 Speech.setParams
 Speech.setVolume
@@ -496,14 +522,6 @@ Wav.loadFile
 Wav.getLength
 Wav.setVolume
 Wav.setLooping
-Wav.set3dMinMaxDistance
-Wav.set3dAttenuation
-Wav.set3dDopplerFactor
-Wav.set3dProcessing
-Wav.set3dListenerRelative
-Wav.set3dDistanceDelay
-Wav.set3dCollider
-Wav.set3dAttenuator
 Wav.setInaudibleBehavior
 Wav.setFilter
 Wav.stop
@@ -547,8 +565,6 @@ Sfxr.set3dAttenuator
 Sfxr.setInaudibleBehavior
 Sfxr.setFilter
 Sfxr.stop
-FlangerFilter.setParams
-DCRemovalFilter.setParams
 Openmpt.load
 Openmpt.loadMem
 Openmpt.loadFile

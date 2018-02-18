@@ -235,6 +235,7 @@ namespace SoLoud
 					return;
 				}
 			}
+			lockAudioMutex();
 		}
 		unlockAudioMutex();
 	}

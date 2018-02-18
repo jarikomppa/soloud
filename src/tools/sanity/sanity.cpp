@@ -91,7 +91,7 @@ void testWave(SoLoud::Wav &aWav)
 	int i;
 	for (i = 0; i < 16000; i++)
 	{
-		buf[i + 44] = ((i&1)?1:-1)*(char)((sin(i * 0.001) * 0x7f) + i);
+		buf[i + 44] = ((i&1)?1:-1)*(char)((sin(i*i * 0.000001) * 0x7f) + i);
 	}
 	aWav.loadMem(buf, buflen, true, false);
 }
@@ -117,11 +117,20 @@ void printinfo(const char * format, ...)
 // Soloud.getBackendChannels
 // Soloud.getBackendSamplerate
 // Soloud.getBackendBufferSize
-void testInfo()
+// Soloud.mix
+// Soloud.mixSigned16
+// Prg.rand
+// Prg.srand
+void testMisc()
 {
-	SoLoud::Soloud soloud;  // SoLoud engine core
-	SoLoud::result res = soloud.init(SoLoud::Soloud::CLIP_ROUNDOFF, SoLoud::Soloud::NULLDRIVER);
+	float scratch[2048];
+	short scratch_i16[2048];
+	SoLoud::result res;
+	SoLoud::Soloud soloud;
+	res = soloud.init(SoLoud::Soloud::CLIP_ROUNDOFF, SoLoud::Soloud::NULLDRIVER);
 	CHECK_RES(res);
+	SoLoud::Wav wav;
+	testWave(wav);
 	int ver = soloud.getVersion();
 	CHECK(ver == SOLOUD_VERSION);
 	printinfo("SoLoud version %d\n", ver);
@@ -137,6 +146,28 @@ void testInfo()
 	CHECK(soloud.getBackendChannels() != 0);
 	CHECK(soloud.getBackendSamplerate() != 0);
 	CHECK(soloud.getBackendBufferSize() != 0);
+
+	soloud.mix(scratch, 1000);
+	soloud.mixSigned16(scratch_i16, 1000);
+	CHECK_BUF_ZERO(scratch, 2000);
+	CHECK_BUF_ZERO(scratch_i16, 2000);
+	soloud.play(wav);
+	soloud.mix(scratch, 1000);
+	soloud.mixSigned16(scratch_i16, 1000);
+	CHECK_BUF_NONZERO(scratch, 2000);
+	CHECK_BUF_NONZERO(scratch_i16, 2000);
+
+	SoLoud::Prg prg;
+	prg.srand(0x1337);
+	int a = prg.rand();
+	prg.srand(0x1337);
+	int b = prg.rand();
+	CHECK(a == b);
+	a = 0;
+	for (b = 0; b < 100; b++)
+		if (prg.rand() != prg.rand())
+			a = 1;
+	CHECK(a == 1);
 
 	soloud.deinit();
 }
@@ -163,7 +194,7 @@ void testGetters()
 {
 	float scratch[2048];
 	SoLoud::result res;
-	SoLoud::Soloud soloud;  // SoLoud engine core
+	SoLoud::Soloud soloud; 
 	SoLoud::Sfxr sfxr;
 	SoLoud::BiquadResonantFilter filter;
 	res = soloud.init(SoLoud::Soloud::CLIP_ROUNDOFF, SoLoud::Soloud::NULLDRIVER);
@@ -244,7 +275,7 @@ void testVis()
 {
 	float scratch[2048];
 	SoLoud::result res;
-	SoLoud::Soloud soloud;  // SoLoud engine core
+	SoLoud::Soloud soloud; 
 	SoLoud::Sfxr sfxr;
 	SoLoud::Bus bus;
 	res = soloud.init(SoLoud::Soloud::CLIP_ROUNDOFF, SoLoud::Soloud::NULLDRIVER);
@@ -326,7 +357,7 @@ void testPlay()
 	float scratch[2048];
 	float ref[2048];
 	SoLoud::result res;
-	SoLoud::Soloud soloud;  // SoLoud engine core
+	SoLoud::Soloud soloud; 
 	SoLoud::Wav wav;
 	SoLoud::Bus bus;
 	testWave(wav);
@@ -413,6 +444,7 @@ void testPlay()
 // Wav.set3dDistanceDelay
 // Wav.set3dCollider
 // Wav.set3dAttenuator
+// Wav.setInaudibleBehavior
 void test3d()
 {
 	// TODO
@@ -433,7 +465,7 @@ void testFilters()
 
 int main(int parc, char ** pars)
 {
-	testInfo();
+	testMisc();
 	testGetters();
 	testVis();
 	testPlay();
@@ -484,37 +516,14 @@ Soloud.addVoiceToGroup
 Soloud.isVoiceGroup
 Soloud.isVoiceGroupEmpty
 Soloud.update3dAudio
-Soloud.mix
-Soloud.mixSigned16
-AudioAttenuator.attenuate
 Bus.setChannels
 Bus.setVolume
 Bus.setLooping
-Bus.setFilter
-Bus.set3dMinMaxDistance
-Bus.set3dAttenuation
-Bus.set3dDopplerFactor
-Bus.set3dProcessing
-Bus.set3dListenerRelative
-Bus.set3dDistanceDelay
-Bus.set3dCollider
-Bus.set3dAttenuator
-Bus.setInaudibleBehavior
 Bus.stop
 Speech.setText
 Speech.setParams
 Speech.setVolume
 Speech.setLooping
-Speech.set3dMinMaxDistance
-Speech.set3dAttenuation
-Speech.set3dDopplerFactor
-Speech.set3dProcessing
-Speech.set3dListenerRelative
-Speech.set3dDistanceDelay
-Speech.set3dCollider
-Speech.set3dAttenuator
-Speech.setInaudibleBehavior
-Speech.setFilter
 Speech.stop
 Wav.load
 Wav.loadMem
@@ -522,7 +531,6 @@ Wav.loadFile
 Wav.getLength
 Wav.setVolume
 Wav.setLooping
-Wav.setInaudibleBehavior
 Wav.setFilter
 Wav.stop
 WavStream.load
@@ -534,6 +542,61 @@ WavStream.getLength
 WavStream.setLoopRange
 WavStream.setVolume
 WavStream.setLooping
+WavStream.stop
+Sfxr.resetParams
+Sfxr.loadParams
+Sfxr.loadParamsMem
+Sfxr.loadParamsFile
+Sfxr.loadPreset
+Sfxr.setVolume
+Sfxr.setLooping
+Sfxr.stop
+Openmpt.load
+Openmpt.loadMem
+Openmpt.loadFile
+Openmpt.setVolume
+Openmpt.setLooping
+Openmpt.stop
+Monotone.setParams
+Monotone.load
+Monotone.loadMem
+Monotone.loadFile
+Monotone.setVolume
+Monotone.setLooping
+Monotone.stop
+TedSid.load
+TedSid.loadToMem
+TedSid.loadMem
+TedSid.loadFileToMem
+TedSid.loadFile
+TedSid.setVolume
+TedSid.setLooping
+TedSid.stop
+
+Not tested - abstract class
+AudioAttenuator.attenuate
+
+Not tested - the functionality is the same for all audio sources, tested for Wav:
+Bus.setFilter
+Bus.set3dMinMaxDistance
+Bus.set3dAttenuation
+Bus.set3dDopplerFactor
+Bus.set3dProcessing
+Bus.set3dListenerRelative
+Bus.set3dDistanceDelay
+Bus.set3dCollider
+Bus.set3dAttenuator
+Bus.setInaudibleBehavior
+Speech.set3dMinMaxDistance
+Speech.set3dAttenuation
+Speech.set3dDopplerFactor
+Speech.set3dProcessing
+Speech.set3dListenerRelative
+Speech.set3dDistanceDelay
+Speech.set3dCollider
+Speech.set3dAttenuator
+Speech.setInaudibleBehavior
+Speech.setFilter
 WavStream.set3dMinMaxDistance
 WavStream.set3dAttenuation
 WavStream.set3dDopplerFactor
@@ -544,16 +607,6 @@ WavStream.set3dCollider
 WavStream.set3dAttenuator
 WavStream.setInaudibleBehavior
 WavStream.setFilter
-WavStream.stop
-Prg.rand
-Prg.srand
-Sfxr.resetParams
-Sfxr.loadParams
-Sfxr.loadParamsMem
-Sfxr.loadParamsFile
-Sfxr.loadPreset
-Sfxr.setVolume
-Sfxr.setLooping
 Sfxr.set3dMinMaxDistance
 Sfxr.set3dAttenuation
 Sfxr.set3dDopplerFactor
@@ -564,12 +617,6 @@ Sfxr.set3dCollider
 Sfxr.set3dAttenuator
 Sfxr.setInaudibleBehavior
 Sfxr.setFilter
-Sfxr.stop
-Openmpt.load
-Openmpt.loadMem
-Openmpt.loadFile
-Openmpt.setVolume
-Openmpt.setLooping
 Openmpt.set3dMinMaxDistance
 Openmpt.set3dAttenuation
 Openmpt.set3dDopplerFactor
@@ -580,13 +627,6 @@ Openmpt.set3dCollider
 Openmpt.set3dAttenuator
 Openmpt.setInaudibleBehavior
 Openmpt.setFilter
-Openmpt.stop
-Monotone.setParams
-Monotone.load
-Monotone.loadMem
-Monotone.loadFile
-Monotone.setVolume
-Monotone.setLooping
 Monotone.set3dMinMaxDistance
 Monotone.set3dAttenuation
 Monotone.set3dDopplerFactor
@@ -597,14 +637,6 @@ Monotone.set3dCollider
 Monotone.set3dAttenuator
 Monotone.setInaudibleBehavior
 Monotone.setFilter
-Monotone.stop
-TedSid.load
-TedSid.loadToMem
-TedSid.loadMem
-TedSid.loadFileToMem
-TedSid.loadFile
-TedSid.setVolume
-TedSid.setLooping
 TedSid.set3dMinMaxDistance
 TedSid.set3dAttenuation
 TedSid.set3dDopplerFactor
@@ -615,5 +647,4 @@ TedSid.set3dCollider
 TedSid.set3dAttenuator
 TedSid.setInaudibleBehavior
 TedSid.setFilter
-TedSid.stop
 */

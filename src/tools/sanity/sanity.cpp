@@ -352,6 +352,7 @@ void testVis()
 // Soloud.stopAudioSource
 // Bus.play
 // Bus.playClocked
+// Soloud.setDelaySamples
 void testPlay()
 {
 	float scratch[2048];
@@ -385,6 +386,13 @@ void testPlay()
 	soloud.mix(scratch, 1000);
 	CHECK_BUF_NONZERO(scratch, 2000);
 	CHECK_BUF_DIFF(scratch, ref, 2000);
+	soloud.stopAll();
+
+	h = soloud.play(wav,1,0,true);
+	soloud.setDelaySamples(h, 10);
+	soloud.setPause(h, false);
+	soloud.mix(scratch, 1000);
+	CHECK_BUF_SAME(scratch + 20, ref, 2000-20);
 	soloud.stopAll();
 
 	soloud.play(bus);
@@ -446,6 +454,8 @@ void testPlay()
 // Wav.set3dCollider
 // Wav.set3dAttenuator
 // Wav.setInaudibleBehavior
+// Soloud.update3dAudio
+// Soloud.setMaxActiveVoiceCount
 void test3d()
 {
 	// TODO
@@ -459,6 +469,10 @@ void test3d()
 // BassboostFilter.setParams
 // FlangerFilter.setParams
 // DCRemovalFilter.setParams
+// Soloud.setFilterParameter
+// Soloud.fadeFilterParameter
+// Soloud.oscillateFilterParameter
+// Soloud.setGlobalFilter
 void testFilters()
 {
 	float scratch[2048];
@@ -481,17 +495,6 @@ void testFilters()
 	soloud.mix(ref, 1000);
 	soloud.stopAll();
 
-	biquad.setParams(SoLoud::BiquadResonantFilter::LOWPASS, 8000, 2000, 5);
-	wav.setFilter(0, &biquad);
-	soloud.play(wav);
-	soloud.mix(ref2, 1000);
-	CHECK_BUF_DIFF(ref, ref2, 2000);
-	soloud.stopAll();
-	biquad.setParams(SoLoud::BiquadResonantFilter::HIGHPASS, 8000, 1000, 5);
-	soloud.play(wav);
-	soloud.mix(scratch, 1000);
-	CHECK_BUF_DIFF(ref2, scratch, 2000);
-	soloud.stopAll();
 
 	lofi.setParams(4000, 5);
 	wav.setFilter(0, &lofi);
@@ -500,6 +503,33 @@ void testFilters()
 	CHECK_BUF_DIFF(ref, ref2, 2000);
 	soloud.stopAll();
 	lofi.setParams(2000, 3);
+	soloud.play(wav);
+	soloud.mix(scratch, 1000);
+	CHECK_BUF_DIFF(ref2, scratch, 2000);
+	soloud.stopAll();
+	lofi.setParams(4000, 5);
+	int h = soloud.play(wav);
+	soloud.setFilterParameter(h, 0, 0, 0.5f);
+	soloud.mix(scratch, 1000);
+	CHECK_BUF_DIFF(ref, scratch, 2000);
+	lofi.setParams(4000, 5);
+	h = soloud.play(wav);
+	soloud.fadeFilterParameter(h, 0, 0, 0.5f, 1.0f);
+	soloud.mix(scratch, 1000);
+	CHECK_BUF_DIFF(ref, scratch, 2000);
+	lofi.setParams(4000, 5);
+	h = soloud.play(wav);
+	soloud.oscillateFilterParameter(h, 0, 0, 0.25f, 0.75f, 0.5f);
+	soloud.mix(scratch, 1000);
+	CHECK_BUF_DIFF(ref, scratch, 2000);
+
+	biquad.setParams(SoLoud::BiquadResonantFilter::LOWPASS, 8000, 2000, 5);
+	wav.setFilter(0, &biquad);
+	soloud.play(wav);
+	soloud.mix(ref2, 1000);
+	CHECK_BUF_DIFF(ref, ref2, 2000);
+	soloud.stopAll();
+	biquad.setParams(SoLoud::BiquadResonantFilter::HIGHPASS, 8000, 1000, 5);
 	soloud.play(wav);
 	soloud.mix(scratch, 1000);
 	CHECK_BUF_DIFF(ref2, scratch, 2000);
@@ -529,18 +559,6 @@ void testFilters()
 	CHECK_BUF_DIFF(ref2, scratch, 2000);
 	soloud.stopAll();
 
-	flang.setParams(0.05f, 10);
-	wav.setFilter(0, &flang);
-	soloud.play(wav);
-	soloud.mix(ref2, 1000);
-	CHECK_BUF_DIFF(ref, ref2, 2000);
-	soloud.stopAll();
-	flang.setParams(0.005f, 5);
-	soloud.play(wav);
-	soloud.mix(scratch, 1000);
-	CHECK_BUF_DIFF(ref2, scratch, 2000);
-	soloud.stopAll();
-
 	dc.setParams(0.1f);
 	wav.setFilter(0, &dc);
 	soloud.play(wav);
@@ -552,6 +570,23 @@ void testFilters()
 	soloud.mix(scratch, 1000);
 	CHECK_BUF_DIFF(ref2, scratch, 2000);
 	soloud.stopAll();
+
+	flang.setParams(0.05f, 10);
+	wav.setFilter(0, &flang);
+	soloud.play(wav);
+	soloud.mix(ref2, 1000);
+	CHECK_BUF_DIFF(ref, ref2, 2000);
+	soloud.stopAll();
+	flang.setParams(0.005f, 5);
+	soloud.play(wav);
+	soloud.mix(scratch, 1000);
+	CHECK_BUF_DIFF(ref2, scratch, 2000);
+	soloud.stopAll();
+	wav.setFilter(0, 0);
+	soloud.setGlobalFilter(0, &flang);
+	soloud.play(wav);
+	soloud.mix(scratch, 1000);
+	CHECK_BUF_DIFF(ref2, scratch, 2000);
 
 	soloud.deinit();
 }
@@ -573,12 +608,6 @@ int main(int parc, char ** pars)
 TODO:
 
 Soloud.setSpeakerPosition
-Soloud.setFilterParameter
-Soloud.fadeFilterParameter
-Soloud.oscillateFilterParameter
-Soloud.setLooping
-Soloud.setMaxActiveVoiceCount
-Soloud.setInaudibleBehavior
 Soloud.setGlobalVolume
 Soloud.setPostClipScaler
 Soloud.setPause
@@ -589,7 +618,6 @@ Soloud.setSamplerate
 Soloud.setPan
 Soloud.setPanAbsolute
 Soloud.setVolume
-Soloud.setDelaySamples
 Soloud.fadeVolume
 Soloud.fadePan
 Soloud.fadeRelativePlaySpeed
@@ -600,15 +628,16 @@ Soloud.oscillateVolume
 Soloud.oscillatePan
 Soloud.oscillateRelativePlaySpeed
 Soloud.oscillateGlobalVolume
-Soloud.setGlobalFilter
+
+Soloud.setLooping
 Soloud.getLoopCount
-Soloud.getInfo
+
 Soloud.createVoiceGroup
 Soloud.destroyVoiceGroup
 Soloud.addVoiceToGroup
 Soloud.isVoiceGroup
 Soloud.isVoiceGroupEmpty
-Soloud.update3dAudio
+
 Bus.setChannels
 Bus.setLooping
 Bus.stop
@@ -658,6 +687,8 @@ TedSid.loadFileToMem
 TedSid.loadFile
 TedSid.setLooping
 TedSid.stop
+Soloud.getInfo
+
 
 Not tested - abstract class
 AudioAttenuator.attenuate

@@ -121,6 +121,8 @@ namespace SoLoud
 		void * mBackendData;
 		// Pointer for the audio thread mutex.
 		void * mAudioThreadMutex;
+		// Flag for when we're inside the mutex, used for debugging.
+		bool mInsideAudioThreadMutex;
 		// Called by SoLoud to shut down the back-end. If NULL, not called. Should be set by back-end.
 		soloudCallFunction mBackendCleanupFunc;
 

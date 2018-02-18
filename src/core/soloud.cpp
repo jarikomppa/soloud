@@ -89,7 +89,7 @@ namespace SoLoud
 		u = u & ~(_EM_INVALID | /*_EM_DENORMAL |*/ _EM_ZERODIVIDE | _EM_OVERFLOW /*| _EM_UNDERFLOW  | _EM_INEXACT*/);
 		_controlfp(u, _MCW_EM);
 #endif
-		
+		mInsideAudioThreadMutex = false;
 		mScratchSize = 0;
 		mScratchNeeded = 0;
 		mSamplerate = 0;
@@ -1589,13 +1589,21 @@ namespace SoLoud
 	void Soloud::lockAudioMutex()
 	{
 		if (mAudioThreadMutex)
+		{
 			Thread::lockMutex(mAudioThreadMutex);
+		}
+		SOLOUD_ASSERT(!mInsideAudioThreadMutex);
+		mInsideAudioThreadMutex = true;
 	}
 
 	void Soloud::unlockAudioMutex()
 	{
+		SOLOUD_ASSERT(mInsideAudioThreadMutex);
+		mInsideAudioThreadMutex = false;
 		if (mAudioThreadMutex)
+		{
 			Thread::unlockMutex(mAudioThreadMutex);
+		}
 	}
 
 };

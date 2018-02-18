@@ -47,8 +47,8 @@ namespace SoLoud
 		if (mBufferLength < mParam[FlangerFilter::DELAY] * aSamplerate)
 		{
 			delete[] mBuffer;
-			mBufferLength = (int)ceil(mParam[FlangerFilter::DELAY] * aSamplerate) * aChannels;
-			mBuffer = new float[mBufferLength];
+			mBufferLength = (int)ceil(mParam[FlangerFilter::DELAY] * aSamplerate);
+			mBuffer = new float[mBufferLength * aChannels];
 			if (mBuffer == NULL)
 			{
 				mBufferLength = 0;

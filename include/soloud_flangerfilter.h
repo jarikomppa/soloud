@@ -34,9 +34,9 @@ namespace SoLoud
 	class FlangerFilterInstance : public FilterInstance
 	{
 		float *mBuffer;
-		int mBufferLength;
+		unsigned int mBufferLength;
 		FlangerFilter *mParent;
-		int mOffset;
+		unsigned int mOffset;
 		double mIndex;
 
 	public:

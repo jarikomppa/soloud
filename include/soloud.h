@@ -27,7 +27,13 @@ freely, subject to the following restrictions:
 
 #include <stdlib.h> // rand
 #include <math.h> // sin
+
+#ifdef SOLOUD_NO_ASSERTS
+#define SOLOUD_ASSERT(x)
+#else
 #include <assert.h> // assert
+#define SOLOUD_ASSERT(x) assert(x)
+#endif
 
 #ifndef M_PI
 #define M_PI 3.14159265359

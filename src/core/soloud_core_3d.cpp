@@ -377,8 +377,6 @@ namespace SoLoud
 		mVoice[v]->mFlags |= AudioSourceInstance::PROCESS_3D;
 		set3dSourceParameters(h, aPosX, aPosY, aPosZ, aVelX, aVelY, aVelZ);
 
-		unlockAudioMutex();
-
 		int samples = 0;
 		if (aSound.mFlags & AudioSource::DISTANCE_DELAY)
 		{
@@ -421,9 +419,10 @@ namespace SoLoud
 		}
 		mActiveVoiceDirty = true;
 
+		unlockAudioMutex();
 		setDelaySamples(h, samples);
 		setPause(h, aPaused);
-		return h;		
+		return h;
 	}
 
 	handle Soloud::play3dClocked(time aSoundTime, AudioSource &aSound, float aPosX, float aPosY, float aPosZ, float aVelX, float aVelY, float aVelZ, float aVolume, unsigned int aBus)

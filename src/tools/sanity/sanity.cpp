@@ -56,6 +56,9 @@ distribution.
 #include "soloud_waveshaperfilter.h"
 #include "soloud_wavstream.h"
 
+// This option is useful while developing tests:
+//#define NO_LASTKNOWN_CHECK
+
 int errorcount = 0;
 int tests = 0;
 int verbose = 1;
@@ -440,36 +443,80 @@ void testPlay()
 // 
 // Soloud.play3d
 // Soloud.play3dClocked
-// Bus.play3d
-// Bus.play3dClocked
-// Soloud.set3dSoundSpeed
-// Soloud.get3dSoundSpeed
-// Soloud.set3dListenerParameters
-// Soloud.set3dListenerPosition
-// Soloud.set3dListenerAt
-// Soloud.set3dListenerUp
-// Soloud.set3dListenerVelocity
-// Soloud.set3dSourceParameters
-// Soloud.set3dSourcePosition
-// Soloud.set3dSourceVelocity
-// Soloud.set3dSourceMinMaxDistance
-// Soloud.set3dSourceAttenuation
-// Soloud.set3dSourceDopplerFactor
+//  Bus.play3d
+//  Bus.play3dClocked
+//  Soloud.set3dSoundSpeed
+//  Soloud.get3dSoundSpeed
+//  Soloud.set3dListenerParameters
+//  Soloud.set3dListenerPosition
+//  Soloud.set3dListenerAt
+//  Soloud.set3dListenerUp
+//  Soloud.set3dListenerVelocity
+//  Soloud.set3dSourceParameters
+//  Soloud.set3dSourcePosition
+//  Soloud.set3dSourceVelocity
+//  Soloud.set3dSourceMinMaxDistance
+//  Soloud.set3dSourceAttenuation
+//  Soloud.set3dSourceDopplerFactor
 // Wav.set3dMinMaxDistance
 // Wav.set3dAttenuation
-// Wav.set3dDopplerFactor
-// Wav.set3dProcessing
-// Wav.set3dListenerRelative
-// Wav.set3dDistanceDelay
-// Wav.set3dCollider
-// Wav.set3dAttenuator
-// Wav.setInaudibleBehavior
+//  Wav.set3dDopplerFactor
+//  Wav.set3dProcessing
+//  Wav.set3dListenerRelative
+//  Wav.set3dDistanceDelay
+//  Wav.set3dCollider
+//  Wav.set3dAttenuator
+//  Wav.setInaudibleBehavior
 // Soloud.update3dAudio
-// Soloud.setMaxActiveVoiceCount
-// Soloud.setSpeakerPosition
+//  Soloud.setMaxActiveVoiceCount
+//  Soloud.setSpeakerPosition
 void test3d()
 {
-	// TODO
+	float scratch[2048];
+	float ref[2048];
+	SoLoud::result res;
+	SoLoud::Soloud soloud;
+	SoLoud::Wav wav;
+	testWave(wav);
+	res = soloud.init(SoLoud::Soloud::CLIP_ROUNDOFF, SoLoud::Soloud::NULLDRIVER);
+	CHECK_RES(res);
+	wav.set3dMinMaxDistance(1, 200);
+	wav.set3dAttenuation(SoLoud::AudioSource::EXPONENTIAL_DISTANCE, 0.5);
+	soloud.play3d(wav, 10, 20, 30);
+	soloud.update3dAudio();
+	soloud.mix(ref, 1000);
+	CHECKLASTKNOWN(ref, 2000);
+	soloud.stopAll();
+
+	wav.set3dAttenuation(SoLoud::AudioSource::EXPONENTIAL_DISTANCE, 0.25);
+	soloud.play3d(wav, 10, 20, 30);
+	soloud.update3dAudio();
+	soloud.mix(scratch, 1000);
+	CHECKLASTKNOWN(scratch, 2000);
+	CHECK_BUF_DIFF(ref, scratch, 2000);
+	soloud.stopAll();
+	wav.set3dAttenuation(SoLoud::AudioSource::EXPONENTIAL_DISTANCE, 0.5);
+
+	wav.set3dMinMaxDistance(1, 20);
+	soloud.play3d(wav, 10, 20, 30);
+	soloud.update3dAudio();
+	soloud.mix(scratch, 1000);
+	CHECKLASTKNOWN(scratch, 2000);
+	CHECK_BUF_DIFF(ref, scratch, 2000);
+	soloud.stopAll();
+	wav.set3dMinMaxDistance(1, 200);
+
+	soloud.play3dClocked(0.01f, wav, 10, 20, 30);
+	soloud.stopAll();
+	soloud.play3dClocked(0.1f, wav, 10, 20, 30);
+	soloud.update3dAudio();
+	soloud.mix(scratch, 1000);
+	CHECKLASTKNOWN(scratch, 2000);
+	CHECK_BUF_DIFF(ref, scratch, 2000);
+	soloud.stopAll();
+
+
+	soloud.deinit();
 }
 
 // Test various filter options
@@ -845,6 +892,7 @@ void testCore()
 
 int main(int parc, char ** pars)
 {
+#ifndef NO_LASTKNOWN_CHECK
 	lastknownfile = fopen("lastknown.dat", "rb");
 	if (!lastknownfile)
 	{
@@ -852,6 +900,7 @@ int main(int parc, char ** pars)
 		lastknownfile = fopen("lastknown.dat", "wb");
 		lastknownwrite = 1;
 	}
+#endif
 
 	testMisc();
 	testGetters();
@@ -865,7 +914,9 @@ int main(int parc, char ** pars)
 	if (!lastknownwrite && errorcount)
 		printf("(To rebuild lastknown.dat, simply delete it)\n");
 	printf("\n");
+#ifndef NO_LASTKNOWN_CHECK
 	fclose(lastknownfile);
+#endif
 	return 0;
 }
 

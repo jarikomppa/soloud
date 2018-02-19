@@ -32,8 +32,9 @@ total = 0
 for func in soloud_codegen.soloud_func:
     apifunc = func[1].replace("_",".")
     if ((apifunc[-2::] != "Ex") and 
-        (apifunc[-7::] != "destroy") and 
-        (apifunc[-6::] != "create")):
+        (apifunc[-7::] != "destroy")):
+        if (apifunc[-6::] == "create"):
+            apifunc = "class " + apifunc[:-7:]
         total += 1
         if not checkfiles(apifunc):
             print apifunc

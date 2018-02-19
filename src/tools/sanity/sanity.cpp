@@ -60,14 +60,19 @@ int errorcount = 0;
 int tests = 0;
 int verbose = 1;
 
+float lastknownscratch[2048];
+FILE *lastknownfile = 0;
+int lastknownwrite = 0;
+
 #define CHECK_RES(x) tests++; if ((x)) { errorcount++; printf("Error on line %d, %s(): %s\n",__LINE__,__FUNCTION__, soloud.getErrorString((x)));}
 #define CHECK(x) tests++; if (!(x)) { errorcount++; printf("Error on line %d, %s(): Check \"%s\" fail\n",__LINE__,__FUNCTION__,#x);}
 #define CHECK_BUF_NONZERO(x, n) tests++; { int i, zero = 1; for (i = 0; i < (n); i++) if ((x)[i] != 0) zero = 0; if (zero) { errorcount++; printf("Error on line %d, %s(): buffer not nonzero\n",__LINE__,__FUNCTION__);}}
 #define CHECK_BUF_ZERO(x, n) tests++; { int i, zero = 1; for (i = 0; i < (n); i++) if ((x)[i] != 0) zero = 0; if (!zero) { errorcount++; printf("Error on line %d, %s(): buffer not zero\n",__LINE__,__FUNCTION__);}}
 #define CHECK_BUF_DIFF(x, y, n) tests++; { int i, same = 1; for (i = 0; i < (n); i++) if (fabs((x)[i] - (y)[i]) > 0.00001) same = 0; if (same) { errorcount++; printf("Error on line %d, %s(): buffers are equal\n",__LINE__,__FUNCTION__);}}
 #define CHECK_BUF_SAME(x, y, n) tests++; { int i, same = 1; for (i = 0; i < (n); i++) if (fabs((x)[i] - (y)[i]) > 0.00001) same = 0; if (!same) { errorcount++; printf("Error on line %d, %s(): buffers differ\n",__LINE__,__FUNCTION__);}}
+#define CHECK_BUF_SAME_LASTKNOWN(x, n) tests++; { int i, same = 1; for (i = 0; i < (n); i++) if (fabs((x)[i] - lastknownscratch[i]) > 0.00001) same = 0; if (!same) { errorcount++; printf("Error on line %d, %s(): output differs from last known\n",__LINE__,__FUNCTION__);}}
 #define CHECK_BUF_GTE(x, y, n) tests++; { int i, lt = 0; for (i = 0; i < (n); i++) if (fabs((x)[i]) - fabs((y)[i]) < 0) lt = 1; if (lt) { errorcount++; printf("Error on line %d, %s(): buffer %s magnitude not bigger than buffer %s \n",__LINE__,__FUNCTION__,#x, #y);}}
-
+#define CHECKLASTKNOWN(x, n) if (lastknownwrite && lastknownfile) { fwrite((x),1,(n)*sizeof(float),lastknownfile); } else if (lastknownfile) { fread(lastknownscratch,1,(n)*sizeof(float),lastknownfile); CHECK_BUF_SAME_LASTKNOWN((x), n); }
 
 void testWave(SoLoud::Wav &aWav)
 {
@@ -367,6 +372,7 @@ void testPlay()
 
 	int h = soloud.play(wav);
 	soloud.mix(ref, 1000);
+	CHECKLASTKNOWN(ref, 2000);
 	CHECK_BUF_NONZERO(ref, 2000);
 	soloud.stop(h);
 	soloud.mix(scratch, 1000);
@@ -384,6 +390,7 @@ void testPlay()
 	soloud.stopAll();
 	h = soloud.playClocked(0.015, wav);
 	soloud.mix(scratch, 1000);
+	CHECKLASTKNOWN(scratch, 2000);
 	CHECK_BUF_NONZERO(scratch, 2000);
 	CHECK_BUF_DIFF(scratch, ref, 2000);
 	soloud.stopAll();
@@ -406,6 +413,7 @@ void testPlay()
 	soloud.play(bus);
 	h = bus.playClocked(0.015, wav);
 	soloud.mix(scratch, 1000);
+	CHECKLASTKNOWN(scratch, 2000);
 	CHECK_BUF_NONZERO(scratch, 2000);
 	CHECK_BUF_DIFF(scratch, ref, 2000);
 	soloud.stopAll();
@@ -413,12 +421,14 @@ void testPlay()
 	h = soloud.play(wav);
 	soloud.seek(h, 0.1);
 	soloud.mix(scratch, 1000);
+	CHECKLASTKNOWN(scratch, 2000);
 	CHECK_BUF_NONZERO(scratch, 2000);
 	CHECK_BUF_DIFF(scratch, ref, 2000);
 	soloud.stopAll();
 	
 	h = soloud.playBackground(wav);
 	soloud.mix(scratch, 1000);
+	CHECKLASTKNOWN(scratch, 2000);
 	CHECK_BUF_NONZERO(scratch, 2000);
 	CHECK_BUF_GTE(scratch, ref, 2000);
 
@@ -495,44 +505,52 @@ void testFilters()
 	soloud.play(wav);
 	soloud.mix(ref, 1000);
 	soloud.stopAll();
+	CHECKLASTKNOWN(ref, 2000);
 
 
 	lofi.setParams(4000, 5);
 	wav.setFilter(0, &lofi);
 	soloud.play(wav);
 	soloud.mix(ref2, 1000);
+	CHECKLASTKNOWN(ref2, 2000);
 	CHECK_BUF_DIFF(ref, ref2, 2000);
 	soloud.stopAll();
 	lofi.setParams(2000, 3);
 	soloud.play(wav);
 	soloud.mix(scratch, 1000);
+	CHECKLASTKNOWN(scratch, 2000);
 	CHECK_BUF_DIFF(ref2, scratch, 2000);
 	soloud.stopAll();
 	lofi.setParams(4000, 5);
 	int h = soloud.play(wav);
 	soloud.setFilterParameter(h, 0, 0, 0.5f);
 	soloud.mix(scratch, 1000);
+	CHECKLASTKNOWN(scratch, 2000);
 	CHECK_BUF_DIFF(ref, scratch, 2000);
 	lofi.setParams(4000, 5);
 	h = soloud.play(wav);
 	soloud.fadeFilterParameter(h, 0, 0, 0.5f, 1.0f);
 	soloud.mix(scratch, 1000);
+	CHECKLASTKNOWN(scratch, 2000);
 	CHECK_BUF_DIFF(ref, scratch, 2000);
 	lofi.setParams(4000, 5);
 	h = soloud.play(wav);
 	soloud.oscillateFilterParameter(h, 0, 0, 0.25f, 0.75f, 0.5f);
 	soloud.mix(scratch, 1000);
+	CHECKLASTKNOWN(scratch, 2000);
 	CHECK_BUF_DIFF(ref, scratch, 2000);
 
 	biquad.setParams(SoLoud::BiquadResonantFilter::LOWPASS, 8000, 2000, 5);
 	wav.setFilter(0, &biquad);
 	soloud.play(wav);
 	soloud.mix(ref2, 1000);
+	CHECKLASTKNOWN(ref2, 2000);
 	CHECK_BUF_DIFF(ref, ref2, 2000);
 	soloud.stopAll();
 	biquad.setParams(SoLoud::BiquadResonantFilter::HIGHPASS, 8000, 1000, 5);
 	soloud.play(wav);
 	soloud.mix(scratch, 1000);
+	CHECKLASTKNOWN(scratch, 2000);
 	CHECK_BUF_DIFF(ref2, scratch, 2000);
 	soloud.stopAll();
 
@@ -540,11 +558,13 @@ void testFilters()
 	wav.setFilter(0, &echo);
 	soloud.play(wav);
 	soloud.mix(ref2, 1000);
+	CHECKLASTKNOWN(ref2, 2000);
 	CHECK_BUF_DIFF(ref, ref2, 2000);
 	soloud.stopAll();
 	echo.setParams(0.01f, 0.75f, 0.1f);
 	soloud.play(wav);
 	soloud.mix(scratch, 1000);
+	CHECKLASTKNOWN(scratch, 2000);
 	CHECK_BUF_DIFF(ref2, scratch, 2000);
 	soloud.stopAll();
 
@@ -552,11 +572,13 @@ void testFilters()
 	wav.setFilter(0, &bass);
 	soloud.play(wav);
 	soloud.mix(ref2, 1000);
+	CHECKLASTKNOWN(ref2, 2000);
 	CHECK_BUF_DIFF(ref, ref2, 2000);
 	soloud.stopAll();
 	bass.setParams(10);
 	soloud.play(wav);
 	soloud.mix(scratch, 1000);
+	CHECKLASTKNOWN(scratch, 2000);
 	CHECK_BUF_DIFF(ref2, scratch, 2000);
 	soloud.stopAll();
 
@@ -564,11 +586,13 @@ void testFilters()
 	wav.setFilter(0, &dc);
 	soloud.play(wav);
 	soloud.mix(ref2, 1000);
+	CHECKLASTKNOWN(ref2, 2000);
 	CHECK_BUF_DIFF(ref, ref2, 2000);
 	soloud.stopAll();
 	dc.setParams(0.5f);
 	soloud.play(wav);
 	soloud.mix(scratch, 1000);
+	CHECKLASTKNOWN(scratch, 2000);
 	CHECK_BUF_DIFF(ref2, scratch, 2000);
 	soloud.stopAll();
 
@@ -576,17 +600,20 @@ void testFilters()
 	wav.setFilter(0, &flang);
 	soloud.play(wav);
 	soloud.mix(ref2, 1000);
+	CHECKLASTKNOWN(ref2, 2000);
 	CHECK_BUF_DIFF(ref, ref2, 2000);
 	soloud.stopAll();
 	flang.setParams(0.005f, 5);
 	soloud.play(wav);
 	soloud.mix(scratch, 1000);
+	CHECKLASTKNOWN(scratch, 2000);
 	CHECK_BUF_DIFF(ref2, scratch, 2000);
 	soloud.stopAll();
 	wav.setFilter(0, 0);
 	soloud.setGlobalFilter(0, &flang);
 	soloud.play(wav);
 	soloud.mix(scratch, 1000);
+	CHECKLASTKNOWN(scratch, 2000);
 	CHECK_BUF_DIFF(ref2, scratch, 2000);
 
 	soloud.deinit();
@@ -641,6 +668,7 @@ void testCore()
 	soloud.setGlobalVolume(0.5f);
 	soloud.play(wav);
 	soloud.mix(scratch, 1000);
+	CHECKLASTKNOWN(scratch, 2000);
 	CHECK_BUF_GTE(ref, scratch, 2000);
 	CHECK_BUF_DIFF(ref, scratch, 2000);
 	soloud.stopAll();
@@ -649,6 +677,7 @@ void testCore()
 	soloud.setPostClipScaler(0.5f);
 	soloud.play(wav);
 	soloud.mix(scratch, 1000);
+	CHECKLASTKNOWN(scratch, 2000);
 	CHECK_BUF_GTE(ref, scratch, 2000);
 	CHECK_BUF_DIFF(ref, scratch, 2000);
 	soloud.stopAll();
@@ -669,30 +698,35 @@ void testCore()
 	h = soloud.play(wav);
 	soloud.setRelativePlaySpeed(h, 0.3f);
 	soloud.mix(scratch, 1000);
+	CHECKLASTKNOWN(scratch, 2000);
 	CHECK_BUF_DIFF(ref, scratch, 2000);
 	soloud.stopAll();
 
 	h = soloud.play(wav);
 	soloud.setSamplerate(h, 12345);
 	soloud.mix(scratch, 1000);
+	CHECKLASTKNOWN(scratch, 2000);
 	CHECK_BUF_DIFF(ref, scratch, 2000);
 	soloud.stopAll();
 
 	h = soloud.play(wav);
 	soloud.setPan(h, 0.75f);
 	soloud.mix(scratch, 1000);
+	CHECKLASTKNOWN(scratch, 2000);
 	CHECK_BUF_DIFF(ref, scratch, 2000);
 	soloud.stopAll();
 
 	h = soloud.play(wav);
 	soloud.setPanAbsolute(h, 0.75f, 0.25f);
 	soloud.mix(scratch, 1000);
+	CHECKLASTKNOWN(scratch, 2000);
 	CHECK_BUF_DIFF(ref, scratch, 2000);
 	soloud.stopAll();
 
 	h = soloud.play(wav);
 	soloud.setVolume(h, 0.5f);
 	soloud.mix(scratch, 1000);
+	CHECKLASTKNOWN(scratch, 2000);
 	CHECK_BUF_GTE(ref, scratch, 2000);
 	CHECK_BUF_DIFF(ref, scratch, 2000);
 	soloud.stopAll();
@@ -700,6 +734,7 @@ void testCore()
 	h = soloud.play(wav);
 	soloud.fadeVolume(h, 0.5f, 1.0f);
 	soloud.mix(scratch, 1000);
+	CHECKLASTKNOWN(scratch, 2000);
 	CHECK_BUF_GTE(ref, scratch, 2000);
 	CHECK_BUF_DIFF(ref, scratch, 2000);
 	soloud.stopAll();
@@ -707,18 +742,21 @@ void testCore()
 	h = soloud.play(wav);
 	soloud.fadePan(h, 0.75f, 1.0f);
 	soloud.mix(scratch, 1000);
+	CHECKLASTKNOWN(scratch, 2000);
 	CHECK_BUF_DIFF(ref, scratch, 2000);
 	soloud.stopAll();
 
 	h = soloud.play(wav);
 	soloud.fadeRelativePlaySpeed(h, 0.5f, 1.0f);
 	soloud.mix(scratch, 1000);
+	CHECKLASTKNOWN(scratch, 2000);
 	CHECK_BUF_DIFF(ref, scratch, 2000);
 	soloud.stopAll();
 
 	soloud.play(wav);
 	soloud.fadeGlobalVolume(0.5f, 1.0f);
 	soloud.mix(scratch, 1000);
+	CHECKLASTKNOWN(scratch, 2000);
 	CHECK_BUF_GTE(ref, scratch, 2000);
 	CHECK_BUF_DIFF(ref, scratch, 2000);
 	soloud.stopAll();
@@ -728,6 +766,7 @@ void testCore()
 	soloud.schedulePause(h, 0.015f); // note: pausescheduler works on mix granularity
 	soloud.mix(scratch, 500);
 	soloud.mix(scratch+1000, 500);
+	CHECKLASTKNOWN(scratch, 2000);
 	CHECK_BUF_NONZERO(scratch, 2000);
 	CHECK_BUF_DIFF(ref, scratch, 2000);
 	CHECK(soloud.getVoiceCount() > 0);
@@ -737,6 +776,7 @@ void testCore()
 	soloud.scheduleStop(h, 0.015f); // note: stopscheduler works on mix granularity
 	soloud.mix(scratch, 500);
 	soloud.mix(scratch + 1000, 500);
+	CHECKLASTKNOWN(scratch, 2000);
 	CHECK_BUF_NONZERO(scratch, 2000);
 	CHECK_BUF_DIFF(ref, scratch, 2000);
 	CHECK(soloud.getVoiceCount() == 0);
@@ -745,6 +785,7 @@ void testCore()
 	h = soloud.play(wav);
 	soloud.oscillateVolume(h, 0.25f, 0.75f, 0.2f);
 	soloud.mix(scratch, 1000);
+	CHECKLASTKNOWN(scratch, 2000);
 	CHECK_BUF_GTE(ref, scratch, 2000);
 	CHECK_BUF_DIFF(ref, scratch, 2000);
 	soloud.stopAll();
@@ -752,18 +793,21 @@ void testCore()
 	h = soloud.play(wav);
 	soloud.oscillatePan(h, 0.25f, 0.75f, 0.2f);
 	soloud.mix(scratch, 1000);
+	CHECKLASTKNOWN(scratch, 2000);
 	CHECK_BUF_DIFF(ref, scratch, 2000);
 	soloud.stopAll();
 
 	h = soloud.play(wav);
 	soloud.oscillateRelativePlaySpeed(h, 0.75f, 1.25f, 0.2f);
 	soloud.mix(scratch, 1000);
+	CHECKLASTKNOWN(scratch, 2000);
 	CHECK_BUF_DIFF(ref, scratch, 2000);
 	soloud.stopAll();
 
 	soloud.play(wav);
 	soloud.oscillateGlobalVolume(0.25f, 0.75f, 0.2f);
 	soloud.mix(scratch, 1000);
+	CHECKLASTKNOWN(scratch, 2000);
 	CHECK_BUF_GTE(ref, scratch, 2000);
 	CHECK_BUF_DIFF(ref, scratch, 2000);
 	soloud.stopAll();
@@ -801,6 +845,14 @@ void testCore()
 
 int main(int parc, char ** pars)
 {
+	lastknownfile = fopen("lastknown.dat", "rb");
+	if (!lastknownfile)
+	{
+		printf("lastknown.dat not found, writing one.\n");
+		lastknownfile = fopen("lastknown.dat", "wb");
+		lastknownwrite = 1;
+	}
+
 	testMisc();
 	testGetters();
 	testVis();
@@ -809,7 +861,11 @@ int main(int parc, char ** pars)
 	testFilters();
 	testCore();
 
-	printf("\n%d tests, %d error(s)\n", tests, errorcount);
+	printf("\n%d tests, %d error(s) ", tests, errorcount);
+	if (!lastknownwrite && errorcount)
+		printf("(To rebuild lastknown.dat, simply delete it)\n");
+	printf("\n");
+	fclose(lastknownfile);
 	return 0;
 }
 

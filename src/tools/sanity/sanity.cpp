@@ -366,6 +366,8 @@ void testVis()
 // Bus.play
 // Bus.playClocked
 // Soloud.setDelaySamples
+//  Soloud.setProtectVoice
+//  Soloud.setMaxActiveVoiceCount
 void testPlay()
 {
 	float scratch[2048];
@@ -451,27 +453,25 @@ void testPlay()
 //  Bus.play3d
 //  Bus.play3dClocked
 // Soloud.set3dListenerParameters
-//  Soloud.set3dListenerPosition
-//  Soloud.set3dListenerAt
-//  Soloud.set3dListenerUp
-//  Soloud.set3dListenerVelocity
-//  Soloud.set3dSourceParameters
-//  Soloud.set3dSourcePosition
-//  Soloud.set3dSourceVelocity
-//  Soloud.set3dSourceMinMaxDistance
-//  Soloud.set3dSourceAttenuation
-//  Soloud.set3dSourceDopplerFactor
+// Soloud.set3dListenerPosition
+// Soloud.set3dListenerAt
+// Soloud.set3dListenerUp
+// Soloud.set3dListenerVelocity
+// Soloud.set3dSourceParameters
+// Soloud.set3dSourcePosition
+// Soloud.set3dSourceVelocity
+// Soloud.set3dSourceMinMaxDistance
+// Soloud.set3dSourceAttenuation
+// Soloud.set3dSourceDopplerFactor
 // Wav.set3dMinMaxDistance
 // Wav.set3dAttenuation
 //  Wav.set3dDopplerFactor
-//  Wav.set3dProcessing
 //  Wav.set3dListenerRelative
 //  Wav.set3dDistanceDelay
 //  Wav.set3dCollider
 //  Wav.set3dAttenuator
 //  Wav.setInaudibleBehavior
 // Soloud.update3dAudio
-//  Soloud.setMaxActiveVoiceCount
 //  Soloud.setSpeakerPosition
 // Soloud.set3dSoundSpeed
 void test3d()
@@ -574,6 +574,62 @@ void test3d()
 	CHECK_BUF_DIFF(ref, scratch, 2000);
 	soloud.stopAll();
 	soloud.set3dListenerParameters(0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0);
+
+	int h = soloud.play3d(wav, 10, 20, 30, 1, 1, 1);
+	soloud.set3dSourceAttenuation(h, SoLoud::AudioSource::LINEAR_DISTANCE, 0.5f);
+	soloud.update3dAudio();
+	soloud.mix(scratch, 1000);
+	CHECKLASTKNOWN(scratch, 2000);
+	CHECK_BUF_DIFF(ref, scratch, 2000);
+	soloud.stopAll();
+
+	h = soloud.play3d(wav, 10, 20, 30, 1, 1, 1);
+	soloud.set3dSourceDopplerFactor(h, 2.5f);
+	soloud.update3dAudio();
+	soloud.mix(scratch, 1000);
+	CHECKLASTKNOWN(scratch, 2000);
+	CHECK_BUF_DIFF(ref, scratch, 2000);
+	soloud.stopAll();
+
+	h = soloud.play3d(wav, 10, 20, 30, 1, 1, 1);
+	soloud.set3dSourceMinMaxDistance(h, 1, 20);
+	soloud.update3dAudio();
+	soloud.mix(scratch, 1000);
+	CHECKLASTKNOWN(scratch, 2000);
+	CHECK_BUF_DIFF(ref, scratch, 2000);
+	soloud.stopAll();
+
+	h = soloud.play3d(wav, 10, 20, 30, 1, 1, 1);
+	soloud.set3dSourcePosition(h, 20, 10, 30);
+	soloud.update3dAudio();
+	soloud.mix(scratch, 1000);
+	CHECKLASTKNOWN(scratch, 2000);
+	CHECK_BUF_DIFF(ref, scratch, 2000);
+	soloud.stopAll();
+
+	h = soloud.play3d(wav, 10, 20, 30, 1, 1, 1);
+	soloud.set3dSourceVelocity(h, 2, 1, 3);
+	soloud.update3dAudio();
+	soloud.mix(scratch, 1000);
+	CHECKLASTKNOWN(scratch, 2000);
+	CHECK_BUF_DIFF(ref, scratch, 2000);
+	soloud.stopAll();
+
+	h = soloud.play3d(wav, 10, 20, 30, 1, 1, 1);
+	soloud.set3dSourceParameters(h, 1, 2, 3, 4, 5, 6);
+	soloud.update3dAudio();
+	soloud.mix(scratch, 1000);
+	CHECKLASTKNOWN(scratch, 2000);
+	CHECK_BUF_DIFF(ref, scratch, 2000);
+	soloud.stopAll();
+
+	h = soloud.play3d(wav, 10, 20, 30, 1, 1, 1);
+	soloud.set3dSourceParameters(h, 1, 2, 3, 4, 5, 6);
+	soloud.update3dAudio();
+	soloud.mix(scratch, 1000);
+	CHECKLASTKNOWN(scratch, 2000);
+	CHECK_BUF_DIFF(ref, scratch, 2000);
+	soloud.stopAll();
 
 	soloud.deinit();
 }
@@ -732,7 +788,6 @@ void testFilters()
 // Soloud.setPause
 // Soloud.setPauseAll
 // Soloud.setRelativePlaySpeed
-//  Soloud.setProtectVoice
 // Soloud.setSamplerate
 // Soloud.setPan
 // Soloud.setPanAbsolute
@@ -1050,7 +1105,6 @@ Bus.setFilter
 Bus.set3dMinMaxDistance
 Bus.set3dAttenuation
 Bus.set3dDopplerFactor
-Bus.set3dProcessing
 Bus.set3dListenerRelative
 Bus.set3dDistanceDelay
 Bus.set3dCollider
@@ -1059,7 +1113,6 @@ Bus.setInaudibleBehavior
 Speech.set3dMinMaxDistance
 Speech.set3dAttenuation
 Speech.set3dDopplerFactor
-Speech.set3dProcessing
 Speech.set3dListenerRelative
 Speech.set3dDistanceDelay
 Speech.set3dCollider
@@ -1069,7 +1122,6 @@ Speech.setFilter
 WavStream.set3dMinMaxDistance
 WavStream.set3dAttenuation
 WavStream.set3dDopplerFactor
-WavStream.set3dProcessing
 WavStream.set3dListenerRelative
 WavStream.set3dDistanceDelay
 WavStream.set3dCollider
@@ -1079,7 +1131,6 @@ WavStream.setFilter
 Sfxr.set3dMinMaxDistance
 Sfxr.set3dAttenuation
 Sfxr.set3dDopplerFactor
-Sfxr.set3dProcessing
 Sfxr.set3dListenerRelative
 Sfxr.set3dDistanceDelay
 Sfxr.set3dCollider
@@ -1089,7 +1140,6 @@ Sfxr.setFilter
 Openmpt.set3dMinMaxDistance
 Openmpt.set3dAttenuation
 Openmpt.set3dDopplerFactor
-Openmpt.set3dProcessing
 Openmpt.set3dListenerRelative
 Openmpt.set3dDistanceDelay
 Openmpt.set3dCollider
@@ -1099,7 +1149,6 @@ Openmpt.setFilter
 Monotone.set3dMinMaxDistance
 Monotone.set3dAttenuation
 Monotone.set3dDopplerFactor
-Monotone.set3dProcessing
 Monotone.set3dListenerRelative
 Monotone.set3dDistanceDelay
 Monotone.set3dCollider
@@ -1109,7 +1158,6 @@ Monotone.setFilter
 TedSid.set3dMinMaxDistance
 TedSid.set3dAttenuation
 TedSid.set3dDopplerFactor
-TedSid.set3dProcessing
 TedSid.set3dListenerRelative
 TedSid.set3dDistanceDelay
 TedSid.set3dCollider

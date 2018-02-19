@@ -267,18 +267,6 @@ namespace SoLoud
 		m3dDopplerFactor = aDopplerFactor;
 	}
 
-	void AudioSource::set3dProcessing(bool aDo3dProcessing)
-	{
-		if (aDo3dProcessing)
-		{
-			mFlags |= PROCESS_3D;
-		}
-		else
-		{
-			mFlags &= ~PROCESS_3D;
-		}
-	}
-
 	void AudioSource::set3dListenerRelative(bool aListenerRelative)
 	{
 		if (aListenerRelative)

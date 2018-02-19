@@ -284,8 +284,6 @@ namespace SoLoud
 		void set3dAttenuation(unsigned int aAttenuationModel, float aAttenuationRolloffFactor);
 		// Set doppler factor to reduce or enhance doppler effect, default = 1.0
 		void set3dDopplerFactor(float aDopplerFactor);
-		// Enable 3d processing. Implicitly set by play3d calls.
-		void set3dProcessing(bool aDo3dProcessing);
 		// Set the coordinates for this audio source to be relative to listener's coordinates.
 		void set3dListenerRelative(bool aListenerRelative);
 		// Enable delaying the start of the sound based on the distance.

@@ -368,6 +368,7 @@ void testVis()
 // Soloud.setDelaySamples
 //  Soloud.setProtectVoice
 //  Soloud.setMaxActiveVoiceCount
+//  Wav.setInaudibleBehavior
 void testPlay()
 {
 	float scratch[2048];
@@ -446,12 +447,25 @@ void testPlay()
 }
 
 
+class customAttenuatorCollider : public SoLoud::AudioCollider, public SoLoud::AudioAttenuator
+{
+public:
+	virtual float collide(SoLoud::Soloud *aSoloud, SoLoud::AudioSourceInstance3dData *aAudioInstance3dData, int aUserData)
+	{
+		return 0.5f;
+	}
+	virtual float attenuate(float aDistance, float aMinDistance, float aMaxDistance, float aRolloffFactor)
+	{
+		return 0.5f;
+	}
+};
+
 // Test various 3d functions
 // 
 // Soloud.play3d
 // Soloud.play3dClocked
-//  Bus.play3d
-//  Bus.play3dClocked
+// Bus.play3d
+// Bus.play3dClocked
 // Soloud.set3dListenerParameters
 // Soloud.set3dListenerPosition
 // Soloud.set3dListenerAt
@@ -465,32 +479,36 @@ void testPlay()
 // Soloud.set3dSourceDopplerFactor
 // Wav.set3dMinMaxDistance
 // Wav.set3dAttenuation
-//  Wav.set3dDopplerFactor
-//  Wav.set3dListenerRelative
-//  Wav.set3dDistanceDelay
-//  Wav.set3dCollider
-//  Wav.set3dAttenuator
-//  Wav.setInaudibleBehavior
+// Wav.set3dDopplerFactor
+// Wav.set3dListenerRelative
+// Wav.set3dDistanceDelay
+// Wav.set3dCollider
+// Wav.set3dAttenuator
 // Soloud.update3dAudio
-//  Soloud.setSpeakerPosition
+// Soloud.setSpeakerPosition
 // Soloud.set3dSoundSpeed
 void test3d()
 {
+	customAttenuatorCollider customAC;
 	float scratch[2048];
 	float ref[2048];
 	SoLoud::result res;
 	SoLoud::Soloud soloud;
+	SoLoud::Bus bus;
 	SoLoud::Wav wav;
 	testWave(wav);
 	res = soloud.init(SoLoud::Soloud::CLIP_ROUNDOFF, SoLoud::Soloud::NULLDRIVER);
 	CHECK_RES(res);
-	soloud.set3dListenerParameters(0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0);
+	soloud.set3dListenerParameters(0, 5, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0);
 	soloud.set3dSoundSpeed(343);
+	soloud.setSpeakerPosition(0, 2, 0, 1);
+	soloud.setSpeakerPosition(0, -2, 0, 1);
 	wav.set3dMinMaxDistance(1, 200);
 	wav.set3dAttenuation(SoLoud::AudioSource::EXPONENTIAL_DISTANCE, 0.5);
 	soloud.play3d(wav, 10, 20, 30, 1, 1, 1);
 	soloud.update3dAudio();
 	soloud.mix(ref, 1000);
+	CHECK_BUF_NONZERO(ref, 2000);
 	CHECKLASTKNOWN(ref, 2000);
 	soloud.stopAll();
 
@@ -537,7 +555,7 @@ void test3d()
 	CHECKLASTKNOWN(scratch, 2000);
 	CHECK_BUF_DIFF(ref, scratch, 2000);
 	soloud.stopAll();
-	soloud.set3dListenerParameters(0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0);
+	soloud.set3dListenerParameters(0, 5, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0);
 
 	soloud.set3dListenerPosition(1, 2, 3);
 	soloud.play3d(wav, 10, 20, 30, 1, 1, 1);
@@ -546,7 +564,7 @@ void test3d()
 	CHECKLASTKNOWN(scratch, 2000);
 	CHECK_BUF_DIFF(ref, scratch, 2000);
 	soloud.stopAll();
-	soloud.set3dListenerParameters(0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0);
+	soloud.set3dListenerParameters(0, 5, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0);
 
 	soloud.set3dListenerAt(1, 2, 3);
 	soloud.play3d(wav, 10, 20, 30, 1, 1, 1);
@@ -555,7 +573,7 @@ void test3d()
 	CHECKLASTKNOWN(scratch, 2000);
 	CHECK_BUF_DIFF(ref, scratch, 2000);
 	soloud.stopAll();
-	soloud.set3dListenerParameters(0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0);
+	soloud.set3dListenerParameters(0, 5, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0);
 
 	soloud.set3dListenerUp(1, 2, 3);
 	soloud.play3d(wav, 10, 20, 30, 1, 1, 1);
@@ -564,7 +582,7 @@ void test3d()
 	CHECKLASTKNOWN(scratch, 2000);
 	CHECK_BUF_DIFF(ref, scratch, 2000);
 	soloud.stopAll();
-	soloud.set3dListenerParameters(0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0);
+	soloud.set3dListenerParameters(0, 5, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0);
 
 	soloud.set3dListenerVelocity(1, -1, 0);
 	soloud.play3d(wav, 10, 20, 30, 1, 1, 1);
@@ -573,7 +591,7 @@ void test3d()
 	CHECKLASTKNOWN(scratch, 2000);
 	CHECK_BUF_DIFF(ref, scratch, 2000);
 	soloud.stopAll();
-	soloud.set3dListenerParameters(0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0);
+	soloud.set3dListenerParameters(0, 5, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0);
 
 	int h = soloud.play3d(wav, 10, 20, 30, 1, 1, 1);
 	soloud.set3dSourceAttenuation(h, SoLoud::AudioSource::LINEAR_DISTANCE, 0.5f);
@@ -629,6 +647,82 @@ void test3d()
 	soloud.mix(scratch, 1000);
 	CHECKLASTKNOWN(scratch, 2000);
 	CHECK_BUF_DIFF(ref, scratch, 2000);
+	soloud.stopAll();
+
+	soloud.setSpeakerPosition(0, 3, -1, -1);
+	soloud.setSpeakerPosition(0, -3, -1, 1);
+	soloud.play3d(wav, 10, 20, 30, 1, 1, 1);
+	soloud.update3dAudio();
+	soloud.mix(scratch, 1000);
+	CHECKLASTKNOWN(scratch, 2000);
+	CHECK_BUF_DIFF(ref, scratch, 2000);
+	soloud.stopAll();
+	soloud.setSpeakerPosition(0, 2, 0, 1);
+	soloud.setSpeakerPosition(0, -2, 0, 1);
+
+	wav.set3dListenerRelative(true);
+	soloud.play3d(wav, 10, 20, 30, 1, 1, 1);
+	soloud.update3dAudio();
+	soloud.mix(scratch, 1000);
+	CHECKLASTKNOWN(scratch, 2000);
+	CHECK_BUF_DIFF(ref, scratch, 2000);
+	soloud.stopAll();
+	wav.set3dListenerRelative(false);
+
+	wav.set3dDistanceDelay(true);
+	soloud.play3d(wav, 10, 20, 30, 1, 1, 1);
+	soloud.update3dAudio();
+	soloud.mix(scratch, 1000);
+	CHECKLASTKNOWN(scratch, 2000);
+	CHECK_BUF_DIFF(ref, scratch, 2000);
+	soloud.stopAll();
+	wav.set3dDistanceDelay(false);
+
+	wav.set3dDopplerFactor(15.0f);
+	soloud.play3d(wav, 10, 20, 30, 1, 1, 1);
+	soloud.update3dAudio();
+	soloud.mix(scratch, 1000);
+	CHECKLASTKNOWN(scratch, 2000);
+	CHECK_BUF_DIFF(ref, scratch, 2000);
+	soloud.stopAll();
+	wav.set3dDopplerFactor(1.0f);
+
+	wav.set3dAttenuator(&customAC);
+	soloud.play3d(wav, 10, 20, 30, 1, 1, 1);
+	soloud.update3dAudio();
+	soloud.mix(scratch, 1000);
+	CHECKLASTKNOWN(scratch, 2000);
+	CHECK_BUF_DIFF(ref, scratch, 2000);
+	soloud.stopAll();
+	wav.set3dAttenuator(0);
+
+	wav.set3dCollider(&customAC);
+	soloud.play3d(wav, 10, 20, 30, 1, 1, 1);
+	soloud.update3dAudio();
+	soloud.mix(scratch, 1000);
+	CHECKLASTKNOWN(scratch, 2000);
+	CHECK_BUF_DIFF(ref, scratch, 2000);
+	soloud.stopAll();
+	wav.set3dCollider(0);
+
+	soloud.play(bus);
+	bus.play3d(wav, 10, 20, 30, 1, 1, 1);
+	soloud.update3dAudio();
+	soloud.mix(ref, 1000);
+	CHECK_BUF_NONZERO(ref, 2000);
+	CHECKLASTKNOWN(ref, 2000);
+	soloud.stopAll();
+
+	soloud.play(bus);
+	bus.play3dClocked(0.01f, wav, 10, 20, 30, 1, 1, 1);
+	soloud.stopAll();
+	soloud.play(bus);
+	bus.play3dClocked(0.1f, wav, 10, 20, 30, 1, 1, 1);
+	soloud.update3dAudio();
+	soloud.mix(scratch, 1000);
+	CHECK_BUF_DIFF(ref, scratch, 2000);
+	CHECK_BUF_NONZERO(scratch, 2000);
+	CHECKLASTKNOWN(scratch, 2000);
 	soloud.stopAll();
 
 	soloud.deinit();

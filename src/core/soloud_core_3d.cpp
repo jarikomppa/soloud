@@ -458,6 +458,7 @@ namespace SoLoud
 		}
 
 		update3dVoices((unsigned int *)&v, 1);
+		lockAudioMutex();
 		updateVoiceRelativePlaySpeed(v);
 		int j;
 		for (j = 0; j < MAX_CHANNELS; j++)
@@ -481,6 +482,7 @@ namespace SoLoud
 			mVoice[v]->mFlags &= ~AudioSourceInstance::INAUDIBLE;
 		}
 		mActiveVoiceDirty = true;
+		unlockAudioMutex();
 
 		setDelaySamples(h, samples);
 		setPause(h, 0);

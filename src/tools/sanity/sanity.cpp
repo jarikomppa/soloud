@@ -751,6 +751,10 @@ void test3d()
 	wav.set3dDistanceDelay(true);
 	soloud.play3d(wav, 10, 20, 30, 1, 1, 1);
 	soloud.update3dAudio();
+	soloud.mix(scratch, 1000); // skip time to get to when the sound starts 
+	soloud.mix(scratch, 1000);
+	soloud.mix(scratch, 1000);
+	soloud.mix(scratch, 1000);
 	soloud.mix(scratch, 1000);
 	CHECKLASTKNOWN(scratch, 2000);
 	CHECK_BUF_DIFF(ref, scratch, 2000);

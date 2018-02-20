@@ -1382,7 +1382,8 @@ namespace SoLoud
 			if (left >= k) break;
 			left = len;                  
 			len = stack[--pos];          
-		}		
+		}	
+		// TODO: should the rest of the voices be flagged INAUDIBLE?
 	}
 
 	void Soloud::mix_internal(unsigned int aSamples)

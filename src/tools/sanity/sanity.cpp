@@ -197,6 +197,7 @@ void testMisc()
 // Soloud.getPostClipScaler
 // Soloud.getGlobalVolume
 // Soloud.getMaxActiveVoiceCount
+// Soloud.setMaxActiveVoiceCount
 // Soloud.getLooping
 // Soloud.get3dSoundSpeed
 
@@ -366,9 +367,7 @@ void testVis()
 // Bus.play
 // Bus.playClocked
 // Soloud.setDelaySamples
-//  Soloud.setProtectVoice
-//  Soloud.setMaxActiveVoiceCount
-//  Wav.setInaudibleBehavior
+// Soloud.setProtectVoice
 void testPlay()
 {
 	float scratch[2048];
@@ -443,6 +442,21 @@ void testPlay()
 	CHECK_BUF_NONZERO(scratch, 2000);
 	CHECK_BUF_GTE(scratch, ref, 2000);
 
+	h = soloud.play(wav, 0.5f);
+	int i;
+	for (i = 0; i < 3000; i++)
+		soloud.play(wav, 1.0f);
+	CHECK(soloud.isValidVoiceHandle(h) == 0);
+	soloud.stopAll();
+
+	h = soloud.play(wav, 0.5f);
+	soloud.setProtectVoice(h, true);
+	for (i = 0; i < 3000; i++)
+		soloud.play(wav, 1.0f);
+	CHECK(soloud.isValidVoiceHandle(h) != 0);
+	soloud.stopAll();
+
+
 	soloud.deinit();
 }
 
@@ -487,6 +501,7 @@ public:
 // Soloud.update3dAudio
 // Soloud.setSpeakerPosition
 // Soloud.set3dSoundSpeed
+// Wav.setInaudibleBehavior
 void test3d()
 {
 	customAttenuatorCollider customAC;
@@ -532,11 +547,12 @@ void test3d()
 
 	soloud.play3dClocked(0.01f, wav, 10, 20, 30, 1, 1, 1);
 	soloud.stopAll();
-	soloud.play3dClocked(0.1f, wav, 10, 20, 30, 1, 1, 1);
+	soloud.play3dClocked(0.02f, wav, 10, 20, 30, 1, 1, 1);
 	soloud.update3dAudio();
 	soloud.mix(scratch, 1000);
 	CHECKLASTKNOWN(scratch, 2000);
 	CHECK_BUF_DIFF(ref, scratch, 2000);
+	CHECK_BUF_NONZERO(scratch, 2000);
 	soloud.stopAll();
 
 	soloud.set3dSoundSpeed(34);
@@ -705,6 +721,42 @@ void test3d()
 	soloud.stopAll();
 	wav.set3dCollider(0);
 
+	wav.setInaudibleBehavior(false, false);
+	h = soloud.play3d(wav, 10, 20, 30, 1, 1, 1, 0.0f);
+	soloud.update3dAudio();
+	soloud.mix(scratch, 1000);
+	CHECK(soloud.isValidVoiceHandle(h) == 1);
+	soloud.stopAll();
+
+	wav.setInaudibleBehavior(false, true);
+	h = soloud.play3d(wav, 10, 20, 30, 1, 1, 1, 0.0f);
+	soloud.update3dAudio();
+	soloud.mix(scratch, 1000);
+	CHECK(soloud.isValidVoiceHandle(h) == 0);
+	soloud.stopAll();
+
+	wav.setInaudibleBehavior(false, false);
+	h = soloud.play3d(wav, 10, 20, 30, 1, 1, 1, 0.0f);
+	soloud.update3dAudio();
+	soloud.mix(scratch, 1000);
+	soloud.setVolume(h, 1.0f);
+	soloud.update3dAudio();
+	soloud.mix(scratch, 1000);
+	CHECK_BUF_SAME(ref, scratch, 2000);
+	soloud.stopAll();
+
+	wav.setInaudibleBehavior(true, false);
+	h = soloud.play3d(wav, 10, 20, 30, 1, 1, 1, 0.0f);
+	soloud.update3dAudio();
+	soloud.mix(scratch, 1000);
+	soloud.setVolume(h, 1.0f);
+	soloud.update3dAudio();
+	soloud.mix(scratch, 1000);
+	CHECK_BUF_DIFF(ref, scratch, 2000);
+	CHECK_BUF_NONZERO(scratch, 2000);
+	CHECKLASTKNOWN(scratch, 2000);
+	soloud.stopAll();
+
 	soloud.play(bus);
 	bus.play3d(wav, 10, 20, 30, 1, 1, 1);
 	soloud.update3dAudio();
@@ -714,10 +766,10 @@ void test3d()
 	soloud.stopAll();
 
 	soloud.play(bus);
-	bus.play3dClocked(0.01f, wav, 10, 20, 30, 1, 1, 1);
+	bus.play3dClocked(2.01f, wav, 10, 20, 30, 1, 1, 1);
 	soloud.stopAll();
 	soloud.play(bus);
-	bus.play3dClocked(0.1f, wav, 10, 20, 30, 1, 1, 1);
+	bus.play3dClocked(2.02f, wav, 10, 20, 30, 1, 1, 1);
 	soloud.update3dAudio();
 	soloud.mix(scratch, 1000);
 	CHECK_BUF_DIFF(ref, scratch, 2000);

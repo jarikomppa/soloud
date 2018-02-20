@@ -200,7 +200,6 @@ void testMisc()
 // Soloud.setMaxActiveVoiceCount
 // Soloud.getLooping
 // Soloud.get3dSoundSpeed
-
 void testGetters()
 {
 	float scratch[2048];
@@ -367,6 +366,7 @@ void testVis()
 // Bus.play
 // Bus.playClocked
 // Soloud.setDelaySamples
+// Bus.setChannels
 // Soloud.setProtectVoice
 void testPlay()
 {
@@ -416,6 +416,7 @@ void testPlay()
 	h = bus.play(wav);
 	soloud.mix(scratch, 1000);
 	CHECK_BUF_SAME(scratch, ref, 2000); // TODO: fails, seems to offset by a sample when played through bus.
+	soloud.stopAll();
 
 	soloud.play(bus);
 	h = bus.playClocked(0.01, wav);
@@ -426,6 +427,38 @@ void testPlay()
 	CHECKLASTKNOWN(scratch, 2000);
 	CHECK_BUF_NONZERO(scratch, 2000);
 	CHECK_BUF_DIFF(scratch, ref, 2000);
+	soloud.stopAll();
+
+	bus.setChannels(1);
+	soloud.play(bus);
+	h = bus.play(wav);
+	soloud.mix(scratch, 1000);
+	CHECK_BUF_NONZERO(scratch, 2000);
+	CHECKLASTKNOWN(scratch, 2000);
+	soloud.stopAll();
+
+	bus.setChannels(2);
+	soloud.play(bus);
+	h = bus.play(wav);
+	soloud.mix(scratch, 1000);
+	CHECK_BUF_NONZERO(scratch, 2000);
+	CHECKLASTKNOWN(scratch, 2000);
+	soloud.stopAll();
+
+	bus.setChannels(4);
+	soloud.play(bus);
+	h = bus.play(wav);
+	soloud.mix(scratch, 1000);
+	CHECK_BUF_NONZERO(scratch, 2000);
+	CHECKLASTKNOWN(scratch, 2000);
+	soloud.stopAll();
+
+	bus.setChannels(6);
+	soloud.play(bus);
+	h = bus.play(wav);
+	soloud.mix(scratch, 1000);
+	CHECK_BUF_NONZERO(scratch, 2000);
+	CHECKLASTKNOWN(scratch, 2000);
 	soloud.stopAll();
 
 	h = soloud.play(wav);
@@ -742,7 +775,7 @@ void test3d()
 	soloud.setVolume(h, 1.0f);
 	soloud.update3dAudio();
 	soloud.mix(scratch, 1000);
-	CHECK_BUF_SAME(ref, scratch, 2000);
+	CHECK_BUF_SAME(ref, scratch, 2000); // fails, looks like 3d audio has some initial volume ramp problem..
 	soloud.stopAll();
 
 	wav.setInaudibleBehavior(true, false);
@@ -1150,6 +1183,63 @@ void testCore()
 	soloud.deinit();
 }
 
+// Test speech audio source
+//
+// Speech.setText
+// Speech.setParams
+// Speech.setLooping
+void testSpeech()
+{
+	float scratch[2048];
+	float ref[2048];
+	SoLoud::result res;
+	SoLoud::Soloud soloud;
+	SoLoud::Speech speech;
+	res = soloud.init(SoLoud::Soloud::CLIP_ROUNDOFF, SoLoud::Soloud::NULLDRIVER);
+	CHECK_RES(res);
+
+	speech.setParams(1330, 10, 0.5f, 1);
+	speech.setText("Why is it so loud");
+	soloud.play(speech);
+	soloud.mix(ref, 1000);
+	CHECK_BUF_NONZERO(ref, 2000);
+	CHECKLASTKNOWN(ref, 2000);
+	soloud.stopAll();
+
+	speech.setText("a different text");
+	soloud.play(speech);
+	soloud.mix(scratch, 1000);
+	CHECK_BUF_DIFF(scratch, ref, 2000);
+	CHECKLASTKNOWN(scratch, 2000);
+	soloud.stopAll();
+	speech.setText("Why is it so loud");
+
+	speech.setParams(1000, 5, 0, 2);
+	soloud.play(speech);
+	soloud.mix(scratch, 1000);
+	CHECK_BUF_DIFF(scratch, ref, 2000);
+	CHECKLASTKNOWN(scratch, 2000);
+	soloud.stopAll();
+	speech.setParams(1330, 10, 0.5f, 1);
+
+	speech.setLooping(false);
+	soloud.play(speech);
+	int i;
+	for (i = 0; i < 100; i++)
+		soloud.mix(scratch, 1000);
+	CHECK(soloud.getActiveVoiceCount() == 0);
+	soloud.stopAll();
+
+	speech.setLooping(true);
+	soloud.play(speech);
+	for (i = 0; i < 100; i++)
+		soloud.mix(scratch, 1000);
+	CHECK(soloud.getActiveVoiceCount() != 0);
+	soloud.stopAll();
+
+	soloud.deinit();
+}
+
 int main(int parc, char ** pars)
 {
 #ifndef NO_LASTKNOWN_CHECK
@@ -1169,6 +1259,7 @@ int main(int parc, char ** pars)
 	test3d();
 	testFilters();
 	testCore();
+	testSpeech();
 
 	printf("\n%d tests, %d error(s) ", tests, errorcount);
 	if (!lastknownwrite && errorcount)
@@ -1182,15 +1273,7 @@ int main(int parc, char ** pars)
 
 /*
 TODO:
-
-
-Bus.setChannels
-Bus.setLooping
-Bus.stop
-Speech.setText
-Speech.setParams
-Speech.setLooping
-Speech.stop
+----
 Wav.load
 Wav.loadMem
 Wav.loadFile
@@ -1207,39 +1290,44 @@ WavStream.loadFileToMem
 WavStream.getLength
 WavStream.setLoopRange
 WavStream.setLooping
-WavStream.stop
 Sfxr.resetParams
 Sfxr.loadParams
 Sfxr.loadParamsMem
 Sfxr.loadParamsFile
 Sfxr.loadPreset
 Sfxr.setLooping
-Sfxr.stop
 Openmpt.load
 Openmpt.loadMem
 Openmpt.loadFile
 Openmpt.setLooping
-Openmpt.stop
 Monotone.setParams
 Monotone.load
 Monotone.loadMem
 Monotone.loadFile
 Monotone.setLooping
-Monotone.stop
 TedSid.load
 TedSid.loadToMem
 TedSid.loadMem
 TedSid.loadFileToMem
 TedSid.loadFile
 TedSid.setLooping
-TedSid.stop
 Soloud.getInfo
 
 
 Not tested - abstract class
+---------------------------
 AudioAttenuator.attenuate
 
 Not tested - the functionality is the same for all audio sources, tested for Wav:
+---------------------------------------------------------------------------------
+Speech.stop
+WavStream.stop
+Sfxr.stop
+Openmpt.stop
+Monotone.stop
+TedSid.stop
+Bus.setLooping
+Bus.stop
 TedSid.setVolume
 Monotone.setVolume
 Openmpt.setVolume

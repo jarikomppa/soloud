@@ -77,6 +77,36 @@ int lastknownwrite = 0;
 #define CHECK_BUF_GTE(x, y, n) tests++; { int i, lt = 0; for (i = 0; i < (n); i++) if (fabs((x)[i]) - fabs((y)[i]) < 0) lt = 1; if (lt) { errorcount++; printf("Error on line %d, %s(): buffer %s magnitude not bigger than buffer %s \n",__LINE__,__FUNCTION__,#x, #y);}}
 #define CHECKLASTKNOWN(x, n) if (lastknownwrite && lastknownfile) { fwrite((x),1,(n)*sizeof(float),lastknownfile); } else if (lastknownfile) { fread(lastknownscratch,1,(n)*sizeof(float),lastknownfile); CHECK_BUF_SAME_LASTKNOWN((x), n); }
 
+void writeHeader()
+{
+	unsigned char buf[46] = {
+		0x52, 0x49, 0x46, 0x46, // RIFF
+		0xa4, 0x3e, 0x00, 0x00, // length of file - 8
+		0x57, 0x41, 0x56, 0x45, // WAVE
+		0x66, 0x6d, 0x74, 0x20, // fmt
+		0x12, 0x00, 0x00, 0x00, // PCM block
+		0x03, 0x00,             // Uncompressed PCM, float
+		0x02, 0x00,             // Channels (stereo)
+		0x44, 0xac, 0x00, 0x00, // 44100Hz
+		0x20, 0x62, 0x05, 0x00, // 44100*8=352800 bytes per sec
+		0x08, 0x00,             // Number of bytes per sample for all channels
+		0x20, 0x00,             // Bits per channel (32)
+		0x00, 0x00,             // 0 bytes of extension
+		0x64, 0x61, 0x74, 0x61, // data
+		0x80, 0x3e, 0x00, 0x00  // bytes of data
+		// 46 bytes up to this point
+	};
+	int *flen = (int*)(buf + 4);
+	int *dlen = (int*)(buf + 42);
+	if (!lastknownfile || !lastknownwrite)
+		return;
+	int len = ftell(lastknownfile);
+	*flen = len - 8;
+	*dlen = len - 46;
+	fseek(lastknownfile, 0, SEEK_SET);
+	fwrite(buf, 1, 46, lastknownfile);
+}
+
 void testWave(SoLoud::Wav &aWav)
 {
 	unsigned char buf[16044] = { 
@@ -1243,13 +1273,21 @@ void testSpeech()
 int main(int parc, char ** pars)
 {
 #ifndef NO_LASTKNOWN_CHECK
-	lastknownfile = fopen("lastknown.dat", "rb");
+	lastknownfile = fopen("lastknown.wav", "rb");
 	if (!lastknownfile)
 	{
-		printf("lastknown.dat not found, writing one.\n");
-		lastknownfile = fopen("lastknown.dat", "wb");
+		printf("lastknown.wav not found, writing one.\n");
+		lastknownfile = fopen("lastknown.wav", "wb");
 		lastknownwrite = 1;
 	}
+	else
+	{
+		// skip header
+		int i;
+		for (i = 0; i < 46; i++)
+			fgetc(lastknownfile);
+	}
+	writeHeader();
 #endif
 
 	testMisc();
@@ -1263,10 +1301,13 @@ int main(int parc, char ** pars)
 
 	printf("\n%d tests, %d error(s) ", tests, errorcount);
 	if (!lastknownwrite && errorcount)
-		printf("(To rebuild lastknown.dat, simply delete it)\n");
+		printf("(To rebuild lastknown.wav, simply delete it)\n");
 	printf("\n");
 #ifndef NO_LASTKNOWN_CHECK
+	writeHeader();
 	fclose(lastknownfile);
+	if (lastknownfile && lastknownwrite)
+		printf("lastknown.wav written.\n");
 #endif
 	return 0;
 }

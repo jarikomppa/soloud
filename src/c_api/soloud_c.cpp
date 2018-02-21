@@ -801,12 +801,6 @@ void Bus_set3dDopplerFactor(void * aClassPtr, float aDopplerFactor)
 	cl->set3dDopplerFactor(aDopplerFactor);
 }
 
-void Bus_set3dProcessing(void * aClassPtr, int aDo3dProcessing)
-{
-	Bus * cl = (Bus *)aClassPtr;
-	cl->set3dProcessing(!!aDo3dProcessing);
-}
-
 void Bus_set3dListenerRelative(void * aClassPtr, int aListenerRelative)
 {
 	Bus * cl = (Bus *)aClassPtr;
@@ -943,12 +937,6 @@ void Speech_set3dDopplerFactor(void * aClassPtr, float aDopplerFactor)
 	cl->set3dDopplerFactor(aDopplerFactor);
 }
 
-void Speech_set3dProcessing(void * aClassPtr, int aDo3dProcessing)
-{
-	Speech * cl = (Speech *)aClassPtr;
-	cl->set3dProcessing(!!aDo3dProcessing);
-}
-
 void Speech_set3dListenerRelative(void * aClassPtr, int aListenerRelative)
 {
 	Speech * cl = (Speech *)aClassPtr;
@@ -1065,12 +1053,6 @@ void Wav_set3dDopplerFactor(void * aClassPtr, float aDopplerFactor)
 {
 	Wav * cl = (Wav *)aClassPtr;
 	cl->set3dDopplerFactor(aDopplerFactor);
-}
-
-void Wav_set3dProcessing(void * aClassPtr, int aDo3dProcessing)
-{
-	Wav * cl = (Wav *)aClassPtr;
-	cl->set3dProcessing(!!aDo3dProcessing);
 }
 
 void Wav_set3dListenerRelative(void * aClassPtr, int aListenerRelative)
@@ -1201,12 +1183,6 @@ void WavStream_set3dDopplerFactor(void * aClassPtr, float aDopplerFactor)
 {
 	WavStream * cl = (WavStream *)aClassPtr;
 	cl->set3dDopplerFactor(aDopplerFactor);
-}
-
-void WavStream_set3dProcessing(void * aClassPtr, int aDo3dProcessing)
-{
-	WavStream * cl = (WavStream *)aClassPtr;
-	cl->set3dProcessing(!!aDo3dProcessing);
 }
 
 void WavStream_set3dListenerRelative(void * aClassPtr, int aListenerRelative)
@@ -1353,12 +1329,6 @@ void Sfxr_set3dDopplerFactor(void * aClassPtr, float aDopplerFactor)
 {
 	Sfxr * cl = (Sfxr *)aClassPtr;
 	cl->set3dDopplerFactor(aDopplerFactor);
-}
-
-void Sfxr_set3dProcessing(void * aClassPtr, int aDo3dProcessing)
-{
-	Sfxr * cl = (Sfxr *)aClassPtr;
-	cl->set3dProcessing(!!aDo3dProcessing);
 }
 
 void Sfxr_set3dListenerRelative(void * aClassPtr, int aListenerRelative)
@@ -1511,12 +1481,6 @@ void Openmpt_set3dDopplerFactor(void * aClassPtr, float aDopplerFactor)
 	cl->set3dDopplerFactor(aDopplerFactor);
 }
 
-void Openmpt_set3dProcessing(void * aClassPtr, int aDo3dProcessing)
-{
-	Openmpt * cl = (Openmpt *)aClassPtr;
-	cl->set3dProcessing(!!aDo3dProcessing);
-}
-
 void Openmpt_set3dListenerRelative(void * aClassPtr, int aListenerRelative)
 {
 	Openmpt * cl = (Openmpt *)aClassPtr;
@@ -1641,12 +1605,6 @@ void Monotone_set3dDopplerFactor(void * aClassPtr, float aDopplerFactor)
 	cl->set3dDopplerFactor(aDopplerFactor);
 }
 
-void Monotone_set3dProcessing(void * aClassPtr, int aDo3dProcessing)
-{
-	Monotone * cl = (Monotone *)aClassPtr;
-	cl->set3dProcessing(!!aDo3dProcessing);
-}
-
 void Monotone_set3dListenerRelative(void * aClassPtr, int aListenerRelative)
 {
 	Monotone * cl = (Monotone *)aClassPtr;
@@ -1769,12 +1727,6 @@ void TedSid_set3dDopplerFactor(void * aClassPtr, float aDopplerFactor)
 {
 	TedSid * cl = (TedSid *)aClassPtr;
 	cl->set3dDopplerFactor(aDopplerFactor);
-}
-
-void TedSid_set3dProcessing(void * aClassPtr, int aDo3dProcessing)
-{
-	TedSid * cl = (TedSid *)aClassPtr;
-	cl->set3dProcessing(!!aDo3dProcessing);
 }
 
 void TedSid_set3dListenerRelative(void * aClassPtr, int aListenerRelative)

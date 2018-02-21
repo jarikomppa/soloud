@@ -125,7 +125,6 @@ EXPORTS
 	Bus_set3dMinMaxDistance
 	Bus_set3dAttenuation
 	Bus_set3dDopplerFactor
-	Bus_set3dProcessing
 	Bus_set3dListenerRelative
 	Bus_set3dDistanceDelay
 	Bus_set3dCollider
@@ -150,7 +149,6 @@ EXPORTS
 	Speech_set3dMinMaxDistance
 	Speech_set3dAttenuation
 	Speech_set3dDopplerFactor
-	Speech_set3dProcessing
 	Speech_set3dListenerRelative
 	Speech_set3dDistanceDelay
 	Speech_set3dCollider
@@ -171,7 +169,6 @@ EXPORTS
 	Wav_set3dMinMaxDistance
 	Wav_set3dAttenuation
 	Wav_set3dDopplerFactor
-	Wav_set3dProcessing
 	Wav_set3dListenerRelative
 	Wav_set3dDistanceDelay
 	Wav_set3dCollider
@@ -194,7 +191,6 @@ EXPORTS
 	WavStream_set3dMinMaxDistance
 	WavStream_set3dAttenuation
 	WavStream_set3dDopplerFactor
-	WavStream_set3dProcessing
 	WavStream_set3dListenerRelative
 	WavStream_set3dDistanceDelay
 	WavStream_set3dCollider
@@ -220,7 +216,6 @@ EXPORTS
 	Sfxr_set3dMinMaxDistance
 	Sfxr_set3dAttenuation
 	Sfxr_set3dDopplerFactor
-	Sfxr_set3dProcessing
 	Sfxr_set3dListenerRelative
 	Sfxr_set3dDistanceDelay
 	Sfxr_set3dCollider
@@ -247,7 +242,6 @@ EXPORTS
 	Openmpt_set3dMinMaxDistance
 	Openmpt_set3dAttenuation
 	Openmpt_set3dDopplerFactor
-	Openmpt_set3dProcessing
 	Openmpt_set3dListenerRelative
 	Openmpt_set3dDistanceDelay
 	Openmpt_set3dCollider
@@ -269,7 +263,6 @@ EXPORTS
 	Monotone_set3dMinMaxDistance
 	Monotone_set3dAttenuation
 	Monotone_set3dDopplerFactor
-	Monotone_set3dProcessing
 	Monotone_set3dListenerRelative
 	Monotone_set3dDistanceDelay
 	Monotone_set3dCollider
@@ -291,7 +284,6 @@ EXPORTS
 	TedSid_set3dMinMaxDistance
 	TedSid_set3dAttenuation
 	TedSid_set3dDopplerFactor
-	TedSid_set3dProcessing
 	TedSid_set3dListenerRelative
 	TedSid_set3dDistanceDelay
 	TedSid_set3dCollider

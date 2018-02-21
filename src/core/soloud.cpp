@@ -589,6 +589,15 @@ namespace SoLoud
 	}
 
 #ifdef SOLOUD_SSE_INTRINSICS
+
+#if !defined(_MSC_VER) || (_MSC_VER >= 1900)
+	// 16-byte alignment: use C++11 keyword
+	#define ALIGN16 alignas(16)
+#else
+	// 16-byte alignment: VC++ compilers older than 14.0, shipped with Visual Studio 2015.
+	#define ALIGN16 __declspec(align(16))
+#endif
+
 	void Soloud::clip(AlignedFloatBuffer &aBuffer, AlignedFloatBuffer &aDestBuffer, unsigned int aSamples, float aVolume0, float aVolume1)
 	{
 		float vd = (aVolume1 - aVolume0) / aSamples;
@@ -604,19 +613,18 @@ namespace SoLoud
 			float nw = -0.9862875f;	__m128 negwall = _mm_load_ps1(&nw);
 			float pw = 0.9862875f;	__m128 poswall = _mm_load_ps1(&pw);
 			__m128 postscale = _mm_load_ps1(&mPostClipScaler);
-			AlignedFloatBuffer volumes;
-			volumes.init(4);
-			volumes.mData[0] = v;
-			volumes.mData[1] = v + vd;
-			volumes.mData[2] = v + vd + vd;
-			volumes.mData[3] = v + vd + vd + vd;
+			ALIGN16 float volumes[4];
+			volumes[0] = v;
+			volumes[1] = v + vd;
+			volumes[2] = v + vd + vd;
+			volumes[3] = v + vd + vd + vd;
 			vd *= 4;
 			__m128 vdelta = _mm_load_ps1(&vd);
 			c = 0;
 			d = 0;
 			for (j = 0; j < mChannels; j++)
 			{
-				__m128 vol = _mm_load_ps(volumes.mData);
+				__m128 vol = _mm_load_ps(volumes);
 
 				for (i = 0; i < aSamples / 4; i++)
 				{
@@ -661,19 +669,18 @@ namespace SoLoud
 			float nb = -1.0f;	__m128 negbound = _mm_load_ps1(&nb);
 			float pb = 1.0f;	__m128 posbound = _mm_load_ps1(&pb);
 			__m128 postscale = _mm_load_ps1(&mPostClipScaler);
-			AlignedFloatBuffer volumes;
-			volumes.init(4);
-			volumes.mData[0] = v;
-			volumes.mData[1] = v + vd;
-			volumes.mData[2] = v + vd + vd;
-			volumes.mData[3] = v + vd + vd + vd;
+			ALIGN16 float volumes[4];
+			volumes[0] = v;
+			volumes[1] = v + vd;
+			volumes[2] = v + vd + vd;
+			volumes[3] = v + vd + vd + vd;
 			vd *= 4;
 			__m128 vdelta = _mm_load_ps1(&vd);
 			c = 0;
 			d = 0;
 			for (j = 0; j < mChannels; j++)
 			{
-				__m128 vol = _mm_load_ps(volumes.mData);
+				__m128 vol = _mm_load_ps(volumes);
 				for (i = 0; i < aSamples / 4; i++)
 				{
 					//float f1 = aBuffer.mData[c] * v; c++; v += vd;

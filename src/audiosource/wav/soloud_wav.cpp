@@ -180,54 +180,49 @@ namespace SoLoud
 				mData = new float[samples * readchannels];
 				mSampleCount = samples;
 
-				int i, j;
 				if (bitspersample == 8)
 				{
-					for (i = 0; i < samples; i++)
+					// read the samples to a temp buffer
+					unsigned char* buffer = new unsigned char[samples * channels];
+					aReader->read(buffer, samples * channels); // TODO what to do if we could actually read less than expected?
+
+					// convert to floats and take only max two channels
+					for (int src_index = 0, dst_index = 0; dst_index < samples; dst_index++)
 					{
-						for (j = 0; j < channels; j++)
+						mData[dst_index] = ((signed)buffer[src_index++] - 128) / (float)0x80;
+
+						if (readchannels > 1)
 						{
-							if (j == 0)
-							{
-								mData[i] = ((signed)aReader->read8() - 128) / (float)0x80;
-							}
-							else
-							{
-								if (readchannels > 1 && j == 1)
-								{
-									mData[i + samples] = ((signed)aReader->read8() - 128) / (float)0x80;
-								}
-								else
-								{
-									aReader->read8();
-								}
-							}
+							mData[dst_index + samples] = ((signed)buffer[src_index++] - 128) / (float)0x80;
 						}
+
+						// skip extra channels
+						src_index += channels - readchannels;
 					}
+
+					delete[] buffer;
 				}
 				else if (bitspersample == 16)
 				{
-					for (i = 0; i < samples; i++)
+					// read the samples to a temp buffer
+					unsigned short* buffer = new unsigned short[samples * channels];
+					aReader->read((unsigned char*)buffer, samples * channels * 2); // TODO what to do if we could actually read less than expected?
+
+					// convert to floats and take only max two channels
+					for (int src_index = 0, dst_index = 0; dst_index < samples; dst_index++)
 					{
-						for (j = 0; j < channels; j++)
+						mData[dst_index] = ((signed short)buffer[src_index++]) / (float)0x8000;
+
+						if (readchannels > 1)
 						{
-							if (j == 0)
-							{
-								mData[i] = ((signed short)aReader->read16()) / (float)0x8000;
-							}
-							else
-							{
-								if (readchannels > 1 && j == 1)
-								{
-									mData[i + samples] = ((signed short)aReader->read16()) / (float)0x8000;
-								}
-								else
-								{
-									aReader->read16();
-								}
-							}
+							mData[dst_index + samples] = ((signed short)buffer[src_index++]) / (float)0x8000;
 						}
+
+						// skip extra channels
+						src_index += channels - readchannels;
 					}
+
+					delete[] buffer;
 				}
 			}
 

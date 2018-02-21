@@ -103,12 +103,15 @@ namespace SoLoud
 
 		int scratchneeded = SAMPLE_GRANULARITY * mVoice[ch]->mChannels;
 
-		mVoice[ch]->mResampleData[0]->mBuffer = new float[scratchneeded];
-		mVoice[ch]->mResampleData[1]->mBuffer = new float[scratchneeded];
+		float* buffer1 = (float *)((size_t)mResamplingBuffers + (ch * 2 + 0) * SAMPLE_GRANULARITY * sizeof(float) * MAX_CHANNELS);
+		float* buffer2 = (float *)((size_t)mResamplingBuffers + (ch * 2 + 1) * SAMPLE_GRANULARITY * sizeof(float) * MAX_CHANNELS);
 
-		// First buffer will be overwritten anyway; the second may be referenced by resampler
-		memset(mVoice[ch]->mResampleData[0]->mBuffer, 0, sizeof(float) * scratchneeded);
-		memset(mVoice[ch]->mResampleData[1]->mBuffer, 0, sizeof(float) * scratchneeded);
+		mVoice[ch]->mResampleData[0] = buffer1;
+		mVoice[ch]->mResampleData[1] = buffer2;
+
+		// Zero out only the part the resampler is going to need
+		memset(buffer1, 0, sizeof(float) * scratchneeded);
+		memset(buffer2, 0, sizeof(float) * scratchneeded);
 
 		unlockAudioMutex();
 

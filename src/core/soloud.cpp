@@ -857,7 +857,7 @@ namespace SoLoud
 					if (voice->mLeftoverSamples == 0)
 					{
 						// Swap resample buffers (ping-pong)
-						AudioSourceResampleData * t = voice->mResampleData[0];
+						float* t = voice->mResampleData[0];
 						voice->mResampleData[0] = voice->mResampleData[1];
 						voice->mResampleData[1] = t;
 
@@ -865,11 +865,11 @@ namespace SoLoud
 
 						if (voice->hasEnded())
 						{
-							memset(voice->mResampleData[0]->mBuffer, 0, sizeof(float) * SAMPLE_GRANULARITY * voice->mChannels);
+							memset(voice->mResampleData[0], 0, sizeof(float) * SAMPLE_GRANULARITY * voice->mChannels);
 						}
 						else
 						{
-							voice->getAudio(voice->mResampleData[0]->mBuffer, SAMPLE_GRANULARITY);
+							voice->getAudio(voice->mResampleData[0], SAMPLE_GRANULARITY);
 						}
 
 						
@@ -894,7 +894,7 @@ namespace SoLoud
 							if (voice->mFilter[j])
 							{
 								voice->mFilter[j]->filter(
-									voice->mResampleData[0]->mBuffer,
+									voice->mResampleData[0],
 									SAMPLE_GRANULARITY, 
 									voice->mChannels,
 									voice->mSamplerate,
@@ -934,8 +934,8 @@ namespace SoLoud
 					{
 						for (j = 0; j < voice->mChannels; j++)
 						{
-							resample(voice->mResampleData[0]->mBuffer + SAMPLE_GRANULARITY * j,
-								voice->mResampleData[1]->mBuffer + SAMPLE_GRANULARITY * j,
+							resample(voice->mResampleData[0] + SAMPLE_GRANULARITY * j,
+								voice->mResampleData[1] + SAMPLE_GRANULARITY * j,
 									 aScratch + aSamples * j + outofs, 
 									 voice->mSrcOffset,
 									 writesamples,
@@ -1229,7 +1229,7 @@ namespace SoLoud
 					if (voice->mLeftoverSamples == 0)
 					{
 						// Swap resample buffers (ping-pong)
-						AudioSourceResampleData * t = voice->mResampleData[0];
+						float* t = voice->mResampleData[0];
 						voice->mResampleData[0] = voice->mResampleData[1];
 						voice->mResampleData[1] = t;
 
@@ -1237,7 +1237,7 @@ namespace SoLoud
 
 						if (!voice->hasEnded())
 						{
-							voice->getAudio(voice->mResampleData[0]->mBuffer, SAMPLE_GRANULARITY);
+							voice->getAudio(voice->mResampleData[0], SAMPLE_GRANULARITY);
 						}
 
 

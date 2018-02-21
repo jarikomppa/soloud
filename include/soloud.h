@@ -62,7 +62,7 @@ freely, subject to the following restrictions:
 #define SAMPLE_GRANULARITY 512
 
 // Maximum number of concurrent voices (hard limit is 4095)
-#define VOICE_COUNT 1024
+#define VOICE_COUNT 256
 
 // Use linear resampler
 #define RESAMPLER_LINEAR
@@ -386,6 +386,9 @@ namespace SoLoud
 		AlignedFloatBuffer mOutputScratch;
 		// Audio voices.
 		AudioSourceInstance *mVoice[VOICE_COUNT];
+		// Resampling buffers for voices.
+		float mResamplingBuffers[VOICE_COUNT * 2 * SAMPLE_GRANULARITY * MAX_CHANNELS];
+
 		// Output sample rate (not float)
 		unsigned int mSamplerate;
 		// Output channel count

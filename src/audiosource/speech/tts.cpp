@@ -874,7 +874,9 @@ static int leftmatch(
 		if (isalpha(*pat) || *pat == '\'' || *pat == ' ')
 		{
 			if (*pat != *text)
+			{
 				return 0;
+			}
 			else
 			{
 				text--;
@@ -963,7 +965,9 @@ static int rightmatch(
 		if (isalpha(*pat) || *pat == '\'' || *pat == ' ')
 		{
 			if (*pat != *text)
+			{
 				return 0;
+			}
 			else
 			{
 				text++;

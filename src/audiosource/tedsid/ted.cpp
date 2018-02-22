@@ -88,7 +88,8 @@ void TED::writeSoundReg(unsigned int reg, unsigned char value)
 			setFreq(1, Freq2);
 			break;
 		case 3:
-			if ((DAStatus = value & 0x80)) {
+			DAStatus = value & 0x80;
+			if (DAStatus) {
 				FlipFlop[0] = 1;
 				FlipFlop[1] = 1;
 				oscCount[0] = OscReload[0];

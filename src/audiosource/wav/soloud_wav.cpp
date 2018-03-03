@@ -146,6 +146,11 @@ namespace SoLoud
 			}
 			filesize -= 8;
 
+			if (aReader->length() < aReader->pos() + chunkSize)
+			{
+				return FILE_LOAD_FAILED;
+			}
+
 			int chunkStart = aReader->pos();
 
 			if (id == MAKEDWORD('f', 'm', 't', ' '))

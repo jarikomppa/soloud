@@ -110,6 +110,7 @@ int is_banned(string aName)
 	if (aName == "AudioSource") return 1;
 	if (aName == "Fader") return 1;
 	if (aName == "AlignedFloatBuffer")	return 1;
+	if (aName == "TinyAlignedFloatBuffer")	return 1;
 	return 0;
 }
 

@@ -110,6 +110,17 @@ namespace SoLoud
 		// dtor
 		~AlignedFloatBuffer();
 	};
+
+	// Lightweight class that handles small aligned buffer to support vectorized operations
+	class TinyAlignedFloatBuffer
+	{
+	public:
+		float *mData; // aligned pointer
+		unsigned char mActualData[sizeof(float) * 16 + 16];
+
+		// ctor
+		TinyAlignedFloatBuffer();
+	};
 };
 
 #include "soloud_filter.h"

@@ -80,6 +80,11 @@ namespace SoLoud
 		delete[] mBasePtr;
 	}
 
+	TinyAlignedFloatBuffer::TinyAlignedFloatBuffer()
+	{
+		unsigned char * basePtr = &mActualData[0];
+		mData = (float *)(((size_t)basePtr + 15)&~15);
+	}
 
 	Soloud::Soloud()
 	{
@@ -604,8 +609,7 @@ namespace SoLoud
 			float nw = -0.9862875f;	__m128 negwall = _mm_load_ps1(&nw);
 			float pw = 0.9862875f;	__m128 poswall = _mm_load_ps1(&pw);
 			__m128 postscale = _mm_load_ps1(&mPostClipScaler);
-			AlignedFloatBuffer volumes;
-			volumes.init(4);
+			TinyAlignedFloatBuffer volumes;
 			volumes.mData[0] = v;
 			volumes.mData[1] = v + vd;
 			volumes.mData[2] = v + vd + vd;
@@ -661,8 +665,7 @@ namespace SoLoud
 			float nb = -1.0f;	__m128 negbound = _mm_load_ps1(&nb);
 			float pb = 1.0f;	__m128 posbound = _mm_load_ps1(&pb);
 			__m128 postscale = _mm_load_ps1(&mPostClipScaler);
-			AlignedFloatBuffer volumes;
-			volumes.init(4);
+			TinyAlignedFloatBuffer volumes;
 			volumes.mData[0] = v;
 			volumes.mData[1] = v + vd;
 			volumes.mData[2] = v + vd + vd;

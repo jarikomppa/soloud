@@ -33,6 +33,7 @@ namespace SoLoud
 {
 	class Wav;
 	class File;
+	class MemoryFile;
 
 	class WavInstance : public AudioSourceInstance
 	{
@@ -47,9 +48,9 @@ namespace SoLoud
 
 	class Wav : public AudioSource
 	{
-		result loadwav(File *aReader);
-		result loadogg(File *aReader);
-		result testAndLoadFile(File *aReader);
+		result loadwav(MemoryFile *aReader);
+		result loadogg(MemoryFile *aReader);
+		result testAndLoadFile(MemoryFile *aReader);
 	public:
 		float *mData;
 		unsigned int mSampleCount;

@@ -124,7 +124,7 @@ namespace SoLoud
 
 #define MAKEDWORD(a,b,c,d) (((d) << 24) | ((c) << 16) | ((b) << 8) | (a))
 
-	result Wav::loadwav(File *aReader)
+	result Wav::loadwav(MemoryFile *aReader)
 	{
 		int filesize = aReader->read32();
 		if (aReader->read32() != MAKEDWORD('W', 'A', 'V', 'E'))
@@ -179,65 +179,55 @@ namespace SoLoud
 
 				mData = new float[samples * readchannels];
 				mSampleCount = samples;
-
 				int i, j;
 				if (bitspersample == 8)
 				{
+					unsigned char * dataptr = (unsigned char*)(aReader->getMemPtr() + aReader->pos());
 					for (i = 0; i < samples; i++)
 					{
 						for (j = 0; j < channels; j++)
 						{
 							if (j == 0)
 							{
-								mData[i] = ((signed)aReader->read8() - 128) / (float)0x80;
+								mData[i] = ((signed)*dataptr - 128) / (float)0x80;
 							}
 							else
 							{
 								if (readchannels > 1 && j == 1)
 								{
-									mData[i + samples] = ((signed)aReader->read8() - 128) / (float)0x80;
-								}
-								else
-								{
-									aReader->read8();
+									mData[i + samples] = ((signed)*dataptr - 128) / (float)0x80;
 								}
 							}
+							dataptr++;
 						}
 					}
 				}
 				else if (bitspersample == 16)
 				{
+					unsigned short * dataptr = (unsigned short*)(aReader->getMemPtr() + aReader->pos());
 					for (i = 0; i < samples; i++)
 					{
 						for (j = 0; j < channels; j++)
 						{
 							if (j == 0)
 							{
-								mData[i] = ((signed short)aReader->read16()) / (float)0x8000;
+								mData[i] = ((signed short)*dataptr) / (float)0x8000;
 							}
 							else
 							{
 								if (readchannels > 1 && j == 1)
 								{
-									mData[i + samples] = ((signed short)aReader->read16()) / (float)0x8000;
-								}
-								else
-								{
-									aReader->read16();
+									mData[i + samples] = ((signed short)*dataptr) / (float)0x8000;
 								}
 							}
+							dataptr++;
 						}
 					}
 				}
 			}
 
 			// skip rest of chunk
-			int bytesRead = aReader->pos() - chunkStart;
-			if ((int)chunkSize > bytesRead)
-			{
-				for (int i = 0; i < chunkSize - bytesRead; i++)
-					aReader->read8();
-			}
+			aReader->seek(chunkStart + chunkSize);
 
 			filesize -= chunkSize;
 		}
@@ -245,15 +235,11 @@ namespace SoLoud
 		return 0;
 	}
 
-	result Wav::loadogg(File *aReader)
-	{
-		aReader->seek(0);
-		MemoryFile memoryFile;
-		memoryFile.openFileToMem(aReader);
-		
+	result Wav::loadogg(MemoryFile *aReader)
+	{	
 		int e = 0;
 		stb_vorbis *vorbis = 0;
-		vorbis = stb_vorbis_open_memory(memoryFile.getMemPtr(), memoryFile.length(), &e, 0);
+		vorbis = stb_vorbis_open_memory(aReader->getMemPtr(), aReader->length(), &e, 0);
 
 		if (0 == vorbis)
 		{
@@ -297,7 +283,7 @@ namespace SoLoud
 		return 0;
 	}
 
-    result Wav::testAndLoadFile(File *aReader)
+    result Wav::testAndLoadFile(MemoryFile *aReader)
     {
 		delete[] mData;
 		mData = 0;
@@ -320,11 +306,7 @@ namespace SoLoud
 	{
 		DiskFile dr;
 		int res = dr.open(aFilename);
-		if (res != SO_NO_ERROR)
-        {
-			return res;
-        }
-		return testAndLoadFile(&dr);
+		return loadFile(&dr);
 	}
 
 	result Wav::loadMem(unsigned char *aMem, unsigned int aLength, bool aCopy, bool aTakeOwnership)
@@ -339,7 +321,16 @@ namespace SoLoud
 
 	result Wav::loadFile(File *aFile)
 	{
-		return testAndLoadFile(aFile);
+		if (!aFile)
+			return INVALID_PARAMETER;
+		MemoryFile mr;
+		result res = mr.openFileToMem(aFile);
+
+		if (res != SO_NO_ERROR)
+		{
+			return res;
+		}
+		return testAndLoadFile(&mr);
 	}
 
 	AudioSourceInstance *Wav::createInstance()

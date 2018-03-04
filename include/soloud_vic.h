@@ -55,7 +55,7 @@ namespace SoLoud
 		VicInstance(Vic *aParent);
 		~VicInstance();
 
-		virtual void getAudio(float *aBuffer, unsigned int aSamples);
+		virtual unsigned int getAudio(float *aBuffer, unsigned int aSamples);
 		virtual bool hasEnded();
 
 	private:

@@ -43,10 +43,10 @@ namespace SoLoud
 		mPlaying = mModfile != NULL;		
 	}
 
-	void OpenmptInstance::getAudio(float *aBuffer, unsigned int aSamples)
+	unsigned int OpenmptInstance::getAudio(float *aBuffer, unsigned int aSamples)
 	{
 		if (mModfile == NULL)
-			return;
+			return 0;
 		int s = aSamples;
 		unsigned int outofs = 0;
 		
@@ -67,13 +67,7 @@ namespace SoLoud
 			s -= samples;
 		}
 
-		if (outofs < aSamples)
-		{
-			// TODO: handle looping
-			unsigned int i;
-			for (i = outofs; i < aSamples; i++)
-				aBuffer[i] = aBuffer[i + aSamples] = 0;
-		}
+		return outofs;
 	}
 
 	bool OpenmptInstance::hasEnded()

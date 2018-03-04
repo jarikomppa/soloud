@@ -41,7 +41,7 @@ namespace SoLoud
 		float mVisualizationWaveData[256];
 
 		BusInstance(Bus *aParent);
-		virtual void getAudio(float *aBuffer, unsigned int aSamples);
+		virtual unsigned int getAudio(float *aBuffer, unsigned int aSamples);
 		virtual bool hasEnded();
 		virtual ~BusInstance();
 	};

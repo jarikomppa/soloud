@@ -176,12 +176,12 @@ namespace SoLoud
 		return samples;
 	}
 
-	void WavStreamInstance::getAudio(float *aBuffer, unsigned int aSamples)
+	unsigned int WavStreamInstance::getAudio(float *aBuffer, unsigned int aSamples)
 	{			
 		unsigned int channels = mChannels;
 
 		if (mFile == NULL)
-			return;
+			return 0;
 
 		if (mOgg)
 		{
@@ -230,11 +230,8 @@ namespace SoLoud
 				}
 				else if (mOffset >= mParent->mSampleCount || b == 0)
 				{
-					unsigned int i;
-					for (i = 0; i < channels; i++)
-						memset(aBuffer + offset + i * aSamples, 0, sizeof(float) * (aSamples - offset));
-					mOffset += aSamples - offset;
-					offset = aSamples;
+					mOffset += offset;
+					return offset;
 				}
 			}
 		}
@@ -271,12 +268,9 @@ namespace SoLoud
 					mLoopCount++;
 				}
 				else
-				{					
-					unsigned int i;
-					for (i = 0; i < channels; i++)
-						memset(aBuffer + copysize + i * aSamples, 0, sizeof(float) * (aSamples - copysize));
-						
-					mOffset += aSamples;
+				{	
+					mOffset += copysize;
+					return copysize;						
 				}
 			}
 			else
@@ -284,6 +278,7 @@ namespace SoLoud
 				mOffset += aSamples;
 			}
 		}
+		return aSamples;
 	}
 
 	result WavStreamInstance::rewind()

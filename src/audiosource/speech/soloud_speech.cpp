@@ -52,7 +52,7 @@ namespace SoLoud
 		}
 	}
 
-	void SpeechInstance::getAudio(float *aBuffer, unsigned int aSamples)
+	unsigned int SpeechInstance::getAudio(float *aBuffer, unsigned int aSamples)
 	{
 		mSynth.init(mParent->mBaseFrequency, mParent->mBaseSpeed, mParent->mBaseDeclination, mParent->mBaseWaveform);
 		unsigned int samples_out = 0;
@@ -93,11 +93,7 @@ namespace SoLoud
 				mLoopCount++;
 			}
 		}
-
-		if (mSampleCount < 0 && aSamples > samples_out)
-		{
-			memset(aBuffer + samples_out, 0, sizeof(float) * (aSamples - samples_out));				
-		}
+		return samples_out;
 	}
 
 	result SpeechInstance::rewind()

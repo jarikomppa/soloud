@@ -60,7 +60,7 @@ namespace SoLoud
 		}
 	}
 
-	void MonotoneInstance::getAudio(float *aBuffer, unsigned int aSamples)
+	unsigned int MonotoneInstance::getAudio(float *aBuffer, unsigned int aSamples)
 	{
 		int samplesPerTick = (int)floor(mSamplerate / 60);
 		unsigned int i;
@@ -316,6 +316,7 @@ namespace SoLoud
 
 			mSampleCount++;
 		}
+		return aSamples;
 	}
 
 	bool MonotoneInstance::hasEnded()

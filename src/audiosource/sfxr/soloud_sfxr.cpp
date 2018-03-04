@@ -72,39 +72,32 @@ namespace SoLoud
 
 #define frnd(x) ((float)(mRand.rand()%10001)/10000*(x))
 
-	void SfxrInstance::getAudio(float *aBuffer, unsigned int aSamples)
+	unsigned int SfxrInstance::getAudio(float *aBuffer, unsigned int aSamples)
 	{
 		float *buffer = aBuffer;
 		unsigned int i;
-		for(i = 0; i < aSamples; i++)
+		for (i = 0; i < aSamples; i++)
 		{
-			if(!playing_sample)
-			{
-				*aBuffer = 0;
-				aBuffer++;
-				continue;
-			}
-
 			rep_time++;
-			if(rep_limit!=0 && rep_time>=rep_limit)
+			if (rep_limit != 0 && rep_time >= rep_limit)
 			{
-				rep_time=0;
+				rep_time = 0;
 				resetSample(true);
 			}
 
 			// frequency envelopes/arpeggios
 			arp_time++;
-			if(arp_limit!=0 && arp_time>=arp_limit)
+			if (arp_limit != 0 && arp_time >= arp_limit)
 			{
-				arp_limit=0;
-				fperiod*=arp_mod;
+				arp_limit = 0;
+				fperiod *= arp_mod;
 			}
-			fslide+=fdslide;
-			fperiod*=fslide;
-			if(fperiod>fmaxperiod)
+			fslide += fdslide;
+			fperiod *= fslide;
+			if (fperiod > fmaxperiod)
 			{
-				fperiod=fmaxperiod;
-				if(mParams.p_freq_limit>0.0f)
+				fperiod = fmaxperiod;
+				if (mParams.p_freq_limit > 0.0f)
 				{
 					if (mFlags & LOOPING)
 					{
@@ -112,28 +105,29 @@ namespace SoLoud
 					}
 					else
 					{
-						playing_sample=false;
+						playing_sample = false;
+						return i;
 					}
 				}
 			}
-			float rfperiod=(float)fperiod;
-			if(vib_amp>0.0f)
+			float rfperiod = (float)fperiod;
+			if (vib_amp > 0.0f)
 			{
-				vib_phase+=vib_speed;
-				rfperiod=(float)(fperiod*(1.0+sin(vib_phase)*vib_amp));
+				vib_phase += vib_speed;
+				rfperiod = (float)(fperiod * (1.0 + sin(vib_phase) * vib_amp));
 			}
-			period=(int)rfperiod;
-			if(period<8) period=8;
-			square_duty+=square_slide;
-			if(square_duty<0.0f) square_duty=0.0f;
-			if(square_duty>0.5f) square_duty=0.5f;		
+			period = (int)rfperiod;
+			if (period < 8) period = 8;
+			square_duty += square_slide;
+			if (square_duty < 0.0f) square_duty = 0.0f;
+			if (square_duty > 0.5f) square_duty = 0.5f;		
 			// volume envelope
 			env_time++;
-			if(env_time>env_length[env_stage])
+			if (env_time > env_length[env_stage])
 			{
-				env_time=0;
+				env_time = 0;
 				env_stage++;
-				if(env_stage==3)
+				if (env_stage == 3)
 				{
 					if (mFlags & LOOPING)
 					{
@@ -141,116 +135,137 @@ namespace SoLoud
 					}
 					else
 					{
-						playing_sample=false;
+						playing_sample = false;
+						return i;
 					}
 				}
 			}
 			if (env_stage == 0)
 			{
 				if (env_length[0])
+				{
 					env_vol = (float)env_time / env_length[0];
+				}
 				else
+				{
 					env_vol = 0;
+				}
 			}
 			if (env_stage == 1)
 			{
 				if (env_length[1])
-					env_vol = 1.0f + (float)pow(1.0f - (float)env_time / env_length[1], 1.0f)*2.0f*mParams.p_env_punch;
+				{
+					env_vol = 1.0f + (float)pow(1.0f - (float)env_time / env_length[1], 1.0f) * 2.0f * mParams.p_env_punch;
+				}
 				else
+				{
 					env_vol = 0;
+				}
 			}
 			if (env_stage == 2)
 			{
 				if (env_length[2])
+				{
 					env_vol = 1.0f - (float)env_time / env_length[2];
+				}
 				else
+				{
 					env_vol = 0;
+				}
 			}
 
 			// phaser step
-			fphase+=fdphase;
-			iphase=abs((int)fphase);
-			if(iphase>1023) iphase=1023;
+			fphase += fdphase;
+			iphase = abs((int)fphase);
+			if (iphase > 1023) iphase = 1023;
 
-			if(flthp_d!=0.0f)
+			if (flthp_d != 0.0f)
 			{
-				flthp*=flthp_d;
-				if(flthp<0.00001f) flthp=0.00001f;
-				if(flthp>0.1f) flthp=0.1f;
+				flthp *= flthp_d;
+				if (flthp < 0.00001f) flthp = 0.00001f;
+				if (flthp > 0.1f) flthp = 0.1f;
 			}
 
-			float ssample=0.0f;
-			for(int si=0;si<8;si++) // 8x supersampling
+			float ssample = 0.0f;
+			for (int si = 0; si < 8; si++) // 8x supersampling
 			{
-				float sample=0.0f;
+				float sample = 0.0f;
 				phase++;
-				if(phase>=period)
+				if (phase >= period)
 				{
-					//				phase=0;
-					phase%=period;
-					if(mParams.wave_type==3)
-						for(int k=0;k<32;k++)
-							noise_buffer[k]=frnd(2.0f)-1.0f;
+					phase %= period;
+					if (mParams.wave_type == 3)
+					{
+						for (int k = 0; k < 32; k++)
+						{
+							noise_buffer[k] = frnd(2.0f) - 1.0f;
+						}
+					}
 				}
 				// base waveform
-				float fp=(float)phase/period;
-				switch(mParams.wave_type)
+				float fp = (float)phase / period;
+				switch (mParams.wave_type)
 				{
 				case 0: // square
-					if(fp<square_duty)
-						sample=0.5f;
+					if (fp < square_duty)
+					{
+						sample = 0.5f;
+					}
 					else
-						sample=-0.5f;
+					{
+						sample = -0.5f;
+					}
 					break;
 				case 1: // sawtooth
-					sample=1.0f-fp*2;
+					sample = 1.0f - fp * 2;
 					break;
 				case 2: // sine
-					sample=(float)sin(fp*2*M_PI);
+					sample = (float)sin(fp * 2 * M_PI);
 					break;
 				case 3: // noise
-					sample=noise_buffer[phase*32/period];
+					sample = noise_buffer[phase * 32 / period];
 					break;
 				}
 				// lp filter
-				float pp=fltp;
-				fltw*=fltw_d;
-				if(fltw<0.0f) fltw=0.0f;
-				if(fltw>0.1f) fltw=0.1f;
-				if(mParams.p_lpf_freq!=1.0f)
+				float pp = fltp;
+				fltw *= fltw_d;
+				if (fltw < 0.0f) fltw = 0.0f;
+				if (fltw > 0.1f) fltw = 0.1f;
+				if (mParams.p_lpf_freq != 1.0f)
 				{
-					fltdp+=(sample-fltp)*fltw;
-					fltdp-=fltdp*fltdmp;
+					fltdp += (sample - fltp) * fltw;
+					fltdp -= fltdp * fltdmp;
 				}
 				else
 				{
-					fltp=sample;
-					fltdp=0.0f;
+					fltp = sample;
+					fltdp = 0.0f;
 				}
-				fltp+=fltdp;
+				fltp += fltdp;
 				// hp filter
-				fltphp+=fltp-pp;
-				fltphp-=fltphp*flthp;
-				sample=fltphp;
+				fltphp += fltp - pp;
+				fltphp -= fltphp * flthp;
+				sample = fltphp;
 				// phaser
-				phaser_buffer[ipp&1023]=sample;
-				sample+=phaser_buffer[(ipp-iphase+1024)&1023];
-				ipp=(ipp+1)&1023;
+				phaser_buffer[ipp & 1023] = sample;
+				sample += phaser_buffer[(ipp - iphase + 1024) & 1023];
+				ipp = (ipp + 1) & 1023;
 				// final accumulation and envelope application
-				ssample+=sample*env_vol;
+				ssample += sample*env_vol;
 			}
-			ssample=ssample/8*mParams.master_vol;
+			ssample = ssample / 8 * mParams.master_vol;
 
-			ssample*=2.0f*mParams.sound_vol;
+			ssample *= 2.0f * mParams.sound_vol;
 
-			if(buffer!=NULL)
+			if (buffer != NULL)
 			{
-				if(ssample>1.0f) ssample=1.0f;
-				if(ssample<-1.0f) ssample=-1.0f;
-				*buffer++=ssample;
+				if (ssample > 1.0f) ssample = 1.0f;
+				if (ssample < -1.0f) ssample = -1.0f;
+				*buffer = ssample;
+				buffer++;
 			}
 		}
-
+		return aSamples;
 	}
 
 	bool SfxrInstance::hasEnded()

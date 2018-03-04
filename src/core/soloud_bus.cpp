@@ -34,7 +34,7 @@ namespace SoLoud
 		mFlags |= PROTECTED | INAUDIBLE_TICK;
 	}
 	
-	void BusInstance::getAudio(float *aBuffer, unsigned int aSamples)
+	unsigned int BusInstance::getAudio(float *aBuffer, unsigned int aSamples)
 	{
 		int handle = mParent->mChannelHandle;
 		if (handle == 0) 
@@ -43,7 +43,7 @@ namespace SoLoud
 			unsigned int i;
 			for (i = 0; i < aSamples * mChannels; i++)
 				aBuffer[i] = 0;
-			return;
+			return aSamples;
 		}
 		
 		Soloud *s = mParent->mSoloud;
@@ -80,6 +80,7 @@ namespace SoLoud
 				}
 			}
 		}
+		return aSamples;
 	}
 
 	bool BusInstance::hasEnded()

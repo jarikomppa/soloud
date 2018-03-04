@@ -40,7 +40,7 @@ namespace SoLoud
 		mOffset = 0;
 	}
 
-	void BasicwaveInstance::getAudio(float *aBuffer, unsigned int aSamples)
+	unsigned int BasicwaveInstance::getAudio(float *aBuffer, unsigned int aSamples)
 	{
 		unsigned int i;
 		switch (mParent->mWaveform)
@@ -81,6 +81,7 @@ namespace SoLoud
 				}
 				break;
 		}
+		return aSamples;
 	}
 
 	bool BasicwaveInstance::hasEnded()

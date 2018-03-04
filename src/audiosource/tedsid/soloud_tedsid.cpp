@@ -53,7 +53,7 @@ namespace SoLoud
 			mRegValues[i] = 0;
 	}
 
-	void TedSidInstance::getAudio(float *aBuffer, unsigned int aSamples)
+	unsigned int TedSidInstance::getAudio(float *aBuffer, unsigned int aSamples)
 	{
 		unsigned int i;
 		for (i = 0; i < aSamples; i++)
@@ -66,6 +66,7 @@ namespace SoLoud
 			aBuffer[i] = (sample + tedsample) / 8192.0f;
 			mSampleCount--;
 		}
+		return aSamples;
 	}
 	
 	void TedSidInstance::tick()

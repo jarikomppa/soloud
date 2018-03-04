@@ -47,7 +47,7 @@ namespace SoLoud
 		float **mOggOutputs;
 	public:
 		WavStreamInstance(WavStream *aParent);
-		virtual void getAudio(float *aBuffer, unsigned int aSamples);
+		virtual unsigned int getAudio(float *aBuffer, unsigned int aSamples);
 		virtual result rewind();
 		virtual bool hasEnded();
 		virtual ~WavStreamInstance();

@@ -207,7 +207,7 @@ namespace SoLoud
 	{
 	}
 
-	void VizsnInstance::getAudio(float *aBuffer, unsigned int aSamples)
+	unsigned int VizsnInstance::getAudio(float *aBuffer, unsigned int aSamples)
 	{	
 		unsigned int idx = 0;
 		int i, j;
@@ -219,7 +219,7 @@ namespace SoLoud
 				idx++;
 			}
 		}
-		if (idx == aSamples) return;
+		if (idx == aSamples) return aSamples;
 		bufwrite = bufread = 0;
 		while (idx + bufwrite < aSamples)
 		{
@@ -281,6 +281,7 @@ namespace SoLoud
 			aBuffer[idx] = buf[bufread];
 			bufread++;
 		}
+		return aSamples;
 	}
 
 	float VizsnInstance::vcsrc(int pitch, int voicetype)

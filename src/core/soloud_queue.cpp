@@ -32,18 +32,19 @@ namespace SoLoud
 		mFlags |= PROTECTED;
 	}
 	
-	void QueueInstance::getAudio(float *aBuffer, unsigned int aSamples)
+	unsigned int QueueInstance::getAudio(float *aBuffer, unsigned int aSamples)
 	{
 		if (mParent->mCount == 0)
 		{
-			return;			
+			return 0;			
 		}
 		unsigned int copycount = aSamples;
 		unsigned int copyofs = 0;
 		while (copycount && mParent->mCount)
 		{
-			mParent->mSource[mParent->mReadIndex]->getAudio(aBuffer + copyofs, copycount);
-			copycount = 0;
+			int readcount = mParent->mSource[mParent->mReadIndex]->getAudio(aBuffer + copyofs, copycount);
+			copyofs += readcount;
+			copycount -= readcount;
 			if (mParent->mSource[mParent->mReadIndex]->hasEnded())
 			{
 				delete mParent->mSource[mParent->mReadIndex];
@@ -52,6 +53,7 @@ namespace SoLoud
 				mParent->mCount--;
 			}
 		}
+		return copyofs;
 	}
 
 	bool QueueInstance::hasEnded()

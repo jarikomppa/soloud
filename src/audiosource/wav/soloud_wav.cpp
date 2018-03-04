@@ -38,60 +38,23 @@ namespace SoLoud
 		mOffset = 0;
 	}
 
-	void WavInstance::getAudio(float *aBuffer, unsigned int aSamples)
+	unsigned int WavInstance::getAudio(float *aBuffer, unsigned int aSamples)
 	{		
 		if (mParent->mData == NULL)
-			return;
+			return 0;
 
-		// Buffer size may be bigger than samples, and samples may loop..
+		unsigned int dataleft = mParent->mSampleCount - mOffset;
+		unsigned int copylen = dataleft;
+		if (copylen > aSamples)
+			copylen = aSamples;
 
-		unsigned int written = 0;
-		unsigned int maxwrite = (aSamples > mParent->mSampleCount) ?  mParent->mSampleCount : aSamples;
-		unsigned int channels = mChannels;
-
-		while (written < aSamples)
+		unsigned int i;
+		for (i = 0; i < mChannels; i++)
 		{
-			unsigned int copysize = maxwrite;
-			if (copysize + mOffset > mParent->mSampleCount)
-			{
-				copysize = mParent->mSampleCount - mOffset;
-			}
-
-			if (copysize + written > aSamples)
-			{
-				copysize = aSamples - written;
-			}
-
-			unsigned int i;
-			for (i = 0; i < channels; i++)
-			{
-				memcpy(aBuffer + i * aSamples + written, mParent->mData + mOffset + i * mParent->mSampleCount, sizeof(float) * copysize);
-			}
-
-			written += copysize;
-			mOffset += copysize;				
-		
-			if (copysize != maxwrite)
-			{
-				if (mFlags & AudioSourceInstance::LOOPING)
-				{
-					if (mOffset == mParent->mSampleCount)
-					{
-						mOffset = 0;
-						mLoopCount++;
-					}
-				}
-				else
-				{
-					for (i = 0; i < channels; i++)
-					{
-						memset(aBuffer + copysize + i * aSamples, 0, sizeof(float) * (aSamples - written));
-					}
-					mOffset += aSamples - written;
-					written = aSamples;
-				}
-			}
+			memcpy(aBuffer + i * aSamples, mParent->mData + mOffset + i * mParent->mSampleCount, sizeof(float) * copylen);
 		}
+
+		return copylen;
 	}
 
 	result WavInstance::rewind()

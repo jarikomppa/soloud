@@ -38,22 +38,23 @@ namespace SoLoud
 		mOffset = 0;
 	}
 
-	unsigned int WavInstance::getAudio(float *aBuffer, unsigned int aSamples)
+	unsigned int WavInstance::getAudio(float *aBuffer, unsigned int aSamplesToRead, unsigned int aBufferSize)
 	{		
 		if (mParent->mData == NULL)
 			return 0;
 
 		unsigned int dataleft = mParent->mSampleCount - mOffset;
 		unsigned int copylen = dataleft;
-		if (copylen > aSamples)
-			copylen = aSamples;
+		if (copylen > aSamplesToRead)
+			copylen = aSamplesToRead;
 
 		unsigned int i;
 		for (i = 0; i < mChannels; i++)
 		{
-			memcpy(aBuffer + i * aSamples, mParent->mData + mOffset + i * mParent->mSampleCount, sizeof(float) * copylen);
+			memcpy(aBuffer + i * aBufferSize, mParent->mData + mOffset + i * mParent->mSampleCount, sizeof(float) * copylen);
 		}
 
+		mOffset += copylen;
 		return copylen;
 	}
 

@@ -43,25 +43,22 @@ namespace SoLoud
 		mPlaying = mModfile != NULL;		
 	}
 
-	unsigned int OpenmptInstance::getAudio(float *aBuffer, unsigned int aSamples)
+	unsigned int OpenmptInstance::getAudio(float *aBuffer, unsigned int aSamplesToRead, unsigned int aBufferSize)
 	{
 		if (mModfile == NULL)
 			return 0;
-		int s = aSamples;
+		int s = aSamplesToRead;
 		unsigned int outofs = 0;
 		
 		while (s && mPlaying)
 		{
 			int samples = 512;
 			if (s < samples) samples = s;
-			int res = openmpt_module_read_float_stereo(mModfile, (int)floor(mSamplerate), samples, aBuffer + outofs, aBuffer + outofs + aSamples);
-			if (res == 0) mPlaying = 0;
-
-			int i;
-			for (i = res; i < samples; i++)
+			int res = openmpt_module_read_float_stereo(mModfile, (int)floor(mSamplerate), samples, aBuffer + outofs, aBuffer + outofs + aBufferSize);
+			if (res == 0)
 			{
-				aBuffer[outofs + i] = 0;
-				aBuffer[outofs + i + aSamples] = 0;
+				mPlaying = 0;
+				return outofs;
 			}
 			outofs += samples;
 			s -= samples;

@@ -37,7 +37,7 @@ namespace SoLoud
 		int mOffset;
 	public:
 		BasicwaveInstance(Basicwave *aParent);
-		virtual unsigned int getAudio(float *aBuffer, unsigned int aSamples);
+		virtual unsigned int getAudio(float *aBuffer, unsigned int aSamplesToRead, unsigned int aBufferSize);
 		virtual bool hasEnded();
 	};
 

@@ -48,7 +48,7 @@ namespace SoLoud
 	{
 	}
 
-	unsigned int VicInstance::getAudio(float *aBuffer, unsigned int aSamples)
+	unsigned int VicInstance::getAudio(float *aBuffer, unsigned int aSamplesToRead, unsigned int aBufferSize)
 	{
 		unsigned int phaseAdder[4] = { 0, 0, 0, 0 };
 		for(int i = 0; i < 4; i++)
@@ -61,7 +61,7 @@ namespace SoLoud
 			}
 		}
 
-		for(int i = 0; i < (signed)aSamples; i++)
+		for(int i = 0; i < (signed)aSamplesToRead; i++)
 		{
 			float s = 0.0f;
 
@@ -91,7 +91,7 @@ namespace SoLoud
 
 			aBuffer[i] = s / 4.0f;
 		}
-		return aSamples;
+		return aSamplesToRead;
 	}
 
 	bool VicInstance::hasEnded()

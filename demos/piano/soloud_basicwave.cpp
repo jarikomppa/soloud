@@ -40,48 +40,48 @@ namespace SoLoud
 		mOffset = 0;
 	}
 
-	unsigned int BasicwaveInstance::getAudio(float *aBuffer, unsigned int aSamples)
+	unsigned int BasicwaveInstance::getAudio(float *aBuffer, unsigned int aSamplesToRead, unsigned int aBufferSize)
 	{
 		unsigned int i;
 		switch (mParent->mWaveform)
 		{
 			case Basicwave::SINE:
-				for (i = 0; i < aSamples; i++)
+				for (i = 0; i < aSamplesToRead; i++)
 				{
 					aBuffer[i] = (float)sin(mParent->mFreq * mOffset * M_PI * 2);
 					mOffset++;
 				}
 				break;
 			case Basicwave::SAW:
-				for (i = 0; i < aSamples; i++)
+				for (i = 0; i < aSamplesToRead; i++)
 				{
 					aBuffer[i] = (1 - (float)fmod(mParent->mFreq * mOffset, 1)) * 2 - 1;
 					mOffset++;
 				}
 				break;				
 			case Basicwave::INVERSESAW:
-				for (i = 0; i < aSamples; i++)
+				for (i = 0; i < aSamplesToRead; i++)
 				{
 					aBuffer[i] = ((float)fmod(mParent->mFreq * mOffset, 1)) * 2 - 1;
 					mOffset++;
 				}
 				break;				
 			case Basicwave::SQUARE:
-				for (i = 0; i < aSamples; i++)
+				for (i = 0; i < aSamplesToRead; i++)
 				{
 					aBuffer[i] = ((float)fmod(mParent->mFreq * mOffset, 1.0f) > 0.5f) ? -1.0f : 1.0f;
 					mOffset++;
 				}
 				break;
 			case Basicwave::TRIANGLE:
-				for (i = 0; i < aSamples; i++)
+				for (i = 0; i < aSamplesToRead; i++)
 				{
 					aBuffer[i] = my_fabs(0.5f - (float)fmod(mParent->mFreq * mOffset, 1)) * 4 - 1;
 					mOffset++;
 				}
 				break;
 		}
-		return aSamples;
+		return aSamplesToRead;
 	}
 
 	bool BasicwaveInstance::hasEnded()

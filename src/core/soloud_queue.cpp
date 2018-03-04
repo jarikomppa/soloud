@@ -32,17 +32,17 @@ namespace SoLoud
 		mFlags |= PROTECTED;
 	}
 	
-	unsigned int QueueInstance::getAudio(float *aBuffer, unsigned int aSamples)
+	unsigned int QueueInstance::getAudio(float *aBuffer, unsigned int aSamplesToRead, unsigned int aBufferSize)
 	{
 		if (mParent->mCount == 0)
 		{
 			return 0;			
 		}
-		unsigned int copycount = aSamples;
+		unsigned int copycount = aSamplesToRead;
 		unsigned int copyofs = 0;
 		while (copycount && mParent->mCount)
 		{
-			int readcount = mParent->mSource[mParent->mReadIndex]->getAudio(aBuffer + copyofs, copycount);
+			int readcount = mParent->mSource[mParent->mReadIndex]->getAudio(aBuffer + copyofs, copycount, aBufferSize);
 			copyofs += readcount;
 			copycount -= readcount;
 			if (mParent->mSource[mParent->mReadIndex]->hasEnded())

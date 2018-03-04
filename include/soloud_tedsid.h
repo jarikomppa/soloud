@@ -48,7 +48,7 @@ namespace SoLoud
 
 		TedSidInstance(TedSid *aParent);
 		~TedSidInstance();
-		virtual unsigned int getAudio(float *aBuffer, unsigned int aSamples);
+		virtual unsigned int getAudio(float *aBuffer, unsigned int aSamplesToRead, unsigned int aBufferSize);
 		virtual void tick();
 		virtual bool hasEnded();
 		virtual float getInfo(unsigned int aInfoKey);

@@ -52,45 +52,36 @@ namespace SoLoud
 		}
 	}
 
-	unsigned int SpeechInstance::getAudio(float *aBuffer, unsigned int aSamples)
+	unsigned int SpeechInstance::getAudio(float *aBuffer, unsigned int aSamplesToRead, unsigned int aBufferSize)
 	{
 		mSynth.init(mParent->mBaseFrequency, mParent->mBaseSpeed, mParent->mBaseDeclination, mParent->mBaseWaveform);
 		unsigned int samples_out = 0;
 		if (mSampleCount > mOffset)
 		{
 			unsigned int copycount = mSampleCount - mOffset;
-			if (copycount > aSamples) 
+			if (copycount > aSamplesToRead) 
 			{
-				copycount = aSamples;
+				copycount = aSamplesToRead;
 			}
 			writesamples(mSample + mOffset, aBuffer, copycount);
 			mOffset += copycount;
 			samples_out += copycount;
 		}
 
-		while (mSampleCount >= 0 && samples_out < aSamples)
+		while (mSampleCount >= 0 && samples_out < aSamplesToRead)
 		{
 			mOffset = 0;
 			mSampleCount = mSynth.synth(mSynth.mNspFr, mSample);
 			if (mSampleCount > 0)
 			{
 				unsigned int copycount = mSampleCount;
-				if (copycount > aSamples - samples_out)
+				if (copycount > aSamplesToRead - samples_out)
 				{
-					copycount = aSamples - samples_out;
+					copycount = aSamplesToRead - samples_out;
 				}
 				writesamples(mSample, aBuffer + samples_out, copycount);
 				mOffset += copycount;
 				samples_out += copycount;				
-			}
-			else
-			if (mSampleCount < 0 && mFlags & AudioSourceInstance::LOOPING)
-			{
-				mSynth.init(mParent->mBaseFrequency, mParent->mBaseSpeed, mParent->mBaseDeclination, mParent->mBaseWaveform);
-				mSynth.initsynth(mParent->mElement.getSize(), (unsigned char *)mParent->mElement.getData());
-				mOffset = 10;
-				mSampleCount = 10;
-				mLoopCount++;
 			}
 		}
 		return samples_out;

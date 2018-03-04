@@ -81,7 +81,7 @@ namespace SoLoud
 		int mRowTick;
 
 		MonotoneInstance(Monotone *aParent);
-		virtual unsigned int getAudio(float *aBuffer, unsigned int aSamples);
+		virtual unsigned int getAudio(float *aBuffer, unsigned int aSamples, unsigned int aBufferSize);
 		virtual bool hasEnded();
 	};
 

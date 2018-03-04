@@ -190,7 +190,7 @@ namespace SoLoud
 		unsigned int mDelaySamples;
 
 		// Get N samples from the stream to the buffer. Report samples written.
-		virtual unsigned int getAudio(float *aBuffer, unsigned int aSamples) = 0;
+		virtual unsigned int getAudio(float *aBuffer, unsigned int aSamplesToRead, unsigned int aBufferSize) = 0;
 		// Has the stream ended?
 		virtual bool hasEnded() = 0;
 		// Seek to certain place in the stream. Base implementation is generic "tape" seek (and slow).

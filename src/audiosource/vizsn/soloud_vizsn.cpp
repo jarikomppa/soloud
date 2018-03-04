@@ -207,21 +207,21 @@ namespace SoLoud
 	{
 	}
 
-	unsigned int VizsnInstance::getAudio(float *aBuffer, unsigned int aSamples)
+	unsigned int VizsnInstance::getAudio(float *aBuffer, unsigned int aSamplesToRead, unsigned int aBufferSize)
 	{	
 		unsigned int idx = 0;
 		int i, j;
 		if (bufwrite > bufread)
 		{
-			for (; bufwrite > bufread && idx < aSamples; bufread++)
+			for (; bufwrite > bufread && idx < aSamplesToRead; bufread++)
 			{
 				aBuffer[idx] = buf[bufread];
 				idx++;
 			}
 		}
-		if (idx == aSamples) return aSamples;
+		if (idx == aSamplesToRead) return aSamplesToRead;
 		bufwrite = bufread = 0;
-		while (idx + bufwrite < aSamples)
+		while (idx + bufwrite < aSamplesToRead)
 		{
 			setphone(&bank0, *s, pitch);
 
@@ -276,12 +276,12 @@ namespace SoLoud
 
 			memcpy(&bank0, &bank1, sizeof(bank));
 		}
-		for (; idx < aSamples; idx++)
+		for (; idx < aSamplesToRead; idx++)
 		{
 			aBuffer[idx] = buf[bufread];
 			bufread++;
 		}
-		return aSamples;
+		return aSamplesToRead;
 	}
 
 	float VizsnInstance::vcsrc(int pitch, int voicetype)

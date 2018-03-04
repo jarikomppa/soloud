@@ -38,7 +38,7 @@ namespace SoLoud
 		Queue *mParent;
 	public:
 		QueueInstance(Queue *aParent);
-		virtual unsigned int getAudio(float *aBuffer, unsigned int aSamples);
+		virtual unsigned int getAudio(float *aBuffer, unsigned int aSamplesToRead, unsigned int aBufferSize);
 		virtual bool hasEnded();
 		virtual ~QueueInstance();
 	};

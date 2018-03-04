@@ -60,7 +60,7 @@ namespace SoLoud
 		}
 	}
 
-	unsigned int MonotoneInstance::getAudio(float *aBuffer, unsigned int aSamples)
+	unsigned int MonotoneInstance::getAudio(float *aBuffer, unsigned int aSamplesToRead, unsigned int aBufferSize)
 	{
 		int samplesPerTick = (int)floor(mSamplerate / 60);
 		unsigned int i;
@@ -68,7 +68,7 @@ namespace SoLoud
 		{
 			mOutput[i].mEnabled = i < (unsigned int)mParent->mHardwareChannels && i < (unsigned int)mParent->mSong.mTotalTracks;
 		}
-		for (i = 0; i < aSamples; i++)
+		for (i = 0; i < aSamplesToRead; i++)
 		{
 			if ((mSampleCount % samplesPerTick) == 0)
 			{
@@ -316,7 +316,7 @@ namespace SoLoud
 
 			mSampleCount++;
 		}
-		return aSamples;
+		return aSamplesToRead;
 	}
 
 	bool MonotoneInstance::hasEnded()

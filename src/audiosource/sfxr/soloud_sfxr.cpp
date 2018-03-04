@@ -72,11 +72,11 @@ namespace SoLoud
 
 #define frnd(x) ((float)(mRand.rand()%10001)/10000*(x))
 
-	unsigned int SfxrInstance::getAudio(float *aBuffer, unsigned int aSamples)
+	unsigned int SfxrInstance::getAudio(float *aBuffer, unsigned int aSamplesToRead, unsigned int aBufferSize)
 	{
 		float *buffer = aBuffer;
 		unsigned int i;
-		for (i = 0; i < aSamples; i++)
+		for (i = 0; i < aSamplesToRead; i++)
 		{
 			rep_time++;
 			if (rep_limit != 0 && rep_time >= rep_limit)
@@ -265,7 +265,7 @@ namespace SoLoud
 				buffer++;
 			}
 		}
-		return aSamples;
+		return aSamplesToRead;
 	}
 
 	bool SfxrInstance::hasEnded()

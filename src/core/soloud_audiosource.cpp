@@ -167,10 +167,10 @@ namespace SoLoud
 
 		while (samples_to_discard)
 		{
-			int samples = mScratchSize / 2;
+			int samples = mScratchSize / mChannels;
 			if (samples > samples_to_discard)
 				samples = samples_to_discard;
-			getAudio(mScratch, samples);
+			getAudio(mScratch, samples, samples);
 			samples_to_discard -= samples;
 		}
 

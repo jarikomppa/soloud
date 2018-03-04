@@ -34,16 +34,16 @@ namespace SoLoud
 		mFlags |= PROTECTED | INAUDIBLE_TICK;
 	}
 	
-	unsigned int BusInstance::getAudio(float *aBuffer, unsigned int aSamples)
+	unsigned int BusInstance::getAudio(float *aBuffer, unsigned int aSamplesToRead, unsigned int aBufferSize)
 	{
 		int handle = mParent->mChannelHandle;
 		if (handle == 0) 
 		{
 			// Avoid reuse of scratch data if this bus hasn't played anything yet
 			unsigned int i;
-			for (i = 0; i < aSamples * mChannels; i++)
+			for (i = 0; i < aBufferSize * mChannels; i++)
 				aBuffer[i] = 0;
-			return aSamples;
+			return aSamplesToRead;
 		}
 		
 		Soloud *s = mParent->mSoloud;
@@ -53,19 +53,19 @@ namespace SoLoud
 			mScratch.init(mScratchSize * MAX_CHANNELS);
 		}
 		
-		s->mixBus(aBuffer, aSamples, mScratch.mData, handle, mSamplerate, mChannels);
+		s->mixBus(aBuffer, aSamplesToRead, aBufferSize, mScratch.mData, handle, mSamplerate, mChannels);
 
 		int i;
 		if (mParent->mFlags & AudioSource::VISUALIZATION_DATA)
 		{
-			if (aSamples > 255)
+			if (aSamplesToRead > 255)
 			{
 				for (i = 0; i < 256; i++)
 				{
 					int j;
 					mVisualizationWaveData[i] = 0;
 					for (j = 0; j < (signed)mChannels; j++)
-						mVisualizationWaveData[i] += aBuffer[i + aSamples * j];
+						mVisualizationWaveData[i] += aBuffer[i + aBufferSize * j];
 				}
 			}
 			else
@@ -76,11 +76,11 @@ namespace SoLoud
 					int j;
 					mVisualizationWaveData[i] = 0;
 					for (j = 0; j < (signed)mChannels; j++)
-						mVisualizationWaveData[i] += aBuffer[(i % aSamples) + aSamples * j];
+						mVisualizationWaveData[i] += aBuffer[(i % aSamplesToRead) + aBufferSize * j];
 				}
 			}
 		}
-		return aSamples;
+		return aSamplesToRead;
 	}
 
 	bool BusInstance::hasEnded()

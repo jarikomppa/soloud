@@ -66,6 +66,8 @@ mFileHandle(fp)
 
 	unsigned int DiskFile::length()
 	{
+		if (!mFileHandle)
+			return 0;
 		int pos = ftell(mFileHandle);
 		fseek(mFileHandle, 0, SEEK_END);
 		int len = ftell(mFileHandle);
@@ -218,6 +220,8 @@ mFileHandle(fp)
 
 	result MemoryFile::openFileToMem(File *aFile)
 	{
+		if (!aFile)
+			return INVALID_PARAMETER;
 		if (mDataOwned)
 			delete[] mDataPtr;
 		mDataPtr = 0;

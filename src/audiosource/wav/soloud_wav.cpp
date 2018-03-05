@@ -275,7 +275,9 @@ namespace SoLoud
 	{
 		DiskFile dr;
 		int res = dr.open(aFilename);
-		return loadFile(&dr);
+		if (res == SO_NO_ERROR)
+			return loadFile(&dr);
+		return FILE_LOAD_FAILED;
 	}
 
 	result Wav::loadMem(unsigned char *aMem, unsigned int aLength, bool aCopy, bool aTakeOwnership)

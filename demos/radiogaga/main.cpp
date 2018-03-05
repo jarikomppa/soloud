@@ -37,6 +37,7 @@ freely, subject to the following restrictions:
 SoLoud::Soloud gSoloud;			// SoLoud engine core
 SoLoud::Speech gSpeechPhrase[18];
 SoLoud::Wav gMusicPhrase[10];
+SoLoud::Speech gIntro;
 
 SoLoud::Bus gMusicBus;
 SoLoud::Bus gSpeechBus;
@@ -104,6 +105,12 @@ int DemoEntry(int argc, char *argv[])
 	gSpeechBus.setVisualizationEnable(1);
 	gMusicBus.setVisualizationEnable(1);
 
+	gIntro.setText("Eat, Sleep, Rave, Repeat");
+	gIntro.setLooping(true);
+	gIntro.setLoopPoint(1.45f);
+	int introhandle = gSoloud.play(gIntro);
+	gSoloud.fadeVolume(introhandle, 0, 10);
+	gSoloud.scheduleStop(introhandle, 10);
 	return 0;
 }
 

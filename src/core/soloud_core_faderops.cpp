@@ -101,7 +101,6 @@ namespace SoLoud
 			setGlobalVolume(aTo);
 			return;
 		}
-		mStreamTime = 0; // avoid rollover (~6 days)
 		mGlobalVolumeFader.set(from, aTo, aTime, mStreamTime);
 	}
 
@@ -152,7 +151,6 @@ namespace SoLoud
 			setGlobalVolume(aTo);
 			return;
 		}
-		mStreamTime = 0; // avoid rollover (~6 days)
 		mGlobalVolumeFader.setLFO(aFrom, aTo, aTime, mStreamTime);
 	}
 }

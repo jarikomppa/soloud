@@ -93,7 +93,6 @@ namespace SoLoud
 		mSynth.initsynth(mParent->mElement.getSize(), (unsigned char *)mParent->mElement.getData());
 		mOffset = 10;
 		mSampleCount = 10;
-		mStreamTime = 0;
 		return 0;
 	}
 

@@ -1126,7 +1126,9 @@ namespace SoLoud
 										if (voice->mLoopPoint != 0)
 											voice->seek(voice->mLoopPoint, mScratch.mData, mScratchSize);
 										voice->mLoopCount++;
-										readcount += voice->getAudio(voice->mResampleData[0]->mBuffer + readcount, SAMPLE_GRANULARITY - readcount, SAMPLE_GRANULARITY);
+										int inc = voice->getAudio(voice->mResampleData[0]->mBuffer + readcount, SAMPLE_GRANULARITY - readcount, SAMPLE_GRANULARITY);
+										readcount += inc;
+										if (inc == 0) break;
 									}
 								}
 							}
@@ -1479,6 +1481,8 @@ namespace SoLoud
 
 				mVoice[i]->mStreamTime += buffertime;
 
+				// TODO: this is actually unstable, because mStreamTime depends on the relative
+				// play speed. 
 				if (mVoice[i]->mRelativePlaySpeedFader.mActive > 0)
 				{
 					float speed = mVoice[i]->mRelativePlaySpeedFader.get(mVoice[i]->mStreamTime);

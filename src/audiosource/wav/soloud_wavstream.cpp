@@ -247,7 +247,6 @@ namespace SoLoud
 			mFile->seek(mParent->mDataOffset);
 		}
 		mOffset = 0;
-		mStreamTime = 0;
 		return 0;
 	}
 

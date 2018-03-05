@@ -120,12 +120,13 @@ namespace SoLoud
 		}
 
 		SoLoud::AudioSourceInstance *instance = aSound.createInstance();
-		instance->mAudioSourceID = aSound.mAudioSourceID;
 
 		if (instance == 0)
 		{
 			return OUT_OF_MEMORY;
 		}
+
+		instance->mAudioSourceID = aSound.mAudioSourceID;
 
 		mSoloud->lockAudioMutex();
 		mSource[mWriteIndex] = instance;

@@ -98,7 +98,7 @@ namespace SoLoud
 			return INVALID_PARAMETER;
 
 		VitaData *data = new VitaData;
-		memset(data, 0, sizeof(*data));
+		memset(data, 0, sizeof(*data)); //TODO: "Using 'memset' on struct that contains a 'std::atomic'"
 		data->port = port;
 		data->samples = aBuffer;
 		data->soloud = aSoloud;

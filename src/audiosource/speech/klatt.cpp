@@ -270,6 +270,7 @@ klatt::klatt() :
 	mBaseF0(1330),
 	mBaseSpeed(10.0f),
 	mBaseDeclination(0.5f),
+	mBaseWaveform(KW_SAW),
 	mF0Flutter(0), 
 	mSampleRate(0), 
 	mNspFr(0),

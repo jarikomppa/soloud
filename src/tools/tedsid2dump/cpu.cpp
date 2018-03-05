@@ -139,7 +139,7 @@ void CPU::process()
 		{
 			fprintf(f, ". %04X %s", PC, ins[currins].name);
 			int i = 1;
-			while (i < typlen[ins[currins].type] && f) {
+			while (i < typlen[ins[currins].type]) {
 				fprintf(f, " %02X", mem->Read(PC+i++));
 			}
 			fprintf(f, "\n");

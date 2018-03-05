@@ -36,7 +36,7 @@ class CbmTune
 {
 public:
 	CbmTune(void);
-	~CbmTune(void);
+	virtual ~CbmTune(void);
 	int parse(char *fName);
 	void getPsidHeader(PsidHeader &ph);
 	virtual char *getName() {

@@ -1123,6 +1123,8 @@ namespace SoLoud
 								{
 									while (readcount < SAMPLE_GRANULARITY && voice->rewind() == SO_NO_ERROR)
 									{
+										if (voice->mLoopPoint != 0)
+											voice->seek(voice->mLoopPoint, mScratch.mData, mScratchSize);
 										voice->mLoopCount++;
 										readcount += voice->getAudio(voice->mResampleData[0]->mBuffer + readcount, SAMPLE_GRANULARITY - readcount, SAMPLE_GRANULARITY);
 									}
@@ -1267,11 +1269,24 @@ namespace SoLoud
 
 						// Get a block of source data
 
-						if (!voice->hasEnded())
+						int readcount = 0;
+						if (!voice->hasEnded() || voice->mFlags & AudioSourceInstance::LOOPING)
 						{
-							voice->getAudio(voice->mResampleData[0]->mBuffer, SAMPLE_GRANULARITY, SAMPLE_GRANULARITY);
+							readcount = voice->getAudio(voice->mResampleData[0]->mBuffer, SAMPLE_GRANULARITY, SAMPLE_GRANULARITY);
+							if (readcount < SAMPLE_GRANULARITY)
+							{
+								if (voice->mFlags & AudioSourceInstance::LOOPING)
+								{
+									while (readcount < SAMPLE_GRANULARITY && voice->rewind() == SO_NO_ERROR)
+									{
+										if (voice->mLoopPoint != 0)
+											voice->seek(voice->mLoopPoint, mScratch.mData, mScratchSize);
+										voice->mLoopCount++;
+										readcount += voice->getAudio(voice->mResampleData[0]->mBuffer + readcount, SAMPLE_GRANULARITY - readcount, SAMPLE_GRANULARITY);
+									}
+								}
+							}
 						}
-
 
 						// If we go past zero, crop to zero (a bit of a kludge)
 						if (voice->mSrcOffset < SAMPLE_GRANULARITY * FIXPOINT_FRAC_MUL)

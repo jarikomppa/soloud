@@ -263,7 +263,11 @@ namespace SoLoud
 		unsigned int getMaxActiveVoiceCount() const;
 		// Query whether a voice is set to loop.
 		bool getLooping(handle aVoiceHandle);
+		// Get voice loop point value
+		time getLoopPoint(handle aVoiceHandle);
 
+		// Set voice loop point value
+		void setLoopPoint(handle aVoiceHandle, time aLoopPoint);
 		// Set voice's loop state
 		void setLooping(handle aVoiceHandle, bool aLooping);
 		// Set current maximum active voice setting

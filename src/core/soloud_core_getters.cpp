@@ -119,6 +119,20 @@ namespace SoLoud
 	}
 
 
+	time Soloud::getLoopPoint(handle aVoiceHandle)
+	{
+		lockAudioMutex();
+		int ch = getVoiceFromHandle(aVoiceHandle);
+		if (ch == -1)
+		{
+			unlockAudioMutex();
+			return 0;
+		}
+		time v = mVoice[ch]->mLoopPoint;
+		unlockAudioMutex();
+		return v;
+	}
+
 	bool Soloud::getLooping(handle aVoiceHandle)
 	{
 		lockAudioMutex();

@@ -188,6 +188,8 @@ namespace SoLoud
 		unsigned int mLeftoverSamples;
 		// Number of samples to delay streaming
 		unsigned int mDelaySamples;
+		// When looping, start playing from this time
+		time mLoopPoint;
 
 		// Get N samples from the stream to the buffer. Report samples written.
 		virtual unsigned int getAudio(float *aBuffer, unsigned int aSamplesToRead, unsigned int aBufferSize) = 0;
@@ -268,6 +270,8 @@ namespace SoLoud
 		AudioAttenuator *mAttenuator;
 		// User data related to audio collider
 		int mColliderData;
+		// When looping, start playing from this time
+		time mLoopPoint;
 
 		// CTor
 		AudioSource();
@@ -296,6 +300,11 @@ namespace SoLoud
 
 		// Set behavior for inaudible sounds
 		void setInaudibleBehavior(bool aMustTick, bool aKill);
+
+		// Set time to jump to when looping
+		void setLoopPoint(time aLoopPoint);
+		// Get current loop point value
+		time getLoopPoint();
 
 		// Set filter. Set to NULL to clear the filter.
 		virtual void setFilter(unsigned int aFilterId, Filter *aFilter);

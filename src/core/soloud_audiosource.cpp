@@ -88,6 +88,7 @@ namespace SoLoud
 		mChannels = 1;
 		mBusHandle = ~0u;
 		mLoopCount = 0;
+		mLoopPoint = 0;
 		for (i = 0; i < FILTERS_PER_STREAM; i++)
 		{
 			mFilter[i] = NULL;
@@ -123,6 +124,7 @@ namespace SoLoud
 		mSamplerate = mBaseSamplerate;
 		mChannels = aSource.mChannels;
 		mStreamTime = 0.0f;
+		mLoopPoint = aSource.mLoopPoint;
 
 		if (aSource.mFlags & AudioSource::SHOULD_LOOP)
 		{
@@ -199,6 +201,7 @@ namespace SoLoud
 		mAttenuator = 0;
 		mColliderData = 0;
 		mVolume = 1;
+		mLoopPoint = 0;
 	}
 
 	AudioSource::~AudioSource() 

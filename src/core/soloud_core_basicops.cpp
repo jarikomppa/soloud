@@ -141,11 +141,16 @@ namespace SoLoud
 		return h;
 	}
 
-	void Soloud::seek(handle aVoiceHandle, time aSeconds)
+	result Soloud::seek(handle aVoiceHandle, time aSeconds)
 	{
+		result res = SO_NO_ERROR;
+		result singleres = SO_NO_ERROR;
 		FOR_ALL_VOICES_PRE
-			mVoice[ch]->seek(aSeconds, mScratch.mData, mScratchSize);
+			singleres = mVoice[ch]->seek(aSeconds, mScratch.mData, mScratchSize);
+		if (singleres != SO_NO_ERROR)
+			res = singleres;
 		FOR_ALL_VOICES_POST
+		return res;
 	}
 
 

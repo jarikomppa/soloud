@@ -217,6 +217,20 @@ namespace SoLoud
 		return v;
 	}
 
+	time Soloud::getStreamPosition(handle aVoiceHandle)
+	{
+		lockAudioMutex();
+		int ch = getVoiceFromHandle(aVoiceHandle);
+		if (ch == -1)
+		{
+			unlockAudioMutex();
+			return 0;
+		}
+		double v = mVoice[ch]->mStreamPosition;
+		unlockAudioMutex();
+		return v;
+	}
+
 	float Soloud::getRelativePlaySpeed(handle aVoiceHandle)
 	{
 		lockAudioMutex();

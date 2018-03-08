@@ -216,7 +216,7 @@ namespace SoLoud
 		handle playBackground(AudioSource &aSound, float aVolume = -1.0f, bool aPaused = 0, unsigned int aBus = 0);
 
 		// Seek the audio stream to certain point in time. Some streams can't seek backwards. Relative play speed affects time.
-		void seek(handle aVoiceHandle, time aSeconds);
+		result seek(handle aVoiceHandle, time aSeconds);
 		// Stop the sound.
 		void stop(handle aVoiceHandle);
 		// Stop all voices.
@@ -235,6 +235,8 @@ namespace SoLoud
 
 		// Get current play time, in seconds.
 		time getStreamTime(handle aVoiceHandle);
+		// Get current sample position, in seconds.
+		time getStreamPosition(handle aVoiceHandle);
 		// Get current pause state.
 		bool getPause(handle aVoiceHandle);
 		// Get current volume.

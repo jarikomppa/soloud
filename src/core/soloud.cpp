@@ -1121,10 +1121,8 @@ namespace SoLoud
 							{
 								if (voice->mFlags & AudioSourceInstance::LOOPING)
 								{
-									while (readcount < SAMPLE_GRANULARITY && voice->rewind() == SO_NO_ERROR)
+									while (readcount < SAMPLE_GRANULARITY && voice->seek(voice->mLoopPoint, mScratch.mData, mScratchSize) == SO_NO_ERROR)
 									{
-										if (voice->mLoopPoint != 0)
-											voice->seek(voice->mLoopPoint, mScratch.mData, mScratchSize);
 										voice->mLoopCount++;
 										int inc = voice->getAudio(voice->mResampleData[0]->mBuffer + readcount, SAMPLE_GRANULARITY - readcount, SAMPLE_GRANULARITY);
 										readcount += inc;
@@ -1133,20 +1131,11 @@ namespace SoLoud
 								}
 							}
 						}
+
 						if (readcount < SAMPLE_GRANULARITY)
+						{
 							memset(voice->mResampleData[0]->mBuffer + readcount, 0, sizeof(float) * (SAMPLE_GRANULARITY - readcount) * voice->mChannels);
-						/*
-						if (voice->hasEnded())
-						{
-							memset(voice->mResampleData[0]->mBuffer, 0, sizeof(float) * SAMPLE_GRANULARITY * voice->mChannels);
 						}
-						else
-						{
-							voice->getAudio(voice->mResampleData[0]->mBuffer, SAMPLE_GRANULARITY);
-						}
-						*/
-						
-						
 
 						// If we go past zero, crop to zero (a bit of a kludge)
 						if (voice->mSrcOffset < SAMPLE_GRANULARITY * FIXPOINT_FRAC_MUL)
@@ -1279,10 +1268,8 @@ namespace SoLoud
 							{
 								if (voice->mFlags & AudioSourceInstance::LOOPING)
 								{
-									while (readcount < SAMPLE_GRANULARITY && voice->rewind() == SO_NO_ERROR)
+									while (readcount < SAMPLE_GRANULARITY && voice->seek(voice->mLoopPoint, mScratch.mData, mScratchSize) == SO_NO_ERROR)
 									{
-										if (voice->mLoopPoint != 0)
-											voice->seek(voice->mLoopPoint, mScratch.mData, mScratchSize);
 										voice->mLoopCount++;
 										readcount += voice->getAudio(voice->mResampleData[0]->mBuffer + readcount, SAMPLE_GRANULARITY - readcount, SAMPLE_GRANULARITY);
 									}
@@ -1480,6 +1467,7 @@ namespace SoLoud
 				}
 
 				mVoice[i]->mStreamTime += buffertime;
+				mVoice[i]->mStreamPosition += buffertime;
 
 				// TODO: this is actually unstable, because mStreamTime depends on the relative
 				// play speed. 

@@ -83,6 +83,7 @@ namespace SoLoud
 		mSamplerate = 44100.0f;
 		mSetRelativePlaySpeed = 1.0f;
 		mStreamTime = 0.0f;
+		mStreamPosition = 0.0f;
 		mAudioSourceID = 0;
 		mActiveFader = 0;
 		mChannels = 1;
@@ -124,6 +125,7 @@ namespace SoLoud
 		mSamplerate = mBaseSamplerate;
 		mChannels = aSource.mChannels;
 		mStreamTime = 0.0f;
+		mStreamPosition = 0.0f;
 		mLoopPoint = aSource.mLoopPoint;
 
 		if (aSource.mFlags & AudioSource::SHOULD_LOOP)
@@ -153,15 +155,15 @@ namespace SoLoud
 		return NOT_IMPLEMENTED;
 	}
 
-	void AudioSourceInstance::seek(double aSeconds, float *mScratch, unsigned int mScratchSize)
+	result AudioSourceInstance::seek(double aSeconds, float *mScratch, unsigned int mScratchSize)
 	{
-		double offset = aSeconds - mStreamTime;
+		double offset = aSeconds - mStreamPosition;
 		if (offset < 0)
 		{
 			if (rewind() != SO_NO_ERROR)
 			{
 				// can't do generic seek backwards unless we can rewind.
-				return;
+				return NOT_IMPLEMENTED;
 			}
 			offset = aSeconds;
 		}
@@ -175,6 +177,8 @@ namespace SoLoud
 			getAudio(mScratch, samples, samples);
 			samples_to_discard -= samples;
 		}
+		mStreamPosition = offset;
+		return SO_NO_ERROR;
 	}
 
 

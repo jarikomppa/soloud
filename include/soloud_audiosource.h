@@ -158,6 +158,8 @@ namespace SoLoud
 		float mOverallRelativePlaySpeed;
 		// How long this stream has played, in seconds.
 		time mStreamTime;
+		// Position of this stream, in seconds.
+		time mStreamPosition;
 		// Fader for the audio panning
 		Fader mPanFader;
 		// Fader for the audio volume
@@ -196,7 +198,7 @@ namespace SoLoud
 		// Has the stream ended?
 		virtual bool hasEnded() = 0;
 		// Seek to certain place in the stream. Base implementation is generic "tape" seek (and slow).
-		virtual void seek(time aSeconds, float *mScratch, unsigned int mScratchSize);
+		virtual result seek(time aSeconds, float *mScratch, unsigned int mScratchSize);
 		// Rewind stream. Base implementation returns NOT_IMPLEMENTED, meaning it can't rewind.
 		virtual result rewind();
 		// Get information. Returns 0 by default.

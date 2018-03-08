@@ -61,6 +61,7 @@ namespace SoLoud
 	result WavInstance::rewind()
 	{
 		mOffset = 0;
+		mStreamPosition = 0.0f;
 		return 0;
 	}
 

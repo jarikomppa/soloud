@@ -1,4 +1,5 @@
 #include <math.h>
+#include <stdlib.h>
 #include "klatt.h"
 #include "darray.h"
 #include "resonator.h"

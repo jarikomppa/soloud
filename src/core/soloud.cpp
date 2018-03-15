@@ -585,8 +585,8 @@ namespace SoLoud
 
 		for (i = 0; i < 256; i++)
 		{
-			float real = temp[i];
-			float imag = temp[i+512];
+			float real = temp[i * 2];
+			float imag = temp[i * 2 + 1];
 			mFFTData[i] = (float)sqrt(real*real+imag*imag);
 		}
 

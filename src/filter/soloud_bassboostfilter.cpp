@@ -41,7 +41,7 @@ namespace SoLoud
 		unsigned int i;
 		for (i = 0; i < 2; i++)
 		{
-			aFFTBuffer[i] *= mParam[BOOST];
+			aFFTBuffer[i * 2] *= mParam[BOOST];
 		}
 	}
 

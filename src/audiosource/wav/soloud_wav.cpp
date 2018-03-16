@@ -1,6 +1,6 @@
 /*
 SoLoud audio engine
-Copyright (c) 2013-2015 Jari Komppa
+Copyright (c) 2013-2018 Jari Komppa
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -314,5 +314,52 @@ namespace SoLoud
 		if (mBaseSamplerate == 0)
 			return 0;
 		return mSampleCount / mBaseSamplerate;
+	}
+
+	result Wav::loadRawWave(unsigned char *aMem, unsigned int aLength, float aSamplerate, unsigned int aChannels)
+	{
+		if (aMem == 0 || aLength == 0 || aSamplerate <= 0 || aChannels < 1)
+			return INVALID_PARAMETER;
+		delete[] mData;
+		mData = new float[aLength];	
+		mSampleCount = aLength / aChannels;
+		mChannels = aChannels;
+		int i;
+		for (i = 0; i < aLength; i++)
+			mData[i] = ((signed)aMem[i] - 128) / (float)0x80;
+		return SO_NO_ERROR;
+	}
+
+	result Wav::loadRawWave(short *aMem, unsigned int aLength, float aSamplerate, unsigned int aChannels)
+	{
+		if (aMem == 0 || aLength == 0 || aSamplerate <= 0 || aChannels < 1)
+			return INVALID_PARAMETER;
+		delete[] mData;
+		mData = new float[aLength];
+		mSampleCount = aLength / aChannels;
+		mChannels = aChannels;
+		int i;
+		for (i = 0; i < aLength; i++)
+			mData[i] = ((signed short)aMem[i]) / (float)0x8000;
+		return SO_NO_ERROR;
+	}
+
+	result Wav::loadRawWave(float *aMem, unsigned int aLength, float aSamplerate, unsigned int aChannels, bool aCopy, bool aTakeOwndership)
+	{
+		if (aMem == 0 || aLength == 0 || aSamplerate <= 0 || aChannels < 1)
+			return INVALID_PARAMETER;
+		delete[] mData;
+		if (aCopy == true || aTakeOwndership == false)
+		{
+			mData = new float[aLength];
+			memcpy(mData, aMem, sizeof(float) * aLength);
+		}
+		else
+		{
+			mData = aMem;
+		}
+		mSampleCount = aLength / aChannels;
+		mChannels = aChannels;
+		return SO_NO_ERROR;
 	}
 };

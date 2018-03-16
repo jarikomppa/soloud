@@ -30,6 +30,7 @@ freely, subject to the following restrictions:
 
 #include "soloud.h"
 #include "soloud_wav.h"
+#include "soloud_padsynth.h"
 #include "soloud_basicwave.h"
 #include "soloud_echofilter.h"
 #include "soloud_speech.h"
@@ -53,6 +54,7 @@ SoLoud::Speech gSpeech;
 SoLoud::Soloud gSoloud;			// SoLoud engine core
 SoLoud::Basicwave gWave;		// Simple wave audio source
 SoLoud::Wav gLoadedWave;
+SoLoud::Wav gPadsynth;
 SoLoud::EchoFilter gEchoFilter;		// Simple echo filter
 SoLoud::BiquadResonantFilter gBQRFilter;   // BQR filter
 SoLoud::Bus gBus;
@@ -89,7 +91,13 @@ void plonk(float rel, float vol = 0x50)
 	}
 	else
 	{
-		handle = gBus.play(gLoadedWave, 0);
+		if (gWaveSelect == 4)
+			handle = gBus.play(gLoadedWave, 0);
+		if (gWaveSelect == 5)
+		{
+			handle = gBus.play(gPadsynth, 0);
+			gSoloud.seek(handle, gPadsynth.getLength() * ((rand() % 1000) / 1000.0f));
+		}
 	}
 	gSoloud.fadeVolume(handle, vol, gAttack);
 	gSoloud.setRelativePlaySpeed(handle, 2 * rel);
@@ -136,6 +144,10 @@ void say(char *text)
 PmEvent buffer[1];
 #endif
 
+float harm[7] = { 0.7f, 0.3f, 0.2f, 1.7f, 0.4f, 1.3f, 0.2f };
+float bw = 0.25f;
+float bws = 1.0f;
+
 int bushandle;
 
 int DemoEntry(int argc, char *argv[])
@@ -160,6 +172,8 @@ int DemoEntry(int argc, char *argv[])
 	gEchoFilter.setParams(0.5f, 0.5f);
 	bushandle = gSoloud.play(gBus);
 
+	
+
 	gSpeech.setFilter(1, &gFftFilter);
 
 	gSpeech.setText(". . . . . . . . . . . . . . . Use keyboard to play!");
@@ -172,6 +186,8 @@ int DemoEntry(int argc, char *argv[])
 	gBus.setFilter(0, &gLofiFilter);
 	gBus.setFilter(1, &gEchoFilter);
 	gBus.setFilter(3, &gDCRemovalFilter);
+
+	SoLoud::generatePadsynth(gPadsynth, 7, harm, bw, bws);
 
 	return 0;
 }
@@ -257,6 +273,25 @@ void DemoMainloop()
 	float *buf = gSoloud.getWave();
 	float *fft = gSoloud.calcFFT();
 
+	ONCE(ImGui::SetNextWindowPos(ImVec2(320, 20)));
+	ONCE(ImGui::SetNextWindowSize(ImVec2(200, 350)));
+	ImGui::Begin("Padsynth");
+	{
+		int changed = 0;
+		if (ImGui::DragFloat("Harmonic 1", &harm[0], 0.1f)) changed = 1;
+		if (ImGui::DragFloat("Harmonic 2", &harm[1], 0.1f)) changed = 1;
+		if (ImGui::DragFloat("Harmonic 3", &harm[2], 0.1f)) changed = 1;
+		if (ImGui::DragFloat("Harmonic 4", &harm[3], 0.1f)) changed = 1;
+		if (ImGui::DragFloat("Harmonic 5", &harm[4], 0.1f)) changed = 1;
+		if (ImGui::DragFloat("Harmonic 6", &harm[5], 0.1f)) changed = 1;
+		if (ImGui::DragFloat("Harmonic 7", &harm[6], 0.1f)) changed = 1;
+		if (ImGui::DragFloat("Bandwidth", &bw, 0.1f)) changed = 1;
+		if (ImGui::DragFloat("Bandwidth scale", &bws, 0.1f)) changed = 1;
+		if (changed)
+			SoLoud::generatePadsynth(gPadsynth, 5, harm, bw, bws);
+	}
+	ImGui::End();
+
 	ONCE(ImGui::SetNextWindowPos(ImVec2(500, 20)));
 	ImGui::Begin("Output");
 	ImGui::PlotLines("##Wave", buf, 256, 0, "Wave", -1, 1, ImVec2(264, 80));
@@ -301,6 +336,11 @@ void DemoMainloop()
 		{
 			gWaveSelect = 4;
 			say("Looping sample");
+		}
+		if (ImGui::RadioButton("Padsynth", gWaveSelect == 5))
+		{
+			gWaveSelect = 5;
+			say("Padsynth");
 		}
 	}
 		

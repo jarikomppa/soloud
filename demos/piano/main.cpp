@@ -96,7 +96,6 @@ void plonk(float rel, float vol = 0x50)
 		if (gWaveSelect == 5)
 		{
 			handle = gBus.play(gPadsynth, 0);
-			gSoloud.seek(handle, gPadsynth.getLength() * ((rand() % 1000) / 1000.0f));
 		}
 	}
 	gSoloud.fadeVolume(handle, vol, gAttack);

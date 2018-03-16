@@ -35,7 +35,7 @@ class PADsynth {
 		N                - is the samplesize (eg: 262144)
 		samplerate 	 - samplerate (eg. 44100)
 		number_harmonics - the number of harmonics that are computed */
-	PADsynth(int N_,int samplerate_,int number_harmonics_);
+	PADsynth(int aSampleCount, float aSamplerate, int aHarmonicsCount);
 
 	~PADsynth();
 
@@ -50,18 +50,8 @@ class PADsynth {
 	    bw		- bandwidth in cents of the fundamental frequency (eg. 25 cents)
 	    bwscale	- how the bandwidth increase on the higher harmonics (recomanded value: 1.0)
 	    *smp	- a pointer to allocated memory that can hold N samples */
-	void synth(float f,float bw,
-	    float bwscale,float *smp);
+	void synth(float aFundamental, float aBandwidth, float aBandwidthScale, float *aBuf);
     protected:
-	int N;			//Size of the sample
-
-	/* IFFT() - inverse fast fourier transform
-	   YOU MUST IMPLEMENT THIS METHOD!
-	   *freq_real and *freq_imaginary represents the real and the imaginary part of the spectrum, 
-	   The result should be in *smp array.
-	   The size of the *smp array is N and the size of the freq_real and freq_imaginary is N/2 */
-	//virtual void IFFT(float *freq_real,float *freq_imaginary,float *smp)=0;
-
 
 	/* relF():
 	    This method returns the N'th overtone's position relative 
@@ -84,91 +74,116 @@ class PADsynth {
 	virtual float RND();
 
     private:
-	float *A;		//Amplitude of the harmonics
-	float *freq_amp;	//Amplitude spectrum
-	int samplerate;
-	int number_harmonics;
+	float *mHarmonics;		//Amplitude of the harmonics
+	float *mFreqAmp;	//Amplitude spectrum
+	float mSamplerate;
+	int mHarmonicsCount;
+	int mSampleCount;			//Size of the sample
 };
 
 
 
-PADsynth::PADsynth(int N_, int samplerate_, int number_harmonics_){
-    N=N_;
-    samplerate=samplerate_;
-    number_harmonics=number_harmonics_;
-    A=new float [number_harmonics];
-    for (int i=0;i<number_harmonics;i++) A[i]=0.0;
-    A[1]=1.0;//default, the first harmonic has the amplitude 1.0
+PADsynth::PADsynth(int aSampleCount, float aSamplerate, int aHarmonicsCount)
+{
+    mSampleCount = aSampleCount;
+    mSamplerate = aSamplerate;
+    mHarmonicsCount = aHarmonicsCount;
+    mHarmonics = new float[mHarmonicsCount];
+	int i;
+	for (i = 0; i < mHarmonicsCount; i++) 
+		mHarmonics[i] = 0.0f;
+	mHarmonics[1]=1.0;//default, the first harmonic has the amplitude 1.0
 
-    freq_amp=new float[N/2];
+    mFreqAmp = new float[mSampleCount / 2];
 };
 
-PADsynth::~PADsynth(){
-    delete[] A;
-    delete[] freq_amp;
+PADsynth::~PADsynth()
+{
+    delete[] mHarmonics;
+    delete[] mFreqAmp;
 };
 
-float PADsynth::relF(int N){
+float PADsynth::relF(int N)
+{
     return (float)N;
 };
 
-void PADsynth::setharmonic(int n,float value){
-    if ((n<1)||(n>=number_harmonics)) return;
-    A[n]=value;
+void PADsynth::setharmonic(int n,float value)
+{
+    if (n < 1 || n >= mHarmonicsCount) return;
+    mHarmonics[n] = value;
 };
 
-float PADsynth::getharmonic(int n){
-    if ((n<1)||(n>=number_harmonics)) return 0.0;
-    return A[n];
+float PADsynth::getharmonic(int n)
+{
+    if (n < 1 || n >= mHarmonicsCount) 
+		return 0.0f;
+    return mHarmonics[n];
 };
 
-float PADsynth::profile(float fi, float bwi){
-    float x=fi/bwi;
-    x*=x;
-    if (x>14.71280603) return 0.0;//this avoids computing the e^(-x^2) where it's results are very close to zero
-    return (float)exp(-x)/bwi;
+float PADsynth::profile(float fi, float bwi)
+{
+    float x = fi / bwi;
+    x *= x;
+    if (x > 14.71280603f) 
+		return 0.0f; //this avoids computing the e^(-x^2) where it's results are very close to zero
+    return (float)exp(-x) / bwi;
 };
 
-void PADsynth::synth(float f,float bw,float bwscale,float *smp){
-    int i,nh;
+void PADsynth::synth(float f,float bw,float bwscale,float *smp)
+{
+    int i, nh;
     
-    for (i=0;i<N/2;i++) freq_amp[i]=0.0;//default, all the frequency amplitudes are zero
+    for (i = 0; i < mSampleCount / 2; i++) 
+		mFreqAmp[i] = 0.0f; //default, all the frequency amplitudes are zero
 
-    for (nh=1;nh<number_harmonics;nh++){//for each harmonic
-	float bw_Hz;//bandwidth of the current harmonic measured in Hz
-        float bwi;
-	float fi;
-	float rF=f*relF(nh);
+    for (nh = 1; nh < mHarmonicsCount; nh++)
+	{ //for each harmonic
+		float bw_Hz;//bandwidth of the current harmonic measured in Hz
+		float bwi;
+		float fi;
+		float rF = f * relF(nh);
 	
-        bw_Hz=(float)((pow(2.0,bw/1200.0)-1.0)*f*pow(relF(nh),bwscale));
+        bw_Hz = (float)((pow(2.0f,bw / 1200.0f) - 1.0f) * f * pow(relF(nh), bwscale));
 	
-	bwi=(float)(bw_Hz/(2.0*samplerate));
-	fi=rF/samplerate;
-	for (i=0;i<N/2;i++){//here you can optimize, by avoiding to compute the profile for the full frequency (usually it's zero or very close to zero)
-	    float hprofile;
-	    hprofile=profile((i/(float)N)-fi,bwi);
-	    freq_amp[i]+=hprofile*A[nh];
-	};
-    };
+		bwi = (float)(bw_Hz / (2.0f * mSamplerate));
+		fi = rF / mSamplerate;
+		for (i = 0; i < mSampleCount / 2; i++)
+		{   //here you can optimize, by avoiding to compute the profile for the full frequency (usually it's zero or very close to zero)
+			float hprofile = profile((i / (float)mSampleCount) - fi, bwi);
+			mFreqAmp[i] += hprofile * mHarmonics[nh];
+		}
+    }
 	
     //Convert the freq_amp array to complex array (real/imaginary) by making the phases random
-    for (i=0;i<N/2;i++){
-		float phase=RND()*2.0f*3.14159265358979f;
-		smp[i*2+0]=(float)(freq_amp[i]*cos(phase));
-		smp[i*2+1]=(float)(freq_amp[i]*sin(phase));
+    for (i = 0; i < mSampleCount / 2; i++)
+	{
+		float phase = RND() * 2.0f * 3.14159265358979f;
+		smp[i * 2 + 0] = (float)(mFreqAmp[i] * cos(phase));
+		smp[i * 2 + 1] = (float)(mFreqAmp[i] * sin(phase));
     };
-    SoLoud::FFT::ifft(smp,N);
+
+	SoLoud::FFT::ifft(smp, mSampleCount);
 
     //normalize the output
-    float max=0.0;
-    for (i=0;i<N;i++) if (fabs(smp[i])>max) max=(float)fabs(smp[i]);
-    if (max<1e-5) max=(float)(1e-5);
-	for (i = 0; i < N; i++) smp[i] /= max * 0.5f;
+    float max = 0.0;
+	for (i = 0; i < mSampleCount; i++)
+	{
+		float amp = (float)fabs(smp[i]);
+		if (amp > max)
+		{
+			max = amp;
+		}
+	}
+    if (max < 0.000001f) max = 0.000001f;
+	for (i = 0; i < mSampleCount; i++) 
+		smp[i] /= max * 0.5f;
     
 };
 
-float PADsynth::RND(){
-    return (rand()/(RAND_MAX+1.0f));
+float PADsynth::RND()
+{
+    return (rand() / (RAND_MAX + 1.0f));
 };
 
 
@@ -180,8 +195,8 @@ namespace SoLoud
 		float *aHarmonics, 
 		float aBandwidth,
 		float aBandwidthScale,
-		unsigned int aPrincipalFreq,
-		unsigned int aSampleRate,
+		float aPrincipalFreq,
+		float aSampleRate,
 		int aSizePow)
 	{
 		if (aHarmonicCount < 1 || aHarmonics == NULL || aSizePow < 8 || aSizePow > 24)
@@ -189,7 +204,7 @@ namespace SoLoud
 		int len = 1 << aSizePow;
 		float *buf = new float[len];
 		PADsynth p(len, aSampleRate, aHarmonicCount);
-		int i;
+		unsigned int i;
 		for (i = 0; i < aHarmonicCount; i++)
 			p.setharmonic(i, aHarmonics[i]);
 		p.synth(aPrincipalFreq, aBandwidth, aBandwidthScale, buf);

@@ -35,8 +35,8 @@ namespace SoLoud
 		float *aHarmonics,
 		float aBandwidth = 0.25f,
 		float aBandwidthScale = 1.0f,
-		unsigned int aPrincipalFreq = 440,
-		unsigned int aSampleRate = 44100,
+		float aPrincipalFreq = 440.0f,
+		float aSampleRate = 44100.0f,
 		int aSizePow = 18);
 }
 #endif

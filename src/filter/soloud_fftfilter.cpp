@@ -115,13 +115,13 @@ namespace SoLoud
 		unsigned int i;
 		for (i = 4; i < aSamples; i++)
 		{
-			aFFTBuffer[i * 2 - 4] = aFFTBuffer[i * 2];
-			aFFTBuffer[i * 2 + 1 - 4] = aFFTBuffer[i * 2 + 1 + aSamples];
+			aFFTBuffer[(i - 4) * 2] = aFFTBuffer[i * 2];
+			aFFTBuffer[(i - 4) * 2 + 1] = aFFTBuffer[i * 2 + 1];
 		}
 		for (i = 0; i < 4; i++)
 		{
-			aFFTBuffer[aSamples - 4 + i * 2] = 0;
-			aFFTBuffer[aSamples + aSamples - 4 + i * 2 + 1] = 0;
+			aFFTBuffer[aSamples - 4 * 2 + i * 2] = 0;
+			aFFTBuffer[aSamples - 4 * 2 + i * 2 + 1] = 0;
 		}
 	}
 

@@ -273,6 +273,9 @@ namespace SoLoud
 
 	result Wav::load(const char *aFilename)
 	{
+		if (aFilename == 0)
+			return INVALID_PARAMETER;
+		stop();
 		DiskFile dr;
 		int res = dr.open(aFilename);
 		if (res == SO_NO_ERROR)
@@ -284,6 +287,7 @@ namespace SoLoud
 	{
 		if (aMem == NULL || aLength == 0)
 			return INVALID_PARAMETER;
+		stop();
 
 		MemoryFile dr;
         dr.openMem(aMem, aLength, aCopy, aTakeOwnership);
@@ -294,6 +298,8 @@ namespace SoLoud
 	{
 		if (!aFile)
 			return INVALID_PARAMETER;
+		stop();
+
 		MemoryFile mr;
 		result res = mr.openFileToMem(aFile);
 
@@ -320,11 +326,12 @@ namespace SoLoud
 	{
 		if (aMem == 0 || aLength == 0 || aSamplerate <= 0 || aChannels < 1)
 			return INVALID_PARAMETER;
+		stop();
 		delete[] mData;
 		mData = new float[aLength];	
 		mSampleCount = aLength / aChannels;
 		mChannels = aChannels;
-		int i;
+		unsigned int i;
 		for (i = 0; i < aLength; i++)
 			mData[i] = ((signed)aMem[i] - 128) / (float)0x80;
 		return SO_NO_ERROR;
@@ -334,11 +341,12 @@ namespace SoLoud
 	{
 		if (aMem == 0 || aLength == 0 || aSamplerate <= 0 || aChannels < 1)
 			return INVALID_PARAMETER;
+		stop();
 		delete[] mData;
 		mData = new float[aLength];
 		mSampleCount = aLength / aChannels;
 		mChannels = aChannels;
-		int i;
+		unsigned int i;
 		for (i = 0; i < aLength; i++)
 			mData[i] = ((signed short)aMem[i]) / (float)0x8000;
 		return SO_NO_ERROR;
@@ -348,6 +356,7 @@ namespace SoLoud
 	{
 		if (aMem == 0 || aLength == 0 || aSamplerate <= 0 || aChannels < 1)
 			return INVALID_PARAMETER;
+		stop();
 		delete[] mData;
 		if (aCopy == true || aTakeOwndership == false)
 		{

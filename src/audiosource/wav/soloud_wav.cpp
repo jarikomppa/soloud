@@ -331,6 +331,7 @@ namespace SoLoud
 		mData = new float[aLength];	
 		mSampleCount = aLength / aChannels;
 		mChannels = aChannels;
+		mBaseSamplerate = aSamplerate;
 		unsigned int i;
 		for (i = 0; i < aLength; i++)
 			mData[i] = ((signed)aMem[i] - 128) / (float)0x80;
@@ -346,6 +347,7 @@ namespace SoLoud
 		mData = new float[aLength];
 		mSampleCount = aLength / aChannels;
 		mChannels = aChannels;
+		mBaseSamplerate = aSamplerate;
 		unsigned int i;
 		for (i = 0; i < aLength; i++)
 			mData[i] = ((signed short)aMem[i]) / (float)0x8000;
@@ -369,6 +371,7 @@ namespace SoLoud
 		}
 		mSampleCount = aLength / aChannels;
 		mChannels = aChannels;
+		mBaseSamplerate = aSamplerate;
 		return SO_NO_ERROR;
 	}
 };

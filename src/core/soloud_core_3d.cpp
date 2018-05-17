@@ -403,6 +403,14 @@ namespace SoLoud
 		}
 
 		updateVoiceVolume(v);
+		
+		// Fix initial voice volume ramp up
+		int i;
+		for (i = 0; i < MAX_CHANNELS; i++)
+		{
+			mVoice[v]->mCurrentChannelVolume[i] = mVoice[v]->mChannelVolume[i] * mVoice[v]->mOverallVolume;
+		}
+
 		if (mVoice[v]->mOverallVolume < 0.01f)
 		{
 			// Inaudible.
@@ -467,6 +475,14 @@ namespace SoLoud
 		}
 
 		updateVoiceVolume(v);
+
+		// Fix initial voice volume ramp up
+		int i;
+		for (i = 0; i < MAX_CHANNELS; i++)
+		{
+			mVoice[v]->mCurrentChannelVolume[i] = mVoice[v]->mChannelVolume[i] * mVoice[v]->mOverallVolume;
+		}
+
 		if (mVoice[v]->mOverallVolume < 0.01f)
 		{
 			// Inaudible.

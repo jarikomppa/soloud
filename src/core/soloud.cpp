@@ -1132,9 +1132,12 @@ namespace SoLoud
 							}
 						}
 
+                        // Clear remaining of the resample data if the full scratch wasn't used
 						if (readcount < SAMPLE_GRANULARITY)
 						{
-							memset(voice->mResampleData[0]->mBuffer + readcount, 0, sizeof(float) * (SAMPLE_GRANULARITY - readcount) * voice->mChannels);
+							unsigned int i;
+							for (i = 0; i < voice->mChannels; i++)
+								memset(voice->mResampleData[0]->mBuffer + readcount + SAMPLE_GRANULARITY * i, 0, sizeof(float) * (SAMPLE_GRANULARITY - readcount));
 						}
 
 						// If we go past zero, crop to zero (a bit of a kludge)

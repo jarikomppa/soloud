@@ -322,7 +322,7 @@ namespace SoLoud
 		return mSampleCount / mBaseSamplerate;
 	}
 
-	result Wav::loadRawWave(unsigned char *aMem, unsigned int aLength, float aSamplerate, unsigned int aChannels)
+	result Wav::loadRawWave8(unsigned char *aMem, unsigned int aLength, float aSamplerate, unsigned int aChannels)
 	{
 		if (aMem == 0 || aLength == 0 || aSamplerate <= 0 || aChannels < 1)
 			return INVALID_PARAMETER;
@@ -338,7 +338,7 @@ namespace SoLoud
 		return SO_NO_ERROR;
 	}
 
-	result Wav::loadRawWave(short *aMem, unsigned int aLength, float aSamplerate, unsigned int aChannels)
+	result Wav::loadRawWave16(short *aMem, unsigned int aLength, float aSamplerate, unsigned int aChannels)
 	{
 		if (aMem == 0 || aLength == 0 || aSamplerate <= 0 || aChannels < 1)
 			return INVALID_PARAMETER;

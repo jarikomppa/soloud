@@ -1,4 +1,6 @@
 EXPORTS
+	TinyAlignedFloatBuffer_destroy
+	TinyAlignedFloatBuffer_create
 	Soloud_destroy
 	Soloud_create
 	Soloud_init
@@ -20,6 +22,8 @@ EXPORTS
 	Soloud_play3dEx
 	Soloud_play3dClocked
 	Soloud_play3dClockedEx
+	Soloud_playBackground
+	Soloud_playBackgroundEx
 	Soloud_seek
 	Soloud_stop
 	Soloud_stopAll
@@ -29,6 +33,7 @@ EXPORTS
 	Soloud_fadeFilterParameter
 	Soloud_oscillateFilterParameter
 	Soloud_getStreamTime
+	Soloud_getStreamPosition
 	Soloud_getPause
 	Soloud_getVolume
 	Soloud_getOverallVolume
@@ -43,6 +48,8 @@ EXPORTS
 	Soloud_getGlobalVolume
 	Soloud_getMaxActiveVoiceCount
 	Soloud_getLooping
+	Soloud_getLoopPoint
+	Soloud_setLoopPoint
 	Soloud_setLooping
 	Soloud_setMaxActiveVoiceCount
 	Soloud_setInaudibleBehavior
@@ -125,13 +132,14 @@ EXPORTS
 	Bus_set3dMinMaxDistance
 	Bus_set3dAttenuation
 	Bus_set3dDopplerFactor
-	Bus_set3dProcessing
 	Bus_set3dListenerRelative
 	Bus_set3dDistanceDelay
 	Bus_set3dCollider
 	Bus_set3dColliderEx
 	Bus_set3dAttenuator
 	Bus_setInaudibleBehavior
+	Bus_setLoopPoint
+	Bus_getLoopPoint
 	Bus_stop
 	EchoFilter_destroy
 	EchoFilter_create
@@ -145,18 +153,21 @@ EXPORTS
 	Speech_destroy
 	Speech_create
 	Speech_setText
+	Speech_setParams
+	Speech_setParamsEx
 	Speech_setVolume
 	Speech_setLooping
 	Speech_set3dMinMaxDistance
 	Speech_set3dAttenuation
 	Speech_set3dDopplerFactor
-	Speech_set3dProcessing
 	Speech_set3dListenerRelative
 	Speech_set3dDistanceDelay
 	Speech_set3dCollider
 	Speech_set3dColliderEx
 	Speech_set3dAttenuator
 	Speech_setInaudibleBehavior
+	Speech_setLoopPoint
+	Speech_getLoopPoint
 	Speech_setFilter
 	Speech_stop
 	Wav_destroy
@@ -165,19 +176,26 @@ EXPORTS
 	Wav_loadMem
 	Wav_loadMemEx
 	Wav_loadFile
+	Wav_loadRawWave8
+	Wav_loadRawWave8Ex
+	Wav_loadRawWave16
+	Wav_loadRawWave16Ex
+	Wav_loadRawWave
+	Wav_loadRawWaveEx
 	Wav_getLength
 	Wav_setVolume
 	Wav_setLooping
 	Wav_set3dMinMaxDistance
 	Wav_set3dAttenuation
 	Wav_set3dDopplerFactor
-	Wav_set3dProcessing
 	Wav_set3dListenerRelative
 	Wav_set3dDistanceDelay
 	Wav_set3dCollider
 	Wav_set3dColliderEx
 	Wav_set3dAttenuator
 	Wav_setInaudibleBehavior
+	Wav_setLoopPoint
+	Wav_getLoopPoint
 	Wav_setFilter
 	Wav_stop
 	WavStream_destroy
@@ -194,13 +212,14 @@ EXPORTS
 	WavStream_set3dMinMaxDistance
 	WavStream_set3dAttenuation
 	WavStream_set3dDopplerFactor
-	WavStream_set3dProcessing
 	WavStream_set3dListenerRelative
 	WavStream_set3dDistanceDelay
 	WavStream_set3dCollider
 	WavStream_set3dColliderEx
 	WavStream_set3dAttenuator
 	WavStream_setInaudibleBehavior
+	WavStream_setLoopPoint
+	WavStream_getLoopPoint
 	WavStream_setFilter
 	WavStream_stop
 	Prg_destroy
@@ -220,13 +239,14 @@ EXPORTS
 	Sfxr_set3dMinMaxDistance
 	Sfxr_set3dAttenuation
 	Sfxr_set3dDopplerFactor
-	Sfxr_set3dProcessing
 	Sfxr_set3dListenerRelative
 	Sfxr_set3dDistanceDelay
 	Sfxr_set3dCollider
 	Sfxr_set3dColliderEx
 	Sfxr_set3dAttenuator
 	Sfxr_setInaudibleBehavior
+	Sfxr_setLoopPoint
+	Sfxr_getLoopPoint
 	Sfxr_setFilter
 	Sfxr_stop
 	FlangerFilter_destroy
@@ -247,13 +267,14 @@ EXPORTS
 	Openmpt_set3dMinMaxDistance
 	Openmpt_set3dAttenuation
 	Openmpt_set3dDopplerFactor
-	Openmpt_set3dProcessing
 	Openmpt_set3dListenerRelative
 	Openmpt_set3dDistanceDelay
 	Openmpt_set3dCollider
 	Openmpt_set3dColliderEx
 	Openmpt_set3dAttenuator
 	Openmpt_setInaudibleBehavior
+	Openmpt_setLoopPoint
+	Openmpt_getLoopPoint
 	Openmpt_setFilter
 	Openmpt_stop
 	Monotone_destroy
@@ -269,13 +290,14 @@ EXPORTS
 	Monotone_set3dMinMaxDistance
 	Monotone_set3dAttenuation
 	Monotone_set3dDopplerFactor
-	Monotone_set3dProcessing
 	Monotone_set3dListenerRelative
 	Monotone_set3dDistanceDelay
 	Monotone_set3dCollider
 	Monotone_set3dColliderEx
 	Monotone_set3dAttenuator
 	Monotone_setInaudibleBehavior
+	Monotone_setLoopPoint
+	Monotone_getLoopPoint
 	Monotone_setFilter
 	Monotone_stop
 	TedSid_destroy
@@ -291,12 +313,13 @@ EXPORTS
 	TedSid_set3dMinMaxDistance
 	TedSid_set3dAttenuation
 	TedSid_set3dDopplerFactor
-	TedSid_set3dProcessing
 	TedSid_set3dListenerRelative
 	TedSid_set3dDistanceDelay
 	TedSid_set3dCollider
 	TedSid_set3dColliderEx
 	TedSid_set3dAttenuator
 	TedSid_setInaudibleBehavior
+	TedSid_setLoopPoint
+	TedSid_getLoopPoint
 	TedSid_setFilter
 	TedSid_stop

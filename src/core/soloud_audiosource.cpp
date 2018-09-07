@@ -221,6 +221,11 @@ namespace SoLoud
 		mLoopPoint = aLoopPoint;
 	}
 
+	time AudioSource::getLoopPoint()
+	{
+		return mLoopPoint;
+	}
+
 	void AudioSource::setLooping(bool aLoop)
 	{
 		if (aLoop)

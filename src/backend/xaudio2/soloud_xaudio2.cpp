@@ -143,8 +143,6 @@ namespace SoLoud
         SetEvent(data->bufferEndEvent);
         Thread::wait(data->thread);
         Thread::release(data->thread);
-        CloseHandle(data->bufferEndEvent);
-        CloseHandle(data->audioProcessingDoneEvent);
         if (0 != data->sourceVoice) 
         {
             data->sourceVoice->Stop();
@@ -177,6 +175,8 @@ namespace SoLoud
                 delete[] data->buffer[i];
             }
         }
+        CloseHandle(data->bufferEndEvent);
+        CloseHandle(data->audioProcessingDoneEvent);
         delete data;
         aSoloud->mBackendData = 0;
         CoUninitialize();

@@ -97,8 +97,6 @@ namespace SoLoud
         SetEvent(data->bufferEndEvent);
         Thread::wait(data->threadHandle);
         Thread::release(data->threadHandle);
-        CloseHandle(data->audioProcessingDoneEvent);
-        CloseHandle(data->bufferEndEvent);
         waveOutReset(data->waveOut);
         for (int i=0;i<BUFFER_COUNT;++i) 
         {
@@ -109,6 +107,8 @@ namespace SoLoud
             }
         }
         waveOutClose(data->waveOut);
+        CloseHandle(data->audioProcessingDoneEvent);
+        CloseHandle(data->bufferEndEvent);
         delete data;
         aSoloud->mBackendData = 0;
     }

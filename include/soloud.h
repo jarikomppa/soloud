@@ -223,6 +223,8 @@ namespace SoLoud
 		void stopAll();
 		// Stop all voices that play this sound source
 		void stopAudioSource(AudioSource &aSound);
+		// Count voices that play this audio source
+		int countAudioSource(AudioSource &aSound);
 
 		// Set a live filter parameter. Use 0 for the global filters.
 		void setFilterParameter(handle aVoiceHandle, unsigned int aFilterId, unsigned int aAttributeId, float aValue);

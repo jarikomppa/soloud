@@ -189,4 +189,25 @@ namespace SoLoud
 		}
 		unlockAudioMutex();
 	}
+
+	int Soloud::countAudioSource(AudioSource &aSound)
+	{
+		int count = 0;
+		if (aSound.mAudioSourceID)
+		{
+			lockAudioMutex();
+
+			int i;
+			for (i = 0; i < (signed)mHighestVoice; i++)
+			{
+				if (mVoice[i] && mVoice[i]->mAudioSourceID == aSound.mAudioSourceID)
+				{
+					count++;
+				}
+			}
+			unlockAudioMutex();
+		}
+		return count;
+	}
+
 }

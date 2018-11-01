@@ -126,7 +126,7 @@ namespace SoLoud
 				/*int blockalign =*/ aReader->read16();
 				bitspersample = aReader->read16();
 
-				if (audioformat != 1 || (bitspersample != 8 && bitspersample != 16))
+				if (audioformat != 1 || (bitspersample != 8 && bitspersample != 16 && bitspersample != 24))
 				{
 					return FILE_LOAD_FAILED;
 				}
@@ -190,6 +190,29 @@ namespace SoLoud
 								}
 							}
 							dataptr++;
+						}
+					}
+				}
+				else
+				if (bitspersample == 24)
+				{
+					unsigned char * dataptr = (unsigned char*)(aReader->getMemPtr() + aReader->pos());
+					for (i = 0; i < samples; i++)
+					{
+						for (j = 0; j < channels; j++)
+						{
+							if (j == 0)
+							{
+								mData[i] = ((dataptr[0] << 8) | (dataptr[1] << 16) | (dataptr[2] << 24)) / (float)0x80000000;
+							}
+							else
+							{
+								if (readchannels > 1 && j == 1)
+								{
+									mData[i + samples] = ((dataptr[0] << 8) | (dataptr[1] << 16) | (dataptr[2] << 24)) / (float)0x80000000;
+								}
+							}
+							dataptr += 3;
 						}
 					}
 				}

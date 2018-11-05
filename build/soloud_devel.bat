@@ -1,1 +1,1 @@
-genie --soloud-devel --platform=x32 vs2013 
+genie --soloud-devel --platform=x32 vs2017

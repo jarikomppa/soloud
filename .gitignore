@@ -37,3 +37,4 @@ glue/soloud*
 scripts/soloud_codegen.py
 glue/rpgmaker_soloud.rb
 *.lastcodeanalysissucceeded
+*.bak

@@ -38,7 +38,7 @@ namespace radiogaga
 {
 
 	SoLoud::Soloud gSoloud;			// SoLoud engine core
-	SoLoud::Speech gSpeechPhrase[18];
+	SoLoud::Speech gSpeechPhrase[19];
 	SoLoud::Wav gMusicPhrase[10];
 	SoLoud::Speech gIntro;
 
@@ -47,8 +47,12 @@ namespace radiogaga
 	SoLoud::Queue gSpeechQueue;
 	SoLoud::Queue gMusicQueue;
 
-	char *phrase[18] =
+	SoLoud::handle gSpeechqueuehandle;
+	SoLoud::handle gIntrohandle;
+
+	char *phrase[19] =
 	{
+		"............................",
 		"in empty eternity",
 		"rain pours down from above",
 		"Because it is",
@@ -79,7 +83,7 @@ namespace radiogaga
 		gSoloud.play(gMusicBus);
 
 		int i;
-		for (i = 0; i < 18; i++)
+		for (i = 0; i < 19; i++)
 			gSpeechPhrase[i].setText(phrase[i]);
 
 		gMusicPhrase[0].load("audio/9 (102 BPM)_Seq01.wav");
@@ -94,11 +98,12 @@ namespace radiogaga
 		gMusicPhrase[9].load("audio/9 (102 BPM)_Seq10.wav");
 
 		gSpeechQueue.setParamsFromAudioSource(gSpeechPhrase[0]);
-		SoLoud::handle speechqueuehandle = gSpeechBus.play(gSpeechQueue);
+		gSpeechqueuehandle = gSpeechBus.play(gSpeechQueue, 1, 0, true);
+		
+		gSoloud.oscillateRelativePlaySpeed(gSpeechqueuehandle, 0.6f, 1.4f, 4);
 
-		gSoloud.oscillateRelativePlaySpeed(speechqueuehandle, 0.6f, 1.4f, 4);
-
-		gSpeechQueue.play(gSpeechPhrase[rand() % 18]);
+		gSpeechQueue.play(gSpeechPhrase[rand() % 19]);
+		
 
 		gMusicQueue.setParamsFromAudioSource(gMusicPhrase[0]);
 		gMusicBus.play(gMusicQueue);
@@ -111,9 +116,9 @@ namespace radiogaga
 		gIntro.setText("Eat, Sleep, Rave, Repeat");
 		gIntro.setLooping(true);
 		gIntro.setLoopPoint(1.45f);
-		int introhandle = gSoloud.play(gIntro);
-		gSoloud.fadeVolume(introhandle, 0, 10);
-		gSoloud.scheduleStop(introhandle, 10);
+		gIntrohandle = gSoloud.play(gIntro);
+		gSoloud.fadeVolume(gIntrohandle, 0, 10);
+		gSoloud.scheduleStop(gIntrohandle, 10);
 		return 0;
 	}
 
@@ -144,9 +149,15 @@ namespace radiogaga
 		if (gSpeechQueue.getQueueCount() < 2)
 		{
 			int i;
-			for (i = 0; i < 16; i++)
-				gSpeechQueue.play(gSpeechPhrase[rand() % 18]);
+			for (i = 0; i < 8; i++)
+			{
+				gSpeechQueue.play(gSpeechPhrase[(rand() % 18) + 1]);
+				gSpeechQueue.play(gSpeechPhrase[0]);
+			}
 		}
+
+		if (gSoloud.getPause(gSpeechqueuehandle) && !gSoloud.isValidVoiceHandle(gIntrohandle))
+			gSoloud.setPause(gSpeechqueuehandle, false);
 
 		if (gMusicQueue.getQueueCount() < 2)
 		{
@@ -165,7 +176,7 @@ namespace radiogaga
 			ImGui::PlotHistogram("##FFT", fft, 256 / 2, 0, "FFT", 0, 10, ImVec2(264, 80), 8);
 			ImGui::Text("Speech queue     : %d", gSpeechQueue.getQueueCount());
 			int i;
-			for (i = 0; i < 18; i++)
+			for (i = 0; i < 19; i++)
 				if (gSpeechQueue.isCurrentlyPlaying(gSpeechPhrase[i]))
 				{
 					ImGui::Text("Speech phrase    : %d", i);

@@ -23,7 +23,7 @@ freely, subject to the following restrictions:
 */
 
 #if defined(_WIN32)||defined(_WIN64)
-#include <Windows.h>
+#include <windows.h>
 #else
 #include <pthread.h>
 #include <unistd.h>

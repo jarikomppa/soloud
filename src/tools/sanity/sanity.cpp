@@ -78,7 +78,7 @@ int lastknownwrite = 0;
 #define CHECKLASTKNOWN(x, n) if (lastknownwrite && lastknownfile) { fwrite((x),1,(n)*sizeof(float),lastknownfile); } else if (lastknownfile) { fread(lastknownscratch,1,(n)*sizeof(float),lastknownfile); CHECK_BUF_SAME_LASTKNOWN((x), n); }
 
 #if defined(_MSC_VER)
-#include <Windows.h>
+#include <windows.h>
 
 long getmsec()
 {

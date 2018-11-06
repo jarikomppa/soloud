@@ -41,7 +41,7 @@ freely, subject to the following restrictions:
 
 #ifdef USE_PORTMIDI
 #include "portmidi.h"
-#include <Windows.h>
+#include <windows.h>
 #endif
 
 struct plonked

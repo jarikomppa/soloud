@@ -52,7 +52,7 @@ static Pa_OpenDefaultStreamProc dPa_OpenDefaultStream = NULL;
 
 
 #ifdef WINDOWS_VERSION
-#include <Windows.h>
+#include <windows.h>
 
 static HMODULE openDll()
 {

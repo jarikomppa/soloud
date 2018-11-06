@@ -50,6 +50,8 @@ namespace SoLoud
 	{
 		result loadwav(MemoryFile *aReader);
 		result loadogg(MemoryFile *aReader);
+		result loadmp3(MemoryFile *aReader);
+		result loadflac(MemoryFile *aReader);
 		result testAndLoadFile(MemoryFile *aReader);
 	public:
 		float *mData;

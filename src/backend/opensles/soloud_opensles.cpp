@@ -23,6 +23,7 @@ freely, subject to the following restrictions:
 */
 #include <stdlib.h>
 #include <math.h>
+#include <memory.h>
 
 #include "soloud.h"
 #include "soloud_thread.h"
@@ -272,6 +273,8 @@ namespace SoLoud
 			(*data->playerObj)->GetInterface(data->playerObj, SL_IID_ANDROIDSIMPLEBUFFERQUEUE, &data->playerBufferQueue);
 		}
 
+		aSoloud->mBackendData = data;		// Must be set before callback
+
 		// Begin playing.
 		{
 			const int bufferSizeBytes = data->bufferSize * data->channels * sizeof(short);
@@ -283,10 +286,9 @@ namespace SoLoud
 			(*data->player)->SetPlayState(data->player, SL_PLAYSTATE_PLAYING);
 
 		}
-		
+
 		//
 		aSoloud->postinit(aSamplerate,data->bufferSize,aFlags,2);
-		aSoloud->mBackendData = data;
 		aSoloud->mBackendCleanupFunc = soloud_opensles_deinit;
 
 		LOG_INFO( "Creating audio thread." );

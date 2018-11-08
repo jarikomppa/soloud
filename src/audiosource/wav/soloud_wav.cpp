@@ -112,12 +112,11 @@ namespace SoLoud
 		mBaseSamplerate = (float)decoder.sampleRate;
 		mSampleCount = (unsigned int)samples;
 		mChannels = decoder.channels;
-//		drwav_seek_to_pcm_frame(&decoder, 0);
 
 		unsigned int i, j, k;
 		for (i = 0; i < mSampleCount; i += 512)
 		{
-			float tmp[512 * 2];
+			float tmp[512 * MAX_CHANNELS];
 			unsigned int blockSize = (mSampleCount - i) > 512 ? 512 : mSampleCount - i;
 			drwav_read_pcm_frames_f32(&decoder, blockSize, tmp);
 			for (j = 0; j < blockSize; j++)
@@ -207,7 +206,7 @@ namespace SoLoud
 		unsigned int i, j, k;
 		for (i = 0; i<mSampleCount; i += 512)
 		{
-			float tmp[512 * 2];
+			float tmp[512 * MAX_CHANNELS];
 			unsigned int blockSize = (mSampleCount - i) > 512 ? 512 : mSampleCount - i;
 			drmp3_read_pcm_frames_f32(&decoder, blockSize, tmp);
 			for (j = 0; j < blockSize; j++) 
@@ -249,14 +248,16 @@ namespace SoLoud
 		unsigned int i, j, k;
 		for (i = 0; i < mSampleCount; i += 512)
 		{
-			float tmp[512 * 2];
+			float tmp[512 * MAX_CHANNELS];
+			short tmpi[512 * MAX_CHANNELS];
 			unsigned int blockSize = (mSampleCount - i) > 512 ? 512 : mSampleCount - i;
-			drflac_read_pcm_frames_f32(decoder, blockSize, tmp);
+			//drflac_read_pcm_frames_f32(decoder, blockSize, tmp);
+			drflac_read_pcm_frames_s16(decoder, blockSize, tmpi);
 			for (j = 0; j < blockSize; j++)
 			{
 				for (k = 0; k < decoder->channels; k++)
 				{
-					mData[k * mSampleCount + i + j] = tmp[j * decoder->channels + k];
+					mData[k * mSampleCount + i + j] = tmpi[j * decoder->channels + k] / (float)0x7fff;//tmp[j * decoder->channels + k];
 				}
 			}
 		}
@@ -280,6 +281,10 @@ namespace SoLoud
         else if (tag == MAKEDWORD('R','I','F','F')) 
         {
 			return loadwav(aReader);
+		}
+		else if (tag == MAKEDWORD('f', 'L', 'a', 'C'))
+		{
+			return loadflac(aReader);
 		}
 		else if (loadmp3(aReader) == SO_NO_ERROR)
 		{

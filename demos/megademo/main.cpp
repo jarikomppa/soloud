@@ -54,6 +54,8 @@ extern void DemoMainloop_tedsid();
 extern int DemoEntry_tedsid(int argc, char *argv[]);
 extern void DemoMainloop_virtualvoices();
 extern int DemoEntry_virtualvoices(int argc, char *argv[]);
+extern void DemoMainloop_wavformats();
+extern int DemoEntry_wavformats(int argc, char *argv[]);
 
 void DemoMainloop()
 {
@@ -168,6 +170,16 @@ void DemoMainloop_megademo()
 	ImGui::Text("virtualvoices demonstrates playing way\n"
 	            "more sounds than is actually possible,\n"
 				"and having the ones active that matter.");
+
+	ImGui::Separator();
+
+	if (ImGui::Button("wavformats"))
+	{
+		DemoEntry_wavformats(gArgc, gArgv);
+		DemoMainloopPtr = DemoMainloop_wavformats;
+	}
+	ImGui::Text("wavformats test plays files with\n"
+				"all sorts of wave file formats.");
 
 	ImGui::End();
 

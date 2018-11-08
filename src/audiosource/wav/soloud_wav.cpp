@@ -147,13 +147,15 @@ namespace SoLoud
 		mBaseSamplerate = (float)info.sample_rate;
         int samples = stb_vorbis_stream_length_in_samples(vorbis);
 
-		int readchannels = 1;
-		if (info.channels > 1)
+		if (info.channels > MAX_CHANNELS)
 		{
-			readchannels = 2;
-			mChannels = 2;
+			mChannels = MAX_CHANNELS;
 		}
-		mData = new float[samples * readchannels];
+		else
+		{
+			mChannels = info.channels;
+		}
+		mData = new float[samples * mChannels];
 		mSampleCount = samples;
 		samples = 0;
 		while(1)
@@ -164,15 +166,11 @@ namespace SoLoud
             {
 				break;
             }
-			if (readchannels == 1)
-			{
-				memcpy(mData + samples, outputs[0],sizeof(float) * n);
-			}
-			else
-			{
-				memcpy(mData + samples, outputs[0],sizeof(float) * n);
-				memcpy(mData + samples + mSampleCount, outputs[1],sizeof(float) * n);
-			}
+
+			int ch;
+			for (ch = 0; ch < mChannels; ch++)
+				memcpy(mData + samples + mSampleCount * ch, outputs[ch], sizeof(float) * n);
+
 			samples += n;
 		}
         stb_vorbis_close(vorbis);

@@ -839,7 +839,7 @@ namespace SoLoud
 		case 2:
 			switch (aVoice->mChannels)
 			{
-			case 6: // 6->2, just sum lefties and righties, add a bit of center, ignore sub?
+			case 6: // 6->2, just sum lefties and righties, add a bit of center and sub?
 				for (j = 0; j < aSamplesToRead; j++)
 				{
 					pan[0] += pani[0];
@@ -847,11 +847,11 @@ namespace SoLoud
 					float s1 = aScratch[j];
 					float s2 = aScratch[aBufferSize + j];
 					float s3 = aScratch[aBufferSize * 2 + j];
-					//float s4 = aScratch[aBufferSize * 3 + j];
+					float s4 = aScratch[aBufferSize * 3 + j];
 					float s5 = aScratch[aBufferSize * 4 + j];
 					float s6 = aScratch[aBufferSize * 5 + j];
-					aBuffer[j + 0] += 0.3f * (s1 + s3 + s5) * pan[0];
-					aBuffer[j + aBufferSize] += 0.3f * (s2 + s3 + s6) * pan[1];
+					aBuffer[j + 0] += 0.3f * (s1 + s3 + s4 + s5) * pan[0];
+					aBuffer[j + aBufferSize] += 0.3f * (s2 + s3 + s4 + s6) * pan[1];
 				}
 				break;
 			case 4: // 4->2, just sum lefties and righties
@@ -893,7 +893,7 @@ namespace SoLoud
 		case 4:
 			switch (aVoice->mChannels)
 			{
-			case 6: // 6->4, add a bit of center, ignore sub?
+			case 6: // 6->4, add a bit of center, sub?
 				for (j = 0; j < aSamplesToRead; j++)
 				{
 					pan[0] += pani[0];
@@ -903,10 +903,10 @@ namespace SoLoud
 					float s1 = aScratch[j];
 					float s2 = aScratch[aBufferSize + j];
 					float s3 = aScratch[aBufferSize * 2 + j];
-					//float s4 = aScratch[aBufferSize * 3 + j];
+					float s4 = aScratch[aBufferSize * 3 + j];
 					float s5 = aScratch[aBufferSize * 4 + j];
 					float s6 = aScratch[aBufferSize * 5 + j];
-					float c = s3 * 0.7f;
+					float c = (s3 + s4) * 0.7f;
 					aBuffer[j + 0] += s1 * pan[0] + c;
 					aBuffer[j + aBufferSize] += s2 * pan[1] + c;
 					aBuffer[j + aBufferSize * 2] += s5 * pan[2];

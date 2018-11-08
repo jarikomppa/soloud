@@ -52,12 +52,21 @@ namespace SoLoud
 		virtual ~WavStreamInstance();
 	};
 
+	enum WAVSTREAM_FILETYPE
+	{
+		WAVSTREAM_WAV = 0,
+		WAVSTREAM_OGG = 1,
+		WAVSTREAM_FLAC = 2,
+		WAVSTREAM_MP3 = 3
+	};
+
 	class WavStream : public AudioSource
 	{
 		result loadwav(File * fp);
 		result loadogg(File * fp);
+		result loadflac(File * fp);
 	public:
-		int mOgg;
+		int mFiletype;
 		char *mFilename;
 		File *mMemFile;
 		File *mStreamFile;

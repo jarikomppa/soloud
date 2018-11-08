@@ -29,6 +29,7 @@ freely, subject to the following restrictions:
 #include "soloud_wavstream.h"
 #include "soloud_file.h"
 #include "stb_vorbis.h"
+#include "dr_flac.h"
 
 namespace SoLoud
 {
@@ -64,7 +65,7 @@ namespace SoLoud
 		
 		if (mFile)
 		{
-			if (mParent->mOgg)
+			if (mParent->mFiletype == WAVSTREAM_OGG)
 			{
 				int e;
 
@@ -260,7 +261,7 @@ namespace SoLoud
 	{
 		mFilename = 0;
 		mSampleCount = 0;
-		mOgg = 0;
+		mFiletype = WAVSTREAM_WAV;
 		mDataOffset = 0;
 		mBits = 0;
 		mMemFile = 0;
@@ -350,7 +351,7 @@ namespace SoLoud
 		mBits = bitspersample;
 		mBaseSamplerate = (float)samplerate;
 		mSampleCount = samples;
-		mOgg = 0;
+		mFiletype = WAVSTREAM_WAV;
 
 		return 0;
 	}
@@ -372,11 +373,48 @@ namespace SoLoud
 		mBaseSamplerate = (float)info.sample_rate;
 		int samples = stb_vorbis_stream_length_in_samples(v);
 		stb_vorbis_close(v);
-		mOgg = 1;
+		mFiletype = WAVSTREAM_OGG;
 
 		mSampleCount = samples;
 
 		return 0;
+	}
+
+	size_t drflac_read_func(void* pUserData, void* pBufferOut, size_t bytesToRead)
+	{
+		File *fp = (File*)pUserData;
+		return fp->read((unsigned char*)pBufferOut, bytesToRead);
+	}
+
+	drflac_bool32 drflac_seek_func(void* pUserData, int offset, drflac_seek_origin origin)
+	{
+		File *fp = (File*)pUserData;
+		if (origin != drflac_seek_origin_start)
+			offset += fp->pos();
+		fp->seek(offset);
+		return 1;
+	}
+
+	result WavStream::loadflac(File * fp)
+	{
+		fp->seek(0);
+		drflac* decoder = drflac_open(drflac_read_func, drflac_seek_func, (void*)fp);
+
+		if (decoder == NULL)
+			return FILE_LOAD_FAILED;
+		
+		mChannels = decoder->channels;
+		if (mChannels > MAX_CHANNELS)
+		{
+			mChannels = MAX_CHANNELS;
+		}
+
+		mBaseSamplerate = (float)decoder->sampleRate;
+		mSampleCount = decoder->totalPCMFrameCount;
+		mFiletype = WAVSTREAM_FLAC;
+		drflac_close(decoder);
+
+		return SO_NO_ERROR;
 	}
 
 	result WavStream::load(const char *aFilename)
@@ -516,6 +554,11 @@ namespace SoLoud
 		if (tag == MAKEDWORD('R', 'I', 'F', 'F'))
 		{
 			res = loadwav(aFile);
+		}
+		else
+		if (tag == MAKEDWORD('f', 'L', 'a', 'C'))
+		{
+			res = loadflac(aFile);
 		}
 		else
 		{

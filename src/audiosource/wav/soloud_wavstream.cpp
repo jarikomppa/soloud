@@ -164,14 +164,10 @@ namespace SoLoud
 			samples = aFrameSize - aFrameOffset;
 		}
 
-		if (aChannels == 1)
+		int i;
+		for (i = 0; i < aChannels; i++)
 		{
-			memcpy(aBuffer, aOggOutputs[0] + aFrameOffset, sizeof(float) * samples);
-		}
-		else
-		{
-			memcpy(aBuffer, aOggOutputs[0] + aFrameOffset, sizeof(float) * samples);
-			memcpy(aBuffer + aPitch, aOggOutputs[1] + aFrameOffset, sizeof(float) * samples);
+			memcpy(aBuffer + aPitch * i, aOggOutputs[i] + aFrameOffset, sizeof(float) * samples);
 		}
 		return samples;
 	}
@@ -368,10 +364,10 @@ namespace SoLoud
 		if (v == NULL)
 			return FILE_LOAD_FAILED;
 		stb_vorbis_info info = stb_vorbis_get_info(v);
-		mChannels = 1;
-		if (info.channels > 1)
+		mChannels = info.channels;
+		if (info.channels > MAX_CHANNELS)
 		{
-			mChannels = 2;
+			mChannels = MAX_CHANNELS;
 		}
 		mBaseSamplerate = (float)info.sample_rate;
 		int samples = stb_vorbis_stream_length_in_samples(v);

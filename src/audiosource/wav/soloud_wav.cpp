@@ -167,7 +167,7 @@ namespace SoLoud
 				break;
             }
 
-			int ch;
+			unsigned int ch;
 			for (ch = 0; ch < mChannels; ch++)
 				memcpy(mData + samples + mSampleCount * ch, outputs[ch], sizeof(float) * n);
 

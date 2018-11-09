@@ -35,13 +35,6 @@ namespace SoLoud
 	class AudioSourceInstance;
 	class AudioSourceInstance3dData;
 
-	struct AudioSourceResampleData
-	{
-		AudioSourceResampleData();
-		~AudioSourceResampleData();
-		float *mBuffer;
-	};
-
 	class AudioCollider
 	{
 	public:
@@ -183,7 +176,7 @@ namespace SoLoud
 		// Initialize instance. Mostly internal use.
 		void init(AudioSource &aSource, int aPlayIndex);
 		// Buffers for the resampler
-		AudioSourceResampleData *mResampleData[2];
+		AlignedFloatBuffer *mResampleData[2];
 		// Sub-sample playhead; 16.16 fixed point
 		unsigned int mSrcOffset;
 		// Samples left over from earlier pass

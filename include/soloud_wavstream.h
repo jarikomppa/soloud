@@ -35,6 +35,9 @@ struct drflac;
 #ifndef dr_mp3_h
 struct drmp3;
 #endif
+#ifndef dr_wav_h
+struct drwav;
+#endif
 
 namespace SoLoud
 {
@@ -46,9 +49,13 @@ namespace SoLoud
 		WavStream *mParent;
 		unsigned int mOffset;
 		File *mFile;
-		stb_vorbis *mOgg;
-		drflac *mFlac;
-		drmp3 *mMp3;
+		union codec
+		{
+			stb_vorbis *mOgg;
+			drflac *mFlac;
+			drmp3 *mMp3;
+			drwav *mWav;
+		} mCodec;
 		unsigned int mOggFrameSize;
 		unsigned int mOggFrameOffset;
 		float **mOggOutputs;
@@ -79,8 +86,6 @@ namespace SoLoud
 		char *mFilename;
 		File *mMemFile;
 		File *mStreamFile;
-		unsigned int mDataOffset;
-		unsigned int mBits;
 		unsigned int mSampleCount;
 
 		WavStream();

@@ -2,7 +2,7 @@
 SoLoud audio engine
 Copyright (c) 2013-2018 Jari Komppa
 
-vizsn speech synthesizer (c) by Ville-Matias Heikkil‰,
+vizsn speech synthesizer (c) by Ville-Matias Heikkil√§,
 released under WTFPL, http://www.wtfpl.net/txt/copying/
 (in short, "do whatever you want to")
 
@@ -18,7 +18,7 @@ released under same license.
 
 /*
 
- l‰htˆfunktiot: voice, noise
+ l√§ht√∂funktiot: voice, noise
  muut:          pitch
  volyymit:      voice, asp, fric, bypass (4kpl)
  resonaattorit: lp, nz (ar), npc, 1p, 2p, 3p, 4p, 5p, 6p, out (10kpl)
@@ -46,7 +46,7 @@ released under same license.
    |           |
   [-]-(re.4P)--[
    |           |
-  [-]-(re.3P)--[   <-- selvit‰‰nkˆ kahdella tuossa vaiheessa?
+  [-]-(re.3P)--[   <-- selvit√§√§nk√∂ kahdella tuossa vaiheessa?
    |           |
   [-]-(re.2P)--[
    |           |
@@ -62,13 +62,13 @@ released under same license.
 
     x = a*input + b*y + c*z
 
-    ja tulos kiert‰‰ x=>y=>z
+    ja tulos kiert√§√§ x=>y=>z
 
     antiresonaattori:
 
     x = a*input + b*y + c*z
 
-    inputti kiert‰‰ i=>y=>z
+    inputti kiert√§√§ i=>y=>z
 */
 
 #define RLP 0
@@ -111,10 +111,10 @@ released under same license.
 static const float vowtab[8][4][2] =
 {
 	/* a */ 0.10f, 1.6f, 0, 0, 0.2f, 1.5f,  0, 0,
-	/* ‰ */ 0.10f, 1.6f, 0, 0, 0.2f, 0,     0, 0,
+	/* √§ */ 0.10f, 1.6f, 0, 0, 0.2f, 0,     0, 0,
 
 	/* e */ 0.08f, 1.8f, 0, 0, 0.2f, -0.8f, 0, 0,
-	/* ˆ */ 0.08f, 1.8f, 0, 0, 0.3f, 0.9f,  0, 0,
+	/* √∂ */ 0.08f, 1.8f, 0, 0, 0.3f, 0.9f,  0, 0,
 	/* o */ 0.08f, 1.8f, 0, 0, 0.2f, 1.6f,  0, 0,
 
 	/* i */ 0.05f, 1.9f, 0, 0, 0.2f, -1.5f, 0, 0,
@@ -208,7 +208,7 @@ namespace SoLoud
 	}
 
 	unsigned int VizsnInstance::getAudio(float *aBuffer, unsigned int aSamplesToRead, unsigned int aBufferSize)
-	{	
+	{
 		unsigned int idx = 0;
 		int i, j;
 		if (bufwrite > bufread)
@@ -306,8 +306,8 @@ namespace SoLoud
 		case 5:	a += 3;	b++; return ((a & 255) > ((b >> 2) & 255)) ? 0.3f : 0.0f;
 		case 7:	return ((a >> 8) & (256 + 128)) * 0.001f; // robottipulssi
 		case 8:	return (float)(rand() % (1 + ((a & 65535) >> 8))) / 256; // -- hiukka ihmisempi tsaatana
-		case 9:	return ((float)(rand() & 32767)) / 32767; // -- noise: tsaatana 
-		case 6: // fallthrough			
+		case 9:	return ((float)(rand() & 32767)) / 32767; // -- noise: tsaatana
+		case 6: // fallthrough
 		default: return (a & 65535) * (0.001f / 256); /*-- sawtooth: near natural */
 		}
 	}
@@ -365,7 +365,7 @@ namespace SoLoud
 		ob = (ob >> 8) + 128;
 
 		if (ob < 0)	ob = 0;
-		if (ob > 255) ob = 255;		
+		if (ob > 255) ob = 255;
 
 		nper++;
 
@@ -480,7 +480,7 @@ namespace SoLoud
 		stop();
 	}
 
-	AudioSourceInstance * Vizsn::createInstance() 
+	AudioSourceInstance * Vizsn::createInstance()
 	{
 		return new VizsnInstance(this);
 	}
@@ -492,15 +492,15 @@ namespace SoLoud
 		stop();
 		delete[] mText;
 		int len = strlen(aText);
-		mText = new char[len + 3];		
+		mText = new char[len + 3];
 		memcpy(mText+1, aText, len);
 		mText[0] = P_CLR;
 		int i;
 		for (i = 0; i < len; i++)
 		{
 			int c = mText[i + 1];
-			if (c == '‰' || c == -124) c = '{';
-			if (c == 'ˆ' || c == -108) c = '|';
+			if (c == '√§' || c == -124) c = '{';
+			if (c == '√∂' || c == -108) c = '|';
 			if (c >= 'a' && c <= '|')
 			{
 				mText[i + 1] = keyz[c - 'a'];

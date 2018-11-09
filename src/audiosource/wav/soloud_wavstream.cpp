@@ -198,6 +198,7 @@ namespace SoLoud
 				drmp3_uninit(mCodec.mMp3);
 				delete mCodec.mMp3;
 			}
+			break;
 		case WAVSTREAM_WAV:
 			if (mCodec.mWav)
 			{
@@ -478,7 +479,7 @@ namespace SoLoud
 			mChannels = MAX_CHANNELS;
 		}
 
-		drmp3_uint64 samples = drmp3_read_pcm_frames_f32(&decoder, ((drmp3_uint64)1) << 62, NULL);
+		drmp3_uint64 samples = drmp3_get_pcm_frame_count(&decoder);
 
 		mBaseSamplerate = (float)decoder.sampleRate;
 		mSampleCount = (unsigned int)samples;

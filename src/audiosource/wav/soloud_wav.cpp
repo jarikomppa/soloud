@@ -187,7 +187,7 @@ namespace SoLoud
 			return FILE_LOAD_FAILED;
 		}
 
-		drmp3_uint64 samples = drmp3_read_pcm_frames_f32(&decoder, ((drmp3_uint64)1) << 62, NULL);
+		drmp3_uint64 samples = drmp3_get_pcm_frame_count(&decoder);
 
 		if (!samples)
 		{

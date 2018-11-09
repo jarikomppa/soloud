@@ -499,8 +499,8 @@ namespace SoLoud
 		for (i = 0; i < len; i++)
 		{
 			int c = mText[i + 1];
-			if (c == 'ä' || c == -124) c = '{';
-			if (c == 'ö' || c == -108) c = '|';
+			if (c == '\x84' || c == -124) c = '{'; // ä
+			if (c == '\x94' || c == -108) c = '|'; // ö
 			if (c >= 'a' && c <= '|')
 			{
 				mText[i + 1] = keyz[c - 'a'];

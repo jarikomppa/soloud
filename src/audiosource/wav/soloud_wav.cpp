@@ -100,7 +100,7 @@ namespace SoLoud
 			return FILE_LOAD_FAILED;
 		}
 
-		drwav_uint64 samples = decoder.totalSampleCount / decoder.channels;// drwav_read_pcm_frames_f32(&decoder, ((drmp3_uint64)1) << 62, NULL);
+		drwav_uint64 samples = decoder.totalSampleCount / decoder.channels;
 
 		if (!samples)
 		{

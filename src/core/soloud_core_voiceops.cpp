@@ -113,8 +113,17 @@ namespace SoLoud
 		{
 			// Delete via temporary variable to avoid recursion
 			AudioSourceInstance * v = mVoice[aVoice];
-			mVoice[aVoice] = 0;			
+			mVoice[aVoice] = 0;
 			delete v;
+
+			int i;
+			for (i = 0; i < mMaxActiveVoices; i++)
+			{
+				if (mResampleDataOwner[i] == v)
+				{
+					mResampleDataOwner[i] = NULL;
+				}
+			}
 		}
 	}
 

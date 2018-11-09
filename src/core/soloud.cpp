@@ -61,6 +61,7 @@ namespace SoLoud
 		delete[] mBasePtr;
 		mBasePtr = 0;
 		mData = 0;
+		mFloats = aFloats;
 #ifdef DISABLE_SIMD
 		mBasePtr = new unsigned char[aFloats * sizeof(float)];
 		if (mBasePtr == NULL)
@@ -73,6 +74,11 @@ namespace SoLoud
 		mData = (float *)(((size_t)mBasePtr + 15)&~15);
 #endif
 		return SO_NO_ERROR;
+	}
+
+	void AlignedFloatBuffer::clear()
+	{
+		memset(mData, 0, sizeof(float) * mFloats);
 	}
 
 	AlignedFloatBuffer::~AlignedFloatBuffer()
@@ -112,7 +118,7 @@ namespace SoLoud
 		mAudioSourceID = 1;
 		mBackendString = 0;
 		mBackendID = 0;
-		mActiveVoiceDirty = 1;
+		mActiveVoiceDirty = true;
 		mActiveVoiceCount = 0;
 		int i;
 		for (i = 0; i < FILTERS_PER_STREAM; i++)
@@ -149,6 +155,7 @@ namespace SoLoud
 		mMaxActiveVoices = 16;
 		mHighestVoice = 0;
 		mActiveVoiceDirty = true;
+		mResampleData = NULL;
 	}
 
 	Soloud::~Soloud()
@@ -164,6 +171,7 @@ namespace SoLoud
 		for (i = 0; i < mVoiceGroupCount; i++)
 			delete[] mVoiceGroup[i];
 		delete[] mVoiceGroup;
+		delete[] mResampleData;
 	}
 
 	void Soloud::deinit()
@@ -475,6 +483,13 @@ namespace SoLoud
 		mScratchNeeded = mScratchSize;
 		mScratch.init(mScratchSize * MAX_CHANNELS);
 		mOutputScratch.init(mScratchSize * MAX_CHANNELS);
+		mResampleData = new AlignedFloatBuffer[mMaxActiveVoices * 2];
+		mResampleDataOwner = new AudioSourceInstance*[mMaxActiveVoices];
+		unsigned int i;
+		for (i = 0; i < mMaxActiveVoices * 2; i++)
+			mResampleData[i].init(SAMPLE_GRANULARITY * MAX_CHANNELS);
+		for (i = 0; i < mMaxActiveVoices; i++)
+			mResampleDataOwner[i] = NULL;
 		mFlags = aFlags;
 		mPostClipScaler = 0.95f;
 		switch (mChannels)
@@ -1338,6 +1353,58 @@ namespace SoLoud
 		}
 	}
 
+	void Soloud::mapResampleBuffers()
+	{
+		SOLOUD_ASSERT(mMaxActiveVoices < 256);
+		char live[256];
+		memset(live, 0, mMaxActiveVoices);
+		unsigned int i, j;
+		for (i = 0; i < mMaxActiveVoices; i++)
+		{
+			for (j = 0; j < mMaxActiveVoices; j++)
+			{
+				if (mResampleDataOwner[i] && mResampleDataOwner[i] == mVoice[mActiveVoice[j]])
+				{
+					live[i] |= 1; // Live channel
+					live[j] |= 2; // Live voice
+				}
+			}
+		}
+
+		for (i = 0; i < mMaxActiveVoices; i++)
+		{
+			if (!(live[i] & 1) && mResampleDataOwner[i]) // For all dead channels with owners..
+			{
+				mResampleDataOwner[i]->mResampleData[0] = 0;
+				mResampleDataOwner[i]->mResampleData[1] = 0;
+				mResampleDataOwner[i] = 0;
+			}
+		}
+
+		int latestfree = 0;
+		for (i = 0; i < mActiveVoiceCount; i++)
+		{
+			if (!(live[i] & 2) && mVoice[mActiveVoice[i]]) // For all live voices with no channel..
+			{
+				int found = -1;
+				for (j = latestfree; found == -1 && j < mMaxActiveVoices; j++)
+				{
+					if (mResampleDataOwner[j] == 0)
+					{
+						found = j;
+					}
+				}
+				SOLOUD_ASSERT(found != -1);
+				mResampleDataOwner[found] = mVoice[mActiveVoice[i]];
+				mResampleDataOwner[found]->mResampleData[0] = &mResampleData[found * 2 + 0];
+				mResampleDataOwner[found]->mResampleData[1] = &mResampleData[found * 2 + 1];
+				mResampleDataOwner[found]->mResampleData[0]->clear();
+				mResampleDataOwner[found]->mResampleData[1]->clear();
+				latestfree = found + 1;
+			}
+		}
+	}
+
 	void Soloud::calcActiveVoices()
 	{
 		// TODO: consider whether we need to re-evaluate the active voices all the time.
@@ -1370,6 +1437,7 @@ namespace SoLoud
 		{
 			// everything is audible, early out
 			mActiveVoiceCount = candidates;
+			mapResampleBuffers();
 			return;
 		}
 
@@ -1423,6 +1491,7 @@ namespace SoLoud
 			len = stack[--pos];          
 		}	
 		// TODO: should the rest of the voices be flagged INAUDIBLE?
+		mapResampleBuffers();
 	}
 
 	void Soloud::mix_internal(unsigned int aSamples)

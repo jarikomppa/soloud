@@ -102,11 +102,14 @@ namespace SoLoud
 	public:
 		float *mData; // aligned pointer
 		unsigned char *mBasePtr; // raw allocated pointer (for delete)
+		int mFloats; // size of buffer (w/out padding)
 
 		// ctor
 		AlignedFloatBuffer();
 		// Allocate and align buffer
 		result init(unsigned int aFloats);
+		// Clear data to zero.
+		void clear();
 		// dtor
 		~AlignedFloatBuffer();
 	};
@@ -398,6 +401,8 @@ namespace SoLoud
 
 		// Update list of active voices
 		void calcActiveVoices();
+		// Map resample buffers to active voices
+		void mapResampleBuffers();
 		// Perform mixing for a specific bus
 		void mixBus(float *aBuffer, unsigned int aSamplesToRead, unsigned int aBufferSize, float *aScratch, unsigned int aBus, float aSamplerate, unsigned int aChannels);
 		// Max. number of active voices. Busses and tickable inaudibles also count against this.
@@ -412,6 +417,10 @@ namespace SoLoud
 		unsigned int mScratchNeeded;
 		// Output scratch buffer, used in mix_().
 		AlignedFloatBuffer mOutputScratch;
+		// Resampler buffers, two per active voice.
+		AlignedFloatBuffer *mResampleData;
+		// Owners of the resample data
+		AudioSourceInstance **mResampleDataOwner;
 		// Audio voices.
 		AudioSourceInstance *mVoice[VOICE_COUNT];
 		// Output sample rate (not float)

@@ -70,6 +70,16 @@ namespace SoLoud
 			return INVALID_PARAMETER;
 		lockAudioMutex();
 		mMaxActiveVoices = aVoiceCount;
+		delete[] mResampleData;
+		delete[] mResampleDataOwner;
+		mResampleData = new AlignedFloatBuffer[aVoiceCount * 2];
+		mResampleDataOwner = new AudioSourceInstance*[aVoiceCount];
+		unsigned int i;
+		for (i = 0; i < aVoiceCount * 2; i++)
+			mResampleData[i].init(SAMPLE_GRANULARITY * MAX_CHANNELS);
+		for (i = 0; i < aVoiceCount; i++)
+			mResampleDataOwner[i] = NULL;
+		mActiveVoiceDirty = true;
 		unlockAudioMutex();
 		return SO_NO_ERROR;
 	}

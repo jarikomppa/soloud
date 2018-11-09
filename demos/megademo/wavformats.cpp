@@ -133,7 +133,7 @@ namespace wavformats
 		ImGui::Text("Active voices    : %d", gSoloud.getActiveVoiceCount());
 		ImGui::End();
 
-		ONCE(ImGui::SetNextWindowPos(ImVec2(20, 20)));
+		ONCE(ImGui::SetNextWindowPos(ImVec2(20, 0)));
 		ImGui::Begin("Control");
 
 		int i;

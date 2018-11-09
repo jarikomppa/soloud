@@ -66,7 +66,7 @@ void DemoMainloop_megademo()
 {
 	DemoUpdateStart();
 
-	ONCE(ImGui::SetNextWindowPos(ImVec2(20, 20)));
+	ONCE(ImGui::SetNextWindowPos(ImVec2(20, 0)));
 	ImGui::Begin("Select sub-demo to run");
 
 	if (ImGui::Button("Multimusic"))

@@ -27,6 +27,29 @@ freely, subject to the following restrictions:
 
 #include "soloud.h"
 
+char * getBackendEnumString(int aBackend)
+{
+	SOLOUD_ASSERT(SoLoud::Soloud::BACKEND_MAX == 14); // if this fails, this function needs adjustment
+	switch (aBackend)
+	{
+	case SoLoud::Soloud::AUTO: return "AUTO";
+	case SoLoud::Soloud::SDL1: return "SDL1";
+	case SoLoud::Soloud::SDL2: return "SDL2";
+	case SoLoud::Soloud::PORTAUDIO: return "PORTAUDIO";
+	case SoLoud::Soloud::WINMM: return "WINMM";
+	case SoLoud::Soloud::XAUDIO2: return "XAUDIO2";
+	case SoLoud::Soloud::WASAPI: return "WASAPI";
+	case SoLoud::Soloud::ALSA: return "ALSA";
+	case SoLoud::Soloud::OSS: return "OSS";
+	case SoLoud::Soloud::OPENAL: return "OPENAL";
+	case SoLoud::Soloud::COREAUDIO: return "COREAUDIO";
+	case SoLoud::Soloud::OPENSLES: return "OPENSLES";
+	case SoLoud::Soloud::VITA_HOMEBREW: return "VITA_HOMEBREW";
+	case SoLoud::Soloud::NULLDRIVER: return "NULLDRIVER";
+	}
+	return "?!";
+}
+
 char * getChannelString(int aChannels)
 {
 	switch (aChannels)
@@ -54,7 +77,7 @@ int main(int argc, char *argv[])
 	{
 		printf("-----\n"
 			"Backend %d:%s\n",
-			i, i==0?"(auto)":"");
+			i, getBackendEnumString(i));
 		int res = soloud.init(0, i);
 		if (res == SoLoud::SO_NO_ERROR)
 		{

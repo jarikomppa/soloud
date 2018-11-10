@@ -187,7 +187,7 @@ namespace SoLoud
 
 	result Soloud::init(unsigned int aFlags, unsigned int aBackend, unsigned int aSamplerate, unsigned int aBufferSize, unsigned int aChannels)
 	{		
-		if (aBackend >= BACKEND_MAX || aChannels == 3 || aChannels == 5 || aChannels > MAX_CHANNELS)
+		if (aBackend >= BACKEND_MAX || aChannels == 3 || aChannels == 5 || aChannels == 7 || aChannels > MAX_CHANNELS)
 			return INVALID_PARAMETER;
 
 		deinit();
@@ -549,8 +549,39 @@ namespace SoLoud
 			m3dSpeakerPosition[5 * 3 + 1] = 0;
 			m3dSpeakerPosition[5 * 3 + 2] = -1;
 			break;
+		case 8:
+			m3dSpeakerPosition[0 * 3 + 0] = 2;
+			m3dSpeakerPosition[0 * 3 + 1] = 0;
+			m3dSpeakerPosition[0 * 3 + 2] = 1;
+			m3dSpeakerPosition[1 * 3 + 0] = -2;
+			m3dSpeakerPosition[1 * 3 + 1] = 0;
+			m3dSpeakerPosition[1 * 3 + 2] = 1;
 
+			// center and subwoofer. 
+			m3dSpeakerPosition[2 * 3 + 0] = 0;
+			m3dSpeakerPosition[2 * 3 + 1] = 0;
+			m3dSpeakerPosition[2 * 3 + 2] = 1;
+			// Sub should be "mix of everything". We'll handle it as a special case and make it a null vector.
+			m3dSpeakerPosition[3 * 3 + 0] = 0;
+			m3dSpeakerPosition[3 * 3 + 1] = 0;
+			m3dSpeakerPosition[3 * 3 + 2] = 0;
 
+			// side
+			m3dSpeakerPosition[4 * 3 + 0] = 2;
+			m3dSpeakerPosition[4 * 3 + 1] = 0;
+			m3dSpeakerPosition[4 * 3 + 2] = 0;
+			m3dSpeakerPosition[5 * 3 + 0] = -2;
+			m3dSpeakerPosition[5 * 3 + 1] = 0;
+			m3dSpeakerPosition[5 * 3 + 2] = 0;
+
+			// back
+			m3dSpeakerPosition[6 * 3 + 0] = 2;
+			m3dSpeakerPosition[6 * 3 + 1] = 0;
+			m3dSpeakerPosition[6 * 3 + 2] = -1;
+			m3dSpeakerPosition[7 * 3 + 0] = -2;
+			m3dSpeakerPosition[7 * 3 + 1] = 0;
+			m3dSpeakerPosition[7 * 3 + 2] = -1;
+			break;
 		}
 	}
 
@@ -840,7 +871,7 @@ namespace SoLoud
 		int ofs = 0;
 		switch (aChannels)
 		{
-		case 1: // Target is mono. Sum everything. (1->1, 2->1, 4->1, 6->1)
+		case 1: // Target is mono. Sum everything. (1->1, 2->1, 4->1, 6->1, 8->1)
 			for (j = 0, ofs = 0; j < aVoice->mChannels; j++, ofs += aBufferSize)
 			{
 				pan[0] = aVoice->mCurrentChannelVolume[0];
@@ -854,6 +885,23 @@ namespace SoLoud
 		case 2:
 			switch (aVoice->mChannels)
 			{
+			case 8: // 8->2, just sum lefties and righties, add a bit of center and sub?
+				for (j = 0; j < aSamplesToRead; j++)
+				{
+					pan[0] += pani[0];
+					pan[1] += pani[1];
+					float s1 = aScratch[j];
+					float s2 = aScratch[aBufferSize + j];
+					float s3 = aScratch[aBufferSize * 2 + j];
+					float s4 = aScratch[aBufferSize * 3 + j];
+					float s5 = aScratch[aBufferSize * 4 + j];
+					float s6 = aScratch[aBufferSize * 5 + j];
+					float s7 = aScratch[aBufferSize * 6 + j];
+					float s8 = aScratch[aBufferSize * 7 + j];
+					aBuffer[j + 0]           += 0.2f * (s1 + s3 + s4 + s5 + s7) * pan[0];
+					aBuffer[j + aBufferSize] += 0.2f * (s2 + s3 + s4 + s6 + s8) * pan[1];
+				}
+				break;
 			case 6: // 6->2, just sum lefties and righties, add a bit of center and sub?
 				for (j = 0; j < aSamplesToRead; j++)
 				{
@@ -908,6 +956,28 @@ namespace SoLoud
 		case 4:
 			switch (aVoice->mChannels)
 			{
+			case 8: // 8->4, add a bit of center, sub?
+				for (j = 0; j < aSamplesToRead; j++)
+				{
+					pan[0] += pani[0];
+					pan[1] += pani[1];
+					pan[2] += pani[2];
+					pan[3] += pani[3];
+					float s1 = aScratch[j];
+					float s2 = aScratch[aBufferSize + j];
+					float s3 = aScratch[aBufferSize * 2 + j];
+					float s4 = aScratch[aBufferSize * 3 + j];
+					float s5 = aScratch[aBufferSize * 4 + j];
+					float s6 = aScratch[aBufferSize * 5 + j];
+					float s7 = aScratch[aBufferSize * 6 + j];
+					float s8 = aScratch[aBufferSize * 7 + j];
+					float c = (s3 + s4) * 0.7f;
+					aBuffer[j + 0]               += s1 * pan[0] + c;
+					aBuffer[j + aBufferSize]     += s2 * pan[1] + c;
+					aBuffer[j + aBufferSize * 2] += 0.5f * (s5 + s7) * pan[2];
+					aBuffer[j + aBufferSize * 3] += 0.5f * (s6 + s8) * pan[3];
+				}
+				break;
 			case 6: // 6->4, add a bit of center, sub?
 				for (j = 0; j < aSamplesToRead; j++)
 				{
@@ -979,6 +1049,31 @@ namespace SoLoud
 		case 6:
 			switch (aVoice->mChannels)
 			{
+			case 8: // 8->6
+				for (j = 0; j < aSamplesToRead; j++)
+				{
+					pan[0] += pani[0];
+					pan[1] += pani[1];
+					pan[2] += pani[2];
+					pan[3] += pani[3];
+					pan[4] += pani[4];
+					pan[5] += pani[5];
+					float s1 = aScratch[j];
+					float s2 = aScratch[aBufferSize + j];
+					float s3 = aScratch[aBufferSize * 2 + j];
+					float s4 = aScratch[aBufferSize * 3 + j];
+					float s5 = aScratch[aBufferSize * 4 + j];
+					float s6 = aScratch[aBufferSize * 5 + j];
+					float s7 = aScratch[aBufferSize * 6 + j];
+					float s8 = aScratch[aBufferSize * 7 + j];
+					aBuffer[j + 0] += s1 * pan[0];
+					aBuffer[j + aBufferSize] += s2 * pan[1];
+					aBuffer[j + aBufferSize * 2] += s3 * pan[2];
+					aBuffer[j + aBufferSize * 3] += s4 * pan[3];
+					aBuffer[j + aBufferSize * 4] += 0.5f * (s5 + s7) * pan[4];
+					aBuffer[j + aBufferSize * 5] += 0.5f * (s6 + s8) * pan[5];
+				}
+				break;
 			case 6: // 6->6
 				for (j = 0; j < aSamplesToRead; j++)
 				{
@@ -1058,6 +1153,137 @@ namespace SoLoud
 					aBuffer[j + aBufferSize * 3] += s * pan[3];
 					aBuffer[j + aBufferSize * 4] += s * pan[4];
 					aBuffer[j + aBufferSize * 5] += s * pan[5];
+				}
+				break;
+			}
+			break;
+		case 8:
+			switch (aVoice->mChannels)
+			{
+			case 8: // 8->8
+				for (j = 0; j < aSamplesToRead; j++)
+				{
+					pan[0] += pani[0];
+					pan[1] += pani[1];
+					pan[2] += pani[2];
+					pan[3] += pani[3];
+					pan[4] += pani[4];
+					pan[5] += pani[5];
+					pan[6] += pani[6];
+					pan[7] += pani[7];
+					float s1 = aScratch[j];
+					float s2 = aScratch[aBufferSize + j];
+					float s3 = aScratch[aBufferSize * 2 + j];
+					float s4 = aScratch[aBufferSize * 3 + j];
+					float s5 = aScratch[aBufferSize * 4 + j];
+					float s6 = aScratch[aBufferSize * 5 + j];
+					float s7 = aScratch[aBufferSize * 6 + j];
+					float s8 = aScratch[aBufferSize * 7 + j];
+					aBuffer[j + 0] += s1 * pan[0];
+					aBuffer[j + aBufferSize] += s2 * pan[1];
+					aBuffer[j + aBufferSize * 2] += s3 * pan[2];
+					aBuffer[j + aBufferSize * 3] += s4 * pan[3];
+					aBuffer[j + aBufferSize * 4] += s5 * pan[4];
+					aBuffer[j + aBufferSize * 5] += s6 * pan[5];
+					aBuffer[j + aBufferSize * 6] += s7 * pan[6];
+					aBuffer[j + aBufferSize * 7] += s8 * pan[7];
+				}
+				break;
+			case 6: // 6->8
+				for (j = 0; j < aSamplesToRead; j++)
+				{
+					pan[0] += pani[0];
+					pan[1] += pani[1];
+					pan[2] += pani[2];
+					pan[3] += pani[3];
+					pan[4] += pani[4];
+					pan[5] += pani[5];
+					pan[6] += pani[6];
+					pan[7] += pani[7];
+					float s1 = aScratch[j];
+					float s2 = aScratch[aBufferSize + j];
+					float s3 = aScratch[aBufferSize * 2 + j];
+					float s4 = aScratch[aBufferSize * 3 + j];
+					float s5 = aScratch[aBufferSize * 4 + j];
+					float s6 = aScratch[aBufferSize * 5 + j];
+					aBuffer[j + 0] += s1 * pan[0];
+					aBuffer[j + aBufferSize] += s2 * pan[1];
+					aBuffer[j + aBufferSize * 2] += s3 * pan[2];
+					aBuffer[j + aBufferSize * 3] += s4 * pan[3];
+					aBuffer[j + aBufferSize * 4] += 0.5f * (s5 + s1) * pan[4];
+					aBuffer[j + aBufferSize * 5] += 0.5f * (s6 + s2) * pan[5];
+					aBuffer[j + aBufferSize * 6] += s5 * pan[6];
+					aBuffer[j + aBufferSize * 7] += s6 * pan[7];
+				}
+				break;
+			case 4: // 4->8
+				for (j = 0; j < aSamplesToRead; j++)
+				{
+					pan[0] += pani[0];
+					pan[1] += pani[1];
+					pan[2] += pani[2];
+					pan[3] += pani[3];
+					pan[4] += pani[4];
+					pan[5] += pani[5];
+					pan[6] += pani[6];
+					pan[7] += pani[7];
+					float s1 = aScratch[j];
+					float s2 = aScratch[aBufferSize + j];
+					float s3 = aScratch[aBufferSize * 2 + j];
+					float s4 = aScratch[aBufferSize * 3 + j];
+					aBuffer[j + 0] += s1 * pan[0];
+					aBuffer[j + aBufferSize] += s2 * pan[1];
+					aBuffer[j + aBufferSize * 2] += 0.5f * (s1 + s2) * pan[2];
+					aBuffer[j + aBufferSize * 3] += 0.25f * (s1 + s2 + s3 + s4) * pan[3];
+					aBuffer[j + aBufferSize * 4] += 0.5f * (s1 + s3) * pan[4];
+					aBuffer[j + aBufferSize * 5] += 0.5f * (s2 + s4) * pan[5];
+					aBuffer[j + aBufferSize * 6] += s3 * pan[4];
+					aBuffer[j + aBufferSize * 7] += s4 * pan[5];
+				}
+				break;
+			case 2: // 2->8
+				for (j = 0; j < aSamplesToRead; j++)
+				{
+					pan[0] += pani[0];
+					pan[1] += pani[1];
+					pan[2] += pani[2];
+					pan[3] += pani[3];
+					pan[4] += pani[4];
+					pan[5] += pani[5];
+					pan[6] += pani[6];
+					pan[7] += pani[7];
+					float s1 = aScratch[j];
+					float s2 = aScratch[aBufferSize + j];
+					aBuffer[j + 0] += s1 * pan[0];
+					aBuffer[j + aBufferSize] += s2 * pan[1];
+					aBuffer[j + aBufferSize * 2] += 0.5f * (s1 + s2) * pan[2];
+					aBuffer[j + aBufferSize * 3] += 0.5f * (s1 + s2) * pan[3];
+					aBuffer[j + aBufferSize * 4] += s1 * pan[4];
+					aBuffer[j + aBufferSize * 5] += s2 * pan[5];
+					aBuffer[j + aBufferSize * 6] += s1 * pan[6];
+					aBuffer[j + aBufferSize * 7] += s2 * pan[7];
+				}
+				break;
+			case 1: // 1->8
+				for (j = 0; j < aSamplesToRead; j++)
+				{
+					pan[0] += pani[0];
+					pan[1] += pani[1];
+					pan[2] += pani[2];
+					pan[3] += pani[3];
+					pan[4] += pani[4];
+					pan[5] += pani[5];
+					pan[6] += pani[6];
+					pan[7] += pani[7];
+					float s = aScratch[j];
+					aBuffer[j + 0] += s * pan[0];
+					aBuffer[j + aBufferSize] += s * pan[1];
+					aBuffer[j + aBufferSize * 2] += s * pan[2];
+					aBuffer[j + aBufferSize * 3] += s * pan[3];
+					aBuffer[j + aBufferSize * 4] += s * pan[4];
+					aBuffer[j + aBufferSize * 5] += s * pan[5];
+					aBuffer[j + aBufferSize * 6] += s * pan[6];
+					aBuffer[j + aBufferSize * 7] += s * pan[7];
 				}
 				break;
 			}

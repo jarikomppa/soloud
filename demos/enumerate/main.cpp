@@ -27,6 +27,24 @@ freely, subject to the following restrictions:
 
 #include "soloud.h"
 
+char * getChannelString(int aChannels)
+{
+	switch (aChannels)
+	{
+	case 8:
+		return " (7.1 surround)";
+	case 6:
+		return " (5.1 surround)";
+	case 4:
+		return " (quad)";
+	case 2:
+		return " (stereo)";
+	case 1:
+		return " (mono)";
+	}
+	return " (?!)";
+}
+
 int main(int argc, char *argv[])
 {
 	SoLoud::Soloud soloud;
@@ -51,15 +69,15 @@ int main(int argc, char *argv[])
 				soloud.getBackendSamplerate(),
 				soloud.getBackendBufferSize(),
 				soloud.getBackendChannels(),
-				(soloud.getBackendChannels() == 6 ? " (5.1 surround)" : soloud.getBackendChannels() == 4 ? " (quad)" : soloud.getBackendChannels() == 2 ? " (stereo)" : soloud.getBackendChannels() == 1 ? " (mono)" : ""));
+				getChannelString(soloud.getBackendChannels()));
 			soloud.deinit();
 			int j;
-			for (j = 1; j < 7; j++)
+			for (j = 1; j < 12; j++)
 			{
 				int res = soloud.init(0, i, 0, 0, j);
 				if (res == SoLoud::SO_NO_ERROR && soloud.getBackendChannels() == j)
 				{
-					printf("Channels: %d%s\n", soloud.getBackendChannels(), (soloud.getBackendChannels() == 6 ? " (5.1 surround)" : soloud.getBackendChannels() == 4 ? " (quad)" : soloud.getBackendChannels() == 2 ? " (stereo)" : soloud.getBackendChannels() == 1 ? " (mono)" : ""));
+					printf("Channels: %d%s\n", soloud.getBackendChannels(), getChannelString(soloud.getBackendChannels()));
 					soloud.deinit();
 				}
 			}

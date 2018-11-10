@@ -75,8 +75,8 @@ freely, subject to the following restrictions:
 // Use linear resampler
 #define RESAMPLER_LINEAR
 
-// 1)mono, 2)stereo 4)quad 6)5.1
-#define MAX_CHANNELS 6
+// 1)mono, 2)stereo 4)quad 6)5.1 8)7.1
+#define MAX_CHANNELS 8
 
 //
 /////////////////////////////////////////////////////////////////////

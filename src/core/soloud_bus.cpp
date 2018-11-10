@@ -227,7 +227,7 @@ namespace SoLoud
 
 	result Bus::setChannels(unsigned int aChannels)
 	{
-		if (aChannels == 0 || aChannels == 3 || aChannels == 5 || aChannels > 6)
+		if (aChannels == 0 || aChannels == 3 || aChannels == 5 || aChannels > 7 || aChannels > MAX_CHANNELS)
 			return INVALID_PARAMETER;
 		mChannels = aChannels;
 		return SO_NO_ERROR;

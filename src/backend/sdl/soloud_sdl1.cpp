@@ -99,8 +99,11 @@ namespace SoLoud
 		if (dll_SDL1_OpenAudio(&as, &gActiveAudioSpec) < 0)
 		{
 			as.format = AUDIO_S16;
-			if (dll_SDL1_OpenAudio(&as, &gActiveAudioSpec) < 0 || gActiveAudioSpec.format != AUDIO_S16)
+			int res = dll_SDL1_OpenAudio(&as, &gActiveAudioSpec);
+			if (res < 0 || gActiveAudioSpec.format != AUDIO_S16)
 			{
+				if (res >= 0)
+					dll_SDL1_CloseAudio();
 				return UNKNOWN_ERROR;
 			}
 		}

@@ -1,6 +1,6 @@
 /*
 SoLoud audio engine
-Copyright (c) 2013-2014 Jari Komppa
+Copyright (c) 2013-2018 Jari Komppa
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -30,14 +30,24 @@ freely, subject to the following restrictions:
 #endif
 #include <math.h>
 
-typedef int (*SDLOpenAudio)(SDL_AudioSpec *desired, SDL_AudioSpec *obtained);
-typedef void (*SDLCloseAudio)();
-typedef void (*SDLPauseAudio)(int pause_on);
 
-static SDLOpenAudio dSDL2_OpenAudio = NULL;
-static SDLCloseAudio dSDL2_CloseAudio = NULL;
-static SDLPauseAudio dSDL2_PauseAudio = NULL;
+typedef Uint32            (*SDL2_WasInit_t)(Uint32 flags);
+typedef int               (*SDL2_InitSubSystem_t)(Uint32 flags);
+typedef SDL_AudioDeviceID (*SDL2_OpenAudioDevice_t)(const char*          device,
+												    int                  iscapture,
+												    const SDL_AudioSpec* desired,
+												    SDL_AudioSpec*       obtained,
+												    int                  allowed_changes);
+typedef void              (*SDL2_CloseAudioDevice_t)(SDL_AudioDeviceID dev);
+typedef void              (*SDL2_PauseAudioDevice_t)(SDL_AudioDeviceID dev,
+												     int               pause_on);
 
+static SDL2_WasInit_t SDL2_WasInit = NULL;
+static SDL2_InitSubSystem_t SDL2_InitSubSystem = NULL;
+static SDL2_OpenAudioDevice_t SDL2_OpenAudioDevice = NULL;
+static SDL2_CloseAudioDevice_t SDL2_CloseAudioDevice = NULL;
+static SDL2_PauseAudioDevice_t SDL2_PauseAudioDevice = NULL;
+	
 #ifdef WINDOWS_VERSION
 #include <windows.h>
 
@@ -78,7 +88,7 @@ static int load_dll()
 	void * dll = NULL;
 #endif
 
-	if (dSDL2_OpenAudio != NULL)
+	if (SDL2_OpenAudioDevice != NULL)
 	{
 		return 1;
 	}
@@ -87,19 +97,22 @@ static int load_dll()
 
     if (dll)
     {
-	    dSDL2_OpenAudio = (SDLOpenAudio)getDllProc(dll, "SDL_OpenAudio");
-	    dSDL2_CloseAudio = (SDLCloseAudio)getDllProc(dll, "SDL_CloseAudio");
-	    dSDL2_PauseAudio = (SDLPauseAudio)getDllProc(dll, "SDL_PauseAudio");
-
-
-        if (dSDL2_OpenAudio && 
-        	dSDL2_CloseAudio &&
-        	dSDL2_PauseAudio)
+		SDL2_WasInit = (SDL2_WasInit_t)getDllProc(dll, "SDL_WasInit");
+		SDL2_InitSubSystem = (SDL2_InitSubSystem_t)getDllProc(dll, "SDL_InitSubSystem");
+		SDL2_OpenAudioDevice = (SDL2_OpenAudioDevice_t)getDllProc(dll, "SDL_OpenAudioDevice");
+		SDL2_CloseAudioDevice = (SDL2_CloseAudioDevice_t)getDllProc(dll, "SDL_CloseAudioDevice");
+		SDL2_PauseAudioDevice = (SDL2_PauseAudioDevice_t)getDllProc(dll, "SDL_PauseAudioDevice");
+	
+        if (SDL2_WasInit && 
+        	SDL2_InitSubSystem &&
+        	SDL2_OpenAudioDevice &&
+			SDL2_CloseAudioDevice &&
+			SDL2_PauseAudioDevice)
         {
         	return 1;
         }
 	}
-	dSDL2_OpenAudio = NULL;
+	SDL2_OpenAudioDevice = NULL;
     return 0;
 }
 
@@ -108,21 +121,40 @@ int dll_SDL2_found()
 	return load_dll();
 }
 
-int dll_SDL2_OpenAudio(SDL_AudioSpec *desired, SDL_AudioSpec *obtained)
+Uint32 dll_SDL2_WasInit(Uint32 flags)
 {
-	if (load_dll())
-		return dSDL2_OpenAudio(desired, obtained);
+	if (SDL2_WasInit)
+		return SDL2_WasInit(flags);
 	return 0;
 }
 
-void dll_SDL2_CloseAudio()
+int dll_SDL2_InitSubSystem(Uint32 flags)
 {
-	if (load_dll())
-		dSDL2_CloseAudio();
+	if (SDL2_InitSubSystem)
+		return SDL2_InitSubSystem(flags);
+	return -1;
 }
 
-void dll_SDL2_PauseAudio(int pause_on)
+SDL_AudioDeviceID dll_SDL2_OpenAudioDevice(const char*          device,
+										   int                  iscapture,
+										   const SDL_AudioSpec* desired,
+										   SDL_AudioSpec*       obtained,
+										   int                  allowed_changes)
 {
-	if (load_dll())
-		dSDL2_PauseAudio(pause_on);
+	if (SDL2_OpenAudioDevice)
+		return SDL2_OpenAudioDevice(device, iscapture, desired, obtained, allowed_changes);
+	return 0;
+}
+
+void dll_SDL2_CloseAudioDevice(SDL_AudioDeviceID dev)
+{
+	if (SDL2_CloseAudioDevice)
+		SDL2_CloseAudioDevice(dev);
+}
+
+void dll_SDL2_PauseAudioDevice(SDL_AudioDeviceID dev,
+							   int               pause_on)
+{
+	if (SDL2_PauseAudioDevice)
+		SDL2_PauseAudioDevice(dev, pause_on);
 }

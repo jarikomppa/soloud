@@ -52,16 +52,8 @@ namespace SoLoud
 	{
 		short *buf = (short*)stream;
 		SoLoud::Soloud *soloud = (SoLoud::Soloud *)userdata;
-		if (gActiveAudioSpec.format == AUDIO_F32)
-		{
-			int samples = len / (gActiveAudioSpec.channels * sizeof(float));
-			soloud->mix((float *)buf, samples);
-		}
-		else // assume s16 if not float
-		{
-			int samples = len / (gActiveAudioSpec.channels * sizeof(short));
-			soloud->mixSigned16(buf, samples);
-		}
+		int samples = len / (gActiveAudioSpec.channels * sizeof(short));
+		soloud->mixSigned16(buf, samples);
 	}
 
 	static void soloud_sdlstatic_deinit(SoLoud::Soloud *aSoloud)
@@ -73,7 +65,7 @@ namespace SoLoud
 	{
 		SDL_AudioSpec as;
 		as.freq = aSamplerate;
-		as.format = AUDIO_F32;
+		as.format = AUDIO_S16;
 		as.channels = aChannels;
 		as.samples = aBuffer;
 		as.callback = soloud_sdlstatic_audiomixer;
@@ -81,11 +73,7 @@ namespace SoLoud
 
 		if (SDL_OpenAudio(&as, &gActiveAudioSpec) < 0)
 		{
-			as.format = AUDIO_S16;
-			if (SDL_OpenAudio(&as, &gActiveAudioSpec) < 0 || gActiveAudioSpec.format != AUDIO_S16)
-			{
-				return UNKNOWN_ERROR;
-			}
+			return UNKNOWN_ERROR;
 		}
 
 		aSoloud->postinit(gActiveAudioSpec.freq, gActiveAudioSpec.samples, aFlags, gActiveAudioSpec.channels);
@@ -93,7 +81,7 @@ namespace SoLoud
 		aSoloud->mBackendCleanupFunc = soloud_sdlstatic_deinit;
 
 		SDL_PauseAudio(0);
-        aSoloud->mBackendString = "SDL (static)";
+        aSoloud->mBackendString = "SDL1 (static)";
 		return 0;
 	}
 	

@@ -44,10 +44,10 @@ namespace SoLoud
 #endif
 #include <math.h>
 
-
 namespace SoLoud
 {
 	static SDL_AudioSpec gActiveAudioSpec;
+	static SDL_AudioDeviceID gAudioDeviceID;
 
 	void soloud_sdl2static_audiomixer(void *userdata, Uint8 *stream, int len)
 	{
@@ -67,11 +67,19 @@ namespace SoLoud
 
 	static void soloud_sdl2static_deinit(SoLoud::Soloud *aSoloud)
 	{
-		SDL_CloseAudio();
+		SDL_CloseAudioDevice(gAudioDeviceID);
 	}
 
 	result sdl2static_init(SoLoud::Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer, unsigned int aChannels)
 	{
+		if (!SDL_WasInit(SDL_INIT_AUDIO))
+		{
+			if (SDL_InitSubSystem(SDL_INIT_AUDIO) < 0)
+			{
+				return UNKNOWN_ERROR;
+			}
+		}
+
 		SDL_AudioSpec as;
 		as.freq = aSamplerate;
 		as.format = AUDIO_F32;
@@ -80,10 +88,12 @@ namespace SoLoud
 		as.callback = soloud_sdl2static_audiomixer;
 		as.userdata = (void*)aSoloud;
 
-		if (SDL_OpenAudio(&as, &gActiveAudioSpec) < 0)
+		gAudioDeviceID = SDL_OpenAudioDevice(NULL, 0, &as, &gActiveAudioSpec, SDL_AUDIO_ALLOW_ANY_CHANGE & ~(SDL_AUDIO_ALLOW_FORMAT_CHANGE | SDL_AUDIO_ALLOW_CHANNELS_CHANGE));
+		if (gAudioDeviceID == 0)
 		{
 			as.format = AUDIO_S16;
-			if (SDL_OpenAudio(&as, &gActiveAudioSpec) < 0 || gActiveAudioSpec.format != AUDIO_S16)
+			gAudioDeviceID = SDL_OpenAudioDevice(NULL, 0, &as, &gActiveAudioSpec, SDL_AUDIO_ALLOW_ANY_CHANGE & ~(SDL_AUDIO_ALLOW_FORMAT_CHANGE | SDL_AUDIO_ALLOW_CHANNELS_CHANGE));
+			if (gAudioDeviceID == 0)
 			{
 				return UNKNOWN_ERROR;
 			}
@@ -93,10 +103,9 @@ namespace SoLoud
 
 		aSoloud->mBackendCleanupFunc = soloud_sdl2static_deinit;
 
-		SDL_PauseAudio(0);
-        aSoloud->mBackendString = "SDL2 (static)";
+		SDL_PauseAudioDevice(gAudioDeviceID, 0);
+		aSoloud->mBackendString = "SDL2 (static)";
 		return 0;
-	}
-	
+	}	
 };
 #endif

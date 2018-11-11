@@ -70,7 +70,7 @@ namespace SoLoud
 					for (j = 0; j < (signed)mChannels; j++)
 					{
 						float sample = aBuffer[i + aBufferSize * j];
-						float absvol = fabs(sample);
+						float absvol = (float)fabs(sample);
 						if (absvol > mVisualizationChannelVolume[j])
 							mVisualizationChannelVolume[j] = absvol;
 						mVisualizationWaveData[i] += sample;
@@ -87,7 +87,7 @@ namespace SoLoud
 					for (j = 0; j < (signed)mChannels; j++)
 					{
 						float sample = aBuffer[(i % aSamplesToRead) + aBufferSize * j];
-						float absvol = fabs(sample);
+						float absvol = (float)fabs(sample);
 						if (absvol > mVisualizationChannelVolume[j])
 							mVisualizationChannelVolume[j] = absvol;
 						mVisualizationWaveData[i] += sample;

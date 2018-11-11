@@ -86,7 +86,19 @@ namespace wavformats
 		"ch6_float.wav",
 		"ch6_imaadpcm.wav",
 		"ch6_msadpcm.wav",
-		"ch6_ulaw.wav"
+		"ch6_ulaw.wav",
+		"ch8.flac",
+		"ch8.ogg",
+		"ch8_16bit.wav",
+		"ch8_24bit.wav",
+		"ch8_32bit.wav",
+		"ch8_8bit.wav",
+		"ch8_alaw.wav",
+		"ch8_double.wav",
+		"ch8_float.wav",
+		"ch8_imaadpcm.wav",
+		"ch8_msadpcm.wav",
+		"ch8_ulaw.wav"
 	};
 	int files = sizeof(filenames) / sizeof(char*);
 	SoLoud::Soloud gSoloud;

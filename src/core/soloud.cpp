@@ -205,7 +205,8 @@ namespace SoLoud
 		if (aBufferSize != Soloud::AUTO) buffersize = aBufferSize;
 
 #if defined(WITH_SDL1_STATIC)
-		if (aBackend == Soloud::SDL1 || 
+		if (!inited &&
+			aBackend == Soloud::SDL1 || 
 			aBackend == Soloud::AUTO)
 		{
 			if (aBufferSize == Soloud::AUTO) buffersize = 2048;
@@ -223,7 +224,8 @@ namespace SoLoud
 #endif
 
 #if defined(WITH_SDL2_STATIC)
-		if (aBackend == Soloud::SDL2 ||
+		if (!inited &&
+			aBackend == Soloud::SDL2 ||
 			aBackend == Soloud::AUTO)
 		{
 			if (aBufferSize == Soloud::AUTO) buffersize = 2048;
@@ -241,7 +243,8 @@ namespace SoLoud
 #endif
 
 #if defined(WITH_SDL2)
-		if (aBackend == Soloud::SDL2 ||
+		if (!inited &&
+			aBackend == Soloud::SDL2 ||
 			aBackend == Soloud::AUTO)
 		{
 			if (aBufferSize == Soloud::AUTO) buffersize = 2048;
@@ -259,7 +262,8 @@ namespace SoLoud
 #endif
 
 #if defined(WITH_SDL1)
-		if (aBackend == Soloud::SDL1 || 
+		if (!inited &&
+			aBackend == Soloud::SDL1 || 
 			aBackend == Soloud::AUTO)
 		{
 			if (aBufferSize == Soloud::AUTO) buffersize = 2048;
@@ -449,7 +453,8 @@ namespace SoLoud
 #endif
 
 #if defined(WITH_VITA_HOMEBREW)
-		if (aBackend == Soloud::VITA_HOMEBREW || 
+		if (!inited &&
+			aBackend == Soloud::VITA_HOMEBREW || 
 			aBackend == Soloud::AUTO)
 		{
 			int ret = vita_homebrew_init(this, aFlags, samplerate, buffersize, aChannels);

@@ -55,17 +55,31 @@ namespace speakers
 	SoLoud::Wav *gWav;
 	bool *gWavOk;
 	bool *gWavStreamOk;
-
+	bool gChannelsAvailable[MAX_CHANNELS];
 
 	int DemoEntry(int argc, char *argv[])
 	{
-		gSoloud.init(SoLoud::Soloud::CLIP_ROUNDOFF | SoLoud::Soloud::ENABLE_VISUALIZATION);
+		int i;
+		int biggest = 0;
+		for (i = 0; i < MAX_CHANNELS; i++)
+		{
+			int result = gSoloud.init(SoLoud::Soloud::CLIP_ROUNDOFF | SoLoud::Soloud::ENABLE_VISUALIZATION, 0, 0, 0, i + 1);
+			if (result == SoLoud::SO_NO_ERROR)
+			{
+				gChannelsAvailable[i] = true;
+				gSoloud.deinit();
+				biggest = i+1;
+			}
+			else
+				gChannelsAvailable[i] = false;
+		}
+
+		gSoloud.init(SoLoud::Soloud::CLIP_ROUNDOFF | SoLoud::Soloud::ENABLE_VISUALIZATION, 0, 0, 0, biggest);
 
 		gWav = new SoLoud::Wav[files];
 		gWavOk = new bool[files];
 		gWavStreamOk = new bool[files];
 
-		int i;
 		for (i = 0; i < files; i++)
 		{
 			char temp[256];
@@ -82,6 +96,22 @@ namespace speakers
 	{
 		DemoUpdateStart();
 
+		int i;
+		for (i = 0; i < MAX_CHANNELS; i++)
+		{
+			float x, y, z;
+			if (gSoloud.getSpeakerPosition(i, x, y, z) == SoLoud::SO_NO_ERROR)
+			{
+				float vol = gSoloud.getApproximateVolume(i);
+				int col = (int)(vol * 0xff) * 0x010101 | 0xff000000;
+				DemoTriangle(x * 30 + 400     , -z * 30 + 200 - 10,
+							 x * 30 + 400 - 10, -z * 30 + 200 + 10,
+							 x * 30 + 400 + 10, -z * 30 + 200 + 10,
+							 col);
+			}
+		}
+
+
 		float *buf = gSoloud.getWave();
 		float *fft = gSoloud.calcFFT();
 
@@ -96,7 +126,6 @@ namespace speakers
 		ONCE(ImGui::SetNextWindowPos(ImVec2(20, 0)));
 		ImGui::Begin("Control");
 
-		int i;
 		for (i = 0; i < files; i++)
 		{
 			char temp[256];
@@ -107,6 +136,27 @@ namespace speakers
 			if (ImGui::Button(temp)) 
 			{
 				gSoloud.play(gWav[i]);
+			}
+		}
+		ImGui::End();
+
+		ONCE(ImGui::SetNextWindowPos(ImVec2(200, 0)));
+		ImGui::Begin("Audio device");
+
+		for (i = 0; i < MAX_CHANNELS; i++)
+		{
+			char temp[256];
+			bool x = gChannelsAvailable[i];
+			ImGui::Checkbox("", &x);
+			ImGui::SameLine();
+			sprintf(temp, "%d channels", i + 1);
+			if (ImGui::Button(temp))
+			{
+				if (gChannelsAvailable[i])
+				{
+					gSoloud.deinit();
+					gSoloud.init(SoLoud::Soloud::CLIP_ROUNDOFF | SoLoud::Soloud::ENABLE_VISUALIZATION, 0, 0, 0, i + 1);
+				}
 			}
 		}
 

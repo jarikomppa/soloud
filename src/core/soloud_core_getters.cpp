@@ -363,4 +363,16 @@ namespace SoLoud
 		return mBufferSize;
 	}
 
+	// Get speaker position in 3d space
+	result Soloud::getSpeakerPosition(unsigned int aChannel, float &aX, float &aY, float &aZ)
+	{
+		if (aChannel >= mChannels)
+			return INVALID_PARAMETER;
+		aX = m3dSpeakerPosition[3 * aChannel + 0];
+		aY = m3dSpeakerPosition[3 * aChannel + 1];
+		aZ = m3dSpeakerPosition[3 * aChannel + 2];
+		return SO_NO_ERROR;
+	}
+
+
 }

@@ -39,9 +39,9 @@ freely, subject to the following restrictions:
 #include <float.h>
 #endif
 
-#if !defined(WITH_SDL2) && !defined(WITH_SDL) && !defined(WITH_PORTAUDIO) && \
+#if !defined(WITH_SDL2) && !defined(WITH_SDL1) && !defined(WITH_PORTAUDIO) && \
    !defined(WITH_OPENAL) && !defined(WITH_XAUDIO2) && !defined(WITH_WINMM) && \
-   !defined(WITH_WASAPI) && !defined(WITH_OSS) && !defined(WITH_SDL_STATIC) && \
+   !defined(WITH_WASAPI) && !defined(WITH_OSS) && !defined(WITH_SDL1_STATIC) && \
    !defined(WITH_SDL2_STATIC) && !defined(WITH_ALSA) && !defined(WITH_OPENSLES) && \
    !defined(WITH_NULL) && !defined(WITH_COREAUDIO) && !defined(WITH_VITA_HOMEBREW)
 #error It appears you haven't enabled any of the back-ends. Please #define one or more of the WITH_ defines (or use premake) '
@@ -204,17 +204,17 @@ namespace SoLoud
 		if (aSamplerate != Soloud::AUTO) samplerate = aSamplerate;
 		if (aBufferSize != Soloud::AUTO) buffersize = aBufferSize;
 
-#if defined(WITH_SDL_STATIC)
-		if (aBackend == Soloud::SDL || 
+#if defined(WITH_SDL1_STATIC)
+		if (aBackend == Soloud::SDL1 || 
 			aBackend == Soloud::AUTO)
 		{
 			if (aBufferSize == Soloud::AUTO) buffersize = 2048;
 
-			int ret = sdlstatic_init(this, aFlags, samplerate, buffersize, aChannels);
+			int ret = sdl1static_init(this, aFlags, samplerate, buffersize, aChannels);
 			if (ret == 0)
 			{
 				inited = 1;
-				mBackendID = Soloud::SDL;
+				mBackendID = Soloud::SDL1;
 			}
 
 			if (ret != 0 && aBackend != Soloud::AUTO)
@@ -240,18 +240,35 @@ namespace SoLoud
 		}
 #endif
 
-#if defined(WITH_SDL) || defined(WITH_SDL2)
-		if (aBackend == Soloud::SDL || 
-			aBackend == Soloud::SDL2 ||
+#if defined(WITH_SDL2)
+		if (aBackend == Soloud::SDL2 ||
 			aBackend == Soloud::AUTO)
 		{
 			if (aBufferSize == Soloud::AUTO) buffersize = 2048;
 
-			int ret = sdl_init(this, aFlags, samplerate, buffersize, aChannels);
+			int ret = sdl2_init(this, aFlags, samplerate, buffersize, aChannels);
 			if (ret == 0)
 			{
 				inited = 1;
-				mBackendID = Soloud::SDL;
+				mBackendID = Soloud::SDL2;
+			}
+
+			if (ret != 0 && aBackend != Soloud::AUTO)
+				return ret;
+		}
+#endif
+
+#if defined(WITH_SDL1)
+		if (aBackend == Soloud::SDL1 || 
+			aBackend == Soloud::AUTO)
+		{
+			if (aBufferSize == Soloud::AUTO) buffersize = 2048;
+
+			int ret = sdl1_init(this, aFlags, samplerate, buffersize, aChannels);
+			if (ret == 0)
+			{
+				inited = 1;
+				mBackendID = Soloud::SDL1;
 			}
 
 			if (ret != 0 && aBackend != Soloud::AUTO)
@@ -322,6 +339,7 @@ namespace SoLoud
 			aBackend == Soloud::AUTO))
 		{
 			if (aBufferSize == Soloud::AUTO) buffersize = 4096;
+			if (aSamplerate == Soloud::AUTO) samplerate = 48000;
 
 			int ret = wasapi_init(this, aFlags, samplerate, buffersize, aChannels);
 			if (ret == 0)

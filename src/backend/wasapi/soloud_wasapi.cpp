@@ -124,10 +124,7 @@ namespace SoLoud
 
 	result wasapi_init(Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer, unsigned int aChannels)
     {
-        if (FAILED(CoInitializeEx(0, COINIT_MULTITHREADED)))
-        {
-            return UNKNOWN_ERROR;
-        }
+		CoInitializeEx(0, COINIT_MULTITHREADED);
         WASAPIData *data = new WASAPIData;
         ZeroMemory(data, sizeof(WASAPIData));
         aSoloud->mBackendData = data;
@@ -161,7 +158,7 @@ namespace SoLoud
         }
         WAVEFORMATEX format;
         ZeroMemory(&format, sizeof(WAVEFORMATEX));
-        format.nChannels = 2;
+        format.nChannels = aChannels;
         format.nSamplesPerSec = aSamplerate;
         format.wFormatTag = WAVE_FORMAT_PCM;
         format.wBitsPerSample = sizeof(short)*8;

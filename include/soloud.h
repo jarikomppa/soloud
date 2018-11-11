@@ -43,6 +43,18 @@ freely, subject to the following restrictions:
 #endif
 #endif
 
+#ifdef WITH_SDL
+#undef WITH_SDL2
+#undef WITH_SDL1
+#define WITH_SDL1
+#define WITH_SDL2
+#endif
+
+#ifdef WITH_SDL_STATIC
+#undef WITH_SDL1_STATIC
+#define WITH_SDL1_STATIC
+#endif
+
 #ifndef M_PI
 #define M_PI 3.14159265359
 #endif
@@ -157,7 +169,7 @@ namespace SoLoud
 		enum BACKENDS
 		{
 			AUTO = 0,
-			SDL,
+			SDL1,
 			SDL2,
 			PORTAUDIO,
 			WINMM,

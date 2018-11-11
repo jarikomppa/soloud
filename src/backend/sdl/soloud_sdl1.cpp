@@ -25,11 +25,11 @@ freely, subject to the following restrictions:
 
 #include "soloud.h"
 
-#if !(defined(WITH_SDL) || defined(WITH_SDL2))
+#if !defined(WITH_SDL1)
 
 namespace SoLoud
 {
-	result sdl_init(SoLoud::Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer)
+	result sdl1_init(SoLoud::Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer)
 	{
 		return NOT_IMPLEMENTED;
 	}
@@ -47,14 +47,14 @@ namespace SoLoud
 
 extern "C"
 {
-	int dll_SDL_found();
-	int dll_SDL_OpenAudio(SDL_AudioSpec *desired, SDL_AudioSpec *obtained);
-	void dll_SDL_CloseAudio();
-	void dll_SDL_PauseAudio(int pause_on);
-	SDL_mutex * dll_SDL_CreateMutex();
-	void dll_SDL_DestroyMutex(SDL_mutex * mutex);
-	int dll_SDL_mutexP(SDL_mutex * mutex);
-	int dll_SDL_mutexV(SDL_mutex * mutex);
+	int dll_SDL1_found();
+	int dll_SDL1_OpenAudio(SDL_AudioSpec *desired, SDL_AudioSpec *obtained);
+	void dll_SDL1_CloseAudio();
+	void dll_SDL1_PauseAudio(int pause_on);
+	SDL_mutex * dll_SDL1_CreateMutex();
+	void dll_SDL1_DestroyMutex(SDL_mutex * mutex);
+	int dll_SDL1_mutexP(SDL_mutex * mutex);
+	int dll_SDL1_mutexV(SDL_mutex * mutex);
 };
 
 
@@ -62,7 +62,7 @@ namespace SoLoud
 {
 	static SDL_AudioSpec gActiveAudioSpec;
 
-	void soloud_sdl_audiomixer(void *userdata, Uint8 *stream, int len)
+	void soloud_sdl1_audiomixer(void *userdata, Uint8 *stream, int len)
 	{
 		short *buf = (short*)stream;
 		SoLoud::Soloud *soloud = (SoLoud::Soloud *)userdata;
@@ -78,14 +78,14 @@ namespace SoLoud
 		}
 	}
 
-	static void soloud_sdl_deinit(SoLoud::Soloud *aSoloud)
+	static void soloud_sdl1_deinit(SoLoud::Soloud *aSoloud)
 	{
-		dll_SDL_CloseAudio();
+		dll_SDL1_CloseAudio();
 	}
 
-	result sdl_init(SoLoud::Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer, unsigned int aChannels)
+	result sdl1_init(SoLoud::Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer, unsigned int aChannels)
 	{
-		if (!dll_SDL_found())
+		if (!dll_SDL1_found())
 			return DLL_NOT_FOUND;
 
 		SDL_AudioSpec as;
@@ -93,13 +93,13 @@ namespace SoLoud
 		as.format = AUDIO_F32;
 		as.channels = aChannels;
 		as.samples = aBuffer;
-		as.callback = soloud_sdl_audiomixer;
+		as.callback = soloud_sdl1_audiomixer;
 		as.userdata = (void*)aSoloud;
 
-		if (dll_SDL_OpenAudio(&as, &gActiveAudioSpec) < 0)
+		if (dll_SDL1_OpenAudio(&as, &gActiveAudioSpec) < 0)
 		{
 			as.format = AUDIO_S16;
-			if (dll_SDL_OpenAudio(&as, &gActiveAudioSpec) < 0 || gActiveAudioSpec.format != AUDIO_S16)
+			if (dll_SDL1_OpenAudio(&as, &gActiveAudioSpec) < 0 || gActiveAudioSpec.format != AUDIO_S16)
 			{
 				return UNKNOWN_ERROR;
 			}
@@ -107,9 +107,9 @@ namespace SoLoud
 
 		aSoloud->postinit(gActiveAudioSpec.freq, gActiveAudioSpec.samples, aFlags, gActiveAudioSpec.channels);
 
-		aSoloud->mBackendCleanupFunc = soloud_sdl_deinit;
+		aSoloud->mBackendCleanupFunc = soloud_sdl1_deinit;
 
-		dll_SDL_PauseAudio(0);
+		dll_SDL1_PauseAudio(0);
         aSoloud->mBackendString = "SDL (dynamic)";
 		return 0;
 	}

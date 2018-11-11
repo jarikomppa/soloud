@@ -51,10 +51,6 @@ extern "C"
 	int dll_SDL1_OpenAudio(SDL_AudioSpec *desired, SDL_AudioSpec *obtained);
 	void dll_SDL1_CloseAudio();
 	void dll_SDL1_PauseAudio(int pause_on);
-	SDL_mutex * dll_SDL1_CreateMutex();
-	void dll_SDL1_DestroyMutex(SDL_mutex * mutex);
-	int dll_SDL1_mutexP(SDL_mutex * mutex);
-	int dll_SDL1_mutexV(SDL_mutex * mutex);
 };
 
 

@@ -58,6 +58,9 @@ namespace SoLoud
 		int i;
 		if (mParent->mFlags & AudioSource::VISUALIZATION_DATA)
 		{
+			for (i = 0; i < MAX_CHANNELS; i++)
+				mVisualizationChannelVolume[i] = 0;
+
 			if (aSamplesToRead > 255)
 			{
 				for (i = 0; i < 256; i++)
@@ -65,7 +68,13 @@ namespace SoLoud
 					int j;
 					mVisualizationWaveData[i] = 0;
 					for (j = 0; j < (signed)mChannels; j++)
-						mVisualizationWaveData[i] += aBuffer[i + aBufferSize * j];
+					{
+						float sample = aBuffer[i + aBufferSize * j];
+						float absvol = fabs(sample);
+						if (absvol > mVisualizationChannelVolume[j])
+							mVisualizationChannelVolume[j] = absvol;
+						mVisualizationWaveData[i] += sample;
+					}
 				}
 			}
 			else
@@ -76,7 +85,13 @@ namespace SoLoud
 					int j;
 					mVisualizationWaveData[i] = 0;
 					for (j = 0; j < (signed)mChannels; j++)
-						mVisualizationWaveData[i] += aBuffer[(i % aSamplesToRead) + aBufferSize * j];
+					{
+						float sample = aBuffer[(i % aSamplesToRead) + aBufferSize * j];
+						float absvol = fabs(sample);
+						if (absvol > mVisualizationChannelVolume[j])
+							mVisualizationChannelVolume[j] = absvol;
+						mVisualizationWaveData[i] += sample;
+					}
 				}
 			}
 		}
@@ -287,4 +302,17 @@ namespace SoLoud
 		return mWaveData;
 	}
 
+	float Bus::getApproximateVolume(unsigned int aChannel)
+	{
+		if (aChannel > mChannels)
+			return 0;
+		float vol = 0;
+		if (mInstance && mSoloud)
+		{
+			mSoloud->lockAudioMutex();
+			vol = mInstance->mVisualizationChannelVolume[aChannel];
+			mSoloud->unlockAudioMutex();
+		}
+		return vol;
+	}
 };

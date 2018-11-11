@@ -132,6 +132,10 @@ namespace SoLoud
 			mVisualizationWaveData[i] = 0;
 			mWaveData[i] = 0;
 		}
+		for (i = 0; i < MAX_CHANNELS; i++)
+		{
+			mVisualizationChannelVolume[i] = 0;
+		}
 		for (i = 0; i < VOICE_COUNT; i++)
 		{
 			mVoice[i] = 0;
@@ -633,6 +637,17 @@ namespace SoLoud
 			mWaveData[i] = mVisualizationWaveData[i];
 		unlockAudioMutex();
 		return mWaveData;
+	}
+
+	float Soloud::getApproximateVolume(unsigned int aChannel)
+	{
+		if (aChannel > mChannels)
+			return 0;
+		float vol = 0;
+		lockAudioMutex();
+		vol = mVisualizationChannelVolume[aChannel];
+		unlockAudioMutex();
+		return vol;
 	}
 
 
@@ -1863,6 +1878,10 @@ namespace SoLoud
 
 		if (mFlags & ENABLE_VISUALIZATION)
 		{
+			for (i = 0; i < MAX_CHANNELS; i++)
+			{
+				mVisualizationChannelVolume[i] = 0;
+			}
 			if (aSamples > 255)
 			{
 				for (i = 0; i < 256; i++)
@@ -1871,7 +1890,11 @@ namespace SoLoud
 					mVisualizationWaveData[i] = 0;
 					for (j = 0; j < (signed)mChannels; j++)
 					{
-						mVisualizationWaveData[i] += mScratch.mData[i + j * aSamples];
+						float sample = mScratch.mData[i + j * aSamples];
+						float absvol = (float)fabs(sample);
+						if (mVisualizationChannelVolume[j] < absvol)
+							mVisualizationChannelVolume[j] = absvol;
+						mVisualizationWaveData[i] += sample;
 					}
 				}
 			}
@@ -1884,7 +1907,11 @@ namespace SoLoud
 					mVisualizationWaveData[i] = 0;
 					for (j = 0; j < (signed)mChannels; j++)
 					{
-						mVisualizationWaveData[i] += mScratch.mData[(i % aSamples) + j * aSamples];
+						float sample = mScratch.mData[(i % aSamples) + j * aSamples];
+						float absvol = (float)fabs(sample);
+						if (mVisualizationChannelVolume[j] < absvol)
+							mVisualizationChannelVolume[j] = absvol;
+						mVisualizationWaveData[i] += sample;
 					}
 				}
 			}

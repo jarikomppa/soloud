@@ -352,6 +352,9 @@ namespace SoLoud
 		// Get 256 floats of wave data for visualization. Visualization has to be enabled before use.
 		float *getWave();
 
+		// Get approximate output volume for a channel for visualization. Visualization has to be enabled before use.
+		float getApproximateVolume(unsigned int aChannel);
+
 		// Get current loop count. Returns 0 if handle is not valid. (All audio sources may not update loop count)
 		unsigned int getLoopCount(handle aVoiceHandle);
 
@@ -491,6 +494,8 @@ namespace SoLoud
 		void update3dVoices(unsigned int *aVoiceList, unsigned int aVoiceCount);
 		// Clip the samples in the buffer
 		void clip(AlignedFloatBuffer &aBuffer, AlignedFloatBuffer &aDestBuffer, unsigned int aSamples, float aVolume0, float aVolume1);
+		// Approximate volume for channels.
+		float mVisualizationChannelVolume[MAX_CHANNELS];
 		// Mono-mixed wave data for visualization and for visualization FFT input
 		float mVisualizationWaveData[256];
 		// FFT output data

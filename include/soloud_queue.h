@@ -61,7 +61,7 @@ namespace SoLoud
 		
 	public:
 	    unsigned int mReadIndex, mWriteIndex, mCount;
-	    SoLoud::AudioSourceInstance *mSource[SOLOUD_QUEUE_MAX];
+	    AudioSourceInstance *mSource[SOLOUD_QUEUE_MAX];
 		QueueInstance *mInstance;
 		handle mQueueHandle;
 		void findQueueHandle();

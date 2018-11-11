@@ -58,7 +58,7 @@ namespace SoLoud
 		virtual unsigned int getAudio(float *aBuffer, unsigned int aSamplesToRead, unsigned int aBufferSize);
 		virtual bool hasEnded();
 
-	private:
+	public:
 		Vic*			m_parent;
 		unsigned int	m_phase[4];
 		unsigned int	m_noisePos;
@@ -71,7 +71,7 @@ namespace SoLoud
 		enum
 		{
 			PAL	= 0,
-			NTSC,
+			NTSC
 		};
 
 		// VIC sound registers
@@ -85,19 +85,19 @@ namespace SoLoud
 		};
 
 		Vic();
+
 		virtual ~Vic();
 		
 		void setModel(int model);
+
 		int getModel() const;
 
-		void setRegister(int reg, unsigned char value) 		{ m_regs[reg] = value; }
-		unsigned char getRegister(int reg) const			{ return m_regs[reg]; }
+		void setRegister(int reg, unsigned char value);
 
+		unsigned char getRegister(int reg);
+
+	public:
 		virtual AudioSourceInstance *createInstance();
-
-	private:
-		friend class VicInstance;
-
 		int				m_model;
 		float			m_clocks[4];		// base clock frequencies for oscillators, dependent on VIC model
 		unsigned char	m_regs[MAX_REGS];		

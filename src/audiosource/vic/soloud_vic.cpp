@@ -150,6 +150,16 @@ namespace SoLoud
 		return m_model;
 	}
 
+	void Vic::setRegister(int reg, unsigned char value) 
+	{ 
+		m_regs[reg] = value; 
+	}
+	
+	unsigned char Vic::getRegister(int reg)
+	{ 
+		return m_regs[reg]; 
+	}
+
 	AudioSourceInstance * Vic::createInstance() 
 	{
 		return new VicInstance(this);

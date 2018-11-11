@@ -190,7 +190,21 @@ static const char keyz[] =
 
 namespace SoLoud
 {
+	float VizsnResonator::resonate(float i)
+	{
+		float x = (a * i) + (b * p1) + (c * p2);
+		p2 = p1;
+		p1 = x;
+		return x;
+	}
 
+	float VizsnResonator::antiresonate(float i)
+	{
+		float x = a * i + b * p1 + c * p2;
+		p2 = p1;
+		p1 = i;
+		return x;
+	}
 	VizsnInstance::VizsnInstance(Vizsn *aParent)
 	{
 		mParent = aParent;
@@ -274,7 +288,7 @@ namespace SoLoud
 
 			s++;
 
-			memcpy(&bank0, &bank1, sizeof(bank));
+			memcpy(&bank0, &bank1, sizeof(VizsnBank));
 		}
 		for (; idx < aSamplesToRead; idx++)
 		{
@@ -372,7 +386,7 @@ namespace SoLoud
 		return ob * (1.0f / 255.0f);
 	}
 
-	void VizsnInstance::setphone(bank *b, char p, float pitch)
+	void VizsnInstance::setphone(VizsnBank *b, char p, float pitch)
 	{
 		int i;
 		b->frica = b->aspir = b->bypas = b->breth = b->voice = 0;
@@ -390,7 +404,7 @@ namespace SoLoud
 			if (p < 8)
 			{
 				/* vokaali */
-				resonator *r = b->r;
+				VizsnResonator *r = b->r;
 				const float *s = vowtab[p][0];
 
 				r[R1P].c = -0.95f; r[R2P].c = -0.93f; r[R3P].c = -0.88f; r[R4P].c = -0.67f;

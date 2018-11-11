@@ -133,7 +133,7 @@ namespace SoLoud
         }
         WAVEFORMATEX format;
         ZeroMemory(&format, sizeof(WAVEFORMATEX));
-        format.nChannels = 2;
+        format.nChannels = aChannels;
         format.nSamplesPerSec = aSamplerate;
         format.wFormatTag = WAVE_FORMAT_PCM;
         format.wBitsPerSample = sizeof(short)*8;
@@ -157,7 +157,7 @@ namespace SoLoud
                 return UNKNOWN_ERROR;
             }
         }
-        aSoloud->postinit(aSamplerate, data->samples * format.nChannels, aFlags, 2);
+        aSoloud->postinit(aSamplerate, data->samples * format.nChannels, aFlags, aChannels);
         data->threadHandle = Thread::createThread(winMMThread, data);
         if (0 == data->threadHandle)
         {

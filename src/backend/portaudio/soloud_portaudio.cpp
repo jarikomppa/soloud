@@ -100,12 +100,22 @@ namespace SoLoud
 		if (!dll_Pa_found())
 			return DLL_NOT_FOUND;
 
-		aSoloud->postinit(aSamplerate, aBuffer * 2, aFlags, 2);
 		aSoloud->mBackendCleanupFunc = soloud_portaudio_deinit;
-		dll_Pa_Initialize();
-		dll_Pa_OpenDefaultStream(&gStream, 0, 2, paFloat32, aSamplerate, paFramesPerBufferUnspecified, portaudio_callback, (void*)aSoloud);
+		if (0 != dll_Pa_Initialize())
+		{
+			return UNKNOWN_ERROR;
+		}
+
+		if (0 != dll_Pa_OpenDefaultStream(&gStream, 0, aChannels, paFloat32, aSamplerate, paFramesPerBufferUnspecified, portaudio_callback, (void*)aSoloud))
+		{
+			dll_Pa_Terminate();
+			return UNKNOWN_ERROR;
+		}
+
+		aSoloud->postinit(aSamplerate, aBuffer * aChannels, aFlags, aChannels);
 		dll_Pa_StartStream(gStream);
-        aSoloud->mBackendString = "PortAudio";
+		aSoloud->mBackendString = "PortAudio";
+
 		return 0;
 	}
 	

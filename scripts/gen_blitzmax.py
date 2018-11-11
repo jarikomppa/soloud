@@ -26,6 +26,8 @@ C_TO_BMX_TYPES = {
     "float *":"Float Ptr",
     "File *":"Byte Ptr",
     "unsigned char *":"Byte Ptr",
+    "char *":"Byte Ptr",
+    "unsigned char":"Byte",
     "short *":"Byte Ptr"
 }
 

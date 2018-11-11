@@ -18,12 +18,14 @@ C_TO_PY_TYPES = {
     "int":"ctypes.c_int",
     "void":"None",
     "const char *":"ctypes.c_char_p",
+    "char *":"ctypes.c_char_p",
     "unsigned int":"ctypes.c_uint",
     "float":"ctypes.c_float",
     "double":"ctypes.c_double",
     "float *":"ctypes.POINTER(ctypes.c_float * 256)",
     "File *":"ctypes.c_void_p",
     "unsigned char *":"ctypes.POINTER(ctypes.c_ubyte)",
+    "unsigned char":"ctypes.ctypes.c_ubyte",
     "short *":"ctypes.POINTER(ctypes.c_short)"
 }
 

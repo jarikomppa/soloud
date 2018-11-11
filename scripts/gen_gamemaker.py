@@ -10,8 +10,10 @@ import soloud_codegen
 
 UNSUPPORTED_TYPES = {
     "int":0,
+    "unsigned char":0,
     "void":0,
     "const char *":0,
+    "char *":0,
     "unsigned int":0,
     "float":0,
     "double":0,
@@ -52,8 +54,10 @@ PTRTYPE = "2"
 
 C_TO_GMX_TYPES = {
     "int":"2",
+    "unsigned char":"2",
     "void":"2",
     "const char *":PTRTYPE,
+    "char *":PTRTYPE,
     "unsigned int":"2",
     "float":"2",
     "double":"2",
@@ -241,8 +245,10 @@ static void* getSoloudProc(const char *aProcName)
 
 MASK_TYPES = {
     "int":"int",
+    "unsigned char":"unsigned char",
     "void":"void",
     "const char *":"const char *",
+    "char *":"char *",
     "unsigned int":"unsigned int",
     "float":"float",
     "double":"double",
@@ -274,8 +280,10 @@ fo.write("\n")
 
 C_TO_GMX_DLL_TYPES = {
     "int":"double",
+    "unsigned char":"double",     
     "void":"double",
     "const char *":"char *",
+    "char *":"char *",
     "unsigned int":"double",
     "float":"double",
     "double":"double",
@@ -290,11 +298,13 @@ IS_HANDLE_TYPE = {
     "int":0,
     "void":0,
     "const char *":0,
+    "char *":0,
     "unsigned int":0,
     "float":0,
     "double":0,
     "float *":0,
-    "unsigned char *":0
+    "unsigned char *":0,
+    "unsigned char":0
 }
 for soloud_type in soloud_codegen.soloud_type:
     IS_HANDLE_TYPE[soloud_type + " *"] = 1

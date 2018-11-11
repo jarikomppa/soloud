@@ -10,12 +10,14 @@ C_TO_CS_TYPES = {
     "int":"int",
     "void":"void",
     "const char *":"string",
+    "char *":"string",
     "unsigned int":"uint",
     "float":"float",
     "double":"double",
     "float *":"float[]",
     "File *":"SoloudObject",
     "unsigned char *":"IntPtr",
+    "unsigned char":"byte",
     "short *":"IntPtr"
 }
 

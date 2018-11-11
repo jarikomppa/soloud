@@ -10,12 +10,14 @@ C_TO_D_TYPES = {
     "int":"int",
     "void":"void",
     "const char *":"const(char)*",
+    "char *":"char*",
     "unsigned int":"uint",
     "float":"float",
     "double":"double",
     "float *":"float[]",
     "File *":"SoloudObject",
     "unsigned char *":"ubyte*",
+    "unsigned char":"ubyte",
     "short *":"short[]"
 }
 

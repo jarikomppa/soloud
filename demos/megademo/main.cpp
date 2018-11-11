@@ -56,6 +56,8 @@ extern void DemoMainloop_virtualvoices();
 extern int DemoEntry_virtualvoices(int argc, char *argv[]);
 extern void DemoMainloop_wavformats();
 extern int DemoEntry_wavformats(int argc, char *argv[]);
+extern void DemoMainloop_speakers();
+extern int DemoEntry_speakers(int argc, char *argv[]);
 
 void DemoMainloop()
 {
@@ -180,6 +182,16 @@ void DemoMainloop_megademo()
 	}
 	ImGui::Text("wavformats test plays files with\n"
 				"all sorts of wave file formats.");
+
+	ImGui::Separator();
+
+	if (ImGui::Button("speakers"))
+	{
+		DemoEntry_speakers(gArgc, gArgv);
+		DemoMainloopPtr = DemoMainloop_speakers;
+	}
+	ImGui::Text("speakers test plays single sounds\n"
+				"through surround speakers.\n");
 
 	ImGui::End();
 

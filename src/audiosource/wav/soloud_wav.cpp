@@ -229,7 +229,7 @@ namespace SoLoud
 			return FILE_LOAD_FAILED;
 		}
 
-		drflac_uint64 samples = drflac_read_pcm_frames_f32(decoder, ((drmp3_uint64)1) << 62, NULL);
+		drflac_uint64 samples = decoder->totalSampleCount;
 
 		if (!samples)
 		{

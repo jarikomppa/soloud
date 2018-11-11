@@ -1,6 +1,6 @@
 ﻿/*
 SoLoud audio engine
-Copyright (c) 2013-2016 Jari Komppa
+Copyright (c) 2013-2018 Jari Komppa
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -28,7 +28,7 @@ freely, subject to the following restrictions:
 #include <vector>
 #include <string>
 
-#define VERSION "SoLoud C-Api Code Generator (c)2013-2016 Jari Komppa http://iki.fi/sol/"
+#define VERSION "SoLoud C-Api Code Generator (c)2013-2018 Jari Komppa http://iki.fi/sol/"
 
 #define OUTDIR "../src/c_api/"
 #define PYOUTDIR "../scripts/"
@@ -39,24 +39,36 @@ char *gIncludeFile[] =
 {
 	"../include/soloud.h",
 	"../include/soloud_audiosource.h",
-	"../include/soloud_biquadresonantfilter.h",
-	"../include/soloud_lofifilter.h",
-	"../include/soloud_bus.h",
-	"../include/soloud_echofilter.h",
-	"../include/soloud_fader.h",
-	"../include/soloud_fftfilter.h",
 	"../include/soloud_bassboostfilter.h",
-	"../include/soloud_filter.h",
-	"../include/soloud_speech.h",
-//	"../include/soloud_thread.h",
-	"../include/soloud_wav.h",
-	"../include/soloud_wavstream.h",
-	"../include/soloud_sfxr.h",
-	"../include/soloud_flangerfilter.h",
+	"../include/soloud_biquadresonantfilter.h",
+	"../include/soloud_bus.h",
+//	"../include/soloud_c.h",
 	"../include/soloud_dcremovalfilter.h",
-	"../include/soloud_openmpt.h",
+	"../include/soloud_echofilter.h",
+//	"../include/soloud_error.h",
+	"../include/soloud_fader.h",
+	"../include/soloud_fft.h",
+	"../include/soloud_fftfilter.h",
+//	"../include/soloud_file.h",
+//	"../include/soloud_file_hack_off.h",
+//	"../include/soloud_file_hack_on.h",
+	"../include/soloud_filter.h",
+	"../include/soloud_flangerfilter.h",
+//	"../include/soloud_internal.h",
+	"../include/soloud_lofifilter.h",
 	"../include/soloud_monotone.h",
-	"../include/soloud_tedsid.h"
+	"../include/soloud_openmpt.h",
+	"../include/soloud_queue.h",
+	"../include/soloud_robotizefilter.h",
+	"../include/soloud_sfxr.h",
+	"../include/soloud_speech.h",
+	"../include/soloud_tedsid.h",
+//	"../include/soloud_thread.h",
+	"../include/soloud_vic.h",
+	"../include/soloud_vizsn.h",
+	"../include/soloud_wav.h",
+	"../include/soloud_waveshaperfilter.h",
+	"../include/soloud_wavstream.h"
 };
 
 int gIncludeFileCount = sizeof(gIncludeFile) / sizeof(char*);
@@ -92,6 +104,8 @@ string time_d("double");
 string handle_d("unsigned int");
 string bool_d("int");
 string result_d("int");
+int sourceline = 0;
+string latestline = "";
 
 string subs_str(string &aSrc)
 {
@@ -154,9 +168,14 @@ int is_alphanumeric(char c)
 string token(char * buf, int &ofs)
 {
 	string s = "";
-
-	while (is_whitespace(buf[ofs])) ofs++;
 	
+	while (is_whitespace(buf[ofs])) ofs++;
+
+	if (buf[ofs] == '\n')
+	{
+		sourceline++;
+	}
+
 	if (is_alphanumeric(buf[ofs]))
 	{
 		while (is_alphanumeric(buf[ofs]))
@@ -188,6 +207,7 @@ string token(char * buf, int &ofs)
 			ofs++;
 		}		
 	}
+	latestline += s + " ";	
 	return s;
 }
 
@@ -198,7 +218,7 @@ string token(char * buf, int &ofs)
 #define NEXTTOKEN { s = token(b, ofs);  }
 #define EXPECT(x) if (token(b, ofs) != x) { PARSEERROR }
 #endif
-#define PARSEERROR { printf("Parse error near \"%s\", parser line %d\n", s.c_str(), __LINE__); exit(0); }
+#define PARSEERROR { printf("Parse error near\n---8<---\n%s\n---8<---\nparser line %d, source line ~%d\n", (latestline.length() < 200)? latestline.c_str() : latestline.c_str() + latestline.length() - 100, __LINE__, sourceline); exit(0); }
 #define IGNORE token(b, ofs);
 #define ALLOW(x) { int tofs = ofs; if (token(b, tofs) == x) { NEXTTOKEN; } }
 
@@ -279,9 +299,29 @@ void parse(const char *aFilename, int aPrintProgress = 0)
 	Class *c = NULL;
 	string s;
 	int omit = 0;
+	sourceline = 1;
+	latestline = "";
 	while (b[ofs])
 	{
 		NEXTTOKEN;
+		if (s == "private" || s == "friend")
+		{
+			printf("'%s' not allowed - ", s.c_str());
+			PARSEERROR;
+		}
+		if (s == "union")
+		{
+			// skip unions
+			NEXTTOKEN;
+			ALLOW("\n");
+			// may be "union {", "union name {", "union name newline {"
+			if (s != "{") NEXTTOKEN; 
+			if (s != "{") NEXTTOKEN;
+			if (s != "{") PARSEERROR;
+			while (s != "}") NEXTTOKEN;
+			while (s != ";") NEXTTOKEN; // may be union {}; or union {} name;
+		}
+		else
 		if (s == "struct")
 		{
 			// skip helper structs
@@ -355,7 +395,7 @@ void parse(const char *aFilename, int aPrintProgress = 0)
 			{
 				NEXTTOKEN;
 				// Okay, kludge time: let's call thread functions a class, even though they're not, so we can ignore it
-				if (s == "Thread")
+				if (s == "Thread" || s == "FFT")
 				{
 					c = new Class;
 					c->mName = "Instance";

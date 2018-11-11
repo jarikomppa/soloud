@@ -1,6 +1,4 @@
 EXPORTS
-	TinyAlignedFloatBuffer_destroy
-	TinyAlignedFloatBuffer_create
 	Soloud_destroy
 	Soloud_create
 	Soloud_init
@@ -14,6 +12,7 @@ EXPORTS
 	Soloud_getBackendSamplerate
 	Soloud_getBackendBufferSize
 	Soloud_setSpeakerPosition
+	Soloud_getSpeakerPosition
 	Soloud_play
 	Soloud_playEx
 	Soloud_playClocked
@@ -28,6 +27,7 @@ EXPORTS
 	Soloud_stop
 	Soloud_stopAll
 	Soloud_stopAudioSource
+	Soloud_countAudioSource
 	Soloud_setFilterParameter
 	Soloud_getFilterParameter
 	Soloud_fadeFilterParameter
@@ -79,6 +79,7 @@ EXPORTS
 	Soloud_setVisualizationEnable
 	Soloud_calcFFT
 	Soloud_getWave
+	Soloud_getApproximateVolume
 	Soloud_getLoopCount
 	Soloud_getInfo
 	Soloud_createVoiceGroup
@@ -106,12 +107,12 @@ EXPORTS
 	Soloud_mixSigned16
 	AudioAttenuator_destroy
 	AudioAttenuator_attenuate
+	BassboostFilter_destroy
+	BassboostFilter_setParams
+	BassboostFilter_create
 	BiquadResonantFilter_destroy
 	BiquadResonantFilter_create
 	BiquadResonantFilter_setParams
-	LofiFilter_destroy
-	LofiFilter_create
-	LofiFilter_setParams
 	Bus_destroy
 	Bus_create
 	Bus_setFilter
@@ -127,6 +128,7 @@ EXPORTS
 	Bus_setVisualizationEnable
 	Bus_calcFFT
 	Bus_getWave
+	Bus_getApproximateVolume
 	Bus_setVolume
 	Bus_setLooping
 	Bus_set3dMinMaxDistance
@@ -141,15 +143,118 @@ EXPORTS
 	Bus_setLoopPoint
 	Bus_getLoopPoint
 	Bus_stop
+	DCRemovalFilter_destroy
+	DCRemovalFilter_create
+	DCRemovalFilter_setParams
+	DCRemovalFilter_setParamsEx
 	EchoFilter_destroy
 	EchoFilter_create
 	EchoFilter_setParams
 	EchoFilter_setParamsEx
 	FFTFilter_destroy
 	FFTFilter_create
-	BassboostFilter_destroy
-	BassboostFilter_setParams
-	BassboostFilter_create
+	FlangerFilter_destroy
+	FlangerFilter_create
+	FlangerFilter_setParams
+	LofiFilter_destroy
+	LofiFilter_create
+	LofiFilter_setParams
+	Monotone_destroy
+	Monotone_create
+	Monotone_setParams
+	Monotone_setParamsEx
+	Monotone_load
+	Monotone_loadMem
+	Monotone_loadMemEx
+	Monotone_loadFile
+	Monotone_setVolume
+	Monotone_setLooping
+	Monotone_set3dMinMaxDistance
+	Monotone_set3dAttenuation
+	Monotone_set3dDopplerFactor
+	Monotone_set3dListenerRelative
+	Monotone_set3dDistanceDelay
+	Monotone_set3dCollider
+	Monotone_set3dColliderEx
+	Monotone_set3dAttenuator
+	Monotone_setInaudibleBehavior
+	Monotone_setLoopPoint
+	Monotone_getLoopPoint
+	Monotone_setFilter
+	Monotone_stop
+	Openmpt_destroy
+	Openmpt_create
+	Openmpt_load
+	Openmpt_loadMem
+	Openmpt_loadMemEx
+	Openmpt_loadFile
+	Openmpt_setVolume
+	Openmpt_setLooping
+	Openmpt_set3dMinMaxDistance
+	Openmpt_set3dAttenuation
+	Openmpt_set3dDopplerFactor
+	Openmpt_set3dListenerRelative
+	Openmpt_set3dDistanceDelay
+	Openmpt_set3dCollider
+	Openmpt_set3dColliderEx
+	Openmpt_set3dAttenuator
+	Openmpt_setInaudibleBehavior
+	Openmpt_setLoopPoint
+	Openmpt_getLoopPoint
+	Openmpt_setFilter
+	Openmpt_stop
+	Queue_destroy
+	Queue_create
+	Queue_play
+	Queue_getQueueCount
+	Queue_isCurrentlyPlaying
+	Queue_setParamsFromAudioSource
+	Queue_setParams
+	Queue_setParamsEx
+	Queue_setVolume
+	Queue_setLooping
+	Queue_set3dMinMaxDistance
+	Queue_set3dAttenuation
+	Queue_set3dDopplerFactor
+	Queue_set3dListenerRelative
+	Queue_set3dDistanceDelay
+	Queue_set3dCollider
+	Queue_set3dColliderEx
+	Queue_set3dAttenuator
+	Queue_setInaudibleBehavior
+	Queue_setLoopPoint
+	Queue_getLoopPoint
+	Queue_setFilter
+	Queue_stop
+	RobotizeFilter_destroy
+	RobotizeFilter_create
+	Prg_destroy
+	Prg_create
+	Prg_rand
+	Prg_srand
+	Sfxr_destroy
+	Sfxr_create
+	Sfxr_resetParams
+	Sfxr_loadParams
+	Sfxr_loadParamsMem
+	Sfxr_loadParamsMemEx
+	Sfxr_loadParamsFile
+	Sfxr_loadPreset
+	Sfxr_setVolume
+	Sfxr_setLooping
+	Sfxr_set3dMinMaxDistance
+	Sfxr_set3dAttenuation
+	Sfxr_set3dDopplerFactor
+	Sfxr_set3dListenerRelative
+	Sfxr_set3dDistanceDelay
+	Sfxr_set3dCollider
+	Sfxr_set3dColliderEx
+	Sfxr_set3dAttenuator
+	Sfxr_setInaudibleBehavior
+	Sfxr_setLoopPoint
+	Sfxr_getLoopPoint
+	Sfxr_setFilter
+	Sfxr_stop
 	Speech_destroy
 	Speech_create
 	Speech_setText
@@ -170,6 +275,68 @@ EXPORTS
 	Speech_getLoopPoint
 	Speech_setFilter
 	Speech_stop
+	TedSid_destroy
+	TedSid_create
+	TedSid_load
+	TedSid_loadToMem
+	TedSid_loadMem
+	TedSid_loadMemEx
+	TedSid_loadFileToMem
+	TedSid_loadFile
+	TedSid_setVolume
+	TedSid_setLooping
+	TedSid_set3dMinMaxDistance
+	TedSid_set3dAttenuation
+	TedSid_set3dDopplerFactor
+	TedSid_set3dListenerRelative
+	TedSid_set3dDistanceDelay
+	TedSid_set3dCollider
+	TedSid_set3dColliderEx
+	TedSid_set3dAttenuator
+	TedSid_setInaudibleBehavior
+	TedSid_setLoopPoint
+	TedSid_getLoopPoint
+	TedSid_setFilter
+	TedSid_stop
+	Vic_destroy
+	Vic_create
+	Vic_setModel
+	Vic_getModel
+	Vic_setRegister
+	Vic_getRegister
+	Vic_setVolume
+	Vic_setLooping
+	Vic_set3dMinMaxDistance
+	Vic_set3dAttenuation
+	Vic_set3dDopplerFactor
+	Vic_set3dListenerRelative
+	Vic_set3dDistanceDelay
+	Vic_set3dCollider
+	Vic_set3dColliderEx
+	Vic_set3dAttenuator
+	Vic_setInaudibleBehavior
+	Vic_setLoopPoint
+	Vic_getLoopPoint
+	Vic_setFilter
+	Vic_stop
+	Vizsn_destroy
+	Vizsn_create
+	Vizsn_setText
+	Vizsn_setVolume
+	Vizsn_setLooping
+	Vizsn_set3dMinMaxDistance
+	Vizsn_set3dAttenuation
+	Vizsn_set3dDopplerFactor
+	Vizsn_set3dListenerRelative
+	Vizsn_set3dDistanceDelay
+	Vizsn_set3dCollider
+	Vizsn_set3dColliderEx
+	Vizsn_set3dAttenuator
+	Vizsn_setInaudibleBehavior
+	Vizsn_setLoopPoint
+	Vizsn_getLoopPoint
+	Vizsn_setFilter
+	Vizsn_stop
 	Wav_destroy
 	Wav_create
 	Wav_load
@@ -198,6 +365,10 @@ EXPORTS
 	Wav_getLoopPoint
 	Wav_setFilter
 	Wav_stop
+	WaveShaperFilter_destroy
+	WaveShaperFilter_setParams
+	WaveShaperFilter_setParamsEx
+	WaveShaperFilter_create
 	WavStream_destroy
 	WavStream_create
 	WavStream_load
@@ -222,104 +393,3 @@ EXPORTS
 	WavStream_getLoopPoint
 	WavStream_setFilter
 	WavStream_stop
-	Prg_destroy
-	Prg_create
-	Prg_rand
-	Prg_srand
-	Sfxr_destroy
-	Sfxr_create
-	Sfxr_resetParams
-	Sfxr_loadParams
-	Sfxr_loadParamsMem
-	Sfxr_loadParamsMemEx
-	Sfxr_loadParamsFile
-	Sfxr_loadPreset
-	Sfxr_setVolume
-	Sfxr_setLooping
-	Sfxr_set3dMinMaxDistance
-	Sfxr_set3dAttenuation
-	Sfxr_set3dDopplerFactor
-	Sfxr_set3dListenerRelative
-	Sfxr_set3dDistanceDelay
-	Sfxr_set3dCollider
-	Sfxr_set3dColliderEx
-	Sfxr_set3dAttenuator
-	Sfxr_setInaudibleBehavior
-	Sfxr_setLoopPoint
-	Sfxr_getLoopPoint
-	Sfxr_setFilter
-	Sfxr_stop
-	FlangerFilter_destroy
-	FlangerFilter_create
-	FlangerFilter_setParams
-	DCRemovalFilter_destroy
-	DCRemovalFilter_create
-	DCRemovalFilter_setParams
-	DCRemovalFilter_setParamsEx
-	Openmpt_destroy
-	Openmpt_create
-	Openmpt_load
-	Openmpt_loadMem
-	Openmpt_loadMemEx
-	Openmpt_loadFile
-	Openmpt_setVolume
-	Openmpt_setLooping
-	Openmpt_set3dMinMaxDistance
-	Openmpt_set3dAttenuation
-	Openmpt_set3dDopplerFactor
-	Openmpt_set3dListenerRelative
-	Openmpt_set3dDistanceDelay
-	Openmpt_set3dCollider
-	Openmpt_set3dColliderEx
-	Openmpt_set3dAttenuator
-	Openmpt_setInaudibleBehavior
-	Openmpt_setLoopPoint
-	Openmpt_getLoopPoint
-	Openmpt_setFilter
-	Openmpt_stop
-	Monotone_destroy
-	Monotone_create
-	Monotone_setParams
-	Monotone_setParamsEx
-	Monotone_load
-	Monotone_loadMem
-	Monotone_loadMemEx
-	Monotone_loadFile
-	Monotone_setVolume
-	Monotone_setLooping
-	Monotone_set3dMinMaxDistance
-	Monotone_set3dAttenuation
-	Monotone_set3dDopplerFactor
-	Monotone_set3dListenerRelative
-	Monotone_set3dDistanceDelay
-	Monotone_set3dCollider
-	Monotone_set3dColliderEx
-	Monotone_set3dAttenuator
-	Monotone_setInaudibleBehavior
-	Monotone_setLoopPoint
-	Monotone_getLoopPoint
-	Monotone_setFilter
-	Monotone_stop
-	TedSid_destroy
-	TedSid_create
-	TedSid_load
-	TedSid_loadToMem
-	TedSid_loadMem
-	TedSid_loadMemEx
-	TedSid_loadFileToMem
-	TedSid_loadFile
-	TedSid_setVolume
-	TedSid_setLooping
-	TedSid_set3dMinMaxDistance
-	TedSid_set3dAttenuation
-	TedSid_set3dDopplerFactor
-	TedSid_set3dListenerRelative
-	TedSid_set3dDistanceDelay
-	TedSid_set3dCollider
-	TedSid_set3dColliderEx
-	TedSid_set3dAttenuator
-	TedSid_setInaudibleBehavior
-	TedSid_setLoopPoint
-	TedSid_getLoopPoint
-	TedSid_setFilter
-	TedSid_stop

@@ -103,10 +103,12 @@ namespace speakers
 			if (gSoloud.getSpeakerPosition(i, x, y, z) == SoLoud::SO_NO_ERROR)
 			{
 				float vol = gSoloud.getApproximateVolume(i);
+				vol *= 20;
+				if (vol > 1) vol = 1;
 				int col = (int)(vol * 0xff) * 0x010101 | 0xff000000;
-				DemoTriangle(x * 30 + 400     , -z * 30 + 200 - 10,
-							 x * 30 + 400 - 10, -z * 30 + 200 + 10,
-							 x * 30 + 400 + 10, -z * 30 + 200 + 10,
+				DemoTriangle(-x * 30 + 400     , -z * 30 + 200 - 10,
+							 -x * 30 + 400 - 10, -z * 30 + 200 + 10,
+							 -x * 30 + 400 + 10, -z * 30 + 200 + 10,
 							 col);
 			}
 		}

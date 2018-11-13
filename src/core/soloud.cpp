@@ -706,7 +706,7 @@ namespace SoLoud
 			{
 				__m128 vol = _mm_load_ps(volumes.mData);
 
-				for (i = 0; i < aSamples / 4; i++)
+				for (i = 0; i < (aSamples / 4) + 1; i++) // round up
 				{
 					//float f1 = origdata[c] * v;	c++; v += vd;
 					__m128 f = _mm_load_ps(&aBuffer.mData[c]);
@@ -761,7 +761,7 @@ namespace SoLoud
 			for (j = 0; j < mChannels; j++)
 			{
 				__m128 vol = _mm_load_ps(volumes.mData);
-				for (i = 0; i < aSamples / 4; i++)
+				for (i = 0; i < (aSamples / 4) + 1; i++) // round up
 				{
 					//float f1 = aBuffer.mData[c] * v; c++; v += vd;
 					__m128 f = _mm_load_ps(&aBuffer.mData[c]);
@@ -795,7 +795,7 @@ namespace SoLoud
 			for (j = 0; j < mChannels; j++)
 			{
 				v = aVolume0;
-				for (i = 0; i < aSamples/4; i++)
+				for (i = 0; i < (aSamples / 4) + 1; i++) // round up
 				{
 					float f1 = aBuffer.mData[c] * v; c++; v += vd;
 					float f2 = aBuffer.mData[c] * v; c++; v += vd;
@@ -821,7 +821,7 @@ namespace SoLoud
 			for (j = 0; j < mChannels; j++)
 			{
 				v = aVolume0;
-				for (i = 0; i < aSamples / 4; i++)
+				for (i = 0; i < (aSamples / 4) + 1; i++) // round up
 				{
 					float f1 = aBuffer.mData[c] * v; c++; v += vd;
 					float f2 = aBuffer.mData[c] * v; c++; v += vd;

@@ -339,9 +339,11 @@ void testGetters()
 // Soloud.setVisualizationEnable
 // Soloud.calcFFT
 // Soloud.getWave
+// Soloud.getApproximateVolume
 // Bus.setVisualizationEnable
 // Bus.calcFFT
 // Bus.getWave
+// Bus.getApproximateVolume
 void testVis()
 {
 	float scratch[2048];
@@ -360,6 +362,8 @@ void testVis()
 	bus.setVisualizationEnable(true);
 
 	soloud.mix(scratch, 1000);
+	float approxvol = soloud.getApproximateVolume(0);
+	CHECK(approxvol != 0);
 
 	float *w = soloud.getWave();
 	CHECK(w != NULL);
@@ -372,6 +376,9 @@ void testVis()
 				nonzero = 1;
 		CHECK(nonzero != 0);
 	}
+
+	approxvol = bus.getApproximateVolume(0);
+	CHECK(approxvol != 0);
 
 	w = bus.getWave();
 	CHECK(w != NULL);
@@ -596,6 +603,7 @@ public:
 // Soloud.setSpeakerPosition
 // Soloud.set3dSoundSpeed
 // Wav.setInaudibleBehavior
+// Soloud.setInaudibleBehavior
 void test3d()
 {
 	customAttenuatorCollider customAC;
@@ -831,6 +839,13 @@ void test3d()
 	soloud.update3dAudio();
 	soloud.mix(scratch, 1000);
 	CHECK(soloud.isValidVoiceHandle(h) == 1);
+	soloud.stopAll();
+
+	h = soloud.play3d(wav, 10, 20, 30, 1, 1, 1, 0.0f);
+	soloud.setInaudibleBehavior(h, false, true); // don't tick, kill if inaudible
+	soloud.update3dAudio();
+	soloud.mix(scratch, 1000);
+	CHECK(soloud.isValidVoiceHandle(h) == 0);
 	soloud.stopAll();
 
 	wav.setInaudibleBehavior(false, true); // don't tick, kill if inaudible
@@ -1260,6 +1275,11 @@ void testCore()
 // Speech.setText
 // Speech.setParams
 // Speech.setLooping
+// Speech.setLoopPoint
+// Speech.getLoopPoint
+// Speech.stop
+// Soloud.getLoopPoint
+// Soloud.setLoopPoint
 void testSpeech()
 {
 	float scratch[2048];
@@ -1276,6 +1296,14 @@ void testSpeech()
 	soloud.mix(ref, 1000);
 	CHECK_BUF_NONZERO(ref, 2000);
 	CHECKLASTKNOWN(ref, 2000);
+	soloud.stopAll();
+
+	speech.setParams(1330, 10, 0.5f, 1);
+	speech.setText("Why is it so loud");
+	soloud.play(speech);
+	soloud.mix(scratch, 1000);
+	CHECK_BUF_SAME(scratch, ref, 2000);
+	CHECKLASTKNOWN(scratch, 2000);
 	soloud.stopAll();
 
 	speech.setText("a different text");
@@ -1306,8 +1334,27 @@ void testSpeech()
 	soloud.play(speech);
 	for (i = 0; i < 100; i++)
 		soloud.mix(scratch, 1000);
+	soloud.mix(ref, 1000);
 	CHECK(soloud.getActiveVoiceCount() != 0);
+	speech.stop();
+	CHECK(soloud.getActiveVoiceCount() == 0);
 	soloud.stopAll();
+
+	speech.setLoopPoint(0.1f);
+	CHECK(speech.getLoopPoint() == 0.1f);
+	speech.setLoopPoint(0.5f);
+	CHECK(speech.getLoopPoint() != 0.1f);
+	int handle = soloud.play(speech);
+	soloud.setLoopPoint(handle, 0.1f);
+	CHECK(soloud.getLoopPoint(handle) == 0.1f);
+	soloud.setLoopPoint(handle, 0.5f);
+	CHECK(soloud.getLoopPoint(handle) != 0.1f);
+
+	for (i = 0; i < 100; i++)
+		soloud.mix(scratch, 1000);
+	soloud.mix(scratch, 1000);
+	CHECK_BUF_DIFF(ref, scratch, 1000);
+	CHECKLASTKNOWN(ref, 1000);
 
 	soloud.deinit();
 }
@@ -1411,7 +1458,7 @@ int main(int parc, char ** pars)
 	testFilters();
 	testCore();
 	testSpeech();
-	//testSpeedThings();
+//	testSpeedThings();
 	//testMixer();
 	printf("\n%d tests, %d error(s) ", tests, errorcount);
 	if (!lastknownwrite && errorcount)
@@ -1447,14 +1494,12 @@ Wav.getLength
 Wav.setVolume
 Wav.setLooping
 Wav.setFilter
-Wav.stop
 WavStream.load
 WavStream.loadMem
 WavStream.loadToMem
 WavStream.loadFile
 WavStream.loadFileToMem
 WavStream.getLength
-WavStream.setLoopRange
 WavStream.setLooping
 Sfxr.resetParams
 Sfxr.loadParams
@@ -1481,17 +1526,6 @@ Soloud.getInfo
 Soloud.getSpeakerPosition
 Soloud.countAudioSource
 Soloud.getStreamPosition
-Soloud.getLoopPoint
-Soloud.setLoopPoint
-Soloud.setInaudibleBehavior
-Soloud.getApproximateVolume
-Bus.getApproximateVolume
-Bus.setLoopPoint
-Bus.getLoopPoint
-Monotone.setLoopPoint
-Monotone.getLoopPoint
-Openmpt.setLoopPoint
-Openmpt.getLoopPoint
 Queue.play
 Queue.getQueueCount
 Queue.isCurrentlyPlaying
@@ -1500,44 +1534,47 @@ Queue.setParams
 Queue.setVolume
 Queue.setLooping
 Queue.setInaudibleBehavior
-Queue.setLoopPoint
-Queue.getLoopPoint
-Sfxr.setLoopPoint
-Sfxr.getLoopPoint
-Speech.setLoopPoint
-Speech.getLoopPoint
-TedSid.setLoopPoint
-TedSid.getLoopPoint
 Vic.setModel
 Vic.getModel
 Vic.setRegister
 Vic.getRegister
 Vic.setVolume
 Vic.setLooping
-Vic.setLoopPoint
-Vic.getLoopPoint
 Vizsn.setText
 Vizsn.setVolume
 Vizsn.setLooping
-Vizsn.setLoopPoint
-Vizsn.getLoopPoint
 Wav.loadRawWave8
 Wav.loadRawWave16
 Wav.loadRawWave
-Wav.setLoopPoint
-Wav.getLoopPoint
 WaveShaperFilter.setParams
-WavStream.setLoopPoint
-WavStream.getLoopPoint
-
 
 Not tested - abstract class
 ---------------------------
 AudioAttenuator.attenuate
 
-Not tested - the functionality is the same for all audio sources, tested for Wav:
----------------------------------------------------------------------------------
-Speech.stop
+Not tested - the functionality is the same for all audio sources, tested for some source:
+-----------------------------------------------------------------------------------------
+Bus.setLoopPoint
+Bus.getLoopPoint
+Monotone.setLoopPoint
+Monotone.getLoopPoint
+Openmpt.setLoopPoint
+Openmpt.getLoopPoint
+Queue.setLoopPoint
+Queue.getLoopPoint
+Sfxr.setLoopPoint
+Sfxr.getLoopPoint
+TedSid.setLoopPoint
+TedSid.getLoopPoint
+Vic.setLoopPoint
+Vic.getLoopPoint
+Vizsn.setLoopPoint
+Vizsn.getLoopPoint
+Wav.setLoopPoint
+Wav.getLoopPoint
+WavStream.setLoopPoint
+WavStream.getLoopPoint
+Wav.stop
 WavStream.stop
 Sfxr.stop
 Openmpt.stop

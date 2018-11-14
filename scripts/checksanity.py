@@ -34,7 +34,7 @@ for func in soloud_codegen.soloud_func:
     if ((apifunc[-2::] != "Ex") and 
         (apifunc[-7::] != "destroy")):
         if (apifunc[-6::] == "create"):
-            apifunc = "class " + apifunc[:-7:]
+            apifunc = "SoLoud::" + apifunc[:-7:]
         total += 1
         if not checkfiles(apifunc):
             print apifunc

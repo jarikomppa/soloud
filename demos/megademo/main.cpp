@@ -1,6 +1,6 @@
 /*
 SoLoud audio engine
-Copyright (c) 2013-2015 Jari Komppa
+Copyright (c) 2013-2018 Jari Komppa
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -58,6 +58,8 @@ extern void DemoMainloop_wavformats();
 extern int DemoEntry_wavformats(int argc, char *argv[]);
 extern void DemoMainloop_speakers();
 extern int DemoEntry_speakers(int argc, char *argv[]);
+extern void DemoMainloop_thebutton();
+extern int DemoEntry_thebutton(int argc, char *argv[]);
 
 void DemoMainloop()
 {
@@ -192,6 +194,17 @@ void DemoMainloop_megademo()
 	}
 	ImGui::Text("speakers test plays single sounds\n"
 				"through surround speakers.\n");
+
+	ImGui::Separator();
+
+	if (ImGui::Button("thebutton"))
+	{
+		DemoEntry_thebutton(gArgc, gArgv);
+		DemoMainloopPtr = DemoMainloop_thebutton;
+	}
+	ImGui::Text("thebutton test shows one way of\n"
+		        "avoiding actor speaking on top\n"
+		        "of themselves.\n");
 
 	ImGui::End();
 

@@ -122,6 +122,9 @@ public:
 	float mDecay;               // mVoicingSpectralTiltdb converted to exponential time const  
 	float mOneMd;               // in voicing one-pole ELM_FEATURE_LOW-pass filter  
 
+	unsigned int mSeed;			// random seed
+
+
 
 	float natural_source(int aNper);
 

@@ -575,7 +575,6 @@ void klatt::parwave(short int *jwave)
 	int ns;
 	for (ns = 0; ns < mNspFr; ns++)
 	{
-		static unsigned int seed = 5; /* Fixed staring value */
 		float noise;
 		int n4;
 		float sourc;                   /* Sound source if all-parallel config used  */
@@ -591,13 +590,13 @@ void klatt::parwave(short int *jwave)
 		assumes 32-bit unsigned arithmetic
 		with untested code to handle larger.
 		*/
-		seed = seed * 1664525 + 1;
+		mSeed = mSeed * 1664525 + 1;
 
-		seed &= 0xFFFFFFFF;
+		mSeed &= 0xFFFFFFFF;
 
 		/* Shift top bits of seed up to top of int then back down to LS 14 bits */
 		/* Assumes 8 bits per sizeof unit i.e. a "byte" */
-		nrand = (((int) seed) << (8 * sizeof(int) - 32)) >> (8 * sizeof(int) - 14);
+		nrand = (((int) mSeed) << (8 * sizeof(int) - 32)) >> (8 * sizeof(int) - 14);
 
 		/* Tilt down noise spectrum by soft ELM_FEATURE_LOW-pass filter having
 		*    a pole near the origin in the z-plane, i.e.
@@ -886,6 +885,7 @@ void klatt::initsynth(int aElementCount,unsigned char *aElement)
 	mElementCount = aElementCount;
 	mElementIndex = 0;
 	mLastElement = &gElement[0];
+	mSeed = 5;
 	mTStress = 0;
 	mNTStress = 0;
 	mFrame.mF0FundamentalFreq = mBaseF0;

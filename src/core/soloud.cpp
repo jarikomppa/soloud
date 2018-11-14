@@ -121,6 +121,8 @@ namespace SoLoud
 		mActiveVoiceDirty = true;
 		mActiveVoiceCount = 0;
 		int i;
+		for (i = 0; i < VOICE_COUNT; i++)
+			mActiveVoice[i] = 0;
 		for (i = 0; i < FILTERS_PER_STREAM; i++)
 		{
 			mFilter[i] = NULL;

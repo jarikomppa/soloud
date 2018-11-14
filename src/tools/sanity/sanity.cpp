@@ -601,6 +601,7 @@ public:
 // Wav.set3dAttenuator
 // Soloud.update3dAudio
 // Soloud.setSpeakerPosition
+// Soloud.getSpeakerPosition
 // Soloud.set3dSoundSpeed
 // Wav.setInaudibleBehavior
 // Soloud.setInaudibleBehavior
@@ -897,6 +898,14 @@ void test3d()
 	CHECKLASTKNOWN(scratch, 2000);
 	soloud.stopAll();
 
+	float x, y, z;
+	soloud.setSpeakerPosition(0, 1, 2, 3);
+	soloud.getSpeakerPosition(0, x, y, z);
+	CHECK(x == 1 && y == 2 && z == 3);
+	soloud.setSpeakerPosition(0, 4, 5, 6);
+	soloud.getSpeakerPosition(0, x, y, z);
+	CHECK(x != 1 && y != 2 && z != 3);
+
 	soloud.deinit();
 }
 
@@ -1075,6 +1084,8 @@ void testFilters()
 // Soloud.addVoiceToGroup
 // Soloud.isVoiceGroup
 // Soloud.isVoiceGroupEmpty
+// Soloud.countAudioSource
+// Soloud.getStreamPosition
 void testCore()
 {
 	float scratch[2048];
@@ -1266,6 +1277,17 @@ void testCore()
 	CHECK(soloud.isVoiceGroupEmpty(vg) == 0);
 	soloud.destroyVoiceGroup(vg);
 	CHECK(soloud.isVoiceGroup(vg) == 0);
+
+	h = soloud.play(wav);
+	CHECK(soloud.getStreamPosition(h) == 0);
+	soloud.setLooping(h, true);
+	for (i = 0; i < 100; i++)
+		soloud.mix(scratch, 1000);
+	CHECK(soloud.getStreamPosition(h) != 0);
+	CHECK(soloud.countAudioSource(wav) != 0);
+	soloud.stopAll();
+	CHECK(soloud.countAudioSource(wav) == 0);
+
 
 	soloud.deinit();
 }
@@ -1523,9 +1545,6 @@ TedSid.loadFileToMem
 TedSid.loadFile
 TedSid.setLooping
 Soloud.getInfo
-Soloud.getSpeakerPosition
-Soloud.countAudioSource
-Soloud.getStreamPosition
 Queue.play
 Queue.getQueueCount
 Queue.isCurrentlyPlaying

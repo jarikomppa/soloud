@@ -17,21 +17,25 @@ There's a few ways to include SoLoud to your project. Probably the
 easiest is to use GENie / premake4 to create the build files, and build a 
 static library for your compiler / environment.
 
-There may also be a pre-built static library in the SoLoud distribution,
-which you may be able to use. Note that the Windows DLL only exports the 
-"C" API, which may not be what you want.
+Note that the Windows DLL only exports the  "C" API, which may not 
+be what you want.
 
 You can go the lazy way and just add all of the sources to your project,
 or you can copy the things you need to a single directory and include
-those. You'll need the core files, and quite likely the files from
-audiosource/wav. If
-you need the speech synth, include those, too. If you go this route,
-you'll need to enable one or more of the back-ends via preprocessor
-defines. The current list is:
+those. 
+
+You'll need the core files, at least one backend, and at least one 
+audio source. For example, for wav file playing, you'll need the files from
+audiosource/wav. 
+
+If you go this route, you'll need to enable one or more of the back-ends 
+via preprocessor defines. The current list is:
 
 Preprocessor macro  Description
 ------------------  -----------
 WITH_SDL            SDL or SDL2 via runtime dyndll linking
+WITH_SDL1           SDL1 via runtime dyndll linking
+WITH_SDL2           SDL2 via runtime dyndll linking
 WITH_SDL_STATIC     SDL via normal static linking
 WITH_SDL2           SDL or SDL2 via runtime dyndll linking
 WITH_SDL2_STATIC    SDL2 via normal static linking
@@ -42,8 +46,14 @@ WITH_WINMM          Windows multimedia
 WITH_WASAPI         WASAPI (experimental)
 WITH_OSS            Linux OSS
 WITH_ALSA           Linux ALSA
-WITH_NULLDRIVER     No audio device
+WITH_OPENSLES       OpenSL ES
+WITH_COREAUDIO		OSX CoreAudio
+WITH_VITA_HOMEBREW	Sony Vita homebrew backend
+WITH_NULL           No audio device
 
+The backend with no audio device may seem odd, but that can be used to
+call SoLoud's mix function manually, which can be useful in some cases
+such as LibRetro.
 
 #### Include files
 
@@ -63,7 +73,8 @@ you need five SoLoud::Wav objects. You can play one object any number of
 times, even on top of itself.
 
 Where to place these is up to you. Globals work, as do allocation from
-heap, including in a class as members, etc.
+heap, including in a class as members, etc. Stack is probably a bad idea,
+but I'm not stopping you.
 
     SoLoud::Soloud gSoloud; // SoLoud engine
     SoLoud::Wav gWave;      // One wave file
@@ -122,9 +133,16 @@ may do stupid things while the application is shutting down.
 
 And you're done!
 
-Note that most calls above also return some kind of return code which may
+Some useful notes:
+
+Most calls to SoLoud also return some kind of return code which may
 help you diagnose potential problems. When loading wave files, for instance,
-you may want to check if the file is actually found. Many of the calls also
-have additional optional parameters, and there are also alternate calls
-to do (almost) the same thing (Wav::load() and WavStream::loadToMem() as 
-an example).
+you may want to check if the file is actually found.
+
+Many of the calls also have additional optional parameters, and there are
+also alternate calls to do (almost) the same thing (Wav::load() and 
+WavStream::loadToMem() as an example).
+
+Finally, SoLoud has been designed so that you can ignore most of the return values.
+If there's an error state, such as wav file failing to load, further calls,
+like trying to play the wav file that didn't load, will simply do nothing.

@@ -71,11 +71,15 @@ with powerful functionality. Some of the features include:
 - Filter interface and ready filters for low/high pass, echo, etc for real-time modification of audio.
 - Mixing busses for grouping of audio into different uses and adjusting their attributes in one go.
 - Gapless looping.
+- Queued sounds.
 - Playing several ogg streams at once.
 - Atomic operations for several sounds.
 - "Clocked" playing for rapid sound effects.
 - Sound effects synthesizer.
+- Speech synthesizer.
+- Support for various common formats like 8, 16, 32 bit wavs, floating point wavs, ogg, mp3.
 - Modplug library capable of playing various multi-channel music formats (including mod, s3m, it, xm, mid, abc).
+- Up to 8 surround speaker support, easily extendable.
 - 3d positional audio.
 - Foreign interface support for python, ruby (and RPG maker), blitzmax, c# and more.
 - Exotic formats like MONOTONE, SID and TED songs.
@@ -86,14 +90,18 @@ with powerful functionality. Some of the features include:
 
 SoLoud quite probably doesn't have all the features you'd find in a
 commercial library like FMOD or WWISE. There's no artist tools, and
-only limited engine integration. Output is, currently, limited to
-stereo.
+only limited engine integration. 
 
-It quite probably isn't as fast. As of this writing, it has no
-specialized assembler optimizations, for any platform.
+It quite probably isn't as fast. As of this writing, it has limited
+specialized SSE optimizations. It contains no hand-written assembly.
 
 It definitely doesn't come with the support you get from a commercial
 library.
+
+While softare using SoLoud has already shipped on all current-gen
+consoles (as of 2018), the backends needed for those are not included
+with SoLoud due to SDK license issues. New backends are easy to write,
+however. 
 
 If you're planning to make a multi-million budgeted console game, this
 library is (probably) not for you. Feel free to try it though :-)

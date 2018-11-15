@@ -83,7 +83,7 @@ if not os.path.exists("temp/"):
     
 print "- -- --- -- - Generating single-file HTML docs"
 
-callp = ["pandoc", "-s", "-t", "html5", "-H", "singlehtml_head.txt", "-B", "singlehtml_body.txt", "--toc", "--self-contained", "--default-image-extension=png", "-o", datestring + "/soloud_" + datestring + ".html"]
+callp = ["pandoc", "-s", "-t", "html5", "-f", "markdown-smart", "--metadata", 'title="SoLoud ' + datestring + '"',  "-H", "singlehtml_head.txt", "-B", "singlehtml_body.txt", "--toc", "--self-contained", "--default-image-extension=png", "-o", datestring + "/soloud_" + datestring + ".html"]
 for x in src:
     if x not in website_only:
         callp.append(x)
@@ -91,7 +91,7 @@ subprocess.call(callp)
 
 print "- -- --- -- - Generating web site"
 for x in src:
-    subprocess.call(["pandoc", "--template=html.pandoc", "-B", "htmlpre.txt", "-A", "htmlpost.txt", "--default-image-extension=png", x, "-o", datestring + "/web/" + x[:len(x)-3]+"html.bak"])
+    subprocess.call(["pandoc", "--template=html.pandoc", "-f", "markdown-smart", "--metadata", 'title="SoLoud ' + datestring + ' ' + x[:len(x)-4] + '"', "-B", "htmlpre.txt", "-A", "htmlpost.txt", "--default-image-extension=png", x, "-o", datestring + "/web/" + x[:len(x)-3]+"html.bak"])
     with open(datestring + "/web/" + x[:len(x)-3]+"html", "w") as file_out:
         with open(datestring + "/web/" + x[:len(x)-3]+"html.bak", "r") as file_in:
             for line in file_in:
@@ -103,7 +103,7 @@ for x in src:
 
 print "- -- --- -- - Generating epub"
 
-callp = ["pandoc", "-N", "--toc", "--epub-cover-image=images/cover.png", "-t", "epub3", "--default-image-extension=png", "-S", "--epub-stylesheet=epub.css", "--epub-metadata=metadata.xml", "-o", datestring + "/soloud_" + datestring + ".epub", "title.txt"]
+callp = ["pandoc", "-N", "--toc", "--epub-cover-image=images/cover.png", "-t", "epub3", "--default-image-extension=png", "-f", "markdown-smart", "--css=epub.css", "--epub-metadata=metadata.xml", "-o", datestring + "/soloud_" + datestring + ".epub", "title.txt"]
 for x in src:
     if x not in website_only:
         callp.append(x)
@@ -117,7 +117,7 @@ print "- -- --- -- - Generating LaTex"
 
 for x in src:
     if x not in website_only:
-        subprocess.call(["pandoc", "-t", "latex", "--listings", "--default-image-extension=pdf", "--chapters", x, "-o", "temp/" + x[:len(x)-3]+"tex.orig"])
+        subprocess.call(["pandoc", "-t", "latex", "--listings", "--default-image-extension=pdf", "--top-level-division=chapter", x, "-o", "temp/" + x[:len(x)-3]+"tex.orig"])
         with open("temp/" + x[:len(x)-3]+"tex", "w") as file_out:
             with open("temp/" + x[:len(x)-3]+"tex.orig", "r") as file_in:
                 for line in file_in:

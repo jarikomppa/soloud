@@ -51,19 +51,22 @@ LEFT_HANDED_3D       | Use left-handed (Direct3D) 3d coordinates. Default is rig
 
 Current set of back-ends is:
 
-Backend     | Description
------------ | ------------
-AUTO        | Select backend automatically
-SDL         | SDL or SDL2 dynamic linking
-SDL2        | SDL2 static linking (dynamic will use SDL backend)
-PORTAUDIO   | PortAudio
-WINMM       | Windows MultiMedia
-XAUDIO2     | XAudio2
-WASAPI      | Windows Audio Session API
-ALSA        | Advanced Linux Sound Architecture
-OSS         | Open Sound System
-OPENAL      | OpenAL (high latency)
-NULLDRIVER  | Null driver
+Backend       | Description
+------------- | ------------
+AUTO          | Select backend automatically
+SDL1          | SDL1 dynamic or static linking
+SDL2          | SDL2 dynamic or static linking
+PORTAUDIO     | PortAudio
+WINMM         | Windows MultiMedia
+XAUDIO2       | XAudio2
+WASAPI        | Windows Audio Session API
+ALSA          | Advanced Linux Sound Architecture
+OSS           | Open Sound System
+OPENAL        | OpenAL (high latency)
+COREAUDIO     | OSX CoreAudio
+OPENSLES      | OpenSL ES
+VITA_HOMEBREW | Vita console homebrew SDK
+NULLDRIVER    | Null driver
 
 ### Soloud.deinit()
 

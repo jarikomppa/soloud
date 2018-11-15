@@ -11,7 +11,6 @@ Note that documentation is not included in the SoLoud distribution, and is avail
 Directory | Description
 --------- | -----------
 scripts   | Scripts used to automate wrapper code generation. Unless you're adding features to SoLoud, you won't need to touch them.
-ext       | External libraries used by SoLoud. Currently the only thing there is libmodplug.
 lib       | Pre-compiled libraries for windows.
 include   | All of the include files are kept in this single directory.
 bin       | Pre-built binaries of the SoLoud demos for windows.
@@ -25,36 +24,30 @@ src       | Source code for SoLoud itself
 
 Directory       | Description
 --------------- | -----------
-src/tools       | Some command-line tools under the src/tools directory. Most of these are for SoLoud development.
-src/filter      | SoLoud's filters, such as lo-fi, biquad resonant filter, etc.
-src/backend     | Back-end interfaces, such as sdl, alsa, wasapi, etc.
-src/core        | SoLoud proper.
-src/c_api       | The generated c-api code, which is used to create the SoLoud DLL, can be found here.
 src/audiosource | SoLoud's audio sources, such as speech, wav, etc.
+src/backend     | Back-end interfaces, such as sdl, alsa, wasapi, etc.
+src/c_api       | The generated c-api code, which is used to create the SoLoud DLL, can be found here.
+src/core        | SoLoud's core source files.
+src/filter      | SoLoud's filters, such as lo-fi, biquad resonant filter, etc.
+src/tools       | Some command-line tools under the src/tools directory. Most of these are for SoLoud development.
 
 ### demos
 
-Most of the demos use some common code based on the ImGui library. This is to make the source for the demo
-itself mostly about SoLoud and not about putting pixels on the screen, while having an easy to use UI
+Most of the demos use some common code based on Ocornut's Dear ImGui library. This is to make the source for the demo itself mostly about SoLoud and not about putting pixels on the screen, while having an easy to use UI
 for the demos.
 
 Directory           | Description
 ------------------- | -----------
-demos/3dtest        | 3d audio test.
+demos/android       | Demo for Android operating system.
 demos/c_test        | Test for the c-api.
 demos/common        | Common code for graphical demos.
+demos/emscripten    | Scripts for compiling for web browsers with Emscripten
 demos/enumerate     | Enumerate all backends, show information.
 demos/env           | Environmental audio demo.
 demos/glue          | Some tiny examples for different foreign interfaces (cs, rpgmaker, etc).
-demos/mixbusses     | Small example of playing through mixing busses.
-demos/monotone      | MONOTONE tracker song example.
-demos/multimusic    | Example of playing and cross-fading between two ogg streams.
+demos/megademo      | Compilation of many smaller demos showing off various features.
 demos/null          | Null driver example (using SoLoud without audio output).
-demos/pewpew        | Demonstration of play() and playClocked() calls.
 demos/piano         | Simple musical instrument using SoLoud.
 demos/simplest      | Simplest example.
-demos/space         | Demo of taking visualization data from different parts of the audio pipeline.
-demos/tedsid        | TED / SID music example.
 demos/welcome       | Slightly more complex example than simplest.
-demos/virtualvoices | Demo of virtual voices.
 

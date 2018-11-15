@@ -7,8 +7,8 @@ use "C" DLL:s, and this is one of the things SoLoud has.
 For most cases, you won't need to care about the codegen. Here's
 some information, however, if should you be curious.
 
-Writing and maintaining glue code is, however, tedious and prone
-to bugs, so the glue code for SoLoud is generated.
+Writing and maintaining glue code by hand is, however, tedious and prone
+to errors, so all of the glue code for SoLoud is generated with scripts.
 
 The "C" API is automatically generated from the c++ sources via the 
 codegen tool that is part of the SoLoud sources. In most cases you
@@ -21,7 +21,7 @@ headers and wrapper cpp code, as well as the DLL .def file, and a
 Python file which can be used to generate glue libraries for other
 environments (such as Python itself).
 
-The generated Python file also turned out to be useful in writing
+The generated Python file has also turned out to be useful in writing
 of this documentation, as it was pretty easy to write a script that
 checks whether a function has been documented or not.
 

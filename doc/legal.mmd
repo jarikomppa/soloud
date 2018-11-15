@@ -16,7 +16,7 @@ SoLoud proper is licensed under the ZLib/LibPNG license. The code is a
 clean-room implementation with no outside sources used.
 
     SoLoud audio engine
-    Copyright (c) 2013-2015 Jari Komppa
+    Copyright (c) 2013-2018 Jari Komppa
 
     This software is provided 'as-is', without any express or implied
     warranty. In no event will the authors be held liable for any damages
@@ -44,6 +44,17 @@ The OGG support in the Wav and WavStream sound sources is based on
 stb_vorbis by Sean Barrett, and it's in the public domain. You can find
 more information (and latest version) at
 <http://nothings.org/stb_vorbis/>
+
+### MP3 Support
+
+The MP3 support in the Wav and Wavstream sound sources is based on
+dr_mp3.h by David Reid, and released under Unlicense. dr_mp3.h itself
+is based on minimp3 is released under CC0 public domain license.
+
+### Wav Support
+
+Various wav file formats are loaded using dr_wav.h by David Reid,
+which is released under Unlicense.
 
 ### Speech Synthesizer
 
@@ -73,6 +84,12 @@ acceptable for you, then CC0:
 
 The SoLoud interface files (soloud_speech.\*) are under the same
 ZLib/LibPNG license as the other SoLoud bits.
+
+### Vizsn
+
+The vizsn speech synthesizer is copyright Ville-Matias Heikkil&auml;,
+released under WTFPL (in short, "do what you want to").
+
 
 ### Fast Fourier Transform (FFT)
 
@@ -206,11 +223,38 @@ under Unlicense:
     
     For more information, please refer to <http://unlicense.org/>
 
+### Vic
+
+The VIC 6560/6561 sound chip emulator is Copyright (c) 2015 Petri Hakkinen,
+and released under zlib/libpng license:
+
+    This software is provided 'as-is', without any express or implied
+    warranty. In no event will the authors be held liable for any damages
+    arising from the use of this software.
+
+    Permission is granted to anyone to use this software for any purpose,
+    including commercial applications, and to alter it and redistribute it
+    freely, subject to the following restrictions:
+
+       1. The origin of this software must not be misrepresented; you must not
+       claim that you wrote the original software. If you use this software
+       in a product, an acknowledgment in the product documentation would be
+       appreciated but is not required.
+
+       2. Altered source versions must be plainly marked as such, and must not be
+       misrepresented as being the original software.
+
+       3. This notice may not be removed or altered from any source
+       distribution.
+
 ### Openmpt
 
 SoLoud does not include Openmpt in itself, but can use it through a DLL.
 If you don't need it, you don't need to include the DLL either. If you DO
-need to use it, the license is as follows:
+need to use it, the license is as follows.
+
+Repeat: SoLoud DOES NOT include Openmpt by default, and is NOT bound by 
+this license:
 
     The OpenMPT code is licensed under the BSD license.
 

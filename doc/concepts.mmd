@@ -23,7 +23,7 @@ settings.
 ### Back end
 
 
-SoLoud itself "only" performs audio mixing and some resource handling.
+SoLoud itself "only" performs audio mixing, resource handling and bookkeeping.
 For it to be useful, it needs one or more sound source and a back end.
 Some other audio systems use the term 'sink' for the back-ends (as in
 audio source and audio sink).
@@ -56,16 +56,34 @@ limited, as having unlimited voices would cause performance issues, as
 well as lead to unnecessary clipping.
 
 The default number of concurrent voices - maximum number of "streams" -
-is 64, but this can be adjusted via a defined constant in the soloud.h
-file. The hard maximum number is 4095, but if more are required, SoLoud
-can be modified to support more. But seriously, if you need more than
-4095 sounds at once, you're probably going to make some serious changes
-in any case.
+is 16, but this can be adjusted at runtime. The hard maximum number is 
+4095, but if more are required, SoLoud can be modified to support more. 
+But seriously, if you need more than 4095 sounds at once, you're probably
+going to make some serious changes in any case.
 
 If all channels are already playing and the application requests another
 sound to play, SoLoud finds the oldest voice and kills it. Since this
 may be your background music, you can protect channels from being killed
 by using the soloud.setProtect() call.
+
+SoLoud also supports virtual voices, so things are a bit more complicated
+- basically you can have thousands of voices playing, but only the most
+audible ones are actually played.
+
+### Virtual Voices
+
+SoLoud lets you play way more voices than will actually be played
+to the user. This can be useful if you, for instance, populate a
+3d world with hundreds of audio sources.
+
+SoLoud will sort the voices based on their current volume level
+and only mixes the most audible sounds. The number of active
+voices can be set at runtime. Protected voices are always played.
+
+The maximum number of virtual voices is currently 1024, but can
+be increased up to a hard limit of 4095 by editing soloud.h and
+recompiling. Higher virtual voice counts than that will require 
+some refactoring.
 
 ### Voice Group
 
@@ -91,7 +109,7 @@ atomic operation.
 
 Audio hardware always has a limited dynamic range. If you think of a
 signed 16-bit variable, for instance, you can only store values from
--32k to +32k in it; if you try to put values outside this range in,
+-32768 to 23767 in it; if you try to put values outside this range in,
 things tend to break. Same goes for audio.
 
 ![Results of different clippers.](images/clipping)\ 
@@ -166,6 +184,9 @@ SoLoud lets you change the relative play speed of samples. Please note
 that asking for a higher relative play speed is always more expensive 
 than a lower one.
 
+Playing samples at higher or lower sample rate than they're intended
+can also cause resampling issues.
+
 ### Resampling
 
 
@@ -180,6 +201,8 @@ interpolation of samples, as well as "point sample" resampling, which
 means it simply skips or repeats samples as needed.
 
 Picking the resampler is done by editing the soloud.h file.
+
+The linear interpolation resampler is used by default.
 
 Higher quality resamplers are planned.
 
@@ -220,8 +243,9 @@ there's no data ready to be played) and the sound breaks down horribly.
 
 Assuming there's no other sources of latency (and there quite likely
 is), with 2048 sample buffer and 44100Hz playback, the latency is around
-46 milliseconds, which is tolerable in most cases. A 100ms latency is
-already easily noticeable.
+46 milliseconds, which is tolerable in most computer game use cases. A 
+100ms latency is already easily noticeable. For playing drums, 40ms 
+is too much.
 
 ### Filter
 
@@ -237,6 +261,9 @@ SoLoud lets you hook several filters to a single audio stream, as well
 as to the global audio output. By default, you can use up to four filters,
 but this can be easily changed by editing SoLoud.h file and rebuilding
 the library.
+
+SoLoud also support STFT filters, where the samples are converted to
+frequency domain for modification and back for playback.
 
 ### Mixing Bus
 
@@ -266,17 +293,3 @@ Additional feature of the mixing busses in SoLoud is that you can
 request visualization data from a bus, instead of just from the global
 scope.
 
-### Virtual Voices
-
-SoLoud lets you play way more voices than will actually be played
-to the user. This can be useful if you, for instance, populate a
-3d world with hundreds of audio sources.
-
-SoLoud will sort the voices based on their current volume level
-and only mixes the most audible sounds. The number of active
-voices can be set at runtime.
-
-The maximum number of virtual voices is currently 1024, but can
-be increased up to a hard limit of 4095 by editing soloud.h and
-recompiling. Higher virtual voice counts than that will require 
-some refactoring.

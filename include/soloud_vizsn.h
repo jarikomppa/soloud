@@ -46,21 +46,25 @@ namespace SoLoud
 
     public:
         Vizsn *mParent;
-		VizsnBank bank0, bank1, bank0to1;
-		int nper, nmod, nopen;
-		int echobuf[1024], ptr;
-		int current_voice_type;
-		float pitch;
-		char *s;
-		float buf[2048];
-		unsigned int bufwrite;
-		unsigned int bufread;
-		float vcsrc(int pitch, int voicetype);
+		VizsnBank mBank0, mBank1, mBank0to1;
+		int mNper, mNmod, mNopen;
+		int mEchobuf[1024], mPtr;
+		int mCurrentVoiceType;
+		float mPitch;
+		char *mS;
+		float mBuf[2048];
+		unsigned int mBufwrite;
+		unsigned int mBufread;
+		float vcsrc(int aPitch, int aVoicetype);
 		float noisrc();
 		float genwave();
-		void setphone(VizsnBank *b, char p, float pitch);
-		void slide_prepare(int numtix);
-		void slide_tick();
+		void setphone(VizsnBank *aB, char aP, float aPitch);
+		void slidePrepare(int aNumtix);
+		void slideTick();
+		int mA;
+		int mB;
+		int mOrgv;
+		float mGlotlast;
 	};
 
 	class Vizsn : public AudioSource

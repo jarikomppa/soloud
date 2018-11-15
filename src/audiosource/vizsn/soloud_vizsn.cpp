@@ -208,13 +208,17 @@ namespace SoLoud
 	VizsnInstance::VizsnInstance(Vizsn *aParent)
 	{
 		mParent = aParent;
-		ptr = 0;
-		current_voice_type = 6;
-		memset(echobuf, 0, 1024 * sizeof(int));
-		pitch = 800;
-		s = mParent->mText;
-		bufwrite = 0;
-		bufread = 0;
+		mPtr = 0;
+		mCurrentVoiceType = 6;
+		memset(mEchobuf, 0, 1024 * sizeof(int));
+		mPitch = 800;
+		mS = mParent->mText;
+		mBufwrite = 0;
+		mBufread = 0;
+		mA = 0;
+		mB = 100;
+		mOrgv = -1;
+		mGlotlast = 0;
 	}
 
 	VizsnInstance::~VizsnInstance()
@@ -225,52 +229,52 @@ namespace SoLoud
 	{
 		unsigned int idx = 0;
 		int i, j;
-		if (bufwrite > bufread)
+		if (mBufwrite > mBufread)
 		{
-			for (; bufwrite > bufread && idx < aSamplesToRead; bufread++)
+			for (; mBufwrite > mBufread && idx < aSamplesToRead; mBufread++)
 			{
-				aBuffer[idx] = buf[bufread];
+				aBuffer[idx] = mBuf[mBufread];
 				idx++;
 			}
 		}
 		if (idx == aSamplesToRead) return aSamplesToRead;
-		bufwrite = bufread = 0;
-		while (idx + bufwrite < aSamplesToRead)
+		mBufwrite = mBufread = 0;
+		while (idx + mBufwrite < aSamplesToRead)
 		{
-			setphone(&bank0, *s, pitch);
+			setphone(&mBank0, *mS, mPitch);
 
-			if (*s == P_END)
+			if (*mS == P_END)
 			{
-				buf[bufwrite] = 0;
-				bufwrite++;
-				SOLOUD_ASSERT(bufwrite < 2048);
+				mBuf[mBufwrite] = 0;
+				mBufwrite++;
+				SOLOUD_ASSERT(mBufwrite < 2048);
 				break;
 			}
 
-			setphone(&bank1, s[1], pitch);//pitch+=50);  -- RAISE SOUND
+			setphone(&mBank1, mS[1], mPitch);//pitch+=50);  -- RAISE SOUND
 
-			slide_prepare(50);
+			slidePrepare(50);
 
-			nper = 0;
+			mNper = 0;
 
-			for (i = plosive(*s) ? 100 : 300; i; i--)
+			for (i = plosive(*mS) ? 100 : 300; i; i--)
 			{
-				buf[bufwrite] = genwave();
-				bufwrite++;
-				SOLOUD_ASSERT(bufwrite < 2048);
+				mBuf[mBufwrite] = genwave();
+				mBufwrite++;
+				SOLOUD_ASSERT(mBufwrite < 2048);
 			}
 
-			if (!plosive(s[1]))
+			if (!plosive(mS[1]))
 			{
 				for (i = 50; i; i--)
 				{
 					for (j = 10; j; j--)
 					{
-						buf[bufwrite] = genwave();
-						bufwrite++;
-						SOLOUD_ASSERT(bufwrite < 2048);
+						mBuf[mBufwrite] = genwave();
+						mBufwrite++;
+						SOLOUD_ASSERT(mBufwrite < 2048);
 					}
-					slide_tick();
+					slideTick();
 				}
 			}
 			else
@@ -279,50 +283,49 @@ namespace SoLoud
 				{
 					for (j = 3; j; j--)
 					{
-						buf[bufwrite] = genwave();
-						bufwrite++;
-						SOLOUD_ASSERT(bufwrite < 2048);
+						mBuf[mBufwrite] = genwave();
+						mBufwrite++;
+						SOLOUD_ASSERT(mBufwrite < 2048);
 					}
 				}
 			}
 
-			s++;
+			mS++;
 
-			memcpy(&bank0, &bank1, sizeof(VizsnBank));
+			memcpy(&mBank0, &mBank1, sizeof(VizsnBank));
 		}
 		for (; idx < aSamplesToRead; idx++)
 		{
-			aBuffer[idx] = buf[bufread];
-			bufread++;
+			aBuffer[idx] = mBuf[mBufread];
+			mBufread++;
 		}
 		return aSamplesToRead;
 	}
 
-	float VizsnInstance::vcsrc(int pitch, int voicetype)
-	{
-		static int a = 0, b = 100, orgv = -1;
-		a += pitch;
+	float VizsnInstance::vcsrc(int aPitch, int aVoicetype)
+	{		
+		mA += aPitch;
 
-		if (orgv != voicetype)
+		if (mOrgv != aVoicetype)
 		{
-			orgv = voicetype;
-			a = 0;
-			b = 100;
+			mOrgv = aVoicetype;
+			mA = 0;
+			mB = 100;
 		}
 
-		switch (voicetype)
+		switch (aVoicetype)
 		{
-		case 0:	return (a & (256 + 128 + 32)) * 5 * 0.0002f;
-		case 1:	return (float)(sin(a * 0.0002) * cos(a * 0.0003) * 0.2f + ((rand() % 200 - 100) / 300.0f)); // ilmava
-		case 2: return (float)tan(a*0.00002)*0.01f; // burpy
-		case 3: return ((a & 65535) > 32768 ? 65535 : 0) * 0.00001f; // square wave
-		case 4: return a * a * 0.0000000002f; // kuisku
-		case 5:	a += 3;	b++; return ((a & 255) > ((b >> 2) & 255)) ? 0.3f : 0.0f;
-		case 7:	return ((a >> 8) & (256 + 128)) * 0.001f; // robottipulssi
-		case 8:	return (float)(rand() % (1 + ((a & 65535) >> 8))) / 256; // -- hiukka ihmisempi tsaatana
+		case 0:	return (mA & (256 + 128 + 32)) * 5 * 0.0002f;
+		case 1:	return (float)(sin(mA * 0.0002) * cos(mA * 0.0003) * 0.2f + ((rand() % 200 - 100) / 300.0f)); // ilmava
+		case 2: return (float)tan(mA*0.00002)*0.01f; // burpy
+		case 3: return ((mA & 65535) > 32768 ? 65535 : 0) * 0.00001f; // square wave
+		case 4: return mA * mA * 0.0000000002f; // kuisku
+		case 5:	mA += 3; mB++; return ((mA & 255) > ((mB >> 2) & 255)) ? 0.3f : 0.0f;
+		case 7:	return ((mA >> 8) & (256 + 128)) * 0.001f; // robottipulssi
+		case 8:	return (float)(rand() % (1 + ((mA & 65535) >> 8))) / 256; // -- hiukka ihmisempi tsaatana
 		case 9:	return ((float)(rand() & 32767)) / 32767; // -- noise: tsaatana
 		case 6: // fallthrough
-		default: return (a & 65535) * (0.001f / 256); /*-- sawtooth: near natural */
+		default: return (mA & 65535) * (0.001f / 256); /*-- sawtooth: near natural */
 		}
 	}
 
@@ -332,80 +335,79 @@ namespace SoLoud
 	}
 
 	float VizsnInstance::genwave()
-	{
-		static float glotlast = 0;
+	{		
 		float s, o, noise, voice, glot, parglot;
 		int ob;
 
 		noise = noisrc();
 
-		if (nper > nmod)
+		if (mNper > mNmod)
 		{
 			noise *= 0.5f;
 		}
 
-		s = bank0.frica * noise;
+		s = mBank0.frica * noise;
 
-		voice = vcsrc((int)floor(bank0.pitch), current_voice_type);
-		voice = bank0.r[RLP].resonate(voice);
+		voice = vcsrc((int)floor(mBank0.pitch), mCurrentVoiceType);
+		voice = mBank0.r[RLP].resonate(voice);
 
-		if (nper < nopen)
+		if (mNper < mNopen)
 		{
-			voice += bank0.breth * noise;
+			voice += mBank0.breth * noise;
 		}
 
-		parglot = glot = (bank0.voice * voice) + (bank0.aspir * noise);
+		parglot = glot = (mBank0.voice * voice) + (mBank0.aspir * noise);
 
-		parglot = bank0.r[RNZ].antiresonate(parglot);
-		parglot = bank0.r[RNPC].resonate(parglot);
-		s += (parglot - glotlast);
-		glotlast = parglot;
-		o = bank0.r[R1P].resonate(parglot);
+		parglot = mBank0.r[RNZ].antiresonate(parglot);
+		parglot = mBank0.r[RNPC].resonate(parglot);
+		s += (parglot - mGlotlast);
+		mGlotlast = parglot;
+		o = mBank0.r[R1P].resonate(parglot);
 
 		int i;
 		for (i = R4P; i > R2P; i--)
 		{
-			o = bank0.r[i].resonate(s) - o;
+			o = mBank0.r[i].resonate(s) - o;
 		}
 
-		o = bank0.r[ROUT].resonate(bank0.bypas * s - o);
+		o = mBank0.r[ROUT].resonate(mBank0.bypas * s - o);
 
 		/*********/
 
-		ob = (int)floor(o * 400 * 256 + (echobuf[ptr] / 4));
-		echobuf[ptr] = ob;
-		ptr = (ptr + 1) & 1023;
+		ob = (int)floor(o * 400 * 256 + (mEchobuf[mPtr] / 4));
+		mEchobuf[mPtr] = ob;
+		mPtr = (mPtr + 1) & 1023;
 
 		ob = (ob >> 8) + 128;
 
 		if (ob < 0)	ob = 0;
 		if (ob > 255) ob = 255;
 
-		nper++;
+		mNper++;
 
 		return ob * (1.0f / 255.0f);
 	}
 
-	void VizsnInstance::setphone(VizsnBank *b, char p, float pitch)
+	void VizsnInstance::setphone(VizsnBank *aB, char aP, float aPitch)
 	{
 		int i;
-		b->frica = b->aspir = b->bypas = b->breth = b->voice = 0;
-		b->pitch = pitch;
+		aB->frica = aB->aspir = aB->bypas = aB->breth = aB->voice = 0;
+		aB->pitch = mPitch;
 
-		if (p < 0)
+		if (aP < 0)
 		{
 			for (i = 0; i < 10; i++)
 			{
-				b->r[i].p1 = b->r[i].p2 = b->r[i].a = b->r[i].b = b->r[i].c = 0;
+				aB->r[i].p1 = aB->r[i].p2 = aB->r[i].a = aB->r[i].b = aB->r[i].c = 0;
 			}
 		}
 		else
 		{
-			if (p < 8)
+			if (aP < 8)
 			{
 				/* vokaali */
-				VizsnResonator *r = b->r;
-				const float *s = vowtab[p][0];
+				VizsnResonator *r = aB->r;
+				const float *s = vowtab[aP][0];
 
 				r[R1P].c = -0.95f; r[R2P].c = -0.93f; r[R3P].c = -0.88f; r[R4P].c = -0.67f;
 				r[RLP].a = 0.31f;  r[RLP].b = 1.35f;  r[RLP].c = -0.67f;
@@ -422,65 +424,65 @@ namespace SoLoud
 					r++;
 				}
 
-				b->voice = 0.8f;
+				aB->voice = 0.8f;
 			}
 			else
 			{
 				/* v */
 				int i;
-				const float *v = voo[p - 8];
+				const float *v = voo[aP - 8];
 
-				b->voice = *v++;
-				b->aspir = *v++;
-				b->frica = *v++;
-				b->bypas = *v++;
-				b->breth = *v++;
+				aB->voice = *v++;
+				aB->aspir = *v++;
+				aB->frica = *v++;
+				aB->bypas = *v++;
+				aB->breth = *v++;
 
 				for (i = 0; i < 10; i++)
 				{
-					b->r[i].a = *v++;
-					b->r[i].b = *v++;
-					b->r[i].c = *v++;
+					aB->r[i].a = *v++;
+					aB->r[i].b = *v++;
+					aB->r[i].c = *v++;
 				}
 
-				b->voice = 0.8f;
+				aB->voice = 0.8f;
 
-				b->breth = 0.18f;
+				aB->breth = 0.18f;
 			}
 		}
 	}
 
-	void VizsnInstance::slide_prepare(int numtix)
+	void VizsnInstance::slidePrepare(int aNumtix)
 	{
 		int i;
 
 		for (i = 0; i < 10; i++)
 		{
-			bank0to1.r[i].a = (bank1.r[i].a - bank0.r[i].a) / numtix;
-			bank0to1.r[i].b = (bank1.r[i].b - bank0.r[i].b) / numtix;
-			bank0to1.r[i].c = (bank1.r[i].c - bank0.r[i].c) / numtix;
+			mBank0to1.r[i].a = (mBank1.r[i].a - mBank0.r[i].a) / aNumtix;
+			mBank0to1.r[i].b = (mBank1.r[i].b - mBank0.r[i].b) / aNumtix;
+			mBank0to1.r[i].c = (mBank1.r[i].c - mBank0.r[i].c) / aNumtix;
 		}
 
-		bank0to1.pitch = (bank1.pitch - bank0.pitch) / numtix;
+		mBank0to1.pitch = (mBank1.pitch - mBank0.pitch) / aNumtix;
 	}
 
-	void VizsnInstance::slide_tick()
+	void VizsnInstance::slideTick()
 	{
 		int i;
 
 		for (i = 0; i < 10; i++)
 		{
-			bank0.r[i].a += bank0to1.r[i].a;
-			bank0.r[i].b += bank0to1.r[i].b;
-			bank0.r[i].c += bank0to1.r[i].c;
+			mBank0.r[i].a += mBank0to1.r[i].a;
+			mBank0.r[i].b += mBank0to1.r[i].b;
+			mBank0.r[i].c += mBank0to1.r[i].c;
 		}
 
-		bank0.pitch += bank0to1.pitch;
+		mBank0.pitch += mBank0to1.pitch;
 	}
 
 	bool VizsnInstance::hasEnded()
 	{
-		return *s == P_END;
+		return *mS == P_END;
 	}
 
 	Vizsn::Vizsn()

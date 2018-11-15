@@ -187,6 +187,7 @@ void printinfo(const char * format, ...)
 // Soloud.mixSigned16
 // Prg.rand
 // Prg.srand
+// wav.getLength
 void testMisc()
 {
 	float scratch[2048];
@@ -197,6 +198,7 @@ void testMisc()
 	CHECK_RES(res);
 	SoLoud::Wav wav;
 	generateTestWave(wav);
+	CHECK(wav.getLength() != 0);
 	int ver = soloud.getVersion();
 	CHECK(ver == SOLOUD_VERSION);
 	printinfo("SoLoud version %d\n", ver);
@@ -921,6 +923,7 @@ void test3d()
 // Soloud.fadeFilterParameter
 // Soloud.oscillateFilterParameter
 // Soloud.setGlobalFilter
+// WaveShaperFilter.setParams
 void testFilters()
 {
 	float scratch[2048];
@@ -936,6 +939,10 @@ void testFilters()
 	SoLoud::BassboostFilter bass;
 	SoLoud::FlangerFilter flang;
 	SoLoud::DCRemovalFilter dc;
+	SoLoud::FFTFilter fft;
+	SoLoud::RobotizeFilter rob;
+	SoLoud::WaveShaperFilter wshap;
+
 	res = soloud.init(SoLoud::Soloud::CLIP_ROUNDOFF, SoLoud::Soloud::NULLDRIVER);
 	CHECK_RES(res);
 
@@ -1052,6 +1059,38 @@ void testFilters()
 	soloud.mix(scratch, 1000);
 	CHECKLASTKNOWN(scratch, 2000);
 	CHECK_BUF_DIFF(ref2, scratch, 2000);
+	soloud.stopAll();
+
+	wav.setFilter(0, &fft);
+	soloud.play(wav);
+	soloud.mix(ref2, 1000);
+	CHECKLASTKNOWN(ref2, 2000);
+	CHECK_BUF_DIFF(ref, ref2, 2000);
+	soloud.stopAll();
+	wav.setFilter(0, 0);
+
+	wav.setFilter(0, &rob);
+	soloud.play(wav);
+	soloud.mix(ref2, 1000);
+	CHECKLASTKNOWN(ref2, 2000);
+	CHECK_BUF_DIFF(ref, ref2, 2000);
+	soloud.stopAll();
+	wav.setFilter(0, 0);
+
+	wshap.setParams(0.05f, 1);
+	wav.setFilter(0, &wshap);
+	soloud.play(wav);
+	soloud.mix(ref2, 1000);
+	CHECKLASTKNOWN(ref2, 2000);
+	CHECK_BUF_DIFF(ref, ref2, 2000);
+	soloud.stopAll();
+	wshap.setParams(0.005f, 1);
+	soloud.play(wav);
+	soloud.mix(scratch, 1000);
+	CHECKLASTKNOWN(scratch, 2000);
+	CHECK_BUF_DIFF(ref2, scratch, 2000);
+	soloud.stopAll();
+	wav.setFilter(0, 0);
 
 	soloud.deinit();
 }
@@ -1067,6 +1106,7 @@ void testFilters()
 // Soloud.setPan
 // Soloud.setPanAbsolute
 // Soloud.setVolume
+// Wav.setVolume
 // Soloud.fadeVolume
 // Soloud.fadePan
 // Soloud.fadeRelativePlaySpeed
@@ -1160,6 +1200,15 @@ void testCore()
 	CHECKLASTKNOWN(scratch, 2000);
 	CHECK_BUF_DIFF(ref, scratch, 2000);
 	soloud.stopAll();
+
+	wav.setVolume(0.5f);
+	h = soloud.play(wav);
+	soloud.mix(scratch, 1000);
+	CHECKLASTKNOWN(scratch, 2000);
+	CHECK_BUF_GTE(ref, scratch, 2000);
+	CHECK_BUF_DIFF(ref, scratch, 2000);
+	soloud.stopAll();
+	wav.setVolume(1.0f);
 
 	h = soloud.play(wav);
 	soloud.setVolume(h, 0.5f);
@@ -1499,12 +1548,9 @@ int main(int parc, char ** pars)
 /*
 TODO:
 ----
-SoLoud::FFTFilter
 SoLoud::Monotone
 SoLoud::Openmpt
 SoLoud::Queue
-SoLoud::RobotizeFilter
-SoLoud::WaveShaperFilter
 SoLoud::WavStream
 SoLoud::Vizsn
 SoLoud::Vic
@@ -1513,59 +1559,43 @@ Wav.load
 Wav.loadMem
 Wav.loadFile
 Wav.getLength
-Wav.setVolume
-Wav.setLooping
-Wav.setFilter
+Wav.loadRawWave8
+Wav.loadRawWave16
+Wav.loadRawWave
 WavStream.load
 WavStream.loadMem
 WavStream.loadToMem
 WavStream.loadFile
 WavStream.loadFileToMem
 WavStream.getLength
-WavStream.setLooping
 Sfxr.resetParams
 Sfxr.loadParams
 Sfxr.loadParamsMem
 Sfxr.loadParamsFile
 Sfxr.loadPreset
-Sfxr.setLooping
 Openmpt.load
 Openmpt.loadMem
 Openmpt.loadFile
-Openmpt.setLooping
 Monotone.setParams
 Monotone.load
 Monotone.loadMem
 Monotone.loadFile
-Monotone.setLooping
 TedSid.load
 TedSid.loadToMem
 TedSid.loadMem
 TedSid.loadFileToMem
 TedSid.loadFile
-TedSid.setLooping
 Soloud.getInfo
 Queue.play
 Queue.getQueueCount
 Queue.isCurrentlyPlaying
 Queue.setParamsFromAudioSource
 Queue.setParams
-Queue.setVolume
-Queue.setLooping
-Queue.setInaudibleBehavior
 Vic.setModel
 Vic.getModel
 Vic.setRegister
 Vic.getRegister
-Vic.setVolume
-Vic.setLooping
 Vizsn.setText
-Vizsn.setVolume
-Vizsn.setLooping
-Wav.loadRawWave8
-Wav.loadRawWave16
-Wav.loadRawWave
-WaveShaperFilter.setParams
 
 Not tested - abstract class
 ---------------------------
@@ -1573,6 +1603,19 @@ AudioAttenuator.attenuate
 
 Not tested - the functionality is the same for all audio sources, tested for some source:
 -----------------------------------------------------------------------------------------
+Queue.setVolume
+Vic.setVolume
+Vizsn.setVolume
+Wav.setLooping
+WavStream.setLooping
+Sfxr.setLooping
+Openmpt.setLooping
+Monotone.setLooping
+TedSid.setLooping
+Queue.setLooping
+Queue.setInaudibleBehavior
+Vic.setLooping
+Vizsn.setLooping
 Bus.setLoopPoint
 Bus.getLoopPoint
 Monotone.setLoopPoint

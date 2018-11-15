@@ -4,20 +4,22 @@
 ### What does it play?
 
 
-Currently, SoLoud includes support for uncompressed 8 and 16 bit RIFF
-Wav files, as well as Ogg Vorbis files. Both of these only support a
-limited feature set of said formats, so you may experience some issues
-with strange files.
+Currently, SoLoud includes support for various wav formats including
+8, 16, 32 bit, float, double, pcmcia, etc., as well as Ogg Vorbis 
+and MP3 files. Not all variants and features are supported, so you
+may experience some issues with strange files. As time has progressed,
+the libraries SoLoud uses to read these files have improved,
+but they are still not the reference libraries, so some strange
+variants may exist out there.
 
-Additionally, SoLoud comes with a speech synthesizer based on rsynth
-and a retro sound effect synthesizer Sfxr, replayer for MONOTONE 
-PC-speaker tracker music and a replayer for C64 SID and Commodore plus/4 TED music,
+Additionally, SoLoud comes with a speech synthesizer based on rsynth, another
+primitive speech synth, a retro sound effect synthesizer Sfxr, replayer for MONOTONE 
+PC-speaker tracker music, a replayer for C64 SID and Commodore plus/4 TED music,
 and a Commodore VIC emulator too.
 
-Finally, SoLoud can use Openmpt, through which it can play 669, amf, ams, dbm, 
-digi, dmf, dsm, far, gdm, ice, imf, it, itp, j2b, m15, mdl, med, mid, mo3, mod, 
-mptm, mt2, mtm, okt, plm, psm, ptm, s3m, stm, ult, umx, wow, xm, as well as 
-wider support for wav files than the stand-alone wav audio source. (Note that
+Finally, SoLoud can use Openmpt through DLL interface, which can play 669, amf, 
+ams, dbm, digi, dmf, dsm, far, gdm, ice, imf, it, itp, j2b, m15, mdl, med, mid, mo3, mod, 
+mptm, mt2, mtm, okt, plm, psm, ptm, s3m, stm, ult, umx, wow and xm. (Note that
 Openmpt has a more restrictive license than SoLoud).
 
 The interface for audio sources is relatively simple, so new formats and
@@ -34,9 +36,9 @@ fun.
 
 There's no external library dependencies (apart from stdlib). However,
 to get audio out of your speakers, a back-end is needed. Back-ends that
-currently exist include SDL, windows multimedia, oss, alsa and portaudio, 
+currently exist (but are not limited to) include SDL, windows multimedia, oss, alsa and portaudio, 
 and SoLoud has been designed so that making new back-ends would be as
-painless as possible.
+painless as possible. 
 
 ### Is there a DLL / C-Interface?
 
@@ -69,20 +71,30 @@ you would have gotten from doxygen too..
 
 
 I'm aware there are other forks of libmodplug, which may be in better shape than the one
-used in SoLoud by default. However, those forks use more restrictive licenses, which
+used by SoLoud by default. However, those forks use more restrictive licenses, which
 (while still liberal) would require changes in SoLoud licensing. At the moment, you
 don't need to mention the use of SoLoud anywhere if you don't want to.
 
 That said, nothing's stopping you from compiling a version of SoLoud that uses another
 fork of libmodplug.
 
+### Why did SoLoud move to libmodplug?
+
+Originally SoLoud used a public domain fork of modplug, but as time went on it became
+increasingly clear that instead of supporting SoLoud the author would have had to support
+modplug. At the same time better supported forks of modplug existed, so SoLoud was
+divorced from the modplug code, while making it possible to use modplug if needed.
+
 ### Can SoLoud do HRTF?
 
 Currently, no. Pull requests are welcome =)
 
+All joking aside, there's no simple place to plug this in currently. It's a TODO item
+for the future.
+
 ### What about surround speakers?
 
-Currently, no. Support is planned in a future milestone, however.
+Yes. SoLoud supports 1, 2, 4, 5.1 and 7.1 configurations.
 
 ### Are these real questions?
 

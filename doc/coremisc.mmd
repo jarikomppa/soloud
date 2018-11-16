@@ -199,11 +199,13 @@ buffer in reality.
 
     printf("Current backend buffer: %d", gSoloud.getBackendBufferSize());
 
-### Soloud.setSpeakerPosition()
+### Soloud.setSpeakerPosition(), Soloud.getSpeakerPosition()
 
-Set a speaker position in 3d space. Used to configure spakers in multi-speaker systems.
+Get or set a speaker position in 3d space. Used to configure spakers in multi-speaker systems.
 
+	float x,y,z;
+	gSoloud.getSpeakerPosition(0, x, y, z); // get channel 0 speaker coordinates
     gSoloud.setSpeakerPosition(0, 1.0f, 2.0f, 3.0f); // set channel 0 to play from (1,2,3)
     
-For typical use this function does not need to be called.
+For typical use these functions do not need to be called.
 

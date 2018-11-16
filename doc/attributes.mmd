@@ -1,6 +1,6 @@
 ## Attributes
 
-### Soloud.getVolume() / Soloud.setVolume()
+### Soloud.getVolume(), Soloud.setVolume()
 
 These functions can be used to get and set a sound's current volume
 setting.
@@ -22,7 +22,7 @@ set volume and the calculated 3d volume.
     float v = soloud.getOverallVolume(foghorn);
     if (v < 0.1) foghornTooFarToHear();
 
-### Soloud.getPan() / Soloud.setPan()
+### Soloud.getPan(), Soloud.setPan()
 
 These functions can be used to get and set a sound's current pan
 setting.
@@ -49,7 +49,7 @@ Note that this does not affect the value returned by getPan.
 
 If an invalid handle is given to getPan, it will return 0.
 
-### Soloud.getSamplerate() / Soloud.setSamplerate()
+### Soloud.getSamplerate(), Soloud.setSamplerate()
 
 These functions can be used to get and set a sound's base sample rate.
 
@@ -63,7 +63,7 @@ setRelativePlaySpeed instead.
 
 If an invalid handle is given to getSamplerate, it will return 0.
 
-### Soloud.getRelativePlaySpeed() / Soloud.setRelativePlaySpeed()
+### Soloud.getRelativePlaySpeed(), Soloud.setRelativePlaySpeed()
 
 These functions can be used to get and set a sound's relative play
 speed.
@@ -83,7 +83,7 @@ cheaper.
 
 If an invalid handle is given to getRelativePlaySpeed, it will return 1.
 
-### Soloud.getProtectVoice() / Soloud.setProtectVoice()
+### Soloud.getProtectVoice(), Soloud.setProtectVoice()
 
 These functions can be used to get and set a sound's protection state.
 
@@ -99,7 +99,7 @@ If all voices are protected, the result will be undefined.
 
 If an invalid handle is given to getProtectChannel, it will return 0.
 
-### Soloud.getPause() / Soloud.setPause()
+### Soloud.getPause(), Soloud.setPause()
 
 The setPause function can be used to pause, or unpause, a sound.
 
@@ -139,13 +139,24 @@ support changing of live parameters; otherwise this call returns zero.
     float v = soloud.getFilterParameter(h,3,FILTER::CUTOFF); 
     // get h's 3rd filter's "cutoff" value
 
-### Soloud.getLooping() / Soloud.setLooping()
+### Soloud.getLooping(), Soloud.setLooping()
 
 Get or set the looping behavior of a live sound.
 
     bool l = soloud.getLooping(h);
     soloud.setLooping(h, !l); // anti-loop
-    
+
+### Soloud.setLoopPoint(), Soloud.geteLoopPoint()
+
+If looping is enabled, the loop point is, by default, the start of the
+stream. The loop point can be changed, and current loop point can be
+queried with these functions.
+
+	double t = soloud.getLoopPoint(h);
+	snd.setLoopPoint(h, t + 1); // skip 1 second more when looping
+	...
+	snd.setLoopPoint(h, 0); // loop from start
+	
 ### Soloud.setInaudibleBehavior()
 
 Set the inaudible behavior of a live sound. By default, if a sound is

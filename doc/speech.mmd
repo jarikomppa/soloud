@@ -28,6 +28,21 @@ any playing instances to avoid crashing.
 
 Trying to set the text to NULL will return an error code.
 
+### Speech.setParams()
+
+The speech's voice can be adjusted by changing the parameters;
+
+	result Speech::setParams(unsigned int aBaseFrequency, 
+                             float aBaseSpeed, 
+							 float aBaseDeclination, 
+							 int aBaseWaveform)
+
+The default parameters for these are 1330 for frequecy, 10 for speed, 0.5 for declination 
+and KW_SQUARE as waveform. The easiest way to understand what these parameters do and how
+they affect the voice is to play with the "speechfilter" demo that is part of the megademo
+example.
+
+
 ### Speech.setLooping()
 
 

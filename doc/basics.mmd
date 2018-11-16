@@ -149,6 +149,20 @@ used) to calculate the delay between two sound effects. If a output
 sound buffer threshold is passed between the two sounds, SoLoud will
 adjust the delay accordingly.
 
+### Soloud.playBackground()
+
+The playBackground() function can be used to play sounds without 
+panning, primarily meant for background music. 
+
+		handle playBackground(AudioSource &aSound,
+		                      float aVolume = -1.0f, 
+							  bool aPaused = 0, 
+							  unsigned int aBus = 0);
+
+It's a convenience function, and is equivalent to play() followed by
+setPanAbsolute() to set left and right channels to full volme.
+
+	gSoloud.playBackground(gDramaticScore);
 
 ### Soloud.seek()
 
@@ -181,7 +195,7 @@ through a certain sound source. Will also stop protected sounds.
     soloud.stopAudioSource(duck); // silence all the ducks
 
 
-### Soloud.setGlobalVolume() / Soloud.getGlobalVolume()
+### Soloud.setGlobalVolume(), Soloud.getGlobalVolume()
 
 These functions can be used to get and set the global volume. The volume
 is applied before clipping. Lowering the global volume is one way to
@@ -194,7 +208,7 @@ Note that the volume is not limited to 0..1 range. Negative values may
 result in strange behavior, while huge values will likely cause
 distortion.
 
-### Soloud.setPostClipScaler() / Soloud.getPostClipScaler()
+### Soloud.setPostClipScaler(), Soloud.getPostClipScaler()
 
 These functions can be used to get and set the post-clip scaler. The
 scaler is applied after clipping. Sometimes lowering the post-clip

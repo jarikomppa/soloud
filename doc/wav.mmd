@@ -1,12 +1,12 @@
 ## SoLoud::Wav
 
 The SoLoud::Wav class represents a wave sound effect. The source files
-may be in 8 or 16 bit raw RIFF WAV files, or compressed Ogg Vorbis
+may be in various RIFF WAV file formats FLAC, MP3 or Ogg Vorbis
 files.
 
 The sounds are loaded and converted to float samples, which means that
 every second of a 44100Hz stereo sound takes about 350kB of memory. The
-good side is, after loading, these samples are very lightweight, as
+good side is, after loading, the use of these samples are very lightweight, as
 their processing is mostly just a memory copy.
 
 For lengthy samples like background music, you may want to use
@@ -51,6 +51,31 @@ The loadFile() can be used to load audio from a SoLoud::File object. This
 is useful for integrating with virtual filesystems / packfiles, such as
 PhysFS.
 
+### Wav.loadRawWave, Wav.loadRawWave8, Wav.loadRawWave16
+
+It is also possible to turn an array of raw wave data into a SoLoud Wav object
+using the loadRawWave family of functions. These functions differ primarily by the
+format of wave data they load - floats, unsigned 8 bit and signed 16 bit samples.
+
+		result loadRawWave8(unsigned char *aMem, 
+		                    unsigned int aLength, 
+							float aSamplerate = 44100.0f, 
+							unsigned int aChannels = 1);
+		result loadRawWave16(short *aMem, 
+		                     unsigned int aLength, 
+							 float aSamplerate = 44100.0f, 
+							 unsigned int aChannels = 1);
+		result loadRawWave(float *aMem, 
+		                   unsigned int aLength, 
+						   float aSamplerate = 44100.0f, 
+						   unsigned int aChannels = 1, 
+						   bool aCopy = false, 
+						   bool aTakeOwnership = true);
+
+The variant that loads float samples additionally lets you decice whether
+SoLoud should make a copy of the data (such as when the data is in stack),
+and whether SoLoud should take ownership of the data (i.e, should SoLoud
+delete the data when the object is destroyed).
 
 ### Wav.setLooping()
 

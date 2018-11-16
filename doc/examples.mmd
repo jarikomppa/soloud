@@ -1,12 +1,12 @@
-Examples
-========
+## Examples
+
 
 SoLoud package comes with a bunch of simple examples. These can be found under the 'demos' directory. Pre-built binaries for Windows can also be found in the 'bin' directory.
 
 Along with the examples, the 'bin' directory also contains some command-line tools. These are safe to run without parameters, and will print out help when run.
 
-simplest
---------
+### simplest
+
 The simplest example initializes SoLoud, and uses the speech synthesizer to play some sound. Once the sound has finished, the application cleans up and quits.
 
 This example also uses SoLoud's cross-platform thread library to sleep while waiting for the sound to end. The source code is so short that we'll just include it here verbatim:
@@ -45,8 +45,8 @@ This example also uses SoLoud's cross-platform thread library to sleep while wai
       return 0;
     }
 
-welcome
--------
+### welcome
+
 
 Slightly more complicated console-based example, playing different kinds of sounds.
 
@@ -63,28 +63,47 @@ Slightly more complicated console-based example, playing different kinds of soun
 - Wait until speech is over
 - Try to load and play an S3M module
 
-megademo
-----------
-The megademo demo is a collection of smaller demos and tests showing various SoLoud features.
-
-![multimusic demo screenshot](images/demo_multimusic)\ 
-
-![mixbusses demo screenshot](images/demo_mixbusses)\ 
-
-![pewpew demo screenshot](images/demo_pewpew)\ 
-
-![3dtest demo screenshot](images/demo_3dtest)\ 
-
-![monotone demo screenshot](images/demo_monotone)\ 
+### megademo
 
 ![tedsid demo screenshot](images/demo_tedsid)\ 
 
-![virtual voices demo screenshot](images/demo_virtualvoices)\ 
+The megademo demo is a collection of smaller demos and tests showing various SoLoud features.
 
+### env
 
+![env demo screenshot](images/demo_env)\ 
 
-piano
------
+The env demo is a non-interactive demo of how SoLoud could be used to play environmental 
+audio. It is more of a proof of concept than a good example at this point.
+
+### c_test
+
+The c_test demo uses the "c" API to play voice samples as well as playing a wave that is generated on the fly.
+
+### enumerate
+
+The enumerate demo scans all included back-ends and shows data about them.
+Note that some backends, like WinMM, only support limited number of channels, while others may report more 
+channels available than the hardware supports, like PortAudio.
+
+### emscripten
+
+Script files are included to compile some of the demos for web use using Emscripten. These require Linux environment 
+with Emscripten installed.
+
+### glue
+
+Some simple demos are included for the glue interfaces, i.e, using SoLoud from C#, gamemaker, python, ruby, etc.
+
+### null
+
+The null demo shows an example of using the null driver backend. It plays some sound and draws the waveform
+on the console using ascii graphics.
+
+\pagebreak
+
+### piano
+
 ![piano demo screenshot](images/demo_piano)\ 
 
 This example is a simple implementation of a playable instrument. 
@@ -97,34 +116,3 @@ Don't worry if you don't have an external midi keyboard though, you can also jam
 
 You can also adjust some filters and pick waveforms using the GUI. Speech synthesizer describes your option changes.
 
-env
----
-![env demo screenshot](images/demo_env)\ 
-
-The env demo is a non-interactive demo of how SoLoud could be used to play environmental 
-audio. It is more of a proof of concept than a good example at this point.
-
-c_test
-------
-
-The c_test demo uses the "c" API to play voice samples as well as playing a wave that is generated on the fly.
-
-enumerate
----------
-
-The enumerate demo scans all included back-ends and shows data about them.
-
-emscripten
-----------
-
-Script files are included to compile some of the demos for web use using Emscripten.
-
-glue
-----
-
-Some simple demos are included for the glue interfaces, i.e, using SoLoud from C#, gamemaker, python, ruby, etc.
-
-null
-----
-
-The null demo shows an example of using the null driver backend.

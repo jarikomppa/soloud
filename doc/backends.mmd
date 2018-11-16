@@ -1,5 +1,4 @@
-Back-ends
-=========
+## Back-ends
 
 SoLoud needs a back-end to play audio out. SoLoud ships with a bunch of
 back-ends with various levels of stability and latency. Creating new
@@ -11,8 +10,8 @@ addition to the optional mutex function pointers.
 Studying the existing back-end implementations' source code, in addition
 to this page, will help creating new ones.
 
-Soloud.postinit()
--------------
+### Soloud.postinit()
+
 
 The back-end should call Soloud.postinit() once it knows what it can do.
 
@@ -26,8 +25,10 @@ things. The buffer size should be the maximum number of samples the
 back-end requests on one call. Making it bigger doesn't affect latency,
 but causes SoLoud to create larger than necessary internal mixing buffers.
 
-Soloud.mix()
-------------
+
+\pagebreak
+
+### Soloud.mix()
 
 The back-end can call the mix function to request a number of stereo
 samples from SoLoud. The samples will be in float format, and the
@@ -41,8 +42,7 @@ If the number of samples exceeds the buffer size set at init, the result
 is undefined (most likely a crash).
 
 
-Soloud.mixSigned16()
-----------------
+### Soloud.mixSigned16()
 
 Since so many back-ends prefer 16 bit signed data instead of float
 data, SoLoud also provides a mix call that outputs signed 16 bit data.
@@ -51,15 +51,13 @@ data, SoLoud also provides a mix call that outputs signed 16 bit data.
                      int aSamples);  // Number of requested stereo samples
 
 
-Soloud.mBackendData
--------------------
+### Soloud.mBackendData
 
 This void pointer is free for the back-end to use in any way it wants.
 It may be a convenient place to store any buffers and other information
 it needs to keep around.
 
-Soloud.mLockMutexFunc / Soloud.mUnlockMutexFunc
------------------------------------------------
+### Soloud.mLockMutexFunc, Soloud.mUnlockMutexFunc
 
 These function pointers point to functions which should lock and unlock
 a mutex. If they are left as NULL, they will not be called.
@@ -69,43 +67,39 @@ that some shared resources, such as the channel data, may be accessed by
 several threads at the same time. In the worst case one thread may
 delete an object while another is accessing it.
 
-Soloud.mMutex
--------------
+### Soloud.mMutex
 
 Pointer to mutex data. The pointer is also passed to the lock/unlock
 mutex functions as a parameter.
 
-Soloud.mBackendCleanupFunc
---------------------------
+### Soloud.mBackendCleanupFunc
 
 This function pointer is used by SoLoud to signal the back-end to
 perform cleanup; stop any threads, free any resources, etc. If NULL, not
 called, but may result in resource leaks and quite possibly crashes.
 
-Soloud.mBackendString
----------------------
+### Soloud.mBackendString
 
 Descriptive, short asciiz string about the back-end. Applications may
 use this to print out different audio devices for user to pick from.
 
-Different back-ends
--------------------
+### Different back-ends
 
 This is a non-exhaustive list of back-ends and notes regarding them.
 
-Backend            | x64  | Notes
-----               | --   | ----------------
-SDL/SDL2 DLL       | No   | Most tested, primary development platform. Cross-platform. Low latency.
-SDL Static         | No?  | Mostly meant for emscripten use.
-SDL2 Static        | Yes? | Can be used to statically link to SDL2.
-PortAudio          | No   | Cross-platform. Very low latency. Dynamic linking.
-WinMM              | Yes  | Simplest back-end for Windows-only programs.
-ALSA               | Yes  | Default audio interface for Linux
-oss (/dev/dsp)     | Yes  | Simplest back-end for Linux-only programs. Experimental.
-OpenAL             | No   | Very experimental. Very high latency; if this is your only option, you're probably better off using OpenAL directly.
-WASAPI             | Yes  | Experimental
-XAudio2            | Yes  | Experimental
-Null driver        | Yes  | Can be used to use SoLoud without audio device.
+Backend        x64  Notes
+----           --   ----------------
+SDL/SDL2 DLL   No   Most tested, primary development platform. Cross-platform. Low latency.
+SDL Static     No?  Mostly meant for emscripten use.
+SDL2 Static    Yes  Can be used to statically link to SDL2.
+PortAudio      No   Cross-platform. Very low latency. Dynamic linking.
+WinMM          Yes  Simplest back-end for Windows-only programs.
+ALSA           Yes  Default audio interface for Linux
+oss (/dev/dsp) Yes  Simplest back-end for Linux-only programs. Experimental.
+OpenAL         No   Very experimental. Very high latency; if this is your only option, you're probably better off using OpenAL directly.
+WASAPI         Yes  Experimental
+XAudio2        Yes  Experimental
+Null driver    Yes  Can be used to use SoLoud without audio device.
 
 The back-ends that are not x64 ready use runtime dyndll linking. It may be possible in the future to link to 64bit dll:s and make them work. Current dyndll linkage is towards 32bit dlls which does not work in x64.
 

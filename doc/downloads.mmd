@@ -5,24 +5,9 @@ This page lists SoLoud downloads, as well as other relevant information.
 
 Latest stable release
 ---------------------
-[soloud_20160109.zip](soloud_20160109.zip) <<- Download here
+[soloud_201811xx.zip](soloud_201811xx.zip) <<- Download here
 
-Documentation: [PDF](soloud_20160109.pdf) | [EPUB](soloud_20160109.epub) | [MOBI](soloud_20160109.mobi) | [HTML](soloud_20160109.html) 
-
-Milestones
-----------
-SoLoud milestones are named after the ITU radio band symbols.
-
-![Milestone symbols](images/milestones)\ 
-
-Some milestone hilights: 
-
-- LF is planned
-- VLF is under construction
-- ULF went all 3d audio, and added more foreign interfaces
-- SLF put in playClocked, voice groups and python support
-- ELF added libmodplug, sfxr and "C" api generator
-- TLF had mixing busses, visualization data, and various backends
+Documentation: [PDF](soloud_201811xx.pdf) | [EPUB](soloud_201811xx.epub) | [MOBI](soloud_201811xx.mobi) | [HTML](soloud_201811xx.html) 
 
 Development
 -----------
@@ -32,9 +17,10 @@ There's a mailing list at <http://groups.google.com/d/forum/soloud>
 
 Finally, there's #soloud on ircnet, if you want to pop by.
 
-Swag
-----
-Yes, someone asked. So, you can buy SoLoud swag here: <http://solstuff.spreadshirt.fi/>
+How to support SoLoud development
+---------------------------------
+
+Contact the author, maybe we'll work something out.
 
 Additional files
 ----------------
@@ -48,6 +34,32 @@ Additional files
 Release history
 ---------------
 
+[soloud_201811xx.zip](soloud_201811xx.zip)
+
+Documentation: [PDF](soloud_201811xx.pdf) | [EPUB](soloud_201811xx.epub) | [MOBI](soloud_201811xx.mobi) | [HTML](soloud_201811xx.html) 
+
+- First release after 2 year burnout hiatus
+- Hilights:
+    - FLAC, MP3 and various wav file formats through dr_flac, dr_mp3 and dr_wav
+    - Split SDL and SDL2 dll backends due to SDL2 doing stupid things unless told not to
+    - Removed modplug, added libmodplug dll interface
+    - Loop point support for all audio sources
+    - Wav files can now load from raw data
+    - Multi-speaker support
+    - Queues
+    - Many new small examples
+    - Piano demo now has padsynth
+    - Sanity test: over 200 tests to check if changes break playback
+    - Asserts
+    - playBackground helper interface to play audio without panning
+    - countAudioSource call to see how many instances of an audio source are playing
+    - PS Vita homebrew platform support
+    - Wave shaper, robotize filters
+    - Added more options to speech synth playback
+    - Removed many dynamic allocations
+    - Switched FFT implementations (again)
+    - Countless bug fixes and tweaks
+    
 [soloud_20160109.zip](soloud_20160109.zip) 
 
 Documentation: [PDF](soloud_20160109.pdf) | [EPUB](soloud_20160109.epub) | [MOBI](soloud_20160109.mobi) | [HTML](soloud_20160109.html) 

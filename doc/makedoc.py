@@ -121,7 +121,7 @@ for x in src:
         with open("temp/" + x[:len(x)-3]+"tex", "w") as file_out:
             with open("temp/" + x[:len(x)-3]+"tex.orig", "r") as file_in:
                 for line in file_in:
-                    file_out.write(line.replace('\\begin{longtable}[c]{@{}ll@{}}', '\\begin{tabulary}{\\textwidth}{lJ}').replace('\\begin{longtable}[c]{@{}lll@{}}', '\\begin{tabulary}{\\textwidth}{lJJ}').replace('\\begin{longtable}[c]{@{}llll@{}}', '\\begin{tabulary}{\\textwidth}{lJJJ}').replace('\\endhead','').replace('\\end{longtable}','\\end{tabulary}'))
+                    file_out.write(line.replace('\\begin{longtable}[]{@{}ll@{}}', '\\begin{tabulary}{\\textwidth}{lJ}').replace('\\begin{longtable}[]{@{}lll@{}}', '\\begin{tabulary}{\\textwidth}{lJJ}').replace('\\begin{longtable}[]{@{}llll@{}}', '\\begin{tabulary}{\\textwidth}{lJJJ}').replace('\\endhead','').replace('\\end{longtable}','\\end{tabulary}'))
 
 print "- -- --- -- - Generating pdf (xelatex_output.txt)"
 

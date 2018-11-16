@@ -104,6 +104,16 @@ For this function to work properly, you also need enable visualization with
 the Bus.setVisualizationEnable() call. Otherwise the source data
 will not be gathered, and the result is undefined (probably zero).
 
+### Bus.getApproximateVolume()
+
+Gets the approximate volume for output per output channel (i.e, per speaker). Returns zero for invalid parameters.
+
+    float ch1 = gBus.getApproximateVolume(0);
+    float ch2 = gBus.getApproximateVolume(1);
+    printf("Volume is %3.3f %3.3f", ch1, ch2);
+
+Visualization needs to be enabled for this function to work.
+
 ### Bus.setLooping(), Bus.setLoopPoint(), Bus.getLoopPoint()
 
 

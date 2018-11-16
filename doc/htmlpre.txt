@@ -80,8 +80,10 @@ ga('send', 'pageview');
 <a href="dcremovalfilter.html">SoLoud::DCRemovalF..</a><br>
 <a href="fftfilter.html">SoLoud::FFTFilter</a><br>
 <a href="bassboostfilter.html">SoLoud::BassBoost..</a><br>
+<a href="waveshaperfilter.html">SoLoud::WaveShaper..</a><br>
 <br>
 <a href="mixbus.html">SoLoud::Bus</a><br>
+<a href="queue.html">SoLoud::Queue</a><br>
 <a href="collider.html">SoLoud::AudioCollid..</a><br>
 <a href="attenuator.html">SoLoud::AudioAttenu..</a><br>
 <a href="file.html">SoLoud::File</a><br>

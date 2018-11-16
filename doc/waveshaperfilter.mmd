@@ -1,0 +1,28 @@
+## SoLoud::WaveShaperFilter
+
+The waveshaper filter is an experimental filter that
+shapes the input wave by a simple function. It is mostly
+meant as a voice distortion filter.
+
+There is one parameter to adjust the severity of the effect.
+
+    // Set up wave shaper
+    gWaveshaper.setParams(0.1f, 1);  
+    // Set the filter as the first filter of the bus
+    gBus.setFilter(0, &gWaveshaper); 
+
+### WaveShaperFilter.setParams()
+
+Set the parameters of the filter.
+
+    gWaveshaper.setParams(0.3f, 1);
+    
+Changing the parameters via setParams() does not affect "live" sounds. Live parameters
+can be set, faded or oscillated:
+
+    gSoloud.fadeFilterParameter(
+      gMusicHandle, // Sound handle
+      0,            // First filter
+      1,            // What to adjust
+      0,            // Target value
+      3);           // Time in seconds

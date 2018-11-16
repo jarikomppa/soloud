@@ -1,0 +1,97 @@
+
+## SoLoud::Queue
+
+Queue is a special audio source which can be used to queue other audio sources.
+Possible uses include making endless mix of music by queueing random music patterns,
+streaming generated audio by cycling a few Wav objects you rewrite with loadRaw(),
+concatenative speech synthesis, or just simply chaining a couple sounds for some reason.
+
+The parameters of the played audio sources are ignored. This means that all of the
+audio sources should have the same parameters: sample rate, channels - and that the
+queue must be set up to those parameters before playing.
+
+Only one instance of a queue can play at a time.
+
+### Queue.play()
+
+Queues an audio source for playback.
+
+    gQueue.play(gAsTimeGoesBy); // Play it, Sam
+
+### Queue.getQueueCount()
+
+Returns the number of audio sources remaining in queue.
+
+    // If queue is getting short, queue another pattern.
+    if (gQueue.getQueueCount() < 3)
+      gQueue.play(gPattern[rand()%8]);
+
+### Queue.isCurrentlyPlaying()
+
+Check if the audio source is currently playing in queue.
+
+    if (gQueue.isCurrentlyPlaying(gTheGoodBit))
+        print("Yay, the good bit");
+
+### Queue.setParamsFromAudioSource()
+
+Get audio playback parameters from an audio source, instead of
+specifying them explicitly.
+
+    gQueue.setParamsFromAudioSource(gMusic);
+
+### Queue.setParams()
+
+Set audio parameters. Use this or the setParamsFromAudioSource() before
+using the queue.
+
+    // Stereo 44.1kHz, just like the redbook ordered.
+    gQueue.setParams(44100, 2);
+
+### Queue.setLooping(), Queue.setLoopPoint(), Queue.getLoopPoint()
+
+Trying to change the looping state of a queue has no effect.
+
+### Queue.stop()
+
+This is equivalent of calling soloud.stopAudioSource()
+with the sound source.
+
+
+### Queue.setFilter()
+
+
+As with any other audio source, you can attach filters to 
+queues.
+
+    gMusicQueue.setFilter(0, &gConcertHall);
+
+### Queue.setInaudibleBehavior()
+
+Set the inaudible behavior of the sound. By default, if a sound is
+inaudible, it's paused, and will resume when it becomes audible again.
+With this function you can tell SoLoud to either kill the sound if
+it becomes inaudible, or to keep ticking the sound even if it's 
+inaudible.
+
+    // Kill off the sfx if they're not heard.
+	gFireworkQueue.setInaudibleBehavior(false, true);
+
+### Queue.setVolume()
+
+Set the default volume of the queue.
+
+    gMusicBus.setVolume(11);
+    
+### Inherited 3d audio interfaces
+
+Like all other audio sources, the queue inherits the 3d audio interfaces. Please refer to the 3d audio chapter for details on:
+
+- Queue.set3dMinMaxDistance()
+- Queue.set3dAttenuation()
+- Queue.set3dDopplerFactor()
+- Queue.set3dProcessing()
+- Queue.set3dListenerRelative()
+- Queue.set3dDistanceDelay()
+- Queue.set3dCollider()
+- Queue.set3dAttenuator()

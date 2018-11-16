@@ -99,7 +99,18 @@ inaudible.
 Set the default volume of the instances created from this audio source.
 
     gTinyVoice.setVolume(0.1);
-      
+
+### TedSid.setLoopPoint(), TedSid.getLoopPoint()
+
+If looping is enabled, the loop point is, by default, the start of the
+stream. The loop point can be changed, and current loop point can be
+queried with these functions.
+
+	double t = snd.getLoopPoint();
+	snd.setLoopPoint(t + 1); // skip 1 second more when looping
+	...
+	snd.setLoopPoint(0); // loop from start
+	
 ### tedsid2dump tool
 
 The tedsid2dump tool can be used to dump audio chip register writes from plus/4 and c64 tunes.
@@ -150,6 +161,7 @@ Since the data is stored in x86 big-endian format, the bytes are actually swappe
 
 To decode, read two bytes; if the highest bit of the second byte is on, this is a timestamp, otherwise it's a register write.
 The timestamp delta value says how many clocks to wait until the write should be executed.
+
 
 ### Inherited 3d audio interfaces
 

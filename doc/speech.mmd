@@ -72,6 +72,17 @@ Set the default volume of the instances created from this audio source.
 
     gTinyVoice.setVolume(0.1);
     
+### Speech.setLoopPoint(), Speech.getLoopPoint()
+
+If looping is enabled, the loop point is, by default, the start of the
+stream. The loop point can be changed, and current loop point can be
+queried with these functions.
+
+	double t = snd.getLoopPoint();
+	snd.setLoopPoint(t + 1); // skip 1 second more when looping
+	...
+	snd.setLoopPoint(0); // loop from start
+
 ### Inherited 3d audio interfaces
 
 Like all other audio sources, Speech inherits the 3d audio interfaces. Please refer to the 3d audio chapter for details on:

@@ -57,7 +57,7 @@ Returns the number of voices the application has told SoLoud to play.
 
     if (soloud.getVoiceCount() > 1000) lots_of_voices();
 
-### Soloud.setMaxActiveVoiceCount() / Soloud.getMaxActiveVoiceCount()
+### Soloud.setMaxActiveVoiceCount(), Soloud.getMaxActiveVoiceCount()
 
 Get or set the current maximum active voice count. If voice count is
 higher than the maximum active voice count, SoLoud will pick the
@@ -76,9 +76,6 @@ Sets, or clears, the global filter.
 Setting the global filter to NULL will clear the global filter. The
 default maximum number of global filters active is 4, but this can be
 changed in a global constant in soloud.h (and rebuilding SoLoud).
-
-\pagebreak
-
 
 ### Soloud.calcFFT()
 

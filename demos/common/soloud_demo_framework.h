@@ -29,7 +29,7 @@
 
 extern int gPressed[256], gWasPressed[256];
 extern int gMouseX, gMouseY;
-unsigned int DemoLoadTexture(char * aFilename);
+unsigned int DemoLoadTexture(const char * aFilename);
 void DemoInit();
 void DemoUpdateStart();
 void DemoUpdateEnd();

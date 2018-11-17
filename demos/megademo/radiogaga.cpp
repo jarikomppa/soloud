@@ -50,7 +50,7 @@ namespace radiogaga
 	SoLoud::handle gSpeechqueuehandle;
 	SoLoud::handle gIntrohandle;
 
-	char *phrase[19] =
+	const char *phrase[19] =
 	{
 		"............................",
 		"in empty eternity",

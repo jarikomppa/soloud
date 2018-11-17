@@ -27,7 +27,7 @@ freely, subject to the following restrictions:
 
 #include "soloud.h"
 
-char * getBackendEnumString(int aBackend)
+const char * getBackendEnumString(int aBackend)
 {
 	SOLOUD_ASSERT(SoLoud::Soloud::BACKEND_MAX == 14); // if this fails, this function needs adjustment
 	switch (aBackend)
@@ -50,7 +50,7 @@ char * getBackendEnumString(int aBackend)
 	return "?!";
 }
 
-char * getChannelString(int aChannels)
+const char * getChannelString(int aChannels)
 {
 	switch (aChannels)
 	{

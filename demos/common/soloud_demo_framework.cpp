@@ -29,16 +29,19 @@
 #if defined(_MSC_VER)
 #include "SDL.h"
 #include <windows.h>
+#include "GL/glew.h"
 #else
 #include "SDL2/SDL.h"
-#endif
-#ifndef __EMSCRIPTEN__
 #include "GL/glew.h"
+#include <GL/gl.h>
 #endif
 
 #ifdef __EMSCRIPTEN__
 #include "emscripten.h"
 #include <GLES2/gl2.h>
+#endif
+
+#if !defined(_MSC_VER) && !defined(__EMSCRIPTEN__)
 #endif
 
 #include <math.h>
@@ -54,7 +57,7 @@ int gMouseY = 0;
 SDL_Window *gSDLWindow;
 GLuint desktop_tex;
 
-unsigned int DemoLoadTexture(char * aFilename)
+unsigned int DemoLoadTexture(const char * aFilename)
 {
 	int x, y, comp;
 	unsigned char *image = stbi_load(aFilename, &x, &y, &comp, 4);

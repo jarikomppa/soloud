@@ -136,7 +136,7 @@ namespace space
 			gTickofs = tick;
 		}
 
-		char *s = "What the alien has to say might\n"
+		const char *s = "What the alien has to say might\n"
 			"appear around here if this\n"
 			"wasn't just a dummy mockup..\n"
 			"\n       \n"

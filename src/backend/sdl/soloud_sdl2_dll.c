@@ -26,7 +26,7 @@ freely, subject to the following restrictions:
 #define WINDOWS_VERSION
 #include <SDL.h>
 #else
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 #endif
 #include <math.h>
 

@@ -386,6 +386,7 @@ end
 		links {"SoloudStatic"}
 		if (not os.is("windows")) then
 		  links { "pthread" }
+		  links { "dl" }
 		end
 
 		targetname "simplest"
@@ -411,7 +412,8 @@ end
 		links {"SoloudStatic"}
 		if (not os.is("windows")) then
 		  links { "pthread" }
-		end
+		  links { "dl" }
+        end
 
 		targetname "welcome"
 
@@ -437,6 +439,7 @@ end
 		links {"SoloudStatic"}
 		if (not os.is("windows")) then
 		  links { "pthread" }
+		  links { "dl" }
 		end
 
 		targetname "null"
@@ -462,6 +465,7 @@ end
 		links {"SoloudStatic"}
 		if (not os.is("windows")) then
 		  links { "pthread" }
+		  links { "dl" }
 		end
 
 		targetname "enumerate"
@@ -672,6 +676,7 @@ if (WITH_TOOLS == 1) then
 		links {"SoloudStatic"}
 		if (not os.is("windows")) then
 		  links { "pthread" }
+		  links { "dl" }
 		end
 
 		targetname "sanity"
@@ -746,6 +751,7 @@ end
 		links {"SoloudStatic"}
 		if (not os.is("windows")) then
 		  links { "pthread" }
+		  links { "dl" }
 		end
 if (WITH_ALSA == 1) then
 	links {"asound"}
@@ -825,7 +831,15 @@ if (WITH_COREAUDIO == 1) then
 	links {"AudioToolbox.framework"}
 end
 
-		links {"SoloudStatic", "SoloudDemoCommon", "SDL2main", "SDL2", "opengl32"}
+		links {"SoloudStatic", "SoloudDemoCommon", "SDL2main", "SDL2"}
+if (os.is("Windows")) then
+        links {"opengl32"}
+end
+		if (not os.is("windows")) then
+		  links { "pthread" }
+		  links { "dl" }
+		  links { "GL" }
+		end
 
 		targetname (_name)
 end
@@ -871,7 +885,15 @@ end
 		links { "portmidi" }
 	end
 
-		links {"SoloudStatic", "SDL2main", "SDL2", "opengl32"}
+		links {"SoloudStatic", "SDL2main", "SDL2"}
+if (os.is("Windows")) then
+        links {"opengl32"}
+end
+		if (not os.is("windows")) then
+		  links { "pthread" }
+		  links { "dl" }
+		  links { "GL" }
+		end
 
 		targetname "piano"
 

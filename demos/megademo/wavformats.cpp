@@ -122,8 +122,6 @@ namespace wavformats
 		{
 			char temp[256];
 			sprintf(temp, "audio/wavformats/%s", filenames[i]);
-			OutputDebugStringA(temp);
-			OutputDebugStringA("\r\n");
 			gWavOk[i] = gWav[i].load(temp) == SoLoud::SO_NO_ERROR;
 			gWavStreamOk[i] = gWavstream[i].load(temp) == SoLoud::SO_NO_ERROR;
 		}

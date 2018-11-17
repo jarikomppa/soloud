@@ -64,9 +64,10 @@ Instead of panning like with the "2d" version of the call, the 3d version requir
 
 The play3dClocked can also add the "distance delay" to the sound, if enabled.
 
-    gSoloud.play3dClocked(physicstime, boom, bx, by, bz); // trigger boom at specific coords
+    // trigger boom at specific coords
+    gSoloud.play3dClocked(physicstime, boom, bx, by, bz); 
    
-### Soloud.set3dSoundSpeed() / Soloud.get3dSoundSpeed()
+### Soloud.set3dSoundSpeed(), Soloud.get3dSoundSpeed()
 
 
 You can set and get the current value of the speed of sound width the get3dSoundSpeed() and set3dSoundSpeed() functions. The speed of sound is used to calculate doppler effects in addition to the distance delay.
@@ -75,6 +76,9 @@ Since SoLoud has no knowledge of the scale of your coordinates, you may need to 
 
     int speed = gSoloud.get3dSoundSpeed(); // Get the current speed of sound
     gSoloud.set3dSoundSpeed(speed / 2); // Halve it
+
+
+\pagebreak
 
 
 ### Soloud.set3dListenerParameters()
@@ -195,6 +199,8 @@ You can set the minimum and maximum distance parameters of a live 3d audio sourc
                                    float aMaxDistance)
 
 The changes to these parameters are only evaluated when the update3dAudio() function is called.
+
+\pagebreak
 
 ### Soloud.set3dSourceAttenuation()
 

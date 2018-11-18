@@ -1,6 +1,6 @@
 /*
 SoLoud audio engine
-Copyright (c) 2013-2015 Jari Komppa
+Copyright (c) 2013-2018 Jari Komppa
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -164,3 +164,15 @@ void DemoMainloop_monotone()
 {
 	return monotone::DemoMainloop();
 }
+
+#ifdef __EMSCRIPTEN__
+int DemoEntry(int argc, char *argv[])
+{
+	return monotone::DemoEntry(argc, argv);
+}
+
+void DemoMainloop()
+{
+	return monotone::DemoMainloop();
+}
+#endif

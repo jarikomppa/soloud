@@ -31,17 +31,17 @@
 #include <windows.h>
 #include "GL/glew.h"
 #else
-#ifndef __EMSCRIPTEN__
-#include "SDL2/SDL.h"
+#ifdef __EMSCRIPTEN__
+#include "emscripten.h"
+#include <SDL2/SDL.h>
+#include <GLES2/gl2.h>
+#else
+#include <SDL2/SDL.h>
 #include "GL/glew.h"
 #include <GL/gl.h>
 #endif
 #endif
 
-#ifdef __EMSCRIPTEN__
-#include "emscripten.h"
-#include <GLES2/gl2.h>
-#endif
 
 #if !defined(_MSC_VER) && !defined(__EMSCRIPTEN__)
 #endif

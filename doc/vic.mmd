@@ -1,0 +1,76 @@
+## SoLoud::Vic
+
+
+The SoLoud::Vic is a vic-20 audio emulator. It is used by adjusting registers directly, like
+on the actual device.
+
+This backend is a bit of a work in progress. All instances of a single Vic object will play
+exactly the same audio, and registers are set at the object level.
+
+### Vic.setModel(), Vic.getModel()
+
+The model of machine, between PAL and NTSC, can be set and queried. PAL is the default.
+
+    // Set model to NTSC
+    gMyVic.setModel(SoLoud::Vic::NTSC);
+
+### Vic.setRegister(), Vic.getRegister()
+
+Registers can be set and read. All of the four registers are 8 bits wide.
+
+    // Increment register 2
+    unsigned char v = gMyVic.getRegister(2);
+    gMyVic.setRegister(2, v + 1); 
+
+### Vic.setLooping(), Vic.setLoopPoint(), Vic.getLoopPoint()
+
+
+Adjusting the looping of a vic sound does not have any effect.
+
+### Vic.setFilter()
+
+
+As with any other audio source, you can attach filters to 
+monotone audio sources.
+
+    gMusic.setFilter(0, &gLofi);
+
+### Vic.stop()
+
+
+You can stop all instances of a vic sound source with
+stop(). This is equivalent of calling soloud.stopAudioSource()
+with the sound source.
+
+    gMusic.stop();
+
+### Vic.setInaudibleBehavior()
+
+Set the inaudible behavior of the sound. By default, if a sound is
+inaudible, it's paused, and will resume when it becomes audible again.
+With this function you can tell SoLoud to either kill the sound if
+it becomes inaudible, or to keep ticking the sound even if it's 
+inaudible.
+
+	// Keep on talking even if I'm not around
+	gSpeech.setInaudibleBehavior(true, false);
+
+### Vic.setVolume()
+
+Set the default volume of the instances created from this audio source.
+
+    gTinyVoice.setVolume(0.1);
+       
+
+### Inherited 3d audio interfaces
+
+Like all other audio sources, monotone inherits the 3d audio interfaces. Please refer to the 3d audio chapter for details on:
+
+- Vic.set3dMinMaxDistance()
+- Vic.set3dAttenuation()
+- Vic.set3dDopplerFactor()
+- Vic.set3dProcessing()
+- Vic.set3dListenerRelative()
+- Vic.set3dDistanceDelay()
+- Vic.set3dCollider()
+- Vic.set3dAttenuator()

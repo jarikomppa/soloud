@@ -46,6 +46,8 @@ src = [
     "modplug.mmd",
     "monotone.mmd",
     "tedsid.mmd",
+    "vizsn.mmd",
+    "vic.mmd",
     "filters.mmd",
     "biquadfilter.mmd",
     "echofilter.mmd",

@@ -31,6 +31,7 @@ freely, subject to the following restrictions:
 
 #include "soloud.h"
 #include "soloud_speech.h"
+#include "soloud_vizsn.h"
 #include "soloud_lofifilter.h"
 #include "soloud_biquadresonantfilter.h"
 #include "soloud_echofilter.h"
@@ -43,13 +44,17 @@ namespace speechfilter
 
 	SoLoud::Soloud gSoloud;
 	SoLoud::Speech gSpeech;
+	SoLoud::Vizsn gVizsn;
 	SoLoud::BiquadResonantFilter gBiquad;
 	SoLoud::LofiFilter gLofi;
 	SoLoud::EchoFilter gEcho;
 	SoLoud::WaveShaperFilter gWaveShaper;
 	SoLoud::DCRemovalFilter gDCRemoval;
 	SoLoud::RobotizeFilter gRobotize;
+	SoLoud::Bus gBus;
 	int gSpeechhandle;
+	int gVizsnhandle;
+	int gBushandle;
 
 	float filter_param0[6] = { 0, 0, 0, 0, 0, 0 };
 	float filter_param1[6] = { 1000, 8000, 0, 0, 0 ,0 };
@@ -65,30 +70,37 @@ namespace speechfilter
 
 	void initspeech()
 	{
+		gVizsn.setText(
+			"The beige hue on the waters of the loch impressed all, including the French queen, before she heard that symphony again, just as young Arthur wanted. "
+			"Are those shy Eurasian footwear, cowboy chaps, or jolly earthmoving headgear? "
+			"Shaw, those twelve beige hooks are joined if I patch a young, gooey mouth. "
+			"With tenure, Suzie'd have all the more leisure for yachting, but her publications are no good.");
 		gSpeech.setText(
 			"The beige hue on the waters of the loch impressed all, including the French queen, before she heard that symphony again, just as young Arthur wanted. "
 			"Are those shy Eurasian footwear, cowboy chaps, or jolly earthmoving headgear? "
 			"Shaw, those twelve beige hooks are joined if I patch a young, gooey mouth. "
 			"With tenure, Suzie'd have all the more leisure for yachting, but her publications are no good.");
 		gSpeech.setParams((unsigned int)floor(basefreq), basespeed, basedeclination);
-		gSpeechhandle = gSoloud.play(gSpeech);
+		gBushandle = gSoloud.play(gBus);
+		gSpeechhandle = gBus.play(gSpeech);
+		gVizsnhandle = gBus.play(gVizsn, -1, 0, true);
 	}
 
 	void DemoMainloop()
 	{
-		gSoloud.setFilterParameter(gSpeechhandle, 1, 0, filter_param0[0]);
-		gSoloud.setFilterParameter(gSpeechhandle, 2, 0, filter_param0[1]);
-		gSoloud.setFilterParameter(gSpeechhandle, 3, 0, filter_param0[2]);
-		gSoloud.setFilterParameter(gSpeechhandle, 4, 0, filter_param0[3]);
-		gSoloud.setFilterParameter(gSpeechhandle, 0, 0, filter_param0[4]);
-		gSoloud.setFilterParameter(gSpeechhandle, 5, 0, filter_param0[5]);
+		gSoloud.setFilterParameter(gBushandle, 1, 0, filter_param0[0]);
+		gSoloud.setFilterParameter(gBushandle, 2, 0, filter_param0[1]);
+		gSoloud.setFilterParameter(gBushandle, 3, 0, filter_param0[2]);
+		gSoloud.setFilterParameter(gBushandle, 4, 0, filter_param0[3]);
+		gSoloud.setFilterParameter(gBushandle, 0, 0, filter_param0[4]);
+		gSoloud.setFilterParameter(gBushandle, 5, 0, filter_param0[5]);
 
-		gSoloud.setFilterParameter(gSpeechhandle, 1, 2, filter_param1[0]);
-		gSoloud.setFilterParameter(gSpeechhandle, 1, 3, filter_param2[0]);
-		gSoloud.setFilterParameter(gSpeechhandle, 2, 1, filter_param1[1]);
-		gSoloud.setFilterParameter(gSpeechhandle, 2, 2, filter_param2[1]);
+		gSoloud.setFilterParameter(gBushandle, 1, 2, filter_param1[0]);
+		gSoloud.setFilterParameter(gBushandle, 1, 3, filter_param2[0]);
+		gSoloud.setFilterParameter(gBushandle, 2, 1, filter_param1[1]);
+		gSoloud.setFilterParameter(gBushandle, 2, 2, filter_param2[1]);
 
-		gSoloud.setFilterParameter(gSpeechhandle, 0, 1, filter_param1[4]);
+		gSoloud.setFilterParameter(gBushandle, 0, 1, filter_param1[4]);
 
 		DemoUpdateStart();
 
@@ -141,6 +153,19 @@ namespace speechfilter
 		ONCE(ImGui::SetNextWindowContentSize(ImVec2(200, 300)));
 		ImGui::Begin("Speech params");
 		int changed = 0;
+		if (ImGui::CollapsingHeader("Engine", (const char*)0, true, false))
+		{
+			if (ImGui::RadioButton("Speech", gSoloud.getPause(gSpeechhandle) == false))
+			{
+				gSoloud.setPause(gVizsnhandle, true);
+				gSoloud.setPause(gSpeechhandle, false);
+			}
+			if (ImGui::RadioButton("Vizsn", gSoloud.getPause(gVizsnhandle) == false))
+			{
+				gSoloud.setPause(gVizsnhandle, false);
+				gSoloud.setPause(gSpeechhandle, true);
+			}
+		}
 		if (ImGui::CollapsingHeader("Waveform", (const char*)0, true, false))
 		{
 			if (ImGui::RadioButton("Sin", basewaveform == KW_SIN))
@@ -202,12 +227,13 @@ namespace speechfilter
 		gBiquad.setParams(SoLoud::BiquadResonantFilter::LOWPASS, 44100, 4000, 2);
 
 		gSpeech.setLooping(1);
-		gSpeech.setFilter(0, &gWaveShaper);
-		gSpeech.setFilter(1, &gBiquad);
-		gSpeech.setFilter(2, &gLofi);
-		gSpeech.setFilter(3, &gEcho);
-		gSpeech.setFilter(4, &gDCRemoval);
-		gSpeech.setFilter(5, &gRobotize);
+		gVizsn.setLooping(1);
+		gBus.setFilter(0, &gWaveShaper);
+		gBus.setFilter(1, &gBiquad);
+		gBus.setFilter(2, &gLofi);
+		gBus.setFilter(3, &gEcho);
+		gBus.setFilter(4, &gDCRemoval);
+		gBus.setFilter(5, &gRobotize);
 
 		gSoloud.init(SoLoud::Soloud::CLIP_ROUNDOFF | SoLoud::Soloud::ENABLE_VISUALIZATION);
 

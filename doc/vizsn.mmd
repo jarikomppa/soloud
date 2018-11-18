@@ -1,0 +1,78 @@
+## SoLoud::Vizsn
+
+Vizsn is another free, but primitive speech synthesizer.
+
+This audio source is a bit of a work in progress.
+
+### Vizsn.setText()
+
+The words to be spoken are set with setText(). Calling this while the audio source is in use
+may cause undefined behavior.
+
+    // Speak the truth
+    gTalk.setText("You probably won't understand what I'm saying");
+
+### Vizsn.setLooping()
+
+
+Adjusting the looping of a monotone sound does not currently
+have any effect. All music is set to loop by default. 
+
+### Vizsn.setFilter()
+
+
+As with any other audio source, you can attach filters to 
+monotone audio sources.
+
+    gTalk.setFilter(0, &gLofi);
+
+### Vizsn.stop()
+
+
+You can stop all instances of a monotone sound source with
+stop(). This is equivalent of calling soloud.stopAudioSource()
+with the sound source.
+
+    // Shut up.
+    gTalk.stop();
+
+### Vizsn.setInaudibleBehavior()
+
+Set the inaudible behavior of the sound. By default, if a sound is
+inaudible, it's paused, and will resume when it becomes audible again.
+With this function you can tell SoLoud to either kill the sound if
+it becomes inaudible, or to keep ticking the sound even if it's 
+inaudible.
+
+	// Keep on talking even if I'm not around
+	gTalk.setInaudibleBehavior(true, false);
+
+### Vizsn.setVolume()
+
+Set the default volume of the instances created from this audio source.
+
+    gTinyVoice.setVolume(0.1);
+       
+### Vizsn.setLoopPoint(), Vizsn.getLoopPoint()
+
+If looping is enabled, the loop point is, by default, the start of the
+stream. The loop point can be changed, and current loop point can be
+queried with these functions.
+
+	double t = snd.getLoopPoint();
+	snd.setLoopPoint(t + 1); // skip 1 second more when looping
+	...
+	snd.setLoopPoint(0); // loop from start
+
+### Inherited 3d audio interfaces
+
+Like all other audio sources, monotone inherits the 3d audio interfaces. Please refer to the 3d audio chapter for details on:
+
+- Vizsn.set3dMinMaxDistance()
+- Vizsn.set3dAttenuation()
+- Vizsn.set3dDopplerFactor()
+- Vizsn.set3dProcessing()
+- Vizsn.set3dListenerRelative()
+- Vizsn.set3dDistanceDelay()
+- Vizsn.set3dCollider()
+- Vizsn.set3dAttenuator()

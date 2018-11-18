@@ -49,7 +49,7 @@ Returns the number of concurrent sounds that are playing at the moment.
 
 Returns the number of concurrent soudns that are playing a specific audio source.
 
-    if (soloud.countAudioSource(cheer) == 0) nobody_is_cheering();    
+    if (soloud.countAudioSource(cheer) == 3) three_cheers();    
 
 ### Soloud.getVoiceCount()
 
@@ -100,6 +100,8 @@ For the FFT to work, you also need to initialize SoLoud with the
 Soloud::ENABLE\_VISUALIZATION flag, or by enabling visualization with
 the Soloud.setVisualizationEnable() call. Otherwise the source data for the
 FFT calculation will not be gathered.
+
+\pagebreak
 
 ### Soloud.getWave()
 

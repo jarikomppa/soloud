@@ -65,13 +65,14 @@ Converted to the Python API, this becomes:
 For cleanup, the code generator produces three functions: close, destroy and quit.
 All of these perform the exact same function, and it doesn't matter which you choose.
 
+\pagebreak
+
+
 Alternatively, you can use the SoLoud objects with the "with" syntax, which also handles cleanup, for example:
 
     with Soloud() as audiolib:
         audiolib.init()
         # ...
-
-\pagebreak
 
 
 Here's a slightly longer example:

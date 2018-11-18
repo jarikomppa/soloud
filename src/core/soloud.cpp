@@ -791,6 +791,7 @@ namespace SoLoud
 		float vd = (aVolume1 - aVolume0) / aSamples;
 		float v = aVolume0;
 		unsigned int i, j, c, d;
+		unsigned int samplequads = (aSamples + 3) / 4; // rounded up
 		// Clip
 		if (mFlags & CLIP_ROUNDOFF)
 		{

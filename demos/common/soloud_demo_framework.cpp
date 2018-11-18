@@ -31,9 +31,11 @@
 #include <windows.h>
 #include "GL/glew.h"
 #else
+#ifndef __EMSCRIPTEN__
 #include "SDL2/SDL.h"
 #include "GL/glew.h"
 #include <GL/gl.h>
+#endif
 #endif
 
 #ifdef __EMSCRIPTEN__

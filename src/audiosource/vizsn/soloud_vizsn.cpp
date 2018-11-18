@@ -507,7 +507,7 @@ namespace SoLoud
 			return;
 		stop();
 		delete[] mText;
-		int len = strlen(aText);
+		int len = (int)strlen(aText);
 		mText = new char[len + 3];
 		memcpy(mText+1, aText, len);
 		mText[0] = P_CLR;

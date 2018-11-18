@@ -38,19 +38,19 @@ namespace SoLoud
 	size_t drflac_read_func(void* pUserData, void* pBufferOut, size_t bytesToRead)
 	{
 		File *fp = (File*)pUserData;
-		return fp->read((unsigned char*)pBufferOut, bytesToRead);
+		return fp->read((unsigned char*)pBufferOut, (unsigned int)bytesToRead);
 	}
 
 	size_t drmp3_read_func(void* pUserData, void* pBufferOut, size_t bytesToRead)
 	{
 		File *fp = (File*)pUserData;
-		return fp->read((unsigned char*)pBufferOut, bytesToRead);
+		return fp->read((unsigned char*)pBufferOut, (unsigned int)bytesToRead);
 	}
 
 	size_t drwav_read_func(void* pUserData, void* pBufferOut, size_t bytesToRead)
 	{
 		File *fp = (File*)pUserData;
-		return fp->read((unsigned char*)pBufferOut, bytesToRead);
+		return fp->read((unsigned char*)pBufferOut, (unsigned int)bytesToRead);
 	}
 
 	drflac_bool32 drflac_seek_func(void* pUserData, int offset, drflac_seek_origin origin)

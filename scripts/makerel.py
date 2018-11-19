@@ -512,7 +512,7 @@ for x in sources:
 
 print "making","soloud"+datestring+"_lite.zip"
 
-os.system("7z A -r -bd -tzip "+root+"rel/"+"soloud"+datestring+"_lite.zip "+targetdir+" > 7z.log")
+os.system("7z A -r -bd -tzip "+root+"rel/"+"soloud_"+datestring+"_lite.zip "+targetdir+" > 7z.log")
 
 #
 # Copy files
@@ -533,6 +533,6 @@ for x in sources:
 
 print "making","soloud"+datestring+".zip"
 
-os.system("7z A -r -bd -tzip "+root+"rel/"+"soloud"+datestring+".zip "+targetdir+" > 7z.log")
+os.system("7z A -r -bd -tzip "+root+"rel/"+"soloud_"+datestring+".zip "+targetdir+" > 7z.log")
 
 print "All done."

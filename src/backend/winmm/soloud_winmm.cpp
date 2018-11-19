@@ -95,8 +95,11 @@ namespace SoLoud
         SoLoudWinMMData *data = static_cast<SoLoudWinMMData*>(aSoloud->mBackendData);
         SetEvent(data->audioProcessingDoneEvent);
         SetEvent(data->bufferEndEvent);
-        Thread::wait(data->threadHandle);
-        Thread::release(data->threadHandle);
+		if (data->threadHandle)
+		{
+			Thread::wait(data->threadHandle);
+			Thread::release(data->threadHandle);
+		}
         waveOutReset(data->waveOut);
         for (int i=0;i<BUFFER_COUNT;++i) 
         {

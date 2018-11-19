@@ -124,6 +124,7 @@ namespace SoLoud
 
 	result wasapi_init(Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer, unsigned int aChannels)
     {
+		return UNKNOWN_ERROR;
 		CoInitializeEx(0, COINIT_MULTITHREADED);
         WASAPIData *data = new WASAPIData;
         ZeroMemory(data, sizeof(WASAPIData));

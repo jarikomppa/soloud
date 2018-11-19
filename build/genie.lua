@@ -332,6 +332,7 @@ solution "SoLoud"
 	targetdir "../bin"
 	debugdir "../bin"
 	flags { "NoExceptions", "NoRTTI", "NoPCH" }
+    if (os.is("Windows")) then flags {"StaticRuntime"} end
 	if (os.is("Windows")) then defines { "_CRT_SECURE_NO_WARNINGS" } end
     configuration { "x32", "Debug" }
         targetsuffix "_x86_d"   

@@ -30,7 +30,7 @@ freely, subject to the following restrictions:
 #include "soloud_demo_framework.h"
 
 #include "soloud.h"
-#include "soloud_speech.h"
+#include "soloud_wav.h"
 
 namespace SoLoud
 {
@@ -42,6 +42,7 @@ namespace SoLoud
 		AudioSource *mAck;
 		unsigned int mSourceCount;
 		unsigned int mSourceCountMax;
+		unsigned int mAckLength;
 	public:
 		RadioSet()
 		{
@@ -60,9 +61,10 @@ namespace SoLoud
 			return SO_NO_ERROR;
 		}
 
-		result setAck(AudioSource &aAudioSource)
+		result setAck(AudioSource &aAudioSource, unsigned int aAckLength)
 		{
 			mAck = &aAudioSource;
+			mAckLength = aAckLength;
 			return SO_NO_ERROR;
 		}
 
@@ -112,17 +114,27 @@ namespace SoLoud
 				}
 			}
 
+			int delay = 0;
+
 			if (mAck && found)
 			{
 				if (mBus)
 					mBus->play(*mAck);
 				else
 					mSoloud->play(*mAck);
+				delay = mAckLength;
 			}
 
+			int res;
+
 			if (mBus)
-				return mBus->play(aAudioSource);
-			return mSoloud->play(aAudioSource);
+				res = mBus->play(aAudioSource,-1,0,true);
+			else
+				res = mSoloud->play(aAudioSource,-1,0,true);
+			// delay the sample by however long ack is
+			mSoloud->setDelaySamples(res, delay);
+			mSoloud->setPause(res, false);
+			return res;
 		}
 	};
 }
@@ -131,7 +143,7 @@ namespace thebutton
 {
 	SoLoud::Soloud gSoloud;
 	SoLoud::RadioSet gRadioSet;
-	SoLoud::Speech gPhrase[10];
+	SoLoud::Wav gPhrase[12];
 	int gCycles;
 	int gNextEvent;
 
@@ -141,21 +153,23 @@ namespace thebutton
 		gNextEvent = 0;
 		gSoloud.init(SoLoud::Soloud::CLIP_ROUNDOFF | SoLoud::Soloud::ENABLE_VISUALIZATION);
 		gRadioSet.init(gSoloud, NULL);
-		gPhrase[0].setText("Please press the button.");
-		gPhrase[1].setText("Kindly press the button, please.");
-		gPhrase[2].setText("Would you please press the button.");
-		gPhrase[3].setText("Press the button. Please.");
-		gPhrase[4].setText("Press the button.");
-		gPhrase[5].setText("Press the button already.");
-		gPhrase[6].setText("Could you possibly press the button?");
-		gPhrase[7].setText("Just press the button.");
-		gPhrase[8].setText("Thank you. Now, please press the button.");
-		gPhrase[9].setText("k");
+		gPhrase[0].load("audio/thebutton/button1.mp3");
+		gPhrase[1].load("audio/thebutton/button2.mp3");
+		gPhrase[2].load("audio/thebutton/button3.mp3");
+		gPhrase[3].load("audio/thebutton/button4.mp3");
+		gPhrase[4].load("audio/thebutton/button5.mp3");
+		gPhrase[5].load("audio/thebutton/cough.mp3");
+		gPhrase[6].load("audio/thebutton/button6.mp3");
+		gPhrase[7].load("audio/thebutton/button7.mp3");
+		gPhrase[8].load("audio/thebutton/button1.mp3");
+		gPhrase[9].load("audio/thebutton/sigh.mp3");
+		gPhrase[10].load("audio/thebutton/thankyou.mp3");
+		gPhrase[11].load("audio/thebutton/ack.ogg");
 
 		int i;
-		for (i = 0; i < 9; i++)
+		for (i = 0; i < 11; i++)
 			gRadioSet.attach(gPhrase[i]);
-		gRadioSet.setAck(gPhrase[9]);
+		gRadioSet.setAck(gPhrase[11], gPhrase[11].mSampleCount);
 
 		return 0;
 	}
@@ -168,7 +182,7 @@ namespace thebutton
 		{
 			gRadioSet.play(gPhrase[gCycles]);
 			gNextEvent = DemoTick() + 5000;
-			gCycles = (gCycles + 1) % 8;
+			gCycles = (gCycles + 1) % 9;
 		}
 
 		float *buf = gSoloud.getWave();
@@ -179,15 +193,17 @@ namespace thebutton
 		ImGui::PlotLines("##Wave", buf, 256, 0, "Wave", -1, 1, ImVec2(264, 80));
 		ImGui::PlotHistogram("##FFT", fft, 256 / 2, 0, "FFT", 0, 10, ImVec2(264, 80), 8);
 		ImGui::Text("Active voices    : %d", gSoloud.getActiveVoiceCount());
+		ImGui::Text("Thanks to Anthony Salter for\n"
+					"voice acting!");
 		ImGui::End();
 
 
 
 		ONCE(ImGui::SetNextWindowPos(ImVec2(20, 20)));
 		ImGui::Begin("Control");
-		if (ImGui::Button("The button"))
+		if (ImGui::Button("The button",ImVec2(300,200)))
 		{
-			gRadioSet.play(gPhrase[8]);
+			gRadioSet.play(gPhrase[10]);
 			gNextEvent = DemoTick() + 5000;
 		}
 		ImGui::End();

@@ -376,7 +376,6 @@ print "copying files to gm_temp"
 shutil.copy("soloud.extension.gmx", "gm_temp")
 shutil.copy("soloud_gamemaker_dll.dll", "gm_temp/soloud")
 shutil.copy("../lib/soloud_x86.dll", "gm_temp/soloud")
-shutil.copy("../bin/msvcr100.dll", "gm_temp/soloud")
 
 callp = ["make_gmez.bat"]
 subprocess.call(callp)

@@ -478,7 +478,7 @@ print "All prebuilt binaries are fresh enough."
 #
 
 datestring = time.strftime("%Y%m%d")
-targetdir = root + "rel/soloud" + datestring + "/";
+targetdir = root + "rel/soloud" + datestring + "/"
 
 if os.path.exists(targetdir):
     print "Target directory already exists."

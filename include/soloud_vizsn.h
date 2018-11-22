@@ -2,7 +2,7 @@
 SoLoud audio engine
 Copyright (c) 2013-2018 Jari Komppa
 
-vizsn speech synthesizer (c) by Ville-Matias Heikkil‰,
+vizsn speech synthesizer (c) by Ville-Matias Heikkil√§,
 released under WTFPL, http://www.wtfpl.net/txt/copying/
 (in short, "do whatever you want to")
 

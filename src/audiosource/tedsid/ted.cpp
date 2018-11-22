@@ -140,7 +140,7 @@ inline unsigned int TED::waveTriangle(unsigned int channel)
 
 #if 0
 	msb = OSCRELOADVAL + 1 - OscReload[channel];
-	int diff = FlipFlop[channel] ? int(oscCount[channel]) - int(OscReload[channel]) 
+	int diff = FlipFlop[channel] ? int(oscCount[channel]) - int(OscReload[channel])
 		: int(OSCRELOADVAL) - int(oscCount[channel]);
 	//if (diff < 0) diff = 0;
 	//if (oscCount[channel] >= 0x3fa) diff = 0;
@@ -175,7 +175,7 @@ inline unsigned int TED::getWaveSample(unsigned int channel, unsigned int wave)
 			return waveTriangle(channel);
 			break;
 
-		// combined waveforms แ la SID
+		// combined waveforms รก la SID
 		case 3: // square + sawtooth
 			sm = waveSawTooth(channel) + waveSquare(channel);
 			return sm /= 2;

@@ -162,6 +162,7 @@ namespace SoLoud
 		mHighestVoice = 0;
 		mActiveVoiceDirty = true;
 		mResampleData = NULL;
+		mResampleDataOwner = NULL;
 	}
 
 	Soloud::~Soloud()
@@ -178,6 +179,7 @@ namespace SoLoud
 			delete[] mVoiceGroup[i];
 		delete[] mVoiceGroup;
 		delete[] mResampleData;
+		delete[] mResampleDataOwner;
 	}
 
 	void Soloud::deinit()

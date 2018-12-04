@@ -22,6 +22,7 @@
 %%% DOCUMENT TITLE
 \title{SoLoud Audio Engine}
 \author{Jari Komppa}
+%\date{November 19, 2018}
 %\date{August 2012} % Delete this line to display the current date
 
 \usepackage{titletoc}
@@ -36,6 +37,9 @@
   { \normalsize \huge  \color{black}}
   {\flushright \normalsize \color{black} \MakeUppercase { \chaptertitlename } \hspace{1 ex} { \fontsize{60}{60}\selectfont \color{black} \sffamily  \thechapter }} {10 pt}{\huge}
 
+\usepackage{blowup}
+\blowUp{target=a5}
+
 %%% BEGIN DOCUMENT
 \begin{document}
 \lstset{
@@ -49,9 +53,26 @@
     tabsize=2,
     backgroundcolor=\color{mycyan}}
 
+\frontmatter
 \begin{titlingpage}
 \maketitle
+\pagestyle{plain}
+\newpage
+
+These pages were intentionally left blank.
+
+\newpage
+
+(Except for this text)
+
+\newpage
+
+© 2018 Komppa, Jari\\
+%Kustantaja: BoD - Books on Demand, Helsinki, Suomi\\
+%Valmistaja: BoD - Books on Demand, Norderstedt, Saksa\\
+%ISBN: 978-952-80-0359-5
 \end{titlingpage}
+
 
 % Use * to avoid the entries themselves to get inserted in TOC
 \tableofcontents*
@@ -60,6 +81,7 @@
 
 %===============================================================================
 % All parts of the document are included as separate files.
+\mainmatter
 
 \include{temp/intro}
 \include{temp/quickstart}
@@ -75,14 +97,14 @@
 \include{temp/examples}
 
 \include{temp/foreign_interface}
+\include{temp/bmx_api}
 \include{temp/c_api}
+\include{temp/cs_api}
+\include{temp/d_api}
+\include{temp/gamemaker_api}
 \include{temp/python_api}
 \include{temp/ruby_api}
 \include{temp/rpgmaker_api}
-\include{temp/bmx_api}
-\include{temp/gamemaker_api}
-\include{temp/cs_api}
-\include{temp/d_api}
 \include{temp/codegen}
 
 \include{temp/basics}

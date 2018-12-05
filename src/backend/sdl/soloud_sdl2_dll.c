@@ -21,6 +21,8 @@ freely, subject to the following restrictions:
    3. This notice may not be removed or altered from any source
    distribution.
 */
+#if defined(WITH_SDL2)
+
 #include <stdlib.h>
 #if defined(_MSC_VER)
 #define WINDOWS_VERSION
@@ -47,17 +49,17 @@ static SDL2_InitSubSystem_t SDL2_InitSubSystem = NULL;
 static SDL2_OpenAudioDevice_t SDL2_OpenAudioDevice = NULL;
 static SDL2_CloseAudioDevice_t SDL2_CloseAudioDevice = NULL;
 static SDL2_PauseAudioDevice_t SDL2_PauseAudioDevice = NULL;
-	
+
 #ifdef WINDOWS_VERSION
 #include <windows.h>
 
-static HMODULE openDll()
+static HMODULE sdl2_openDll()
 {
 	HMODULE res = LoadLibraryA("SDL2.dll");
     return res;
 }
 
-static void* getDllProc(HMODULE aDllHandle, const char *aProcName)
+static void* sdl2_getDllProc(HMODULE aDllHandle, const char *aProcName)
 {
     return GetProcAddress(aDllHandle, aProcName);
 }
@@ -65,7 +67,7 @@ static void* getDllProc(HMODULE aDllHandle, const char *aProcName)
 #else
 #include <dlfcn.h> // dll functions
 
-static void * openDll()
+static void * sdl2_openDll()
 {
 	void * res;
 	res = dlopen("/Library/Frameworks/SDL2.framework/SDL2", RTLD_LAZY);
@@ -74,14 +76,14 @@ static void * openDll()
     return res;
 }
 
-static void* getDllProc(void * aLibrary, const char *aProcName)
+static void* sdl2_getDllProc(void * aLibrary, const char *aProcName)
 {
     return dlsym(aLibrary, aProcName);
 }
 
 #endif
 
-static int load_dll()
+static int sdl2_load_dll()
 {
 #ifdef WINDOWS_VERSION
 	HMODULE dll = NULL;
@@ -94,17 +96,17 @@ static int load_dll()
 		return 1;
 	}
 
-    dll = openDll();
+    dll = sdl2_openDll();
 
     if (dll)
     {
-		SDL2_WasInit = (SDL2_WasInit_t)getDllProc(dll, "SDL_WasInit");
-		SDL2_InitSubSystem = (SDL2_InitSubSystem_t)getDllProc(dll, "SDL_InitSubSystem");
-		SDL2_OpenAudioDevice = (SDL2_OpenAudioDevice_t)getDllProc(dll, "SDL_OpenAudioDevice");
-		SDL2_CloseAudioDevice = (SDL2_CloseAudioDevice_t)getDllProc(dll, "SDL_CloseAudioDevice");
-		SDL2_PauseAudioDevice = (SDL2_PauseAudioDevice_t)getDllProc(dll, "SDL_PauseAudioDevice");
-	
-        if (SDL2_WasInit && 
+		SDL2_WasInit = (SDL2_WasInit_t)sdl2_getDllProc(dll, "SDL_WasInit");
+		SDL2_InitSubSystem = (SDL2_InitSubSystem_t)sdl2_getDllProc(dll, "SDL_InitSubSystem");
+		SDL2_OpenAudioDevice = (SDL2_OpenAudioDevice_t)sdl2_getDllProc(dll, "SDL_OpenAudioDevice");
+		SDL2_CloseAudioDevice = (SDL2_CloseAudioDevice_t)sdl2_getDllProc(dll, "SDL_CloseAudioDevice");
+		SDL2_PauseAudioDevice = (SDL2_PauseAudioDevice_t)sdl2_getDllProc(dll, "SDL_PauseAudioDevice");
+
+        if (SDL2_WasInit &&
         	SDL2_InitSubSystem &&
         	SDL2_OpenAudioDevice &&
 			SDL2_CloseAudioDevice &&
@@ -119,7 +121,7 @@ static int load_dll()
 
 int dll_SDL2_found()
 {
-	return load_dll();
+	return sdl2_load_dll();
 }
 
 Uint32 dll_SDL2_WasInit(Uint32 flags)
@@ -159,3 +161,5 @@ void dll_SDL2_PauseAudioDevice(SDL_AudioDeviceID dev,
 	if (SDL2_PauseAudioDevice)
 		SDL2_PauseAudioDevice(dev, pause_on);
 }
+
+#endif

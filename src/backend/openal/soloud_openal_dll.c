@@ -21,6 +21,8 @@ freely, subject to the following restrictions:
    3. This notice may not be removed or altered from any source
    distribution.
 */
+#if defined(WITH_OPENAL)
+
 #include <stdlib.h>
 #include <math.h>
 
@@ -39,7 +41,10 @@ freely, subject to the following restrictions:
 
 #ifdef SOLOUD_STATIC_OPENAL
 
-// statically linked OpenAL 
+extern "C"
+{
+
+// statically linked OpenAL
 int dll_al_found() { return 1; }
 ALCdevice* dll_alc_OpenDevice(const ALCchar *devicename) { return alcOpenDevice(devicename); }
 void dll_alc_CloseDevice(ALCdevice *device) { alcCloseDevice(device); }
@@ -56,6 +61,8 @@ void dll_al_GenBuffers(ALsizei n, ALuint *buffers) { alGenBuffers(n, buffers); }
 void dll_al_DeleteBuffers(ALsizei n, ALuint *buffers) { alDeleteBuffers(n, buffers); }
 void dll_al_GenSources(ALsizei n, ALuint *sources) { alGenSources(n, sources); }
 void dll_al_DeleteSources(ALsizei n, ALuint *sources) { alDeleteSources(n, sources); }
+
+}
 
 #else
 
@@ -94,14 +101,14 @@ static al_DeleteSources dAlDeleteSources;
 #ifdef WINDOWS_VERSION
 #include <windows.h>
 
-static HMODULE openDll()
+static HMODULE oal_openDll()
 {
 	HMODULE x = LoadLibraryA("soft_oal.dll");
 	if (x == 0) x = LoadLibraryA("OpenAL32.dll");
 	return x;
 }
 
-static void* getDllProc(HMODULE aDllHandle, const char *aProcName)
+static void* oal_getDllProc(HMODULE aDllHandle, const char *aProcName)
 {
     return GetProcAddress(aDllHandle, aProcName);
 }
@@ -111,19 +118,22 @@ static void* getDllProc(HMODULE aDllHandle, const char *aProcName)
 
 typedef void* HMODULE;
 
-static HMODULE openDll()
+static HMODULE oal_openDll()
 {
     return dlopen("libopenal.so", RTLD_LAZY);
 }
 
-static void* getDllProc(HMODULE aLibrary, const char *aProcName)
+static void* oal_getDllProc(HMODULE aLibrary, const char *aProcName)
 {
     return dlsym(aLibrary, aProcName);
 }
 
 #endif
 
-static int load_dll()
+extern "C"
+{
+
+static int oal_load_dll()
 {
 #ifdef WINDOWS_VERSION
 	HMODULE dll = NULL;
@@ -136,25 +146,25 @@ static int load_dll()
 		return 1;
 	}
 
-    dll = openDll();
+    dll = oal_openDll();
 
     if (dll)
     {
-        dAlcOpenDevice = (alc_OpenDevice)getDllProc(dll, "alcOpenDevice");
-        dAlcCloseDevice = (alc_CloseDevice)getDllProc(dll, "alcCloseDevice");
-        dAlcCreateContext = (alc_CreateContext)getDllProc(dll, "alcCreateContext");
-        dAlcDestroyContext = (alc_DestroyContext)getDllProc(dll, "alcDestroyContext");
-        dAlcMakeContextCurrent = (alc_MakeContextCurrent)getDllProc(dll, "alcMakeContextCurrent");
-        dAlGetSourcei = (al_GetSourcei)getDllProc(dll, "alGetSourcei");
-        dAlSourceQueueBuffers = (al_SourceQueueBuffers)getDllProc(dll, "alSourceQueueBuffers");
-        dAlSourceUnqueueBuffers = (al_SourceUnqueueBuffers)getDllProc(dll, "alSourceUnqueueBuffers");
-        dAlBufferData = (al_BufferData)getDllProc(dll, "alBufferData");
-        dAlSourcePlay = (al_SourcePlay)getDllProc(dll, "alSourcePlay");
-        dAlSourceStop = (al_SourceStop)getDllProc(dll, "alSourceStop");
-        dAlGenBuffers = (al_GenBuffers)getDllProc(dll, "alGenBuffers");
-        dAlDeleteBuffers = (al_GenBuffers)getDllProc(dll, "alDeleteBuffers");
-        dAlGenSources = (al_GenSources)getDllProc(dll, "alGenSources");
-        dAlDeleteSources = (al_GenSources)getDllProc(dll, "alDeleteSources");
+        dAlcOpenDevice = (alc_OpenDevice)oal_getDllProc(dll, "alcOpenDevice");
+        dAlcCloseDevice = (alc_CloseDevice)oal_getDllProc(dll, "alcCloseDevice");
+        dAlcCreateContext = (alc_CreateContext)oal_getDllProc(dll, "alcCreateContext");
+        dAlcDestroyContext = (alc_DestroyContext)oal_getDllProc(dll, "alcDestroyContext");
+        dAlcMakeContextCurrent = (alc_MakeContextCurrent)oal_getDllProc(dll, "alcMakeContextCurrent");
+        dAlGetSourcei = (al_GetSourcei)oal_getDllProc(dll, "alGetSourcei");
+        dAlSourceQueueBuffers = (al_SourceQueueBuffers)oal_getDllProc(dll, "alSourceQueueBuffers");
+        dAlSourceUnqueueBuffers = (al_SourceUnqueueBuffers)oal_getDllProc(dll, "alSourceUnqueueBuffers");
+        dAlBufferData = (al_BufferData)oal_getDllProc(dll, "alBufferData");
+        dAlSourcePlay = (al_SourcePlay)oal_getDllProc(dll, "alSourcePlay");
+        dAlSourceStop = (al_SourceStop)oal_getDllProc(dll, "alSourceStop");
+        dAlGenBuffers = (al_GenBuffers)oal_getDllProc(dll, "alGenBuffers");
+        dAlDeleteBuffers = (al_GenBuffers)oal_getDllProc(dll, "alDeleteBuffers");
+        dAlGenSources = (al_GenSources)oal_getDllProc(dll, "alGenSources");
+        dAlDeleteSources = (al_GenSources)oal_getDllProc(dll, "alDeleteSources");
 
         if (dAlcOpenDevice &&
         	dAlcCloseDevice &&
@@ -164,7 +174,7 @@ static int load_dll()
             dAlGetSourcei &&
 			dAlSourceQueueBuffers &&
             dAlSourceUnqueueBuffers &&
-			dAlBufferData && 
+			dAlBufferData &&
 			dAlSourcePlay &&
 			dAlSourceStop &&
             dAlGenBuffers &&
@@ -181,100 +191,103 @@ static int load_dll()
 
 int dll_al_found()
 {
-	return load_dll();
+	return oal_load_dll();
 }
 
 ALCdevice* dll_alc_OpenDevice(const ALCchar *devicename)
 {
-	if (load_dll())
+	if (oal_load_dll())
 		return dAlcOpenDevice(devicename);
 	return NULL;
 }
 
 void dll_alc_CloseDevice(ALCdevice *device)
 {
-	if (load_dll())
+	if (oal_load_dll())
 		dAlcCloseDevice(device);
 }
 
 ALCcontext* dll_alc_CreateContext(ALCdevice *device, const ALCint* attrlist)
 {
-	if (load_dll())
+	if (oal_load_dll())
 		return dAlcCreateContext(device, attrlist);
 	return NULL;
 }
 
 void dll_alc_DestroyContext(ALCcontext *context)
 {
-	if (load_dll())
+	if (oal_load_dll())
 		dAlcDestroyContext(context);
 }
 
 ALCboolean dll_alc_MakeContextCurrent(ALCcontext *context)
 {
-	if (load_dll())
+	if (oal_load_dll())
 		return dAlcMakeContextCurrent(context);
 	return 0;
 }
 
 void dll_al_GetSourcei(ALuint source, ALenum param, ALint *value)
 {
-	if (load_dll())
+	if (oal_load_dll())
 		dAlGetSourcei(source, param, value);
 }
 
 void dll_al_SourceQueueBuffers(ALuint source, ALsizei nb, const ALuint *buffers)
 {
-	if (load_dll())
+	if (oal_load_dll())
 		dAlSourceQueueBuffers(source, nb, buffers);
 }
 
 void dll_al_SourceUnqueueBuffers(ALuint source, ALsizei nb, ALuint *buffers)
 {
-	if (load_dll())
+	if (oal_load_dll())
 		dAlSourceUnqueueBuffers(source, nb, buffers);
 }
 
 void dll_al_BufferData(ALuint buffer, ALenum format, const ALvoid *data, ALsizei size, ALsizei freq)
 {
-	if (load_dll())
+	if (oal_load_dll())
 		dAlBufferData(buffer, format, data, size, freq);
 }
 
 void dll_al_SourcePlay(ALuint source)
 {
-	if (load_dll())
+	if (oal_load_dll())
 		dAlSourcePlay(source);
 }
 
 void dll_al_SourceStop(ALuint source)
 {
-	if (load_dll())
+	if (oal_load_dll())
 		dAlSourceStop(source);
 }
 
 void dll_al_GenBuffers(ALsizei n, ALuint *buffers)
 {
-	if (load_dll())
+	if (oal_load_dll())
 		dAlGenBuffers(n, buffers);
 }
 
 void dll_al_DeleteBuffers(ALsizei n, ALuint *buffers)
 {
-	if (load_dll())
+	if (oal_load_dll())
 		dAlDeleteBuffers(n, buffers);
 }
 
 void dll_al_GenSources(ALsizei n, ALuint *sources)
 {
-	if (load_dll())
+	if (oal_load_dll())
 		dAlGenSources(n, sources);
 }
 
 void dll_al_DeleteSources(ALsizei n, ALuint *sources)
 {
-	if (load_dll())
+	if (oal_load_dll())
 		dAlDeleteSources(n, sources);
 }
 
+}
+
+#endif
 #endif

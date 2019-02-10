@@ -412,7 +412,7 @@ namespace SoLoud
 		}
 
 		mBaseSamplerate = (float)decoder->sampleRate;
-		mSampleCount = (unsigned int)decoder->totalSampleCount;
+		mSampleCount = (unsigned int)decoder->totalPCMFrameCount;
 		mFiletype = WAVSTREAM_WAV;
 		drwav_close(decoder);
 

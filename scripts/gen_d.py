@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """ SoLoud D wrapper generator """
 
 import soloud_codegen
@@ -205,4 +206,4 @@ fo.write(function_decls)
 
 fo.close()
 
-print "soloud.d generated"
+print("soloud.d generated")

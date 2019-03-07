@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """ SoLoud Python wrapper generator """
 
 import soloud_codegen
@@ -70,7 +71,7 @@ fo.write('\n')
 fo.write('try:\n')
 fo.write('\tsoloud_dll = ctypes.CDLL("soloud_x86")\n')
 fo.write('except:\n')
-fo.write('\tprint "SoLoud dynamic link library (soloud_x86.dll on Windows) not found. Terminating."\n')
+fo.write('\tprint("SoLoud dynamic link library (soloud_x86.dll on Windows) not found. Terminating.")\n')
 fo.write('\tsys.exit()')
 fo.write("\n")
 
@@ -218,6 +219,6 @@ for x in soloud_codegen.soloud_type:
 
 
 
-print "soloud.py generated"
+print("soloud.py generated")
 
 fo.close()

@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """ Complains if some API call is not tested """
 
 import soloud_codegen
@@ -7,7 +8,7 @@ import os
 def checkfile(apifunc, fname):
     """ Checks whether the string can be found in a file """
     if apifunc in open(fname).read():
-#        print apifunc + " found in " + fname
+#        print(apifunc + " found in " + fname)
         return True
     return False
     
@@ -23,8 +24,8 @@ def checkfiles(apifunc):
             return True
     return False
 
-print "Checking for untested APIs.."
-print
+print("Checking for untested APIs..")
+print()
 
 found = 0
 total = 0
@@ -37,12 +38,12 @@ for func in soloud_codegen.soloud_func:
             apifunc = "SoLoud::" + apifunc[:-7:]
         total += 1
         if not checkfiles(apifunc):
-            print apifunc
+            print(apifunc)
             found += 1
 
 if found == 0:
-    print "All good! (" + str(total) + ", not counting ctor/dtor/ex)"
+    print("All good! (" + str(total) + ", not counting ctor/dtor/ex)")
 else:
-    print
-    print str(found) + " / " + str(total) + " APIs untested. Get to work!"
-    print "(not counting ctor/dtor/ex variants)"
+    print()
+    print(str(found) + " / " + str(total) + " APIs untested. Get to work!")
+    print("(not counting ctor/dtor/ex variants)")

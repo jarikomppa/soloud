@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """ SoLoud Ruby wrapper generator """
 
 import soloud_codegen
@@ -168,6 +169,6 @@ for x in soloud_codegen.soloud_type:
     if not first:
         fo.write('end\n')
 
-print "soloud.rb generated"
+print("soloud.rb generated")
 
 fo.close()

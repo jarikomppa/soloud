@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """ builds documentation files from multimarkdown (mmd) source
     to various formats, including the web site and pdf.
 """
@@ -73,10 +74,10 @@ unknown = 0
 for file in glob.glob("*.mmd"):
     if file not in src:
         unknown = 1
-        print file + " not included in docs!"
+        print(file + " not included in docs!")
         
 if unknown:
-    print "Add the new files to makedoc.py, soloud.tex and htmlpre.txt."
+    print("Add the new files to makedoc.py, soloud.tex and htmlpre.txt.")
     sys.exit()
 
 datestring = time.strftime("%Y%m%d")
@@ -85,7 +86,7 @@ if not os.path.exists(datestring + "/web"):
 if not os.path.exists("temp/"):
   os.makedirs("temp/")
     
-print "- -- --- -- - Generating single-file HTML docs"
+print("- -- --- -- - Generating single-file HTML docs")
 
 callp = ["pandoc", "-s", "-t", "html5", "-f", "markdown-smart", "--metadata", 'title="SoLoud ' + datestring + '"',  "-H", "singlehtml_head.txt", "-B", "singlehtml_body.txt", "--toc", "--self-contained", "--default-image-extension=png", "-o", datestring + "/soloud_" + datestring + ".html"]
 for x in src:
@@ -93,7 +94,7 @@ for x in src:
         callp.append(x)
 subprocess.call(callp)
 
-print "- -- --- -- - Generating web site"
+print("- -- --- -- - Generating web site")
 for x in src:
     subprocess.call(["pandoc", "--template=html.pandoc", "-f", "markdown-smart", "--metadata", 'title="SoLoud ' + datestring + ' ' + x[:len(x)-4] + '"', "-B", "htmlpre.txt", "-A", "htmlpost.txt", "--default-image-extension=png", x, "-o", datestring + "/web/" + x[:len(x)-3]+"html.bak"])
     with open(datestring + "/web/" + x[:len(x)-3]+"html", "w") as file_out:
@@ -105,7 +106,7 @@ for x in src:
             os.remove(datestring + "/web/index.html")
         os.rename(datestring + "/web/intro.html", datestring + "/web/index.html")
 
-print "- -- --- -- - Generating epub"
+print("- -- --- -- - Generating epub")
 
 callp = ["pandoc", "-N", "--toc", "--epub-cover-image=images/cover.png", "-t", "epub3", "--default-image-extension=png", "-f", "markdown-smart", "--css=epub.css", "--epub-metadata=metadata.xml", "-o", datestring + "/soloud_" + datestring + ".epub", "title.txt"]
 for x in src:
@@ -113,11 +114,11 @@ for x in src:
         callp.append(x)
 subprocess.call(callp)
 
-print "- -- --- -- - Converting epub -> mobi (kindlegen_output.txt)"
+print("- -- --- -- - Converting epub -> mobi (kindlegen_output.txt)")
 with open('kindlegen_output.txt', 'w') as outfile:
     subprocess.call(["kindlegen", datestring + "/soloud_" + datestring + ".epub", "-c2"], stdout=outfile)
 
-print "- -- --- -- - Generating LaTex"
+print("- -- --- -- - Generating LaTex")
 
 for x in src:
     if x not in website_only:
@@ -127,16 +128,16 @@ for x in src:
                 for line in file_in:
                     file_out.write(line.replace('\\begin{longtable}[]{@{}ll@{}}', '\\begin{tabulary}{\\textwidth}{lJ}').replace('\\begin{longtable}[]{@{}lll@{}}', '\\begin{tabulary}{\\textwidth}{lJJ}').replace('\\begin{longtable}[]{@{}llll@{}}', '\\begin{tabulary}{\\textwidth}{lJJJ}').replace('\\endhead','').replace('\\end{longtable}','\\end{tabulary}'))
 
-print "- -- --- -- - Generating pdf (xelatex_output.txt)"
+print("- -- --- -- - Generating pdf (xelatex_output.txt)")
 
 with open('xelatex_output.txt', 'w') as outfile:
     subprocess.call(["xelatex", "SoLoud.tex"], stdout=outfile)
-    print "- -- --- -- - Generating pdf pass 2.."
+    print("- -- --- -- - Generating pdf pass 2..")
     subprocess.call(["xelatex", "SoLoud.tex"], stdout=outfile)
 
 shutil.move("SoLoud.pdf", datestring + "/soloud_" + datestring + ".pdf")
 
-print "- -- --- -- - Cleanup.."
+print("- -- --- -- - Cleanup..")
 tempsuffix = ["aux", "toc", "out", "log", "lg", "4ct", "4tc", "idv", "tmp", "xdv", "xref", "bak"]
 for suffix in tempsuffix:
     for file in glob.glob("*."+suffix):
@@ -147,4 +148,4 @@ for file in glob.glob("temp/*"):
    os.remove(file)
 os.rmdir("temp")
 
-print "- -- --- -- - Done - " + datestring
+print("- -- --- -- - Done - " + datestring)

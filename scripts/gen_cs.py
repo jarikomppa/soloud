@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """ SoLoud C# (cs) wrapper generator """
 
 import soloud_codegen
@@ -224,6 +225,6 @@ for x in soloud_codegen.soloud_type:
 
 fo.write('}\n')
 
-print "soloud.cs generated"
+print("soloud.cs generated")
 
 fo.close()

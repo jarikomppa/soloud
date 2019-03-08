@@ -212,7 +212,10 @@ for x in soloud_codegen.soloud_type:
                             if fudged_type == 'ctypes.c_void_p':
                                 fo.write(z[1] + '.objhandle')
                             else:
-                                fo.write(fudged_type + '(' +  z[1] + ')')
+                                if fudged_type == 'ctypes.c_char_p':
+                                    fo.write(fudged_type + '(' +  z[1] + ".encode('utf-8'))")
+                                else:
+                                    fo.write(fudged_type + '(' +  z[1] + ')')
                 fo.write(')\n')
                 if floatbufreturn:
                     fo.write('\t\treturn [f for f in floatbuf.contents]\n')

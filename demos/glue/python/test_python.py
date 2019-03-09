@@ -18,7 +18,7 @@ with Soloud() as audiolib:
 
 	print("Enter text to speak (empty string quits)")
 	while t != "":
-		t = raw_input(": ")
+		t = input(": ")
 
 		speech.set_text(t);
 		audiolib.play(speech);

@@ -133,7 +133,7 @@ for x in soloud_codegen.soloud_type:
                 if len(enums)>1:
                     fo.write('\n\t\tenum\n\t\t{\n')
                     fo.write(enums)
-                    fo.write('\t\t}\n\n')
+                    fo.write('\t\t};\n\n')
 
                 fo.write('\t\t%s();\n'%(x))
                 fo.write('\t\t~%s();\n'%(x))
@@ -183,7 +183,6 @@ fo.write("""
 
 # dll imports
 
-fo.write("# Raw DLL functions\n")
 for x in soloud_codegen.soloud_func:
     fo.write('\t\ttypedef %s (*%s_func)('%(C_TO_C_TYPES[x[0]], x[1]))
     first = True
@@ -263,7 +262,7 @@ for x in soloud_codegen.soloud_type:
     fo.write('\t\tmObjhandle = dll::%s_create();\n'%(x))
     fo.write('\t}\n\n')
     fo.write('\t%s::~%s()\n\t{\n'%(x,x))
-    fo.write('\t\tdll::%s_destroy(mObjhandle);\n'%(x))
+    fo.write('\t\tdll::%s_destroy((%s *)mObjhandle);\n'%(x,x))
     fo.write('\t}\n\n')
     for y in soloud_codegen.soloud_func:
         if (x + "_") == y[1][0:len(x)+1:]:
@@ -295,7 +294,7 @@ for x in soloud_codegen.soloud_type:
                     pass
                 else:
                     fo.write('return ')
-                fo.write('dll::' + y[1] + '(mObjhandle')
+                fo.write('dll::' + y[1] + '((Soloud *)mObjhandle')
                 for z in y[2]:
                     if len(z) > 1:
                         if z[1] == 'a'+x:
@@ -303,7 +302,7 @@ for x in soloud_codegen.soloud_type:
                         else:
                             fo.write(', ')
                             if z[0] in CROSS_OBJ:
-                                fo.write(z[1] + '->mObjhandle')
+                                fo.write('(%s)((SoloudObject *)%s)->mObjhandle'%(z[0],z[1]))
                             else:
                                 fo.write(z[1])
                 fo.write(');\n')

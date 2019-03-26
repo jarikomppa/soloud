@@ -294,6 +294,7 @@ klatt::klatt() :
 	mGlotLast(0),
 	mDecay(0),
 	mOneMd(0),
+	mSeed(5),
 	mElementCount(0),
 	mElement(0),
 	mElementIndex(0),

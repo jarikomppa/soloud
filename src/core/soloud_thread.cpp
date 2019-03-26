@@ -194,7 +194,11 @@ namespace SoLoud
 
 		void sleep(int aMSec)
 		{
-			usleep(aMSec * 1000);
+			//usleep(aMSec * 1000);
+			struct timespec req = {0};
+			req.tv_sec = 0;
+			req.tv_nsec = aMSec * 1000000L;
+			nanosleep(&req, (struct timespec *)NULL);
 		}
 
         void wait(ThreadHandle aThreadHandle)

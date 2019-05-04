@@ -1,6 +1,6 @@
 /*
 SoLoud audio engine
-Copyright (c) 2013-2014 Jari Komppa
+Copyright (c) 2013-2019 Jari Komppa
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -124,7 +124,6 @@ namespace SoLoud
 
 	result wasapi_init(Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer, unsigned int aChannels)
     {
-		return UNKNOWN_ERROR;
 		CoInitializeEx(0, COINIT_MULTITHREADED);
         WASAPIData *data = new WASAPIData;
         ZeroMemory(data, sizeof(WASAPIData));
@@ -157,20 +156,35 @@ namespace SoLoud
         {
             return UNKNOWN_ERROR;
         }
-        WAVEFORMATEX format;
-        ZeroMemory(&format, sizeof(WAVEFORMATEX));
-        format.nChannels = aChannels;
-        format.nSamplesPerSec = aSamplerate;
-        format.wFormatTag = WAVE_FORMAT_PCM;
-        format.wBitsPerSample = sizeof(short)*8;
-        format.nBlockAlign = (format.nChannels*format.wBitsPerSample)/8;
-        format.nAvgBytesPerSec = format.nSamplesPerSec*format.nBlockAlign;
+		// Get mixing format from WASAPI to figure out a samplerate it can support
+		WAVEFORMATEX* mixFormat = 0;
+		WAVEFORMATEX format;
+		ZeroMemory(&format, sizeof(WAVEFORMATEX));
+		if (FAILED(data->audioClient->GetMixFormat(&mixFormat)))
+		{
+			return UNKNOWN_ERROR;
+		}
+		if (mixFormat->wFormatTag == WAVE_FORMAT_EXTENSIBLE)
+		{
+			WAVEFORMATEXTENSIBLE* ext = reinterpret_cast<WAVEFORMATEXTENSIBLE*>(mixFormat);
+			format.nChannels = ext->Format.nChannels;
+			format.nSamplesPerSec = ext->Format.nSamplesPerSec;
+			format.wFormatTag = WAVE_FORMAT_PCM;
+			format.wBitsPerSample = sizeof(short) * 8;
+			format.nBlockAlign = (format.nChannels * format.wBitsPerSample) / 8;
+			format.nAvgBytesPerSec = format.nSamplesPerSec * format.nBlockAlign;
+		}
+		else
+		{
+			CopyMemory(&format, mixFormat, sizeof(WAVEFORMATEX));
+		}
+		CoTaskMemFree(mixFormat);
         REFERENCE_TIME dur = static_cast<REFERENCE_TIME>(static_cast<double>(aBuffer)
                                            / (static_cast<double>(aSamplerate)*(1.0/10000000.0)));
 		HRESULT res = data->audioClient->Initialize(AUDCLNT_SHAREMODE_SHARED,
 			AUDCLNT_STREAMFLAGS_EVENTCALLBACK,
 			dur, 0, &format, 0);
-		if (FAILED(res)) 
+		if (FAILED(res))
         {
             return UNKNOWN_ERROR;
         }
@@ -190,7 +204,7 @@ namespace SoLoud
         }
         data->channels = format.nChannels;
         data->soloud = aSoloud;
-        aSoloud->postinit(aSamplerate, data->bufferFrames * format.nChannels, aFlags, 2);
+        aSoloud->postinit(format.nSamplesPerSec, data->bufferFrames * format.nChannels, aFlags, 2);
         data->thread = Thread::createThread(wasapiThread, data);
         if (0 == data->thread)
         {

@@ -37,6 +37,8 @@ namespace SoLoud
 
 #else
 
+#include <windows.h>
+
 namespace SoLoud
 {
     struct SoLoudNullData

@@ -307,6 +307,26 @@ namespace SoLoud
 		}
 #endif
 
+#if defined(WITH_WASAPI)
+		if (!inited &&
+			(aBackend == Soloud::WASAPI ||
+			aBackend == Soloud::AUTO))
+		{
+			if (aBufferSize == Soloud::AUTO) buffersize = 4096;
+			if (aSamplerate == Soloud::AUTO) samplerate = 48000;
+
+			int ret = wasapi_init(this, aFlags, samplerate, buffersize, aChannels);
+			if (ret == 0)
+			{
+				inited = 1;
+				mBackendID = Soloud::WASAPI;
+			}
+
+			if (ret != 0 && aBackend != Soloud::AUTO)
+				return ret;			
+		}
+#endif
+
 #if defined(WITH_XAUDIO2)
 		if (!inited &&
 			(aBackend == Soloud::XAUDIO2 ||
@@ -338,26 +358,6 @@ namespace SoLoud
 			{
 				inited = 1;
 				mBackendID = Soloud::WINMM;
-			}
-
-			if (ret != 0 && aBackend != Soloud::AUTO)
-				return ret;			
-		}
-#endif
-
-#if defined(WITH_WASAPI)
-		if (!inited &&
-			(aBackend == Soloud::WASAPI ||
-			aBackend == Soloud::AUTO))
-		{
-			if (aBufferSize == Soloud::AUTO) buffersize = 4096;
-			if (aSamplerate == Soloud::AUTO) samplerate = 48000;
-
-			int ret = wasapi_init(this, aFlags, samplerate, buffersize, aChannels);
-			if (ret == 0)
-			{
-				inited = 1;
-				mBackendID = Soloud::WASAPI;
 			}
 
 			if (ret != 0 && aBackend != Soloud::AUTO)

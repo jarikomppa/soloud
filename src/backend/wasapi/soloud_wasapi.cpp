@@ -62,34 +62,183 @@ namespace SoLoud
         Soloud *soloud;
         UINT32 bufferFrames;
         int channels;
+		REFERENCE_TIME duration;
+		unsigned int sampleRate;
+		volatile bool resetRequired;
+		class MMNotificationClient *notificationClient;
     };
 
-    static void wasapiSubmitBuffer(WASAPIData *aData, UINT32 aFrames)
+	class MMNotificationClient : public IMMNotificationClient
+	{
+	public:
+		MMNotificationClient(WASAPIData *aData) : IMMNotificationClient(), mRef(1), mData(aData) {}
+
+		// IUnknown methods -- AddRef, Release, and QueryInterface
+
+		ULONG STDMETHODCALLTYPE AddRef()
+		{
+			return InterlockedIncrement(&mRef);
+		}
+
+		ULONG STDMETHODCALLTYPE Release()
+		{
+			ULONG ulRef = InterlockedDecrement(&mRef);
+			if (0 == ulRef)
+			{
+				delete this;
+			}
+			return ulRef;
+		}
+
+		HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, VOID **ppvInterface)
+		{
+			if (IID_IUnknown == riid)
+			{
+				AddRef();
+				*ppvInterface = (IUnknown*)this;
+			}
+			else if (__uuidof(IMMNotificationClient) == riid)
+			{
+				AddRef();
+				*ppvInterface = (IMMNotificationClient*)this;
+			}
+			else
+			{
+				*ppvInterface = NULL;
+				return E_NOINTERFACE;
+			}
+			return S_OK;
+		}
+
+		HRESULT STDMETHODCALLTYPE OnDeviceStateChanged(LPCWSTR pwstrDeviceId, DWORD dwNewState) { return S_OK; }
+		HRESULT STDMETHODCALLTYPE OnDeviceAdded(LPCWSTR pwstrDeviceId) { return S_OK; }
+		HRESULT STDMETHODCALLTYPE OnDeviceRemoved(LPCWSTR pwstrDeviceId) { return S_OK; }
+		HRESULT STDMETHODCALLTYPE OnPropertyValueChanged(LPCWSTR pwstrDeviceId, const PROPERTYKEY key) { return S_OK; }
+		HRESULT STDMETHODCALLTYPE OnDefaultDeviceChanged(EDataFlow flow, ERole role, LPCWSTR pwstrDefaultDeviceId)
+		{
+			if (flow == eRender)
+			{
+				// The default rendering device just changed -> notify the thread to
+				// recreate the audio graph
+				mData->resetRequired = true;
+				SetEvent(mData->bufferEndEvent);
+			}
+			return S_OK;
+		}
+
+	private:
+		WASAPIData *mData;
+		LONG mRef;
+	};
+
+    static HRESULT wasapiSubmitBuffer(WASAPIData *aData, UINT32 aFrames)
     {
         BYTE *buffer = 0;
-        if (FAILED(aData->renderClient->GetBuffer(aFrames, &buffer)))
+		HRESULT res = aData->renderClient->GetBuffer(aFrames, &buffer);
+        if (FAILED(res))
         {
-            return;
+            return res;
         }
 		aData->soloud->mixSigned16((short *)buffer, aFrames);
-        aData->renderClient->ReleaseBuffer(aFrames, 0);
+		return aData->renderClient->ReleaseBuffer(aFrames, 0);
     }
 
     static void wasapiThread(LPVOID aParam)
     {
+		bool started = false;
+		bool resetRequired = false;
         WASAPIData *data = static_cast<WASAPIData*>(aParam);
-        wasapiSubmitBuffer(data, data->bufferFrames);
-        data->audioClient->Start();
         while (WAIT_OBJECT_0 != WaitForSingleObject(data->audioProcessingDoneEvent, 0)) 
         {
-            WaitForSingleObject(data->bufferEndEvent, INFINITE);
-            UINT32 padding = 0;
-            if (FAILED(data->audioClient->GetCurrentPadding(&padding)))
-            {
-                continue;
-            }
-            UINT32 frames = data->bufferFrames - padding;
-            wasapiSubmitBuffer(data, frames);
+			resetRequired = resetRequired || data->resetRequired;
+			if (!resetRequired)
+			{
+				UINT32 padding = 0;
+				resetRequired = FAILED(data->audioClient->GetCurrentPadding(&padding));
+				if (!resetRequired)
+				{
+					resetRequired = FAILED(wasapiSubmitBuffer(data, data->bufferFrames - padding));
+				}
+				if (!resetRequired && !started)
+				{
+					resetRequired = FAILED(data->audioClient->Start());
+					started = true;
+				}
+				WaitForSingleObject(data->bufferEndEvent, INFINITE);
+			}
+			else
+			{
+				// There was an error. Tear down audio graph:
+				data->resetRequired = false;			
+				if (0 != data->audioClient)
+				{
+					data->audioClient->Stop();
+				}
+				SAFE_RELEASE(data->renderClient);
+				SAFE_RELEASE(data->audioClient);
+				SAFE_RELEASE(data->device);
+
+				// Recreate audio graph:
+				bool reinitFailed = FAILED(data->deviceEnumerator->GetDefaultAudioEndpoint(eRender, eConsole, &data->device));
+				if (!reinitFailed)
+				{
+					reinitFailed = FAILED(data->device->Activate(__uuidof(IAudioClient),
+						                  CLSCTX_ALL, 0, reinterpret_cast<void**>(&data->audioClient)));
+				}
+				// Get mixing format from WASAPI to figure out a samplerate it can support
+				WAVEFORMATEX* mixFormat = 0;
+				WAVEFORMATEX format;
+				ZeroMemory(&format, sizeof(WAVEFORMATEX));
+				if (!reinitFailed) 
+				{
+					reinitFailed = FAILED(data->audioClient->GetMixFormat(&mixFormat));
+				}
+				if (!reinitFailed)
+				{
+					// At this point, we really must use the same mixing rate SoLoud uses,
+					// because we can't change the sampling rate after initialization.
+					// This *can* make the recreation fail every time if the rates do not match,
+					// which makes this thread spin in a loop, trying to recreate everything.
+					if (mixFormat->wFormatTag == WAVE_FORMAT_EXTENSIBLE)
+					{
+						WAVEFORMATEXTENSIBLE* ext = reinterpret_cast<WAVEFORMATEXTENSIBLE*>(mixFormat);
+						format.nChannels = ext->Format.nChannels;
+						format.nSamplesPerSec = data->sampleRate;
+						format.wFormatTag = WAVE_FORMAT_PCM;
+						format.wBitsPerSample = sizeof(short) * 8;
+						format.nBlockAlign = (format.nChannels * format.wBitsPerSample) / 8;
+						format.nAvgBytesPerSec = format.nSamplesPerSec * format.nBlockAlign;
+					}
+					else
+					{
+						CopyMemory(&format, mixFormat, sizeof(WAVEFORMATEX));
+						format.nSamplesPerSec = data->sampleRate;
+					}
+					CoTaskMemFree(mixFormat);
+				}
+				if (!reinitFailed)
+				{
+					reinitFailed = FAILED(data->audioClient->Initialize(AUDCLNT_SHAREMODE_SHARED,
+						AUDCLNT_STREAMFLAGS_EVENTCALLBACK,
+						data->duration, 0, &format, 0));
+				}
+				data->bufferFrames = 0;
+				if (!reinitFailed)
+				{
+					reinitFailed = FAILED(data->audioClient->GetBufferSize(&data->bufferFrames));
+				}
+				if (!reinitFailed)
+				{
+					reinitFailed = FAILED(data->audioClient->GetService(__uuidof(IAudioRenderClient),
+						reinterpret_cast<void**>(&data->renderClient)));
+				}
+				if (!reinitFailed)
+				{
+					reinitFailed = FAILED(data->audioClient->SetEventHandle(data->bufferEndEvent));
+				}
+				started = false;
+				resetRequired = reinitFailed;
+			}
         }
     }
 
@@ -106,6 +255,11 @@ namespace SoLoud
 		{
 			Thread::wait(data->thread);
 			Thread::release(data->thread);
+		}
+		if (0 != data->notificationClient)
+		{
+			data->deviceEnumerator->UnregisterEndpointNotificationCallback(data->notificationClient);
+			data->notificationClient->Release();
 		}
         CloseHandle(data->bufferEndEvent);
         CloseHandle(data->audioProcessingDoneEvent);
@@ -146,6 +300,8 @@ namespace SoLoud
         {
             return UNKNOWN_ERROR;
         }
+		data->notificationClient = new MMNotificationClient(data);
+		HRESULT result = data->deviceEnumerator->RegisterEndpointNotificationCallback(data->notificationClient);
         if (FAILED(data->deviceEnumerator->GetDefaultAudioEndpoint(eRender, eConsole, 
                                                                    &data->device))) 
         {
@@ -180,7 +336,7 @@ namespace SoLoud
 		}
 		CoTaskMemFree(mixFormat);
         REFERENCE_TIME dur = static_cast<REFERENCE_TIME>(static_cast<double>(aBuffer)
-                                           / (static_cast<double>(aSamplerate)*(1.0/10000000.0)));
+			/ (static_cast<double>(format.nSamplesPerSec)*(1.0/10000000.0)));
 		HRESULT res = data->audioClient->Initialize(AUDCLNT_SHAREMODE_SHARED,
 			AUDCLNT_STREAMFLAGS_EVENTCALLBACK,
 			dur, 0, &format, 0);
@@ -202,6 +358,8 @@ namespace SoLoud
         {
             return UNKNOWN_ERROR;
         }
+		data->duration = dur;
+		data->sampleRate = format.nSamplesPerSec;
         data->channels = format.nChannels;
         data->soloud = aSoloud;
         aSoloud->postinit(format.nSamplesPerSec, data->bufferFrames * format.nChannels, aFlags, 2);

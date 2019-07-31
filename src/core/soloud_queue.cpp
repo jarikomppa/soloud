@@ -125,7 +125,7 @@ namespace SoLoud
 		{
 			return OUT_OF_MEMORY;
 		}
-
+		instance->init(aSound, 0);
 		instance->mAudioSourceID = aSound.mAudioSourceID;
 
 		mSoloud->lockAudioMutex();

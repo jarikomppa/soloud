@@ -51,6 +51,7 @@ namespace SoLoud
 				mParent->mSource[mParent->mReadIndex] = 0;
 				mParent->mReadIndex = (mParent->mReadIndex + 1) % SOLOUD_QUEUE_MAX;
 				mParent->mCount--;
+				mLoopCount++;
 			}
 		}
 		return copyofs;
@@ -58,7 +59,7 @@ namespace SoLoud
 
 	bool QueueInstance::hasEnded()
 	{
-		return 0; // never stop a queue, even when out of data.
+		return mLoopCount != 0 && mParent->mCount == 0;
 	}
 
 	QueueInstance::~QueueInstance()

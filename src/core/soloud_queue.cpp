@@ -58,7 +58,7 @@ namespace SoLoud
 
 	bool QueueInstance::hasEnded()
 	{
-		return mParent->mCount == 0;
+		return 0; // never stop a queue, even when out of data.
 	}
 
 	QueueInstance::~QueueInstance()

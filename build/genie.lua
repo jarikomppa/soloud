@@ -1,4 +1,5 @@
 local WITH_SDL = 0
+local WITH_SDL2 = 0
 local WITH_SDL_STATIC = 0
 local WITH_SDL2_STATIC = 0
 local WITH_PORTAUDIO = 0
@@ -126,7 +127,8 @@ newoption {
 }
 
 if _OPTIONS["soloud-devel"] then
-    WITH_SDL = 1
+    WITH_SDL = 0
+    WITH_SDL2 = 1
     WITH_SDL_STATIC = 0
     WITH_SDL2_STATIC = 0
     WITH_PORTAUDIO = 1
@@ -193,6 +195,7 @@ end
 
 if _OPTIONS["with-sdl-only"] then
 	WITH_SDL = 1
+	WITH_SDL2 = 0
 	WITH_SDL_STATIC = 0
 	WITH_SDL2_STATIC = 0
 	WITH_PORTAUDIO = 0
@@ -204,7 +207,8 @@ if _OPTIONS["with-sdl-only"] then
 end
 
 if _OPTIONS["with-sdl2-only"] then
-	WITH_SDL = 1
+	WITH_SDL = 0
+	WITH_SDL2 = 1
 	WITH_SDL_STATIC = 0
 	WITH_SDL2_STATIC = 0
 	WITH_PORTAUDIO = 0
@@ -217,6 +221,7 @@ end
 
 if _OPTIONS["with-sdlstatic-only"] then
 	WITH_SDL = 0
+	WITH_SDL2 = 0
 	WITH_SDL_STATIC = 1
 	WITH_PORTAUDIO = 0
 	WITH_OPENAL = 0
@@ -228,6 +233,7 @@ end
 
 if _OPTIONS["with-sdl2static-only"] then
 	WITH_SDL = 0
+	WITH_SDL2 = 0
 	WITH_SDL_STATIC = 0
 	WITH_SDL2_STATIC = 1
 	WITH_PORTAUDIO = 0
@@ -240,6 +246,7 @@ end
 
 if _OPTIONS["with-sdl2static-only"] then
 	WITH_SDL = 0
+	WITH_SDL2 = 0
 	WITH_SDL_STATIC = 0
 	WITH_SDL2_STATIC = 1
 	WITH_PORTAUDIO = 0
@@ -252,6 +259,7 @@ end
 
 if _OPTIONS["with-vita-homebrew-only"] then
 	WITH_SDL = 0
+	WITH_SDL2 = 0
 	WITH_SDL_STATIC = 0
 	WITH_SDL2_STATIC = 0
 	WITH_PORTAUDIO = 0
@@ -270,6 +278,7 @@ end
 
 if _OPTIONS["with-native-only"] then
 	WITH_SDL = 0
+	WITH_SDL2 = 0
 	WITH_SDL_STATIC = 0
 	WITH_SDL2_STATIC = 0
 	WITH_PORTAUDIO = 0
@@ -294,6 +303,7 @@ end
 print ("")
 print ("Active options:")
 print ("WITH_SDL        = ", WITH_SDL)
+print ("WITH_SDL2       = ", WITH_SDL2)
 print ("WITH_PORTAUDIO  = ", WITH_PORTAUDIO)
 print ("WITH_OPENAL     = ", WITH_OPENAL)
 print ("WITH_XAUDIO2    = ", WITH_XAUDIO2)
@@ -457,7 +467,7 @@ end
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 
-if (WITH_SDL == 1) then
+if (WITH_SDL2 == 1) then
 
 	project "SoloudDemoCommon"
 		kind "StaticLib"
@@ -554,6 +564,17 @@ end
 
 if (WITH_SDL == 1) then
 		defines { "WITH_SDL" }
+	files {
+	  "../src/backend/sdl/**.c*"
+	  }
+	includedirs {
+	  "../include",
+	  sdl2_include
+	}
+end
+
+if (WITH_SDL2 == 1) then
+		defines { "WITH_SDL2" }
 	files {
 	  "../src/backend/sdl/**.c*"
 	  }
@@ -781,7 +802,7 @@ end
 --  The rest of the projects require SDL
 --
 
-if (WITH_SDL == 1) then
+if (WITH_SDL2 == 1) then
 
 function sdl2_lib()
     configuration { "x32" } 
@@ -853,7 +874,7 @@ end
 	}
     sdl2_lib()
     
-	defines { "GLEW_STATIC" }
+	defines { "GLEW_STATIC" }	
 
 if (WITH_ALSA == 1) then
 	links {"asound"}
@@ -865,8 +886,10 @@ end
 		links {"SoloudStatic", "SDL2main", "SDL2"}
 if (os.is("Windows")) then
         links {"opengl32"}
+        defines {"__WINDOWS_MM__"}
 end
 		if (not os.is("windows")) then
+		  defines { "__LINUX_ALSA__"}
 		  links { "pthread" }
 		  links { "dl" }
 		  links { "GL" }
@@ -874,7 +897,6 @@ end
 
 		targetname "piano"
 
-        configuration {}
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 

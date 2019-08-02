@@ -11,7 +11,6 @@ local WITH_OSS = 0
 local WITH_COREAUDIO = 0
 local WITH_VITA_HOMEBREW = 0
 local WITH_NULL = 1
-local WITH_PORTMIDI = 0
 local WITH_TOOLS = 0
 
 if (os.is("Windows")) then
@@ -27,7 +26,6 @@ end
 
 local sdl_root       = "/libraries/sdl"
 local sdl2_root      = "/libraries/sdl2"
-local portmidi_root  = "/libraries/portmidi"
 local dxsdk_root     = os.getenv("DXSDK_DIR") and os.getenv("DXSDK_DIR") or "C:/Program Files (x86)/Microsoft DirectX SDK (June 2010)"
 local portaudio_root = "/libraries/portaudio"
 local openal_root    = "/libraries/openal"
@@ -38,9 +36,6 @@ local sdl_include       = sdl_root .. "/include"
 local sdl2_include      = sdl2_root .. "/include"
 local sdl2_lib_x86      = sdl2_root .. "/lib/x86"
 local sdl2_lib_x64      = sdl2_root .. "/lib/x64"
-local portmidi_include  = portmidi_root .. "/pm_common"
-local portmidi_debug    = portmidi_root .. "/debug"
-local portmidi_release  = portmidi_root .. "/release"
 local dxsdk_include     = dxsdk_root .. "/include"
 local portaudio_include = portaudio_root .. "/include"
 local openal_include    = openal_root .. "/include"
@@ -53,11 +48,6 @@ if _ACTION then buildroot = _ACTION end
 newoption {
     trigger       = "with-common-backends",
     description   = "Includes common backends in build"
-}
-
-newoption {
-	trigger		  = "with-portmidi",
-	description = "Use PortMidi to drive midi keyboard in the piano demo"
 }
 
 newoption {
@@ -152,7 +142,6 @@ if _OPTIONS["soloud-devel"] then
     	WITH_OSS = 0
     end
     WITH_TOOLS = 1
-    WITH_PORTMIDI = 1
 end
 
 if _OPTIONS["with-common-backends"] then
@@ -298,10 +287,6 @@ if _OPTIONS["with-native-only"] then
 	end
 end
 
-if _OPTIONS["with-portmidi"] then
-	WITH_PORTMIDI = 1
-end
-
 if _OPTIONS["with-tools"] then
 	WITH_TOOLS = 1
 end
@@ -318,7 +303,6 @@ print ("WITH_ALSA       = ", WITH_ALSA)
 print ("WITH_OSS        = ", WITH_OSS)
 print ("WITH_COREAUDIO  = ", WITH_COREAUDIO)
 print ("WITH_VITA_HOMEBREW = ", WITH_VITA_HOMEBREW)
-print ("WITH_PORTMIDI   = ", WITH_PORTMIDI)
 print ("WITH_TOOLS      = ", WITH_TOOLS)
 print ("")
 
@@ -878,14 +862,6 @@ if (WITH_COREAUDIO == 1) then
 	links {"AudioToolbox.framework"}
 end
 
-	if (WITH_PORTMIDI == 1) then
-		includedirs {
-		portmidi_include
-		}
-		defines {"USE_PORTMIDI"}
-		links { "portmidi" }
-	end
-
 		links {"SoloudStatic", "SDL2main", "SDL2"}
 if (os.is("Windows")) then
         links {"opengl32"}
@@ -898,15 +874,6 @@ end
 
 		targetname "piano"
 
-		configuration "Debug"
-		if (WITH_PORTMIDI == 1) then
-			libdirs { portmidi_debug }
-		end
-
-		configuration "Release"
-		if (WITH_PORTMIDI == 1) then
-			libdirs { portmidi_release }
-		end
         configuration {}
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --

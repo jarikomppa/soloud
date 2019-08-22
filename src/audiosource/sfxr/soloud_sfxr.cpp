@@ -33,7 +33,8 @@ namespace SoLoud
 {
 
 	Prg::Prg()
-	{		
+	{
+		srand(0);
 	}
 
 	void Prg::srand(int aSeed)

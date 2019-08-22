@@ -1164,7 +1164,7 @@ static void guess_word(darray *arg, char *word)
 static int NRL(const char *s, int n, darray *phone)
 {
 	int old = phone->getSize();
-	char *word = (char *) malloc(n + 3);
+	char *word = (char *) malloc(n + 3); // TODO: may return null
 	char *d = word;
 	*d++ = ' ';
 

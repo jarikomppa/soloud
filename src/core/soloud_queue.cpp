@@ -73,6 +73,9 @@ namespace SoLoud
 		mReadIndex = 0;
 		mWriteIndex = 0;
 		mCount = 0;
+		int i;
+		for (i = 0; i < SOLOUD_QUEUE_MAX; i++)
+			mSource[i] = 0;
 	}
 	
 	QueueInstance * Queue::createInstance()

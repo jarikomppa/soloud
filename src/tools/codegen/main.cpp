@@ -591,7 +591,14 @@ void parse(const char *aFilename, int aPrintProgress = 0)
 						parse_params(m, b, ofs);
 						if (!omit)
 						{
-							c->mMethod.push_back(m);
+							if (!c)
+							{
+								PARSEERROR;
+							}
+							else
+							{
+								c->mMethod.push_back(m);
+							}
 						}
 						else
 						{

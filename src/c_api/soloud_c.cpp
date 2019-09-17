@@ -694,11 +694,6 @@ void Soloud_mixSigned16(void * aClassPtr, short * aBuffer, unsigned int aSamples
 	cl->mixSigned16(aBuffer, aSamples);
 }
 
-void AudioAttenuator_destroy(void * aClassPtr)
-{
-  delete (AudioAttenuator *)aClassPtr;
-}
-
 float AudioAttenuator_attenuate(void * aClassPtr, float aDistance, float aMinDistance, float aMaxDistance, float aRolloffFactor)
 {
 	AudioAttenuator * cl = (AudioAttenuator *)aClassPtr;

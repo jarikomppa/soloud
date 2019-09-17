@@ -245,7 +245,6 @@ void Soloud_mixSigned16(Soloud * aSoloud, short * aBuffer, unsigned int aSamples
 /*
  * AudioAttenuator
  */
-void AudioAttenuator_destroy(AudioAttenuator * aAudioAttenuator);
 float AudioAttenuator_attenuate(AudioAttenuator * aAudioAttenuator, float aDistance, float aMinDistance, float aMaxDistance, float aRolloffFactor);
 
 /*

@@ -128,6 +128,12 @@ int is_banned(string aName)
 	return 0;
 }
 
+int is_interface(string aName)
+{	
+	if (aName == "AudioAttenuator") return 1;
+	return 0;
+}
+
 char * loadfile(const char *aFilename)
 {
 	FILE * f;
@@ -991,12 +997,15 @@ void generate()
 				" * %s\n"
 				" */\n",
 				gClass[i]->mName.c_str());
-			fprintf(f, "void %s_destroy(%s * a%s);\n", gClass[i]->mName.c_str(), gClass[i]->mName.c_str(), gClass[i]->mName.c_str());
-			fprintf(deff, "\t%s_destroy\n", gClass[i]->mName.c_str());
-			fprintf(pyff, "%s['void', '%s_destroy', [['%s *', 'a%s']]]", first?"":",\n", gClass[i]->mName.c_str(), gClass[i]->mName.c_str(), gClass[i]->mName.c_str());
+			if (!is_interface(gClass[i]->mName))
+			{
+				fprintf(f, "void %s_destroy(%s * a%s);\n", gClass[i]->mName.c_str(), gClass[i]->mName.c_str(), gClass[i]->mName.c_str());
+				fprintf(deff, "\t%s_destroy\n", gClass[i]->mName.c_str());
+				fprintf(pyff, "%s['void', '%s_destroy', [['%s *', 'a%s']]]", first?"":",\n", gClass[i]->mName.c_str(), gClass[i]->mName.c_str(), gClass[i]->mName.c_str());
+				emit_dtor(cppf, gClass[i]->mName.c_str());
+			}
 			first = 0;
-			emit_dtor(cppf, gClass[i]->mName.c_str());
-			
+
 			for (j = 0; j < (signed)gClass[i]->mMethod.size(); j++)
 			{
 				if (gClass[i]->mMethod[j]->mFuncName.find("Instance") == string::npos &&

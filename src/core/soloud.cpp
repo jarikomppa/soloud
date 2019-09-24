@@ -859,8 +859,8 @@ namespace SoLoud
 				  float *aDst, 
 				  int aSrcOffset,
 				  int aDstSampleCount,
-				  float aSrcSamplerate, 
-				  float aDstSamplerate,
+				  float /*aSrcSamplerate*/, 
+				  float /*aDstSamplerate*/,
 				  int aStepFixed)
 	{
 #if 0
@@ -1360,7 +1360,6 @@ namespace SoLoud
 				!(voice->mFlags & AudioSourceInstance::PAUSED) &&
 				!(voice->mFlags & AudioSourceInstance::INAUDIBLE))
 			{
-				unsigned int j;
 				float step = voice->mSamplerate / aSamplerate;
 				// avoid step overflow
 				if (step > (1 << (32 - FIXPOINT_FRAC_BITS)))
@@ -1382,9 +1381,10 @@ namespace SoLoud
 					}
 					
 					// Clear scratch where we're skipping
-					for (j = 0; j < voice->mChannels; j++)
+					unsigned int k;
+					for (k = 0; k < voice->mChannels; k++)
 					{
-						memset(aScratch + j * aBufferSize, 0, sizeof(float) * outofs); 
+						memset(aScratch + k * aBufferSize, 0, sizeof(float) * outofs); 
 					}
 				}												
 
@@ -1421,9 +1421,9 @@ namespace SoLoud
                         // Clear remaining of the resample data if the full scratch wasn't used
 						if (readcount < SAMPLE_GRANULARITY)
 						{
-							unsigned int i;
-							for (i = 0; i < voice->mChannels; i++)
-								memset(voice->mResampleData[0]->mData + readcount + SAMPLE_GRANULARITY * i, 0, sizeof(float) * (SAMPLE_GRANULARITY - readcount));
+							unsigned int k;
+							for (k = 0; k < voice->mChannels; k++)
+								memset(voice->mResampleData[0]->mData + readcount + SAMPLE_GRANULARITY * k, 0, sizeof(float) * (SAMPLE_GRANULARITY - readcount));
 						}
 
 						// If we go past zero, crop to zero (a bit of a kludge)

@@ -65,7 +65,7 @@ static HMODULE pta_openDll()
 static void *pta_getdllproc(HMODULE dllhandle, const char *procname)
 {
     HMODULE dllh = (HMODULE)dllhandle;
-    return GetProcAddress(dllh, procname);
+    return (void*)GetProcAddress(dllh, (LPCSTR)procname);
 }
 
 #else

@@ -73,7 +73,7 @@ namespace SoLoud
 
 #define frnd(x) ((float)(mRand.rand()%10001)/10000*(x))
 
-	unsigned int SfxrInstance::getAudio(float *aBuffer, unsigned int aSamplesToRead, unsigned int aBufferSize)
+	unsigned int SfxrInstance::getAudio(float *aBuffer, unsigned int aSamplesToRead, unsigned int /*aBufferSize*/)
 	{
 		float *buffer = aBuffer;
 		unsigned int i;

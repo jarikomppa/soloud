@@ -720,6 +720,7 @@ static int xlate_cardinal(int value, darray *phone)
 	return nph;
 }
 
+#if 0
 /*
 ** Translate a number to phonemes.  This version is for ORDINAL numbers.
 **       Note: this is recursive.
@@ -833,7 +834,7 @@ static int xlate_ordinal(int value, darray *phone)
 
 	return nph;
 }
-
+#endif
 
 static int isvowel(int chr)
 {
@@ -1173,7 +1174,7 @@ static int NRL(const char *s, int n, darray *phone)
 		char ch = *s++;
 
 		if (islower(ch))
-			ch = toupper(ch);
+			ch = (char)toupper(ch);
 
 		*d++ = ch;
 	}
@@ -1217,7 +1218,7 @@ static int suspect_word(const char *s, int n)
 		if (islower(ch))
 		{
 			seen_lower = 1;
-			ch = toupper(ch);
+			ch = (char)toupper(ch);
 		}
 
 		if (ch == 'A' || ch == 'E' || ch == 'I' || ch == 'O' || ch == 'U' || ch == 'Y')
@@ -1270,8 +1271,9 @@ int xlate_string(const char *string, darray *phone)
 	while (isspace(ch = *s))
 		s++;
 
-	while ((ch = *s))
+	while (*s)
 	{
+		ch = *s;
 		const char *word = s;
 
 		if (isalpha(ch))
@@ -1287,8 +1289,9 @@ int xlate_string(const char *string, darray *phone)
 			}
 			else
 			{
-				while ((ch = *s) && !isspace(ch) && !ispunct(ch))
+				while (*s && !isspace(*s) && !ispunct(*s))
 				{
+					ch = *s;
 					s++;
 				}
 
@@ -1336,13 +1339,13 @@ int xlate_string(const char *string, darray *phone)
 			{
 				if (ch == '[' && strchr(s, ']'))
 				{
-					const char *word = s;
+					const char *thisword = s;
 
 					while (*s && *s++ != ']')
 						/* nothing */
 						;
 
-					nph += xlate_word(word, (int)(s - word), phone);
+					nph += xlate_word(thisword, (int)(s - thisword), phone);
 				}
 				else
 				{
@@ -1402,8 +1405,9 @@ int xlate_string(const char *string, darray *phone)
 					}
 					else
 					{
-						while ((ch = *s) && !isspace(ch))
+						while (*s && !isspace(*s))
 						{
+							ch = *s;
 							s++;
 						}
 

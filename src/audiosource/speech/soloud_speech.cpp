@@ -52,7 +52,7 @@ namespace SoLoud
 		}
 	}
 
-	unsigned int SpeechInstance::getAudio(float *aBuffer, unsigned int aSamplesToRead, unsigned int aBufferSize)
+	unsigned int SpeechInstance::getAudio(float *aBuffer, unsigned int aSamplesToRead, unsigned int /*aBufferSize*/)
 	{
 		mSynth.init(mParent->mBaseFrequency, mParent->mBaseSpeed, mParent->mBaseDeclination, mParent->mBaseWaveform);
 		unsigned int samples_out = 0;

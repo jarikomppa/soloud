@@ -29,7 +29,7 @@ freely, subject to the following restrictions:
 
 namespace SoLoud
 {
-	result sdl1_init(SoLoud::Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer)
+	result sdl1_init(SoLoud::Soloud * /*aSoloud*/, unsigned int /*aFlags*/, unsigned int /*aSamplerate*/, unsigned int /*aBuffer*/)
 	{
 		return NOT_IMPLEMENTED;
 	}

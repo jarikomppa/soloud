@@ -320,7 +320,7 @@ namespace SoLoud
 	}
 
 
-	float AudioSourceInstance::getInfo(unsigned int aInfoKey)
+	float AudioSourceInstance::getInfo(unsigned int /*aInfoKey*/)
 	{
 	    return 0;
 	}

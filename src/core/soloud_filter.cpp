@@ -134,7 +134,7 @@ namespace SoLoud
 		}
 	}
 
-	void FilterInstance::filterChannel(float *aBuffer, unsigned int aSamples, float aSamplerate, double aTime, unsigned int aChannel, unsigned int aChannels)
+	void FilterInstance::filterChannel(float * /*aBuffer*/, unsigned int /*aSamples*/, float /*aSamplerate*/, double /*aTime*/, unsigned int /*aChannel*/, unsigned int /*aChannels*/)
 	{
 	}
 

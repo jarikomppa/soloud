@@ -36,7 +36,7 @@ namespace SoLoud
 		mParam[WET] = 1.0;
 	}
 
-	void RobotizeFilterInstance::fftFilterChannel(float *aFFTBuffer, unsigned int aSamples, float aSamplerate, time aTime, unsigned int aChannel, unsigned int aChannels)
+	void RobotizeFilterInstance::fftFilterChannel(float *aFFTBuffer, unsigned int aSamples, float /*aSamplerate*/, time /*aTime*/, unsigned int /*aChannel*/, unsigned int /*aChannels*/)
 	{
 		unsigned int i;
 		for (i = 0; i < aSamples; i++)

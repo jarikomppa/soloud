@@ -601,16 +601,16 @@ void SIDsound::calcSamples(short *buf, long accu)
 			}
 		} while (j--);
 
-		int accu = (sumOutput + filterOutput(cyclesToDo, sumFilteredOutput) 
+		int accu2 = (sumOutput + filterOutput(cyclesToDo, sumFilteredOutput) 
 			+ dcMixer + dcDigiBlaster) * volume;
 
 #if 1
-		sample = accu >> 12;
+		sample = accu2 >> 12;
 #else
 		unsigned int interPolationFac = (clockDeltaRemainder - sidCyclesPerSampleInt) & 0xFF;
-		accu >>= 7;
-		sample = (prevAccu * (0xFF ^ interPolationFac) + accu * (interPolationFac)) >> 12;
-		prevAccu = accu;
+		accu2 >>= 7;
+		sample = (prevAccu * (0xFF ^ interPolationFac) + accu2 * (interPolationFac)) >> 12;
+		prevAccu = accu2;
 #endif
 
 		*buf++ = (short) sample;

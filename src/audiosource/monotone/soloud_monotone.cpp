@@ -60,7 +60,7 @@ namespace SoLoud
 		}
 	}
 
-	unsigned int MonotoneInstance::getAudio(float *aBuffer, unsigned int aSamplesToRead, unsigned int aBufferSize)
+	unsigned int MonotoneInstance::getAudio(float *aBuffer, unsigned int aSamplesToRead, unsigned int /*aBufferSize*/)
 	{
 		int samplesPerTick = (int)floor(mSamplerate / 60);
 		unsigned int i;

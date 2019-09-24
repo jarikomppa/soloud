@@ -136,7 +136,7 @@ namespace SoLoud
         }
         WAVEFORMATEX format;
         ZeroMemory(&format, sizeof(WAVEFORMATEX));
-        format.nChannels = aChannels;
+        format.nChannels = (WORD)aChannels;
         format.nSamplesPerSec = aSamplerate;
         format.wFormatTag = WAVE_FORMAT_PCM;
         format.wBitsPerSample = sizeof(short)*8;

@@ -53,7 +53,7 @@ namespace SoLoud
 			mRegValues[i] = 0;
 	}
 
-	unsigned int TedSidInstance::getAudio(float *aBuffer, unsigned int aSamplesToRead, unsigned int aBufferSize)
+	unsigned int TedSidInstance::getAudio(float *aBuffer, unsigned int aSamplesToRead, unsigned int /*aBufferSize*/)
 	{
 		unsigned int i;
 		for (i = 0; i < aSamplesToRead; i++)
@@ -79,12 +79,12 @@ namespace SoLoud
 			mRegValues[mNextReg] = mNextVal;
 			if (mNextReg < 64)
 			{
-				mSID->write(mNextReg, mNextVal);
+				mSID->write(mNextReg, (unsigned char)mNextVal);
 			}
 			else
 			if (mNextReg < 64 + 5)
 			{
-				mTED->writeSoundReg(mNextReg - 64, mNextVal);
+				mTED->writeSoundReg(mNextReg - 64, (unsigned char)mNextVal);
 			}
 //			mSampleCount = mParent->mFile->read16();
 			mNextVal = mParent->mFile->read8();

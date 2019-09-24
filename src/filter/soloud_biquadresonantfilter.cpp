@@ -100,7 +100,7 @@ namespace SoLoud
 		calcBQRParams();
 	}
 
-	void BiquadResonantFilterInstance::filterChannel(float *aBuffer, unsigned int aSamples, float aSamplerate, double aTime, unsigned int aChannel, unsigned int aChannels)
+	void BiquadResonantFilterInstance::filterChannel(float *aBuffer, unsigned int aSamples, float /*aSamplerate*/, double aTime, unsigned int aChannel, unsigned int /*aChannels*/)
 	{
 		if (!mActive)
 			return;

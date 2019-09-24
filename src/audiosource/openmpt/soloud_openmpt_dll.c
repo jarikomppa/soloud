@@ -46,7 +46,7 @@ static HMODULE openDll()
 
 static void* getDllProc(HMODULE aDllHandle, const char *aProcName)
 {
-	return GetProcAddress(aDllHandle, aProcName);
+	return (void*)GetProcAddress(aDllHandle, (LPCSTR)aProcName);
 }
 
 #elif defined(__vita__)

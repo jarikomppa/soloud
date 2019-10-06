@@ -120,6 +120,7 @@ int is_banned(string aName)
 {	
 	if (aName.find("Instance") != string::npos) return 1;
 	if (aName == "AudioCollider") return 1;
+	if (aName == "AudioAttenuator") return 1;
 	if (aName == "Filter")  return 1;
 	if (aName == "AudioSource") return 1;
 	if (aName == "Fader") return 1;
@@ -1165,11 +1166,15 @@ void inherit_stuff()
 	}
 }
 
+#ifdef _MSC_VER
+  #define strcasecmp _stricmp
+#endif
+
 int main(int parc, char ** pars)
 {
 	printf(VERSION "\n");
 	
-	if (parc < 2 || _stricmp(pars[1], "go") != 0)
+	if (parc < 2 || strcasecmp(pars[1], "go") != 0)
 	{
 		printf("\nThis program will generate the 'C' api wrapper code.\n"
 			   "You probably ran this by mistake.\n"

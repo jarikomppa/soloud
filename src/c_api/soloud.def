@@ -105,8 +105,6 @@ EXPORTS
 	Soloud_set3dSourceDopplerFactor
 	Soloud_mix
 	Soloud_mixSigned16
-	AudioAttenuator_destroy
-	AudioAttenuator_attenuate
 	BassboostFilter_destroy
 	BassboostFilter_setParams
 	BassboostFilter_create

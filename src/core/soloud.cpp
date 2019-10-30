@@ -31,6 +31,7 @@ freely, subject to the following restrictions:
 
 #ifdef SOLOUD_SSE_INTRINSICS
 #include <xmmintrin.h>
+#include <emmintrin.h>
 #endif
 
 //#define FLOATING_POINT_DEBUG
@@ -1967,8 +1968,98 @@ namespace SoLoud
 		}
 	}
 
+#ifdef SOLOUD_SSE_INTRINSICS
+	void interlace_samples_s16_mono(const float *aSourceBuffer, short *aDestBuffer, unsigned int aSamples)
+	{
+		const __m128 scale = _mm_set1_ps(0x7fff);
+		const unsigned int blockSize = 16;
+		const unsigned int numBlocks = aSamples / blockSize;
+
+		for (unsigned int i = 0; i < numBlocks; ++i)
+		{
+			// A0 A1 A2 A3 B0 B1 B2 B3 -> A0 A1 A2 A3 B0 B1 B2 B3 (float -> short)
+			__m128 s0 = _mm_load_ps(&aSourceBuffer[16 * i + 0]);
+			__m128 s1 = _mm_load_ps(&aSourceBuffer[16 * i + 4]);
+			__m128 s2 = _mm_load_ps(&aSourceBuffer[16 * i + 8]);
+			__m128 s3 = _mm_load_ps(&aSourceBuffer[16 * i + 12]);
+
+			__m64 d0 = _mm_cvtps_pi16(_mm_mul_ps(s0, scale));
+			__m64 d1 = _mm_cvtps_pi16(_mm_mul_ps(s1, scale));
+			__m64 d2 = _mm_cvtps_pi16(_mm_mul_ps(s2, scale));
+			__m64 d3 = _mm_cvtps_pi16(_mm_mul_ps(s3, scale));
+
+			__m128i u = _mm_setr_epi64(d0, d1);
+			__m128i v = _mm_setr_epi64(d2, d3);
+
+			_mm_store_si128(reinterpret_cast<__m128i *>(&aDestBuffer[16 * i + 0]), u);
+			_mm_store_si128(reinterpret_cast<__m128i *>(&aDestBuffer[16 * i + 8]), v);
+		}
+
+		const unsigned int offset = blockSize * numBlocks;
+		for (unsigned int i = offset; i < aSamples; ++i)
+		{
+			aDestBuffer[i] = static_cast<short>(aSourceBuffer[i] * 0x7fff);
+		}
+	}
+
+	void interlace_samples_s16_stereo(const float *aSourceBuffer, short *aDestBuffer, unsigned int aSamples)
+	{
+		const __m128 scale = _mm_set1_ps(0x7fff);
+		const unsigned int blockSize = 8u;
+		const unsigned int numBlocks = aSamples / blockSize;
+
+		for (unsigned int i = 0; i < numBlocks; ++i)
+		{
+			// A0 A1 A2 A3 B0 B1 B2 B3 -> A0 B0 A1 B1 A2 B2 A3 B3
+			__m128 a0 = _mm_load_ps(&aSourceBuffer[8 * i + 0]);
+			__m128 a1 = _mm_load_ps(&aSourceBuffer[8 * i + 4]);
+			__m128 b0 = _mm_load_ps(&aSourceBuffer[aSamples + 8 * i + 0]);
+			__m128 b1 = _mm_load_ps(&aSourceBuffer[aSamples + 8 * i + 4]);
+
+			__m128 x = _mm_unpacklo_ps(a0, b0);
+			__m128 y = _mm_unpackhi_ps(a0, b0);
+			__m128 z = _mm_unpacklo_ps(a1, b1);
+			__m128 w = _mm_unpackhi_ps(a1, b1);
+
+			__m64 d0 = _mm_cvtps_pi16(_mm_mul_ps(x, scale));
+			__m64 d1 = _mm_cvtps_pi16(_mm_mul_ps(y, scale));
+			__m64 d2 = _mm_cvtps_pi16(_mm_mul_ps(z, scale));
+			__m64 d3 = _mm_cvtps_pi16(_mm_mul_ps(w, scale));
+
+			__m128i u = _mm_setr_epi64(d0, d1);
+			__m128i v = _mm_setr_epi64(d2, d3);
+
+			_mm_store_si128(reinterpret_cast<__m128i *>(&aDestBuffer[16 * i + 0]), u);
+			_mm_store_si128(reinterpret_cast<__m128i *>(&aDestBuffer[16 * i + 8]), v);
+		}
+
+		const unsigned int offset = blockSize * numBlocks;
+		for (unsigned int i = offset; i < aSamples; ++i)
+		{
+			aDestBuffer[2 * i + 0] = static_cast<short>(aSourceBuffer[i] * 0x7fff);
+			aDestBuffer[2 * i + 1] = static_cast<short>(aSourceBuffer[i + aSamples] * 0x7fff);
+		}
+	}
+#endif
+
 	void interlace_samples_s16(const float *aSourceBuffer, short *aDestBuffer, unsigned int aSamples, unsigned int aChannels)
 	{
+#ifdef SOLOUD_SSE_INTRINSICS
+		switch (aChannels)
+		{
+		case 1:
+			interlace_samples_s16_mono(aSourceBuffer, aDestBuffer, aSamples);
+			return;
+
+		case 2:
+			interlace_samples_s16_stereo(aSourceBuffer, aDestBuffer, aSamples);
+			return;
+
+		default:
+			break;
+		}
+#endif
+
 		// 111222 -> 121212
 		unsigned int i, j, c;
 		c = 0;

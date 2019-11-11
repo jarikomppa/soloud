@@ -67,6 +67,8 @@ namespace SoLoud
 		result setChannels(unsigned int aChannels);
 		// Enable or disable visualization data gathering
 		void setVisualizationEnable(bool aEnable);
+		// Move a live sound to this bus
+		void annexSound(handle aVoiceHandle);
 		
 		// Calculate and get 256 floats of FFT data for visualization. Visualization has to be enabled before use.
 		float *calcFFT();

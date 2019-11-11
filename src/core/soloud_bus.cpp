@@ -24,6 +24,7 @@ freely, subject to the following restrictions:
 
 #include "soloud.h"
 #include "soloud_fft.h"
+#include "soloud_internal.h"
 
 namespace SoLoud
 {
@@ -218,6 +219,13 @@ namespace SoLoud
 		return mSoloud->play3dClocked(aSoundTime, aSound, aPosX, aPosY, aPosZ, aVelX, aVelY, aVelZ, aVolume, mChannelHandle);
 	}
 
+	void Bus::annexSound(handle aVoiceHandle)
+	{
+		findBusHandle();
+		FOR_ALL_VOICES_PRE_EXT
+			mSoloud->mVoice[ch]->mBusHandle = mChannelHandle;
+		FOR_ALL_VOICES_POST_EXT
+	}
 
 	void Bus::setFilter(unsigned int aFilterId, Filter *aFilter)
 	{

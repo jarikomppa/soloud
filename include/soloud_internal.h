@@ -118,4 +118,38 @@ namespace SoLoud
 			h_++; \
 						} 
 
+#define FOR_ALL_VOICES_PRE_EXT \
+		handle *h_ = NULL; \
+		handle th_[2] = { aVoiceHandle, 0 }; \
+		mSoloud->lockAudioMutex(); \
+		h_ = mSoloud->voiceGroupHandleToArray(aVoiceHandle); \
+		if (h_ == NULL) h_ = th_; \
+		while (*h_) \
+		{ \
+			int ch = mSoloud->getVoiceFromHandle(*h_); \
+			if (ch != -1)  \
+			{
+
+#define FOR_ALL_VOICES_POST_EXT \
+			} \
+			h_++; \
+		} \
+		mSoloud->unlockAudioMutex();
+
+#define FOR_ALL_VOICES_PRE_3D_EXT \
+		handle *h_ = NULL; \
+		handle th_[2] = { aVoiceHandle, 0 }; \
+		h_ = mSoloud->voiceGroupHandleToArray(aVoiceHandle); \
+		if (h_ == NULL) h_ = th_; \
+				while (*h_) \
+						{ \
+			int ch = (*h_ & 0xfff) - 1; \
+			if (ch != -1 && mSoloud->m3dData[ch].mHandle == *h_)  \
+						{
+
+#define FOR_ALL_VOICES_POST_3D_EXT \
+						} \
+			h_++; \
+						} 
+
 #endif

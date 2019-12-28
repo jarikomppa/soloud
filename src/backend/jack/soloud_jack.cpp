@@ -42,24 +42,23 @@ namespace SoLoud
 
 namespace SoLoud
 {
-/*
-    struct jack_client_t
-    {
-	    // other function
-	    JackProcessCallback process;
-    	void *process_arg;
-    }*/
-
-    static jack_client_t *client = 0;
+    static jack_client_t *client;
     static jack_port_t **ports;
     static unsigned int portCount;
+    static unsigned int port = 0;
 
     static void jack_cleanup(Soloud * /*aSoloud*/)
     {
         jack_client_close(client);
     }
 
-    int jack_callback(jack_nframes_t nframes, void*) {
+    int jack_callback(jack_nframes_t nframes, void* arg) {
+        Soloud* soloud = (Soloud*) arg;
+        soloud->mix((jack_default_audio_sample_t*) jack_port_get_buffer(ports[0], nframes), nframes);
+        soloud->mix((jack_default_audio_sample_t*) jack_port_get_buffer(ports[1], nframes), nframes);
+
+        port = (port + 1) % portCount;
+        
         return 0;
     }
 
@@ -79,7 +78,7 @@ namespace SoLoud
         }
 
         // Activating Jack client
-        jack_set_process_callback(client, jack_callback, NULL);
+        jack_set_process_callback(client, jack_callback, (void*) aSoloud);
         if (jack_activate(client)) return UNKNOWN_ERROR;
 
         // Connecting to audio ports

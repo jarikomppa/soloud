@@ -38,14 +38,12 @@ namespace SoLoud
 
 #include <jack/jack.h>
 #include <string>
-#include <iostream>
 
 namespace SoLoud
 {
     static jack_client_t *client;
     static jack_port_t **ports;
     static unsigned int portCount;
-    static unsigned int port = 0;
 
     static void jack_cleanup(Soloud * /*aSoloud*/)
     {
@@ -54,11 +52,22 @@ namespace SoLoud
 
     int jack_callback(jack_nframes_t nframes, void* arg) {
         Soloud* soloud = (Soloud*) arg;
-        soloud->mix((jack_default_audio_sample_t*) jack_port_get_buffer(ports[0], nframes), nframes);
-        soloud->mix((jack_default_audio_sample_t*) jack_port_get_buffer(ports[1], nframes), nframes);
+        jack_nframes_t dataLength = nframes * portCount;
+        jack_nframes_t samples = nframes;
 
-        port = (port + 1) % portCount;
+        jack_default_audio_sample_t data[dataLength];
+        soloud->mix(data, samples);
         
+        for (int i = 0; i < portCount; i++) {
+            jack_default_audio_sample_t* buf = (jack_default_audio_sample_t*) jack_port_get_buffer(ports[i], samples);
+            // de-interlaces the samples into each port buffer 121212 -> {111} {222}
+            int c = 0;
+            for (int j = i; j < dataLength; j += portCount) {
+                buf[c] = data[j];
+                c++;
+            }
+        }
+
         return 0;
     }
 

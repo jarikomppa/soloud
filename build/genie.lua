@@ -407,6 +407,9 @@ end
 if (WITH_ALSA == 1) then
 	links {"asound"}
 end
+if (WITH_JACK == 1) then
+	links { "jack" }
+end
 if (WITH_COREAUDIO == 1) then
 	links {"AudioToolbox.framework"}
 end
@@ -432,6 +435,9 @@ end
 	}
 if (WITH_ALSA == 1) then
 	links {"asound"}
+end
+if (WITH_JACK == 1) then
+	links { "jack" }
 end
 if (WITH_COREAUDIO == 1) then
 	links {"AudioToolbox.framework"}
@@ -459,6 +465,9 @@ end
 if (WITH_ALSA == 1) then
 	links {"asound"}
 end
+if (WITH_JACK == 1) then
+	links { "jack" }
+end
 if (WITH_COREAUDIO == 1) then
 	links {"AudioToolbox.framework"}
 end
@@ -485,6 +494,9 @@ end
 	}
 if (WITH_ALSA == 1) then
 	links {"asound"}
+end
+if (WITH_JACK == 1) then
+	links { "jack" }
 end
 if (WITH_COREAUDIO == 1) then
 	links {"AudioToolbox.framework"}
@@ -683,6 +695,7 @@ end
 
 if (WITH_JACK == 1) then
 	defines { "WITH_JACK" }
+	links { "jack" }
 	files {
 	  "../src/backend/jack/**.c*"
 	  }
@@ -717,6 +730,9 @@ if (WITH_TOOLS == 1) then
 		}
 		if (WITH_ALSA == 1) then
 			links {"asound"}
+		end
+		if (WITH_JACK == 1) then
+			links { "jack" }
 		end
 		if (WITH_COREAUDIO == 1) then
 			links {"AudioToolbox.framework"}
@@ -806,6 +822,9 @@ end
 if (WITH_ALSA == 1) then
 	links {"asound"}
 end
+if (WITH_JACK == 1) then
+	links { "jack" }
+end
 if (WITH_COREAUDIO == 1) then
 	links {"AudioToolbox.framework"}
 end
@@ -877,6 +896,9 @@ function CommonDemo(_name)
 if (WITH_ALSA == 1) then
 	links {"asound"}
 end
+if (WITH_JACK == 1) then
+	links { "jack" }
+end
 if (WITH_COREAUDIO == 1) then
 	links {"AudioToolbox.framework"}
 end
@@ -922,6 +944,9 @@ end
 
 if (WITH_ALSA == 1) then
 	links {"asound"}
+end
+if (WITH_JACK == 1) then
+	links { "jack" }
 end
 if (WITH_COREAUDIO == 1) then
 	links {"AudioToolbox.framework"}

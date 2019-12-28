@@ -30,24 +30,53 @@ namespace SoLoud
 {
     result jack_init(Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer)
 	{
-		return NOT_IMPLEMENTED;
-	}
+        return NOT_IMPLEMENTED;
+    }
 };
 
 #else
 
+#include <jack/jack.h>
+
 namespace SoLoud
 {
-    static void jackCleanup(Soloud * /*aSoloud*/)
+    static jack_client_t *jackAudioClient;
+    static jack_port_t *jackAudioPort;
+
+    static void jack_cleanup(Soloud * /*aSoloud*/)
     {
+    }
+
+    int jack_callback(jack_nframes_t nframes, void*) {
+
     }
 
     result jack_init(Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer, unsigned int aChannels)
     {
-		if (aChannels == 0 || aChannels == 3 || aChannels == 5 || aChannels == 7 || aChannels > MAX_CHANNELS || aBuffer < SAMPLE_GRANULARITY)
-			return INVALID_PARAMETER;
-        aSoloud->mBackendData = 0;
-        aSoloud->mBackendCleanupFunc = jackCleanup;
+        aSoloud->mBackendCleanupFunc = jack_cleanup;
+
+        // Connecting to JACK server
+        jackAudioPort = jack_port_register(jackAudioClient, "Solound_Audio", JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
+        jack_set_process_callback(jackAudioClient, jack_callback, NULL);
+        if (jack_activate(jackAudioClient))
+        {
+            // Can't activate JACK
+            return UNKNOWN_ERROR;
+        }
+        // Connecting to audio ports
+        const char** audioPorts;
+        if ((audioPorts = jack_get_ports(jackAudioClient, NULL, JACK_DEFAULT_AUDIO_TYPE, JackPortIsPhysical|JackPortIsInput)) == NULL)
+        {
+            // Cannot find any physical audio playback ports
+            return UNKNOWN_ERROR;
+        } else
+        {
+            for (int n = 0; audioPorts[n] != NULL; n++) // Connecting to all available physical audio playback ports
+            {
+                int m = jack_connect(jackAudioClient, jack_port_name(jackAudioPort), audioPorts[n]);
+                // if (m) // Warning, cannot connect to audio output
+            }
+        }
 
         aSoloud->postinit(aSamplerate, aBuffer, aFlags, aChannels);
         aSoloud->mBackendString = "JACK driver";

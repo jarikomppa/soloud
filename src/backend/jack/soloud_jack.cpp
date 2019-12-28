@@ -50,12 +50,13 @@ namespace SoLoud
     	void *process_arg;
     }*/
 
-    static jack_client_t *jackClient = 0;
-    static jack_port_t **jackPorts;
-    static unsigned int ports;
+    static jack_client_t *client = 0;
+    static jack_port_t **ports;
+    static unsigned int portCount;
 
     static void jack_cleanup(Soloud * /*aSoloud*/)
     {
+        jack_client_close(client);
     }
 
     int jack_callback(jack_nframes_t nframes, void*) {
@@ -67,29 +68,31 @@ namespace SoLoud
         aSoloud->mBackendCleanupFunc = jack_cleanup;
 
         // Starting Jack client
-        if ((jackClient = jack_client_open("Solound_Audio", JackNullOption, NULL)) == 0) return UNKNOWN_ERROR;
+        if ((client = jack_client_open("Solound_Audio", JackNullOption, NULL)) == 0) return UNKNOWN_ERROR;
 
-        ports = aChannels;
-        jackPorts = new jack_port_t*[ports];
+        portCount = aChannels;
+        ports = new jack_port_t*[portCount];
         // Registerring JACK Ports
-        for (int i = 0; i < ports; i++) {
-            jackPorts[i] = jack_port_register(jackClient, ("channel_" + std::to_string(i + 1)).c_str(), JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
+        for (int i = 0; i < portCount; i++)
+        {
+            ports[i] = jack_port_register(client, ("channel_" + std::to_string(i + 1)).c_str(), JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
         }
 
         // Activating Jack client
-        jack_set_process_callback(jackClient, jack_callback, NULL);
-        if (jack_activate(jackClient)) return UNKNOWN_ERROR;
+        jack_set_process_callback(client, jack_callback, NULL);
+        if (jack_activate(client)) return UNKNOWN_ERROR;
 
         // Connecting to audio ports
         const char** audioPorts;
-        if ((audioPorts = jack_get_ports(jackClient, NULL, JACK_DEFAULT_AUDIO_TYPE, JackPortIsPhysical | JackPortIsInput)) == NULL)
+        if ((audioPorts = jack_get_ports(client, NULL, JACK_DEFAULT_AUDIO_TYPE, JackPortIsPhysical | JackPortIsInput)) == NULL)
         {
             return UNKNOWN_ERROR; // Cannot find any physical audio playback ports
-        } else
+        }
+        else
         {
             for (int n = 0; audioPorts[n] != NULL; n++)
             {
-                int m = jack_connect(jackClient, jack_port_name(jackPorts[n % ports]), audioPorts[n]);
+                int m = jack_connect(client, jack_port_name(ports[n % portCount]), audioPorts[n]);
                 // if (m) // Warning, cannot connect to audio output
             }
         }

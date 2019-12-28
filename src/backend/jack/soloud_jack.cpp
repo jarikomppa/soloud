@@ -24,11 +24,11 @@ freely, subject to the following restrictions:
 
 #include "soloud.h"
 
-#if !defined(WITH_NULL)
+#if !defined(WITH_JACK)
 
 namespace SoLoud
 {
-    result null_init(Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer)
+    result jack_init(Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer)
 	{
 		return NOT_IMPLEMENTED;
 	}
@@ -38,19 +38,19 @@ namespace SoLoud
 
 namespace SoLoud
 {
-    static void nullCleanup(Soloud * /*aSoloud*/)
+    static void jackCleanup(Soloud * /*aSoloud*/)
     {
     }
 
-    result null_init(Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer, unsigned int aChannels)
+    result jack_init(Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer, unsigned int aChannels)
     {
 		if (aChannels == 0 || aChannels == 3 || aChannels == 5 || aChannels == 7 || aChannels > MAX_CHANNELS || aBuffer < SAMPLE_GRANULARITY)
 			return INVALID_PARAMETER;
         aSoloud->mBackendData = 0;
-        aSoloud->mBackendCleanupFunc = nullCleanup;
+        aSoloud->mBackendCleanupFunc = jackCleanup;
 
         aSoloud->postinit(aSamplerate, aBuffer, aFlags, aChannels);
-        aSoloud->mBackendString = "null driver";
+        aSoloud->mBackendString = "JACK driver";
         return SO_NO_ERROR;
     }
 };

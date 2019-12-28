@@ -57,7 +57,7 @@ namespace SoLoud
 
         jack_default_audio_sample_t data[dataLength];
         soloud->mix(data, samples);
-        
+
         for (int i = 0; i < portCount; i++) {
             jack_default_audio_sample_t* buf = (jack_default_audio_sample_t*) jack_port_get_buffer(ports[i], samples);
             // de-interlaces the samples into each port buffer 121212 -> {111} {222}
@@ -77,7 +77,7 @@ namespace SoLoud
 
         // Starting Jack client
         if ((client = jack_client_open("Solound_Audio", JackNullOption, NULL)) == 0) return UNKNOWN_ERROR;
-
+        aChannels = aChannels == 0 ? 1 : aChannels; // default to 1 channel if none are provided
         portCount = aChannels;
         ports = new jack_port_t*[portCount];
         // Registerring JACK Ports
@@ -91,8 +91,8 @@ namespace SoLoud
         if (jack_activate(client)) return UNKNOWN_ERROR;
 
         // Connecting to audio ports
-        const char** audioPorts;
-        if ((audioPorts = jack_get_ports(client, NULL, JACK_DEFAULT_AUDIO_TYPE, JackPortIsPhysical | JackPortIsInput)) == NULL)
+        const char** audioPorts = jack_get_ports(client, NULL, JACK_DEFAULT_AUDIO_TYPE, JackPortIsPhysical | JackPortIsInput);
+        if (audioPorts == NULL)
         {
             return UNKNOWN_ERROR; // Cannot find any physical audio playback ports
         }

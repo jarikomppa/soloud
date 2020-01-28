@@ -86,8 +86,6 @@ namespace SoLoud
 		mOffset = 0;
 		mCodec.mOgg = 0;
 		mCodec.mFlac = 0;
-		mCodec.mMp3 = 0;
-		mCodec.mWav = 0;
 		mFile = 0;
 		if (aParent->mMemFile)
 		{
@@ -117,9 +115,11 @@ namespace SoLoud
 		{
 			if (mParent->mFiletype == WAVSTREAM_WAV)
 			{
-				mCodec.mWav = drwav_open(drwav_read_func, drwav_seek_func, (void*)mFile);
-				if (!mCodec.mWav)
+				mCodec.mWav = new drwav;
+				if (!drwav_init(mCodec.mWav, drwav_read_func, drwav_seek_func, (void*)mFile, NULL))
 				{
+					delete mCodec.mWav;
+					mCodec.mWav = 0;
 					if (mFile != mParent->mStreamFile)
 						delete mFile;
 					mFile = 0;
@@ -145,7 +145,7 @@ namespace SoLoud
 			else
 			if (mParent->mFiletype == WAVSTREAM_FLAC)
 			{
-				mCodec.mFlac = drflac_open(drflac_read_func, drflac_seek_func, (void*)mFile);
+				mCodec.mFlac = drflac_open(drflac_read_func, drflac_seek_func, (void*)mFile, NULL);
 				if (!mCodec.mFlac)
 				{
 					if (mFile != mParent->mStreamFile)
@@ -157,7 +157,7 @@ namespace SoLoud
 			if (mParent->mFiletype == WAVSTREAM_MP3)
 			{
 				mCodec.mMp3 = new drmp3;
-				if (!drmp3_init(mCodec.mMp3, drmp3_read_func, drmp3_seek_func, (void*)mFile, NULL))
+				if (!drmp3_init(mCodec.mMp3, drmp3_read_func, drmp3_seek_func, (void*)mFile, NULL, NULL))
 				{
 					delete mCodec.mMp3;
 					mCodec.mMp3 = 0;
@@ -197,13 +197,17 @@ namespace SoLoud
 			{
 				drmp3_uninit(mCodec.mMp3);
 				delete mCodec.mMp3;
+				mCodec.mMp3 = 0;
 			}
 			break;
 		case WAVSTREAM_WAV:
 			if (mCodec.mWav)
 			{
-				drwav_close(mCodec.mWav);
+				drwav_uninit(mCodec.mWav);
+				delete mCodec.mWav;
+				mCodec.mWav = 0;
 			}
+			break;
 		}
 		if (mFile != mParent->mStreamFile)
 		{
@@ -400,21 +404,21 @@ namespace SoLoud
 	result WavStream::loadwav(File * fp)
 	{
 		fp->seek(0);
-		drwav* decoder = drwav_open(drwav_read_func, drwav_seek_func, (void*)fp);
+		drwav decoder;
 
-		if (decoder == NULL)
+		if (!drwav_init(&decoder, drwav_read_func, drwav_seek_func, (void*)fp, NULL))
 			return FILE_LOAD_FAILED;
 
-		mChannels = decoder->channels;
+		mChannels = decoder.channels;
 		if (mChannels > MAX_CHANNELS)
 		{
 			mChannels = MAX_CHANNELS;
 		}
 
-		mBaseSamplerate = (float)decoder->sampleRate;
-		mSampleCount = (unsigned int)decoder->totalSampleCount;
+		mBaseSamplerate = (float)decoder.sampleRate;
+		mSampleCount = (unsigned int)decoder.totalPCMFrameCount;
 		mFiletype = WAVSTREAM_WAV;
-		drwav_close(decoder);
+		drwav_uninit(&decoder);
 
 		return SO_NO_ERROR;
 	}
@@ -446,7 +450,7 @@ namespace SoLoud
 	result WavStream::loadflac(File * fp)
 	{
 		fp->seek(0);
-		drflac* decoder = drflac_open(drflac_read_func, drflac_seek_func, (void*)fp);
+		drflac* decoder = drflac_open(drflac_read_func, drflac_seek_func, (void*)fp, NULL);
 
 		if (decoder == NULL)
 			return FILE_LOAD_FAILED;
@@ -469,7 +473,7 @@ namespace SoLoud
 	{
 		fp->seek(0);
 		drmp3 decoder;
-		if (!drmp3_init(&decoder, drmp3_read_func, drmp3_seek_func, (void*)fp, NULL))
+		if (!drmp3_init(&decoder, drmp3_read_func, drmp3_seek_func, (void*)fp, NULL, NULL))
 			return FILE_LOAD_FAILED;
 
 

@@ -1994,6 +1994,7 @@ namespace SoLoud
 		const __m128 scale = _mm_set1_ps(0x7fff);
 		const unsigned int blockSize = 16;
 		const unsigned int numBlocks = aSamples / blockSize;
+		SOLOUD_ASSERT((aSamples % blockSize) == 0);
 
 		for (unsigned int i = 0; i < numBlocks; ++i)
 		{
@@ -2015,6 +2016,8 @@ namespace SoLoud
 			_mm_store_si128(reinterpret_cast<__m128i *>(&aDestBuffer[16 * i + 8]), v);
 		}
 
+		_mm_empty();
+
 		const unsigned int offset = blockSize * numBlocks;
 		for (unsigned int i = offset; i < aSamples; ++i)
 		{
@@ -2027,6 +2030,7 @@ namespace SoLoud
 		const __m128 scale = _mm_set1_ps(0x7fff);
 		const unsigned int blockSize = 8u;
 		const unsigned int numBlocks = aSamples / blockSize;
+		SOLOUD_ASSERT((aSamples % blockSize) == 0);
 
 		for (unsigned int i = 0; i < numBlocks; ++i)
 		{
@@ -2052,6 +2056,8 @@ namespace SoLoud
 			_mm_store_si128(reinterpret_cast<__m128i *>(&aDestBuffer[16 * i + 0]), u);
 			_mm_store_si128(reinterpret_cast<__m128i *>(&aDestBuffer[16 * i + 8]), v);
 		}
+
+		_mm_empty();
 
 		const unsigned int offset = blockSize * numBlocks;
 		for (unsigned int i = offset; i < aSamples; ++i)

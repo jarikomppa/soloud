@@ -110,7 +110,7 @@ static HMODULE oal_openDll()
 
 static void* oal_getDllProc(HMODULE aDllHandle, const char *aProcName)
 {
-    return GetProcAddress(aDllHandle, aProcName);
+    return (void*)GetProcAddress(aDllHandle, (LPCSTR)aProcName);
 }
 
 #else
@@ -129,9 +129,6 @@ static void* oal_getDllProc(HMODULE aLibrary, const char *aProcName)
 }
 
 #endif
-
-extern "C"
-{
 
 static int oal_load_dll()
 {
@@ -285,8 +282,6 @@ void dll_al_DeleteSources(ALsizei n, ALuint *sources)
 {
 	if (oal_load_dll())
 		dAlDeleteSources(n, sources);
-}
-
 }
 
 #endif

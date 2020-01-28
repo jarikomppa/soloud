@@ -110,7 +110,7 @@ namespace SoLoud
 		mOffset[aChannel] = bofs;
 	}
 
-	void FFTFilterInstance::fftFilterChannel(float *aFFTBuffer, unsigned int aSamples, float aSamplerate, time aTime, unsigned int aChannel, unsigned int aChannels)
+	void FFTFilterInstance::fftFilterChannel(float *aFFTBuffer, unsigned int aSamples, float /*aSamplerate*/, time /*aTime*/, unsigned int /*aChannel*/, unsigned int /*aChannels*/)
 	{
 		unsigned int i;
 		for (i = 4; i < aSamples; i++)

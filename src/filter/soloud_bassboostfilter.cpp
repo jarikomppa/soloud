@@ -36,7 +36,7 @@ namespace SoLoud
 		mParam[BOOST] = aParent->mBoost;
 	}
 
-	void BassboostFilterInstance::fftFilterChannel(float *aFFTBuffer, unsigned int aSamples, float aSamplerate, time aTime, unsigned int aChannel, unsigned int aChannels)
+	void BassboostFilterInstance::fftFilterChannel(float *aFFTBuffer, unsigned int /*aSamples*/, float /*aSamplerate*/, time /*aTime*/, unsigned int /*aChannel*/, unsigned int /*aChannels*/)
 	{
 		unsigned int i;
 		for (i = 0; i < 2; i++)

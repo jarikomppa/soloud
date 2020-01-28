@@ -83,7 +83,7 @@ namespace SoLoud
 		}
 	}
 
-	static void soloud_sdl2_deinit(SoLoud::Soloud *aSoloud)
+	static void soloud_sdl2_deinit(SoLoud::Soloud * /*aSoloud*/)
 	{
 		dll_SDL2_CloseAudioDevice(gAudioDeviceID);
 	}
@@ -104,8 +104,8 @@ namespace SoLoud
 		SDL_AudioSpec as;
 		as.freq = aSamplerate;
 		as.format = AUDIO_F32;
-		as.channels = aChannels;
-		as.samples = aBuffer;
+		as.channels = (Uint8)aChannels;
+		as.samples = (Uint16)aBuffer;
 		as.callback = soloud_sdl2_audiomixer;
 		as.userdata = (void*)aSoloud;
 

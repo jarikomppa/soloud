@@ -225,7 +225,7 @@ namespace SoLoud
 	{
 	}
 
-	unsigned int VizsnInstance::getAudio(float *aBuffer, unsigned int aSamplesToRead, unsigned int aBufferSize)
+	unsigned int VizsnInstance::getAudio(float *aBuffer, unsigned int aSamplesToRead, unsigned int /*aBufferSize*/)
 	{
 		unsigned int idx = 0;
 		int i, j;
@@ -388,7 +388,7 @@ namespace SoLoud
 		return ob * (1.0f / 255.0f);
 	}
 
-	void VizsnInstance::setphone(VizsnBank *aB, char aP, float aPitch)
+	void VizsnInstance::setphone(VizsnBank *aB, char aP, float /*aPitch*/)
 	{
 		int i;
 		aB->frica = aB->aspir = aB->bypas = aB->breth = aB->voice = 0;
@@ -429,7 +429,6 @@ namespace SoLoud
 			else
 			{
 				/* v */
-				int i;
 				const float *v = voo[aP - 8];
 
 				aB->voice = *v++;
@@ -438,11 +437,12 @@ namespace SoLoud
 				aB->bypas = *v++;
 				aB->breth = *v++;
 
-				for (i = 0; i < 10; i++)
+				int j;
+				for (j = 0; j < 10; j++)
 				{
-					aB->r[i].a = *v++;
-					aB->r[i].b = *v++;
-					aB->r[i].c = *v++;
+					aB->r[j].a = *v++;
+					aB->r[j].b = *v++;
+					aB->r[j].c = *v++;
 				}
 
 				aB->voice = 0.8f;

@@ -8,6 +8,7 @@ local WITH_XAUDIO2 = 0
 local WITH_WINMM = 0
 local WITH_WASAPI = 0
 local WITH_ALSA = 0
+local WITH_JACK = 0
 local WITH_OSS = 0
 local WITH_COREAUDIO = 0
 local WITH_VITA_HOMEBREW = 0
@@ -124,6 +125,16 @@ newoption {
 newoption {
 	trigger		  = "soloud-devel",
 	description = "Shorthand for options used while developing SoLoud"
+}
+
+newoption {
+	trigger		  = "with-jack",
+	description = "Include JACK backend in build"
+}
+
+newoption {
+	trigger		  = "with-jack-only",
+	description = "Only include JACK backend in build"
 }
 
 if _OPTIONS["soloud-devel"] then
@@ -276,6 +287,27 @@ if _OPTIONS["with-vita-homebrew-only"] then
 	premake.gcc.ar = "arm-vita-eabi-ar"
 end
 
+if _OPTIONS["with-jack"] then
+	WITH_JACK = 1
+end
+
+if _OPTIONS["with-jack-only"] then
+	WITH_SDL = 0
+	WITH_SDL2 = 0
+	WITH_SDL_STATIC = 0
+	WITH_SDL2_STATIC = 0
+	WITH_PORTAUDIO = 0
+	WITH_OPENAL = 0
+	WITH_XAUDIO2 = 0
+	WITH_WINMM = 0
+	WITH_WASAPI = 0
+	WITH_OSS = 0
+	WITH_ALSA = 0
+	WITH_VITA_HOMEBREW = 0
+	WITH_COREAUDIO = 0
+	WITH_JACK = 1
+end
+
 if _OPTIONS["with-native-only"] then
 	WITH_SDL = 0
 	WITH_SDL2 = 0
@@ -310,6 +342,7 @@ print ("WITH_XAUDIO2    = ", WITH_XAUDIO2)
 print ("WITH_WINMM      = ", WITH_WINMM)
 print ("WITH_WASAPI     = ", WITH_WASAPI)
 print ("WITH_ALSA       = ", WITH_ALSA)
+print ("WITH_JACK       = ", WITH_JACK)
 print ("WITH_OSS        = ", WITH_OSS)
 print ("WITH_COREAUDIO  = ", WITH_COREAUDIO)
 print ("WITH_VITA_HOMEBREW = ", WITH_VITA_HOMEBREW)
@@ -374,6 +407,9 @@ end
 if (WITH_ALSA == 1) then
 	links {"asound"}
 end
+if (WITH_JACK == 1) then
+	links { "jack" }
+end
 if (WITH_COREAUDIO == 1) then
 	links {"AudioToolbox.framework"}
 end
@@ -399,6 +435,9 @@ end
 	}
 if (WITH_ALSA == 1) then
 	links {"asound"}
+end
+if (WITH_JACK == 1) then
+	links { "jack" }
 end
 if (WITH_COREAUDIO == 1) then
 	links {"AudioToolbox.framework"}
@@ -426,6 +465,9 @@ end
 if (WITH_ALSA == 1) then
 	links {"asound"}
 end
+if (WITH_JACK == 1) then
+	links { "jack" }
+end
 if (WITH_COREAUDIO == 1) then
 	links {"AudioToolbox.framework"}
 end
@@ -452,6 +494,9 @@ end
 	}
 if (WITH_ALSA == 1) then
 	links {"asound"}
+end
+if (WITH_JACK == 1) then
+	links { "jack" }
 end
 if (WITH_COREAUDIO == 1) then
 	links {"AudioToolbox.framework"}
@@ -647,6 +692,18 @@ if (WITH_VITA_HOMEBREW == 1) then
 	}
 end
 
+
+if (WITH_JACK == 1) then
+	defines { "WITH_JACK" }
+	links { "jack" }
+	files {
+	  "../src/backend/jack/**.c*"
+	  }
+	includedirs {
+	  "../include"
+	}
+end
+
 if (WITH_NULL == 1) then
     defines { "WITH_NULL" }
 	files {
@@ -673,6 +730,9 @@ if (WITH_TOOLS == 1) then
 		}
 		if (WITH_ALSA == 1) then
 			links {"asound"}
+		end
+		if (WITH_JACK == 1) then
+			links { "jack" }
 		end
 		if (WITH_COREAUDIO == 1) then
 			links {"AudioToolbox.framework"}
@@ -762,6 +822,9 @@ end
 if (WITH_ALSA == 1) then
 	links {"asound"}
 end
+if (WITH_JACK == 1) then
+	links { "jack" }
+end
 if (WITH_COREAUDIO == 1) then
 	links {"AudioToolbox.framework"}
 end
@@ -833,6 +896,9 @@ function CommonDemo(_name)
 if (WITH_ALSA == 1) then
 	links {"asound"}
 end
+if (WITH_JACK == 1) then
+	links { "jack" }
+end
 if (WITH_COREAUDIO == 1) then
 	links {"AudioToolbox.framework"}
 end
@@ -878,6 +944,9 @@ end
 
 if (WITH_ALSA == 1) then
 	links {"asound"}
+end
+if (WITH_JACK == 1) then
+	links { "jack" }
 end
 if (WITH_COREAUDIO == 1) then
 	links {"AudioToolbox.framework"}

@@ -65,20 +65,20 @@ namespace SoLoud
 	static PaStream *gStream;
 
 	static int portaudio_callback( 
-				const void *input,
+				const void * /*input*/,
 				void *output,
 				unsigned long frameCount,
-				const PaStreamCallbackTimeInfo* timeInfo,
-				PaStreamCallbackFlags statusFlags,
+				const PaStreamCallbackTimeInfo* /*timeInfo*/,
+				PaStreamCallbackFlags /*statusFlags*/,
 				void *userData ) 
 	{
 		SoLoud::Soloud *soloud = (SoLoud::Soloud *)userData;
-		float *mixdata = (float*)(soloud->mBackendData);
+		//float *mixdata = (float*)(soloud->mBackendData);
 		soloud->mix((float*)output, frameCount);
 
 		return 0;
 	}
-
+#if 0
 	static void portaudio_mutex_lock(void * mutex)
 	{
 		Thread::lockMutex(mutex);
@@ -88,8 +88,9 @@ namespace SoLoud
 	{
 		Thread::unlockMutex(mutex);
 	}
+#endif
 
-	void soloud_portaudio_deinit(SoLoud::Soloud *aSoloud)
+	void soloud_portaudio_deinit(SoLoud::Soloud * /*aSoloud*/)
 	{
 		dll_Pa_CloseStream(gStream);
 		dll_Pa_Terminate();

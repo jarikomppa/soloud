@@ -44,7 +44,8 @@ freely, subject to the following restrictions:
    !defined(WITH_OPENAL) && !defined(WITH_XAUDIO2) && !defined(WITH_WINMM) && \
    !defined(WITH_WASAPI) && !defined(WITH_OSS) && !defined(WITH_SDL1_STATIC) && \
    !defined(WITH_SDL2_STATIC) && !defined(WITH_ALSA) && !defined(WITH_OPENSLES) && \
-   !defined(WITH_NULL) && !defined(WITH_COREAUDIO) && !defined(WITH_VITA_HOMEBREW)
+   !defined(WITH_NULL) && !defined(WITH_COREAUDIO) && !defined(WITH_VITA_HOMEBREW) &&\
+   !defined(WITH_JACK)
 #error It appears you haven't enabled any of the back-ends. Please #define one or more of the WITH_ defines (or use premake) '
 #endif
 
@@ -378,6 +379,25 @@ namespace SoLoud
 			{
 				inited = 1;
 				mBackendID = Soloud::ALSA;
+			}
+
+			if (ret != 0 && aBackend != Soloud::AUTO)
+				return ret;			
+		}
+#endif
+
+#if defined(WITH_JACK)
+		if (!inited &&
+			(aBackend == Soloud::JACK ||
+			aBackend == Soloud::AUTO))
+		{
+			if (aBufferSize == Soloud::AUTO) buffersize = 2048;
+
+			int ret = jack_init(this, aFlags, samplerate, buffersize, aChannels);
+			if (ret == 0)
+			{
+				inited = 1;
+				mBackendID = Soloud::JACK;
 			}
 
 			if (ret != 0 && aBackend != Soloud::AUTO)
@@ -860,8 +880,8 @@ namespace SoLoud
 				  float *aDst, 
 				  int aSrcOffset,
 				  int aDstSampleCount,
-				  float aSrcSamplerate, 
-				  float aDstSamplerate,
+				  float /*aSrcSamplerate*/, 
+				  float /*aDstSamplerate*/,
 				  int aStepFixed)
 	{
 #if 0
@@ -1361,7 +1381,6 @@ namespace SoLoud
 				!(voice->mFlags & AudioSourceInstance::PAUSED) &&
 				!(voice->mFlags & AudioSourceInstance::INAUDIBLE))
 			{
-				unsigned int j;
 				float step = voice->mSamplerate / aSamplerate;
 				// avoid step overflow
 				if (step > (1 << (32 - FIXPOINT_FRAC_BITS)))
@@ -1383,9 +1402,10 @@ namespace SoLoud
 					}
 					
 					// Clear scratch where we're skipping
-					for (j = 0; j < voice->mChannels; j++)
+					unsigned int k;
+					for (k = 0; k < voice->mChannels; k++)
 					{
-						memset(aScratch + j * aBufferSize, 0, sizeof(float) * outofs); 
+						memset(aScratch + k * aBufferSize, 0, sizeof(float) * outofs); 
 					}
 				}												
 
@@ -1422,9 +1442,9 @@ namespace SoLoud
                         // Clear remaining of the resample data if the full scratch wasn't used
 						if (readcount < SAMPLE_GRANULARITY)
 						{
-							unsigned int i;
-							for (i = 0; i < voice->mChannels; i++)
-								memset(voice->mResampleData[0]->mData + readcount + SAMPLE_GRANULARITY * i, 0, sizeof(float) * (SAMPLE_GRANULARITY - readcount));
+							unsigned int k;
+							for (k = 0; k < voice->mChannels; k++)
+								memset(voice->mResampleData[0]->mData + readcount + SAMPLE_GRANULARITY * k, 0, sizeof(float) * (SAMPLE_GRANULARITY - readcount));
 						}
 
 						// If we go past zero, crop to zero (a bit of a kludge)

@@ -68,9 +68,9 @@ mFileHandle(fp)
 	{
 		if (!mFileHandle)
 			return 0;
-		int pos = ftell(mFileHandle);
+		unsigned int pos = (unsigned int)ftell(mFileHandle);
 		fseek(mFileHandle, 0, SEEK_END);
-		int len = ftell(mFileHandle);
+		unsigned int len = (unsigned int)ftell(mFileHandle);
 		fseek(mFileHandle, pos, SEEK_SET);
 		return len;
 	}
@@ -82,7 +82,7 @@ mFileHandle(fp)
 
 	unsigned int DiskFile::pos()
 	{
-		return ftell(mFileHandle);
+		return (unsigned int)ftell(mFileHandle);
 	}
 
 	FILE *DiskFile::getFilePtr()
@@ -291,7 +291,7 @@ extern "C"
 		return 0;
 	}
 
-	Soloud_Filehack * Soloud_Filehack_fopen(const char *aFilename, char *aMode)
+	Soloud_Filehack * Soloud_Filehack_fopen(const char *aFilename, char * /*aMode*/)
 	{
 		SoLoud::DiskFile *df = new SoLoud::DiskFile();
 		int res = df->open(aFilename);

@@ -61,7 +61,7 @@ static HMODULE sdl2_openDll()
 
 static void* sdl2_getDllProc(HMODULE aDllHandle, const char *aProcName)
 {
-    return GetProcAddress(aDllHandle, aProcName);
+    return (void*)GetProcAddress(aDllHandle, (LPCSTR)aProcName);
 }
 
 #else

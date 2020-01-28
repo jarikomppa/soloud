@@ -38,7 +38,7 @@ namespace SoLoud
 
 namespace SoLoud
 {
-    static void nullCleanup(Soloud *aSoloud)
+    static void nullCleanup(Soloud * /*aSoloud*/)
     {
     }
 

@@ -110,11 +110,11 @@ namespace SoLoud
 			return S_OK;
 		}
 
-		HRESULT STDMETHODCALLTYPE OnDeviceStateChanged(LPCWSTR pwstrDeviceId, DWORD dwNewState) { return S_OK; }
-		HRESULT STDMETHODCALLTYPE OnDeviceAdded(LPCWSTR pwstrDeviceId) { return S_OK; }
-		HRESULT STDMETHODCALLTYPE OnDeviceRemoved(LPCWSTR pwstrDeviceId) { return S_OK; }
-		HRESULT STDMETHODCALLTYPE OnPropertyValueChanged(LPCWSTR pwstrDeviceId, const PROPERTYKEY key) { return S_OK; }
-		HRESULT STDMETHODCALLTYPE OnDefaultDeviceChanged(EDataFlow flow, ERole role, LPCWSTR pwstrDefaultDeviceId)
+		HRESULT STDMETHODCALLTYPE OnDeviceStateChanged(LPCWSTR /*pwstrDeviceId*/, DWORD /*dwNewState*/) { return S_OK; }
+		HRESULT STDMETHODCALLTYPE OnDeviceAdded(LPCWSTR /*pwstrDeviceId*/) { return S_OK; }
+		HRESULT STDMETHODCALLTYPE OnDeviceRemoved(LPCWSTR /*pwstrDeviceId*/) { return S_OK; }
+		HRESULT STDMETHODCALLTYPE OnPropertyValueChanged(LPCWSTR /*pwstrDeviceId*/, const PROPERTYKEY /*key*/) { return S_OK; }
+		HRESULT STDMETHODCALLTYPE OnDefaultDeviceChanged(EDataFlow flow, ERole /*role*/, LPCWSTR /*pwstrDefaultDeviceId*/)
 		{
 			if (flow == eRender)
 			{
@@ -276,7 +276,7 @@ namespace SoLoud
         CoUninitialize();
     }
 
-	result wasapi_init(Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer, unsigned int aChannels)
+	result wasapi_init(Soloud *aSoloud, unsigned int aFlags, unsigned int /*aSamplerate*/, unsigned int aBuffer, unsigned int /*aChannels*/)
     {
 		CoInitializeEx(0, COINIT_MULTITHREADED);
         WASAPIData *data = new WASAPIData;
@@ -301,7 +301,7 @@ namespace SoLoud
             return UNKNOWN_ERROR;
         }
 		data->notificationClient = new MMNotificationClient(data);
-		HRESULT result = data->deviceEnumerator->RegisterEndpointNotificationCallback(data->notificationClient);
+		/*HRESULT result = */data->deviceEnumerator->RegisterEndpointNotificationCallback(data->notificationClient);
         if (FAILED(data->deviceEnumerator->GetDefaultAudioEndpoint(eRender, eConsole, 
                                                                    &data->device))) 
         {

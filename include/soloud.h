@@ -176,6 +176,7 @@ namespace SoLoud
 			XAUDIO2,
 			WASAPI,
 			ALSA,
+			JACK,
 			OSS,
 			OPENAL,
 			COREAUDIO,

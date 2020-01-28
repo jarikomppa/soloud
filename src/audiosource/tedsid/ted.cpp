@@ -110,7 +110,7 @@ void TED::writeSoundReg(unsigned int reg, unsigned char value)
 	}
 }
 
-inline unsigned int TED::waveSquare(unsigned int channel)
+inline unsigned int TED::waveSquare(unsigned int /*channel*/)
 {
 	return Volume;
 }
@@ -200,8 +200,8 @@ void TED::renderSound(unsigned int nrsamples, short *buffer)
 	// Calculate the buffer...
 	if (DAStatus) {// digi?
 		short sample = 0;//audiohwspec->silence;
-		if (Snd1Status) sample = Volume;
-		if (Snd2Status) sample += Volume;
+		if (Snd1Status) sample = (short)Volume;
+		if (Snd2Status) sample += (short)Volume;
 		for (;nrsamples--;) {
 			*buffer++ = sample & channelMask[2];
 		}
@@ -229,7 +229,7 @@ void TED::renderSound(unsigned int nrsamples, short *buffer)
 			} else if (SndNoiseStatus && noise[NoiseCounter] & channelMask[2]) {
 				result += Volume;
 			}
-			*buffer++ = result;
+			*buffer++ = (short)result;
 		}   // for
 	}
 }

@@ -1,6 +1,6 @@
 /*
 SoLoud audio engine
-Copyright (c) 2013-2015 Jari Komppa
+Copyright (c) 2013-2020 Jari Komppa
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -33,3 +33,4 @@ See soloud_file_hack_on.h
 #undef ftell 
 #undef fclose
 #undef fopen 
+#undef fopen_s

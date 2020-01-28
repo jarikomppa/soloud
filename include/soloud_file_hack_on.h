@@ -1,6 +1,6 @@
 /*
 SoLoud audio engine
-Copyright (c) 2013-2015 Jari Komppa
+Copyright (c) 2013-2020 Jari Komppa
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -44,6 +44,7 @@ extern int Soloud_Filehack_fseek(Soloud_Filehack *f, int idx, int base);
 extern int Soloud_Filehack_ftell(Soloud_Filehack *f);
 extern int Soloud_Filehack_fclose(Soloud_Filehack *f);
 extern Soloud_Filehack * Soloud_Filehack_fopen(const char *aFilename, char *aMode);
+extern int Soloud_Filehack_fopen_s(Soloud_Filehack **f, const char* aFilename, char* aMode);
 
 #ifdef __cplusplus
 }
@@ -56,3 +57,4 @@ extern Soloud_Filehack * Soloud_Filehack_fopen(const char *aFilename, char *aMod
 #define ftell Soloud_Filehack_ftell
 #define fclose Soloud_Filehack_fclose
 #define fopen Soloud_Filehack_fopen
+#define fopen_s Soloud_Filehack_fopen_s

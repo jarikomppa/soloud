@@ -25,8 +25,10 @@ freely, subject to the following restrictions:
 #if defined(_WIN32)||defined(_WIN64)
 #include <windows.h>
 #else
+#include <inttypes.h>
 #include <pthread.h>
 #include <unistd.h>
+#include <time.h>
 #endif
 
 #include "soloud.h"
@@ -119,6 +121,11 @@ namespace SoLoud
             delete aThreadHandle;
         }
 
+		int getTimeMillis()
+		{
+			return GetTickCount();
+		}
+
 #else // pthreads
         struct ThreadHandleData
         {
@@ -210,6 +217,13 @@ namespace SoLoud
         {
             delete aThreadHandle;
         }
+
+		int getTimeMillis()
+		{
+			struct timespec spec;
+			clock_gettime(CLOCK_REALTIME, &spec);
+			return spec.tv_sec * 1000 + (int)(spec.tv_nsec / 1.0e6);
+		}
 #endif
 
 		static void poolWorker(void *aParam)

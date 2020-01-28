@@ -46,6 +46,7 @@ namespace SoLoud
 		void sleep(int aMSec);
         void wait(ThreadHandle aThreadHandle);
         void release(ThreadHandle aThreadHandle);
+		int getTimeMillis();
 
 #define MAX_THREADPOOL_TASKS 1024
 

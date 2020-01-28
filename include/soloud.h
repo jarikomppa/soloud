@@ -182,6 +182,7 @@ namespace SoLoud
 			COREAUDIO,
 			OPENSLES,
 			VITA_HOMEBREW,
+			NOSOUND,
 			NULLDRIVER,
 			BACKEND_MAX,
 		};

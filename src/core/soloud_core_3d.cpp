@@ -341,7 +341,7 @@ namespace SoLoud
 					vi->mChannelVolume[j] = v->mChannelVolume[j];
 				}
 
-				if (vi->mOverallVolume < 0.01f)
+				if (vi->mOverallVolume < 0.001f)
 				{
 					// Inaudible.
 					vi->mFlags |= AudioSourceInstance::INAUDIBLE;

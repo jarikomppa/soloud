@@ -26,10 +26,11 @@ freely, subject to the following restrictions:
 #include <stdio.h>
 
 #include "soloud.h"
+#include "soloud_thread.h"
 
 const char * getBackendEnumString(int aBackend)
 {
-	SOLOUD_ASSERT(SoLoud::Soloud::BACKEND_MAX == 15); // if this fails, this function needs adjustment
+	SOLOUD_ASSERT(SoLoud::Soloud::BACKEND_MAX == 17); // if this fails, this function needs adjustment
 	switch (aBackend)
 	{
 	case SoLoud::Soloud::AUTO: return "AUTO";
@@ -47,6 +48,8 @@ const char * getBackendEnumString(int aBackend)
 	case SoLoud::Soloud::OPENSLES: return "OPENSLES";
 	case SoLoud::Soloud::VITA_HOMEBREW: return "VITA_HOMEBREW";
 	case SoLoud::Soloud::NULLDRIVER: return "NULLDRIVER";
+	case SoLoud::Soloud::NOSOUND: return "NOSOUND";
+	case SoLoud::Soloud::MINIAUDIO: return "MINIAUDIO";
 	}
 	return "?!";
 }
@@ -102,7 +105,8 @@ int main(int argc, char *argv[])
 				if (res == SoLoud::SO_NO_ERROR && soloud.getBackendChannels() == j)
 				{
 					printf("Channels: %d%s\n", soloud.getBackendChannels(), getChannelString(soloud.getBackendChannels()));
-					soloud.deinit();
+					soloud.deinit();					
+					SoLoud::Thread::sleep(200);
 				}
 			}
 		}

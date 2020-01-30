@@ -29,9 +29,12 @@ freely, subject to the following restrictions:
 #include "soloud_thread.h"
 #include "soloud_fft.h"
 
+
 #ifdef SOLOUD_SSE_INTRINSICS
 #include <xmmintrin.h>
+#ifdef _M_IX86
 #include <emmintrin.h>
+#endif
 #endif
 
 //#define FLOATING_POINT_DEBUG
@@ -741,7 +744,7 @@ namespace SoLoud
 		return mFFTData;
 	}
 
-#ifdef SOLOUD_SSE_INTRINSICS
+#if defined(SOLOUD_SSE_INTRINSICS)
 	void Soloud::clip(AlignedFloatBuffer &aBuffer, AlignedFloatBuffer &aDestBuffer, unsigned int aSamples, float aVolume0, float aVolume1)
 	{
 		float vd = (aVolume1 - aVolume0) / aSamples;
@@ -2027,7 +2030,7 @@ namespace SoLoud
 		}
 	}
 
-#ifdef SOLOUD_SSE_INTRINSICS
+#if defined(SOLOUD_SSE_INTRINSICS) && defined(_M_IX86)
 	void interlace_samples_s16_mono(const float *aSourceBuffer, short *aDestBuffer, unsigned int aSamples)
 	{
 		const __m128 scale = _mm_set1_ps(0x7fff);
@@ -2109,7 +2112,7 @@ namespace SoLoud
 
 	void interlace_samples_s16(const float *aSourceBuffer, short *aDestBuffer, unsigned int aSamples, unsigned int aChannels)
 	{
-#ifdef SOLOUD_SSE_INTRINSICS
+#if defined(SOLOUD_SSE_INTRINSICS) && defined(_M_IX86)
 		switch (aChannels)
 		{
 		case 1:

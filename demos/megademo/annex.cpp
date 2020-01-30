@@ -34,6 +34,7 @@ freely, subject to the following restrictions:
 #include "soloud_lofifilter.h"
 #include "soloud_biquadresonantfilter.h"
 #include "soloud_echofilter.h"
+#include "soloud_freeverbfilter.h"
 
 
 namespace annex
@@ -44,11 +45,17 @@ namespace annex
 	SoLoud::LofiFilter gLofi;
 	SoLoud::BiquadResonantFilter gBiquad;
 	SoLoud::EchoFilter gEcho;
+	SoLoud::FreeverbFilter gVerb;
+
 	int gMusichandle;
+	int gBus1handle;
+	int gFrozen;
 
 	int DemoEntry(int argc, char* argv[])
 	{
 		gSoloud.init(SoLoud::Soloud::CLIP_ROUNDOFF | SoLoud::Soloud::ENABLE_VISUALIZATION);
+
+		gFrozen = 0;
 
 		gMusic.load("audio/delphi_loop.ogg");
 		gMusic.setLooping(1);
@@ -60,8 +67,9 @@ namespace annex
 		gBus2.setFilter(0, &gLofi);
 		gBus3.setFilter(0, &gBiquad);
 		gBus4.setFilter(0, &gEcho);
+		gBus1.setFilter(0, &gVerb);
 
-		gSoloud.play(gBus1);
+		gBus1handle = gSoloud.play(gBus1);
 		gSoloud.play(gBus2);
 		gSoloud.play(gBus3);
 		gSoloud.play(gBus4);
@@ -94,6 +102,18 @@ namespace annex
 		{
 			gBus1.annexSound(gMusichandle);
 		}
+		ImGui::SameLine();
+		if (!gFrozen && ImGui::Button("Freeze"))
+		{
+			gSoloud.setFilterParameter(gBus1handle, 0, SoLoud::FreeverbFilter::MODE, 1);
+			gFrozen = 1;
+		} 
+		if (gFrozen && ImGui::Button("Thaw"))
+		{
+			gSoloud.setFilterParameter(gBus1handle, 0, SoLoud::FreeverbFilter::MODE, 0);
+			gFrozen = 0;
+		}
+
 		if (ImGui::Button("Annex sound to bus 2"))
 		{
 			gBus2.annexSound(gMusichandle);

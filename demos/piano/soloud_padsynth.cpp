@@ -74,6 +74,8 @@ class PADsynth {
 	virtual float RND();
 
     private:
+	PADsynth(const PADsynth&); // disable copy
+	PADsynth& operator=(PADsynth const&);
 	float *mHarmonics;		//Amplitude of the harmonics
 	float *mFreqAmp;	//Amplitude spectrum
 	float mSamplerate;

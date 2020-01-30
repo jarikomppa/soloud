@@ -52,6 +52,7 @@ namespace SoLoud
 			mSourceCountMax = 0;
 			mAck = 0;
 			mBus = 0;
+			mAckLength = 0;
 		}
 
 		result init(Soloud &aSoloud, Bus *aBus)

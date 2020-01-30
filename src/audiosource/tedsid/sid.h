@@ -17,8 +17,8 @@ class SIDsound
 public:
 	SIDsound(unsigned int model, unsigned int chnlDisableMask);
 	virtual ~SIDsound();
-	virtual void reset();
-	virtual void setReplayFreq() {
+	void reset();
+	void setReplayFreq() {
 		calcEnvelopeTable();
 	};
 	void setModel(unsigned int model);

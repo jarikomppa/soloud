@@ -447,18 +447,21 @@ namespace SoLoud
 		mVoice[v]->mFlags |= AudioSourceInstance::PROCESS_3D;
 		set3dSourceParameters(h, aPosX, aPosY, aPosZ, aVelX, aVelY, aVelZ);
 		time lasttime = mLastClockedTime;
-		if (lasttime == 0) 
+		if (lasttime == 0)
+		{
+			lasttime = aSoundTime;
 			mLastClockedTime = aSoundTime;
+		}
 		vec3 pos;
 		pos.mX = aPosX;
 		pos.mY = aPosY;
 		pos.mZ = aPosZ;
 		unlockAudioMutex();
-		int samples = 0;
-		if (lasttime != 0)
-		{
-			samples = (int)floor((aSoundTime - lasttime) * mSamplerate);
-		}
+		
+		int samples = (int)floor((aSoundTime - lasttime) * mSamplerate);		
+		// Make sure we don't delay too much (or overflow)
+		if (samples < 0 || samples > 2048) samples = 0;
+
 		if (aSound.mFlags & AudioSource::DISTANCE_DELAY)
 		{
 			float dist = pos.mag();

@@ -73,6 +73,7 @@ namespace pewpew
 		int tick = DemoTick();
 		x = (gMouseX - 400.0f) / 200.0f;
 
+
 		if (lasttick >= tick)
 		{
 			DemoYield();
@@ -86,7 +87,7 @@ namespace pewpew
 				gSfx.loadPreset(SoLoud::Sfxr::LASER, 3);
 				if (fire1)
 				{
-					gSoloud.playClocked(lasttick / 1000.0f, gSfx, 1, x);
+					gSoloud.playClocked(DemoTick() / 1000.0f, gSfx, 1, x);
 					bulletc[bulletidx] = 1;
 				}
 
@@ -98,7 +99,7 @@ namespace pewpew
 
 				if (fire3)
 				{
-					gSoloud.playClocked(lasttick / 1000.0f, gSfx, 1, x);
+					gSoloud.playClocked(DemoTick() / 1000.0f, gSfx, 1, x);
 					bulletc[bulletidx] = 1;
 				}
 
@@ -131,7 +132,7 @@ namespace pewpew
 					}
 				}
 
-				lasttick += 40;
+				lasttick += 10;
 			}
 
 			DemoUpdateStart();

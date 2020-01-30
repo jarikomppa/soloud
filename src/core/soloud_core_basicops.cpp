@@ -113,15 +113,18 @@ namespace SoLoud
 	{
 		handle h = play(aSound, aVolume, aPan, 1, aBus);
 		lockAudioMutex();
+		// mLastClockedTime is cleared to zero at start of every output buffer
 		time lasttime = mLastClockedTime;
-		if (lasttime == 0) 
-			mLastClockedTime = aSoundTime;
-		unlockAudioMutex();
-		int samples = 0;
-		if (aSoundTime > lasttime)
+		if (lasttime == 0)
 		{
-			samples = (int)floor((aSoundTime - lasttime) * mSamplerate);
+			mLastClockedTime = aSoundTime;
+			lasttime = aSoundTime;
 		}
+		unlockAudioMutex();
+		int samples = (int)floor((aSoundTime - lasttime) * mSamplerate);
+		// Make sure we don't delay too much (or overflow)
+		if (samples < 0 || samples > 2048)		
+			samples = 0;
 		setDelaySamples(h, samples);
 		setPause(h, 0);
 		return h;

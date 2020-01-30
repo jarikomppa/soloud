@@ -41,12 +41,10 @@ namespace SoLoud
 		public:
 			Comb();
 			void	setbuffer(float* aBuf, int aSize);
-			inline  float	process(float aInp);
+			float	process(float aInp);
 			void	mute();
 			void	setdamp(float val);
-			float	getdamp();
 			void	setfeedback(float val);
-			float	getfeedback();
 			float	mFeedback;
 			float	mFilterstore;
 			float	mDamp1;
@@ -56,51 +54,19 @@ namespace SoLoud
 			int		mBufidx;
 		};
 
-		float Comb::process(float aInput)
-		{
-			float output;
-
-			output = mBuffer[mBufidx];
-
-			mFilterstore = (output * mDamp2) + (mFilterstore * mDamp1);
-
-			mBuffer[mBufidx] = aInput + (mFilterstore * mFeedback);
-
-			if (++mBufidx >= mBufsize) mBufidx = 0;
-
-			return output;
-		}
-
 		class Allpass
 		{
 		public:
 			Allpass();
 			void	setbuffer(float* aBuf, int aSize);
-			inline  float process(float aInp);
+			float   process(float aInp);
 			void	mute();
 			void	setfeedback(float aVal);
-			float	getfeedback();
 			float	mFeedback;
 			float*  mBuffer;
 			int		mBufsize;
 			int		mBufidx;
 		};
-
-		float Allpass::process(float aInput)
-		{
-			float output;
-			float bufout;
-
-			bufout = mBuffer[mBufidx];
-
-			output = -aInput + bufout;
-			mBuffer[mBufidx] = aInput + (bufout * mFeedback);
-
-			if (++mBufidx >= mBufsize) mBufidx = 0;
-
-			return output;
-		}
-
 
 		const int	gNumcombs = 8;
 		const int	gNumallpasses = 4;
@@ -157,17 +123,11 @@ namespace SoLoud
 			void	mute();
 			void	process(float* aSampleData, long aNumSamples);
 			void	setroomsize(float aValue);
-			float	getroomsize();
 			void	setdamp(float aValue);
-			float	getdamp();
 			void	setwet(float aValue);
-			float	getwet();
 			void	setdry(float aValue);
-			float	getdry();
 			void	setwidth(float aValue);
-			float	getwidth();
 			void	setmode(float aValue);
-			float	getmode();
 			void	update();
 
 			float	mGain;
@@ -224,6 +184,24 @@ namespace SoLoud
 		Allpass::Allpass()
 		{
 			mBufidx = 0;
+			mFeedback = 0;
+			mBuffer = 0;
+			mBufsize = 0;
+		}
+
+		float Allpass::process(float aInput)
+		{
+			float output;
+			float bufout;
+
+			bufout = mBuffer[mBufidx];
+
+			output = -aInput + bufout;
+			mBuffer[mBufidx] = aInput + (bufout * mFeedback);
+
+			if (++mBufidx >= mBufsize) mBufidx = 0;
+
+			return output;
 		}
 
 		void Allpass::setbuffer(float* aBuf, int aSize)
@@ -243,15 +221,30 @@ namespace SoLoud
 			mFeedback = aVal;
 		}
 
-		float Allpass::getfeedback()
-		{
-			return mFeedback;
-		}
-
 		Comb::Comb()
 		{
 			mFilterstore = 0;
 			mBufidx = 0;
+			mFeedback = 0;
+			mDamp1 = 0;
+			mDamp2 = 0;
+			mBuffer = 0;
+			mBufsize = 0;
+		}
+
+		float Comb::process(float aInput)
+		{
+			float output;
+
+			output = mBuffer[mBufidx];
+
+			mFilterstore = (output * mDamp2) + (mFilterstore * mDamp1);
+
+			mBuffer[mBufidx] = aInput + (mFilterstore * mFeedback);
+
+			if (++mBufidx >= mBufsize) mBufidx = 0;
+
+			return output;
 		}
 
 		void Comb::setbuffer(float* aBuf, int aSize)
@@ -272,24 +265,27 @@ namespace SoLoud
 			mDamp2 = 1 - aVal;
 		}
 
-		float Comb::getdamp()
-		{
-			return mDamp1;
-		}
-
 		void Comb::setfeedback(float aVal)
 		{
 			mFeedback = aVal;
 		}
-
-		float Comb::getfeedback()
-		{
-			return mFeedback;
-		}
-
-		
+	
 		Revmodel::Revmodel()
 		{
+			mGain = 0;
+			mRoomsize = 0;
+			mRoomsize1 = 0;
+			mDamp = 0;
+			mDamp1 = 0;
+			mWet = 0;
+			mWet1 = 0;
+			mWet2 = 0;
+			mDry = 0;
+			mWidth = 0;
+			mMode = 0;
+
+			mDirty = 1;
+
 			// Tie the components to their buffers
 			mCombL[0].setbuffer(mBufcombL1, gCombtuningL1);
 			mCombR[0].setbuffer(mBufcombR1, gCombtuningR1);
@@ -338,7 +334,7 @@ namespace SoLoud
 
 		void Revmodel::mute()
 		{			
-			if (getmode() >= gFreezemode)
+			if (mMode >= gFreezemode)
 				return;
 
 			for (int i = 0; i < gNumcombs; i++)
@@ -355,7 +351,6 @@ namespace SoLoud
 
 		void Revmodel::process(float* aSampleData, long aNumSamples)
 		{
-			float outL, outR, input;
 			float* inputL, * inputR;
 			inputL = aSampleData;
 			inputR = aSampleData + aNumSamples;
@@ -366,6 +361,7 @@ namespace SoLoud
 
 			while (aNumSamples-- > 0)
 			{
+				float outL, outR, input;
 				outL = outR = 0;
 				input = (*inputL + *inputR) * mGain;
 
@@ -392,7 +388,6 @@ namespace SoLoud
 				inputR++;
 			}
 		}
-
 
 		void Revmodel::update()
 		{
@@ -429,20 +424,10 @@ namespace SoLoud
 			}
 		}
 
-		// The following get/set functions are not inlined, because
-		// speed is never an issue when calling them, and also
-		// because as you develop the reverb model, you may
-		// wish to take dynamic action when they are called.
-
 		void Revmodel::setroomsize(float aValue)
 		{
 			mRoomsize = (aValue * gScaleroom) + gOffsetroom;
 			mDirty = 1;
-		}
-
-		float Revmodel::getroomsize()
-		{
-			return (mRoomsize - gOffsetroom) / gScaleroom;
 		}
 
 		void Revmodel::setdamp(float aValue)
@@ -451,30 +436,15 @@ namespace SoLoud
 			mDirty = 1;
 		}
 
-		float Revmodel::getdamp()
-		{
-			return mDamp / gScaledamp;
-		}
-
 		void Revmodel::setwet(float aValue)
 		{
 			mWet = aValue * gScalewet;
 			mDirty = 1;
 		}
 
-		float Revmodel::getwet()
-		{
-			return mWet / gScalewet;
-		}
-
 		void Revmodel::setdry(float aValue)
 		{
 			mDry = aValue * gScaledry;
-		}
-
-		float Revmodel::getdry()
-		{
-			return mDry / gScaledry;
 		}
 
 		void Revmodel::setwidth(float aValue)
@@ -483,23 +453,10 @@ namespace SoLoud
 			mDirty = 1;
 		}
 
-		float Revmodel::getwidth()
-		{
-			return mWidth;
-		}
-
 		void Revmodel::setmode(float aValue)
 		{
 			mMode = aValue;
 			mDirty = 1;
-		}
-
-		float Revmodel::getmode()
-		{
-			if (mMode >= gFreezemode)
-				return 1;
-			else
-				return 0;
 		}
 	}
 
@@ -521,15 +478,18 @@ namespace SoLoud
 	void FreeverbFilterInstance::filter(float* aBuffer, unsigned int aSamples, unsigned int aChannels, float aSamplerate, time aTime)
 	{
 		SOLOUD_ASSERT(aChannels == 2); // Only stereo supported at this time
-		mModel->setdamp(mParam[DAMP]);
-		mModel->setmode(mParam[MODE]);
-		mModel->setroomsize(mParam[ROOMSIZE]);
-		mModel->setwidth(mParam[WIDTH]);
-		mModel->setwet(mParam[WET]);
-		mModel->setdry(1 - mParam[WET]);
+		if (mParamChanged)
+		{
+			mModel->setdamp(mParam[DAMP]);
+			mModel->setmode(mParam[MODE]);
+			mModel->setroomsize(mParam[ROOMSIZE]);
+			mModel->setwidth(mParam[WIDTH]);
+			mModel->setwet(mParam[WET]);
+			mModel->setdry(1 - mParam[WET]);
+			mParamChanged = 0;
+		}
 		mModel->process(aBuffer, aSamples);
 	}
-
 
 	FreeverbFilterInstance::~FreeverbFilterInstance()
 	{

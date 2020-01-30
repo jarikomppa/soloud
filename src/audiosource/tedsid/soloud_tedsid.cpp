@@ -123,6 +123,7 @@ namespace SoLoud
 		mChannels = 1;
 		mFile = 0;
 		mFileOwned = false;
+		mModel = 0;
 	}
 
 	TedSid::~TedSid()

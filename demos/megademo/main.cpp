@@ -1,6 +1,6 @@
 /*
 SoLoud audio engine
-Copyright (c) 2013-2018 Jari Komppa
+Copyright (c) 2013-2020 Jari Komppa
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -60,6 +60,8 @@ extern void DemoMainloop_speakers();
 extern int DemoEntry_speakers(int argc, char *argv[]);
 extern void DemoMainloop_thebutton();
 extern int DemoEntry_thebutton(int argc, char *argv[]);
+extern void DemoMainloop_annex();
+extern int DemoEntry_annex(int argc, char* argv[]);
 
 void DemoMainloop()
 {
@@ -206,8 +208,18 @@ void DemoMainloop_megademo()
 		        "avoiding actor speaking on top\n"
 		        "of themselves.\n");
 
-	ImGui::End();
+	ImGui::Separator();
 
+	if (ImGui::Button("annex"))
+	{
+		DemoEntry_annex(gArgc, gArgv);
+		DemoMainloopPtr = DemoMainloop_annex;
+	}
+	ImGui::Text("annex test moves a live sound\n"
+	"from one mixing bus to another.\n");
+
+	ImGui::End();
+	
 
 	DemoUpdateEnd();
 }

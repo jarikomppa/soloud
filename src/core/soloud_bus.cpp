@@ -1,6 +1,6 @@
 /*
 SoLoud audio engine
-Copyright (c) 2013-2014 Jari Komppa
+Copyright (c) 2013-2020 Jari Komppa
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -322,5 +322,18 @@ namespace SoLoud
 			mSoloud->unlockAudioMutex();
 		}
 		return vol;
+	}
+
+	unsigned int Bus::getActiveVoiceCount()
+	{
+		int i;
+		unsigned int count = 0;
+		findBusHandle();
+		mSoloud->lockAudioMutex();
+		for (i = 0; i < VOICE_COUNT; i++)
+			if (mSoloud->mVoice[i] && mSoloud->mVoice[i]->mBusHandle == mChannelHandle)
+				count++;
+		mSoloud->unlockAudioMutex();
+		return count;
 	}
 };

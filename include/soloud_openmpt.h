@@ -53,7 +53,7 @@ namespace SoLoud
 		Openmpt();
 		virtual ~Openmpt();
 		result load(const char* aFilename);
-		result loadMem(unsigned char *aMem, unsigned int aLength, bool aCopy = false, bool aTakeOwnership = true);
+		result loadMem(const unsigned char *aMem, unsigned int aLength, bool aCopy = false, bool aTakeOwnership = true);
 		result loadFile(File *aFile);
 		virtual AudioSourceInstance *createInstance();
 	};

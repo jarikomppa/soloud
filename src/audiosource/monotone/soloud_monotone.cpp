@@ -400,7 +400,7 @@ namespace SoLoud
 		return SO_NO_ERROR;
 	}
 	
-	result Monotone::loadMem(unsigned char *aMem, unsigned int aLength, bool aCopy, bool aTakeOwnership)
+	result Monotone::loadMem(const unsigned char *aMem, unsigned int aLength, bool aCopy, bool aTakeOwnership)
 	{
 		MemoryFile mf;
 		int res = mf.openMem(aMem, aLength, aCopy, aTakeOwnership);

@@ -522,7 +522,7 @@ namespace SoLoud
 		return 0;
 	}
 
-	result WavStream::loadMem(unsigned char *aData, unsigned int aDataLen, bool aCopy, bool aTakeOwnership)
+	result WavStream::loadMem(const unsigned char *aData, unsigned int aDataLen, bool aCopy, bool aTakeOwnership)
 	{
 		delete[] mFilename;
 		delete mMemFile;

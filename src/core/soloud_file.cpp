@@ -149,7 +149,7 @@ mFileHandle(fp)
 		return mOffset;
 	}
 
-	unsigned char * MemoryFile::getMemPtr()
+	const unsigned char * MemoryFile::getMemPtr()
 	{
 		return mDataPtr;
 	}
@@ -168,7 +168,7 @@ mFileHandle(fp)
 		mDataOwned = false;
 	}
 
-	result MemoryFile::openMem(unsigned char *aData, unsigned int aDataLength, bool aCopy, bool aTakeOwnership)
+	result MemoryFile::openMem(const unsigned char *aData, unsigned int aDataLength, bool aCopy, bool aTakeOwnership)
 	{
 		if (aData == NULL || aDataLength == 0)
 			return INVALID_PARAMETER;
@@ -186,7 +186,7 @@ mFileHandle(fp)
 			mDataPtr = new unsigned char[aDataLength];
 			if (mDataPtr == NULL)
 				return OUT_OF_MEMORY;
-			memcpy(mDataPtr, aData, aDataLength);
+			memcpy((void *)mDataPtr, aData, aDataLength);
 			return SO_NO_ERROR;
 		}
 
@@ -213,7 +213,7 @@ mFileHandle(fp)
 		mDataPtr = new unsigned char[mDataLength];
 		if (mDataPtr == NULL)
 			return OUT_OF_MEMORY;
-		df.read(mDataPtr, mDataLength);
+		df.read((unsigned char*)mDataPtr, mDataLength);
 		mDataOwned = true;
 		return SO_NO_ERROR;
 	}
@@ -231,7 +231,7 @@ mFileHandle(fp)
 		mDataPtr = new unsigned char[mDataLength];
 		if (mDataPtr == NULL)
 			return OUT_OF_MEMORY;
-		aFile->read(mDataPtr, mDataLength);
+		aFile->read((unsigned char*)mDataPtr, mDataLength);
 		mDataOwned = true;
 		return SO_NO_ERROR;
 	}

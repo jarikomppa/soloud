@@ -91,7 +91,7 @@ namespace SoLoud
 		WavStream();
 		virtual ~WavStream();
 		result load(const char *aFilename);
-		result loadMem(unsigned char *aData, unsigned int aDataLen, bool aCopy = false, bool aTakeOwnership = true);
+		result loadMem(const unsigned char *aData, unsigned int aDataLen, bool aCopy = false, bool aTakeOwnership = true);
 		result loadToMem(const char *aFilename);
 		result loadFile(File *aFile);
 		result loadFileToMem(File *aFile);		

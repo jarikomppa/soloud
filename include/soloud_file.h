@@ -45,7 +45,7 @@ namespace SoLoud
 		virtual void seek(int aOffset) = 0;
 		virtual unsigned int pos() = 0;
 		virtual FILE * getFilePtr() { return 0; }
-		virtual unsigned char * getMemPtr() { return 0; }
+		virtual const unsigned char * getMemPtr() { return 0; }
 	};
 
 	class DiskFile : public File
@@ -68,7 +68,7 @@ namespace SoLoud
 	class MemoryFile : public File
 	{
 	public:
-		unsigned char *mDataPtr;
+		const unsigned char *mDataPtr;
 		unsigned int mDataLength;
 		unsigned int mOffset;
 		bool mDataOwned;
@@ -78,10 +78,10 @@ namespace SoLoud
 		virtual unsigned int length();
 		virtual void seek(int aOffset);
 		virtual unsigned int pos();
-		virtual unsigned char * getMemPtr();
+		virtual const unsigned char * getMemPtr();
 		virtual ~MemoryFile();
 		MemoryFile();
-		result openMem(unsigned char *aData, unsigned int aDataLength, bool aCopy=false, bool aTakeOwnership=true);
+		result openMem(const unsigned char *aData, unsigned int aDataLength, bool aCopy=false, bool aTakeOwnership=true);
 		result openToMem(const char *aFilename);
 		result openFileToMem(File *aFile);
 	};

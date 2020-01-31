@@ -79,6 +79,7 @@ namespace multimusic
 		ImGui::Text("Music1 volume    : %d%%", (int)floor(gSoloud.getVolume(gMusichandle1) * 100));
 		ImGui::Text("Music2 volume    : %d%%", (int)floor(gSoloud.getVolume(gMusichandle2) * 100));
 		ImGui::Text("Music rel. speed : %d%%", (int)floor(gSoloud.getRelativePlaySpeed(gMusichandle2) * 100));
+		ImGui::Text("Music position   : %d%%", (int)floor(gSoloud.getStreamPosition(gMusichandle2) * 100 / gMusic1.getLength()));
 		ImGui::Text("Active voices    : %d", gSoloud.getActiveVoiceCount());
 		ImGui::End();
 

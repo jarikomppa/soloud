@@ -209,9 +209,11 @@ namespace SoLoud
 		}
 
 		unsigned int i;
+		// first item in voice group is number of allocated indices
 		for (i = 1; i < mVoiceGroup[c][0]; i++)
 		{
-			if (mVoiceGroup[c][i] == 0)
+			// If we hit a voice in the group that's not set, we're done
+			if (mVoiceGroup[c][i] == 0) 
 			{
 				unlockAudioMutex();
 				return;
@@ -221,19 +223,24 @@ namespace SoLoud
 			while (!isValidVoiceHandle(mVoiceGroup[c][i])) // function locks mutex, so we need to unlock it before the call
 			{
 				lockAudioMutex();
+				// current index is an invalid handle, move all following handles backwards
 				unsigned int j;
 				for (j = i; j < mVoiceGroup[c][0] - 1; j++)
 				{
 					mVoiceGroup[c][j] = mVoiceGroup[c][j + 1];
+					// not a full group, we can stop copying
 					if (mVoiceGroup[c][j] == 0)
 						break;
 				}
-				mVoiceGroup[c][mVoiceGroup[c][0] - 1] = 0;				
+				// be sure to mark the last one as unused in any case
+				mVoiceGroup[c][mVoiceGroup[c][0] - 1] = 0;
+				// did we end up with an empty group? we're done then
 				if (mVoiceGroup[c][i] == 0)
 				{
 					unlockAudioMutex();
 					return;
 				}
+				unlockAudioMutex();
 			}
 			lockAudioMutex();
 		}

@@ -47,6 +47,15 @@ namespace SoLoud
 		int mSamplerate;
         Thread::ThreadHandle mThreadHandle;
         bool mRunning;
+        SoLoudNosoundData()
+        {
+            mBuffer.clear();
+            mSoloud = 0;
+            mSamples = 0;
+            mSamplerate = 0;
+            mThreadHandle = 0;
+            mRunning = 0;
+        }
     };
 
     static void nosoundThread(LPVOID aParam)
@@ -88,8 +97,7 @@ namespace SoLoud
 
 	result nosound_init(Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer, unsigned int aChannels)
     {
-		SoLoudNosoundData*data = new SoLoudNosoundData;
-		memset(data, 0, sizeof(SoLoudNosoundData));
+		SoLoudNosoundData*data = new SoLoudNosoundData;		
 		aSoloud->mBackendData = data;
         aSoloud->mBackendCleanupFunc = nosoundCleanup;
         data->mSamples = aBuffer;

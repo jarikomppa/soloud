@@ -251,6 +251,8 @@ namespace SoLoud
 			mWorkMutex = 0;
 			mRobin = 0;
 			mMaxTask = 0;
+			for (int i = 0; i < MAX_THREADPOOL_TASKS; i++)
+				mTaskArray[i] = 0;
 		}
 
 		Pool::~Pool()

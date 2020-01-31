@@ -319,7 +319,7 @@ namespace SoLoud
 		case 1:	return (float)(sin(mA * 0.0002) * cos(mA * 0.0003) * 0.2f + ((rand() % 200 - 100) / 300.0f)); // ilmava
 		case 2: return (float)tan(mA*0.00002)*0.01f; // burpy
 		case 3: return ((mA & 65535) > 32768 ? 65535 : 0) * 0.00001f; // square wave
-		case 4: return mA * mA * 0.0000000002f; // kuisku
+		case 4: return (float)mA * (float)mA * 0.0000000002f; // kuisku
 		case 5:	mA += 3; mB++; return ((mA & 255) > ((mB >> 2) & 255)) ? 0.3f : 0.0f;
 		case 7:	return ((mA >> 8) & (256 + 128)) * 0.001f; // robottipulssi
 		case 8:	return (float)(rand() % (1 + ((mA & 65535) >> 8))) / 256; // -- hiukka ihmisempi tsaatana

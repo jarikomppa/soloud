@@ -65,12 +65,12 @@ namespace SoLoud
 			mZ /= m;
 		}
 		
-		float dot(vec3 a)
+		float dot(const vec3 &a)
 		{
 			return mX * a.mX + mY * a.mY + mZ * a.mZ;
 		}
 		
-		vec3 sub(vec3 a)
+		vec3 sub(const vec3 &a)
 		{
 			vec3 r;
 			r.mX = mX - a.mX;
@@ -79,7 +79,7 @@ namespace SoLoud
 			return r;
 		}
 
-		vec3 cross(vec3 a)
+		vec3 cross(const vec3 &a)
 		{
 			vec3 r;
 
@@ -95,7 +95,7 @@ namespace SoLoud
 	{
 		vec3 m[3];
 
-		vec3 mul(vec3 a)
+		vec3 mul(const vec3 &a)
 		{
 			vec3 r;
 
@@ -106,7 +106,7 @@ namespace SoLoud
 			return r;
 		}
 
-		void lookatRH(vec3 at, vec3 up)
+		void lookatRH(const vec3 &at, vec3 up)
 		{
 			vec3 z = at;
 			z.normalize();
@@ -118,7 +118,7 @@ namespace SoLoud
 			m[2] = z;
 		}
 
-		void lookatLH(vec3 at, vec3 up)
+		void lookatLH(const vec3 &at, vec3 up)
 		{
 			vec3 z = at;
 			z.normalize();
@@ -140,7 +140,7 @@ namespace SoLoud
 #define MAX(a,b) ((a) > (b)) ? (a) : (b)
 #endif
 
-	float doppler(vec3 aDeltaPos, vec3 aSrcVel, vec3 aDstVel, float aFactor, float aSoundSpeed)
+	float doppler(vec3 aDeltaPos, const vec3 &aSrcVel, const vec3 &aDstVel, float aFactor, float aSoundSpeed)
 	{
 		float deltamag = aDeltaPos.mag();
 		if (deltamag == 0)

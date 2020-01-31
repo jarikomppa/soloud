@@ -235,7 +235,7 @@ void TED::selectWaveForm(unsigned int channel, unsigned int wave)
 void TED::setplaybackSpeed(unsigned int speed)
 {
 	unsigned int speeds[] = { 16, 8, 4, 3, 2, 1 };
-	playbackSpeed = speeds[(speed - 1) % sizeof(speeds)];
+	playbackSpeed = speeds[(speed - 1) % (sizeof(speeds) / sizeof(unsigned int))];
 }
 
 unsigned int TED::getTimeSinceLastReset()

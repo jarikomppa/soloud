@@ -59,6 +59,21 @@ namespace SoLoud
         Soloud *soloud;
         int samples;
         Thread::ThreadHandle threadHandle;
+        SoLoudWinMMData()
+        {
+            buffer.clear();
+            for (int i = 0; i < BUFFER_COUNT; i++)
+            {
+                sampleBuffer[i] = 0;
+                memset(&header[i], 0, sizeof(WAVEHDR));
+            }
+            waveOut = 0;
+            bufferEndEvent = 0;
+            audioProcessingDoneEvent = 0;
+            soloud = 0;
+            samples = 0;
+            threadHandle = 0;
+        }
     };
 
     static void winMMThread(LPVOID aParam)
@@ -119,7 +134,6 @@ namespace SoLoud
 	result winmm_init(Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer, unsigned int aChannels)
     {
         SoLoudWinMMData *data = new SoLoudWinMMData;
-        ZeroMemory(data, sizeof(SoLoudWinMMData));
         aSoloud->mBackendData = data;
         aSoloud->mBackendCleanupFunc = winMMCleanup;
         data->samples = aBuffer;

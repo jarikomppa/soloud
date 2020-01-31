@@ -47,6 +47,7 @@ namespace SoLoud
 
 	RobotizeFilter::RobotizeFilter()
 	{
+		mBoost = 0;
 	}
 
 	FilterInstance *RobotizeFilter::createInstance()

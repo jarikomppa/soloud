@@ -170,7 +170,7 @@ void SIDsound::setSampleRate(unsigned int sampleRate_)
 	calcEnvelopeTable();
 }
 
-SIDsound::SIDsound(unsigned int model, unsigned int chnlDisableMask) : enableDigiBlaster(false)
+SIDsound::SIDsound(unsigned int model, unsigned int chnlDisableMask) : enableDigiBlaster(false), sampleRate(0)
 {
 	unsigned int i;
 	masterVolume = 0;
@@ -201,7 +201,7 @@ void SIDsound::reset(void)
 		voice[v].freq = voice[v].pw = 0;
 		voice[v].envCurrLevel = voice[v].envSustainLevel = 0;
 		voice[v].gate = voice[v].ring = voice[v].test = 0;
-		voice[v].filter = voice[v].sync = false;
+		voice[v].filter = voice[v].sync = 0;
 		voice[v].muted = 0;
 		// Initial value of internal shift register
 		voice[v].shiftReg = 0x7FFFFC;

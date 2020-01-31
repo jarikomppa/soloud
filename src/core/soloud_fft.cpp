@@ -2468,7 +2468,7 @@ namespace SoLoud
 			unsigned int i;
 			fftimpl::cftfsub(aBufferLength, aBuffer);
 			for (i = 0; i < aBufferLength; i++)
-				aBuffer[i] *= 1.0f / (aBufferLength / 2);
+				aBuffer[i] *= 1.0f / float(aBufferLength / 2);
 		}
     };
 };

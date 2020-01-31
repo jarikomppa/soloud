@@ -32,7 +32,11 @@ namespace SoLoud
 	{
 		mParent = aParent;
 		mScratchSize = 0;
-		mFlags |= PROTECTED | INAUDIBLE_TICK;
+		mFlags |= PROTECTED | INAUDIBLE_TICK;		
+		for (int i = 0; i < MAX_CHANNELS; i++)
+			mVisualizationChannelVolume[i] = 0;
+		for (int i = 0; i < 256; i++)
+			mVisualizationWaveData[i] = 0;
 	}
 	
 	unsigned int BusInstance::getAudio(float *aBuffer, unsigned int aSamplesToRead, unsigned int aBufferSize)
@@ -123,6 +127,11 @@ namespace SoLoud
 		mChannelHandle = 0;
 		mInstance = 0;
 		mChannels = 2;
+		for (int i = 0; i < 256; i++)
+		{
+			mFFTData[i] = 0;
+			mWaveData[i] = 0;
+		}
 	}
 	
 	BusInstance * Bus::createInstance()
@@ -250,7 +259,7 @@ namespace SoLoud
 
 	result Bus::setChannels(unsigned int aChannels)
 	{
-		if (aChannels == 0 || aChannels == 3 || aChannels == 5 || aChannels > 7 || aChannels > MAX_CHANNELS)
+		if (aChannels == 0 || aChannels == 3 || aChannels == 5 || aChannels == 7 || aChannels > MAX_CHANNELS)
 			return INVALID_PARAMETER;
 		mChannels = aChannels;
 		return SO_NO_ERROR;

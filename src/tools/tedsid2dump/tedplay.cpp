@@ -76,7 +76,7 @@ unsigned int parsePsid(unsigned char *buf, PsidHeader &psidHdr_)
 
 void getPsidProperties(PsidHeader &psidHdr_, char *os)
 {
-	char temp[256];
+	char temp[1024];
 
 	if (!psidHdr_.tracks) {
 		strcat(os, "");

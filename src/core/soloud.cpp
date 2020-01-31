@@ -59,6 +59,7 @@ namespace SoLoud
 	{
 		mBasePtr = 0;
 		mData = 0;
+		mFloats = 0;
 	}
 
 	result AlignedFloatBuffer::init(unsigned int aFloats)
@@ -165,9 +166,10 @@ namespace SoLoud
 		m3dSoundSpeed = 343.3f;
 		mMaxActiveVoices = 16;
 		mHighestVoice = 0;
-		mActiveVoiceDirty = true;
 		mResampleData = NULL;
 		mResampleDataOwner = NULL;
+		for (i = 0; i < 3 * MAX_CHANNELS; i++)
+			m3dSpeakerPosition[i] = 0;
 	}
 
 	Soloud::~Soloud()
@@ -2031,7 +2033,14 @@ namespace SoLoud
 		}
 	}
 
-#if defined(SOLOUD_SSE_INTRINSICS) && defined(_M_IX86)
+#if 0 // defined(SOLOUD_SSE_INTRINSICS) && defined(_M_IX86)
+	/* There are several issues with this code.
+	   - Doesn't work in x64, because __m64 doesn't exist there.
+	   - Assumes aDestBuffer is well aligned; this is not guaranteed
+	   - (didn't call _mm_clear, but that was an easy fix)
+	   Leaving it here for future reference for now if a more 
+	   working solution is found.
+	 */
 	void interlace_samples_s16_mono(const float *aSourceBuffer, short *aDestBuffer, unsigned int aSamples)
 	{
 		const __m128 scale = _mm_set1_ps(0x7fff);
@@ -2113,7 +2122,7 @@ namespace SoLoud
 
 	void interlace_samples_s16(const float *aSourceBuffer, short *aDestBuffer, unsigned int aSamples, unsigned int aChannels)
 	{
-#if defined(SOLOUD_SSE_INTRINSICS) && defined(_M_IX86)
+#if 0 // defined(SOLOUD_SSE_INTRINSICS) && defined(_M_IX86)
 		switch (aChannels)
 		{
 		case 1:

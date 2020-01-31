@@ -330,6 +330,8 @@ namespace SoLoud
 		float temphz = 27.5f;
 		int IBO = 12; // Intervals Between Octaves
 		int IBN = 8; // Intervals Between Notes
+		// Fun fact: the resulting constant is pretty 
+		// close to Proton Mass consntant 1.00727646688
 		float interval = 1.00724641222f;//exp(ln(2)/(IBO*IBN));
 		int maxnote = 3 + (8 * IBO) + 1;
 

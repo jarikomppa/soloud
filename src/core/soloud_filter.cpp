@@ -27,6 +27,31 @@ freely, subject to the following restrictions:
 namespace SoLoud
 {
 
+	int Filter::getParamCount()
+	{
+		return 1; // there's always WET
+	}
+
+	const char* Filter::getParamName(unsigned int aParamIndex)
+	{
+		return "Wet";
+	}
+
+	unsigned int Filter::getParamType(unsigned int aParamIndex)
+	{
+		return Filter::FLOAT_PARAM;
+	}
+	
+	float Filter::getParamMax(unsigned int aParamIndex)
+	{
+		return 1;
+	}
+
+	float Filter::getParamMin(unsigned int aParamIndex)
+	{
+		return 0;
+	}
+
 	Filter::Filter()
 	{
 	}

@@ -55,7 +55,19 @@ namespace SoLoud
 	class Filter
 	{
 	public:
+		enum PARAMTYPE
+		{
+			FLOAT_PARAM = 0,
+			INT_PARAM,
+			BOOL_PARAM
+		};
 		Filter();
+		virtual int getParamCount();
+		virtual const char* getParamName(unsigned int aParamIndex);
+		virtual unsigned int getParamType(unsigned int aParamIndex);
+		virtual float getParamMax(unsigned int aParamIndex);
+		virtual float getParamMin(unsigned int aParamIndex);
+
 		virtual FilterInstance *createInstance() = 0;
 		virtual ~Filter();
 	};

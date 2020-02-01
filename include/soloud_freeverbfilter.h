@@ -39,7 +39,7 @@ namespace SoLoud
 	{
 		enum {
 			WET = 0,
-			MODE,
+			FREEZE,
 			ROOMSIZE,
 			DAMP,
 			WIDTH
@@ -58,11 +58,16 @@ namespace SoLoud
 	public:
 		enum {
 			WET = 0,
-			MODE,
+			FREEZE,
 			ROOMSIZE,
 			DAMP,
 			WIDTH
 		};
+		virtual int getParamCount();
+		virtual const char* getParamName(unsigned int aParamIndex);
+		virtual unsigned int getParamType(unsigned int aParamIndex);
+		virtual float getParamMax(unsigned int aParamIndex);
+		virtual float getParamMin(unsigned int aParamIndex);
 
 		float mMode;
 		float mRoomSize;

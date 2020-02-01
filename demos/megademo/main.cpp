@@ -62,6 +62,8 @@ extern void DemoMainloop_thebutton();
 extern int DemoEntry_thebutton(int argc, char *argv[]);
 extern void DemoMainloop_annex();
 extern int DemoEntry_annex(int argc, char* argv[]);
+extern void DemoMainloop_filterfolio();
+extern int DemoEntry_filterfolio(int argc, char* argv[]);
 
 void DemoMainloop()
 {
@@ -217,6 +219,16 @@ void DemoMainloop_megademo()
 	}
 	ImGui::Text("annex test moves a live sound\n"
 	"from one mixing bus to another.\n");
+
+	ImGui::Separator();
+
+	if (ImGui::Button("Filter folio"))
+	{
+		DemoEntry_filterfolio(gArgc, gArgv);
+		DemoMainloopPtr = DemoMainloop_filterfolio;
+	}
+	ImGui::Text("Filter folio is a playground\n"
+		"for various filters and their parameters.\n");
 
 	ImGui::End();
 	

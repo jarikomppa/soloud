@@ -105,12 +105,12 @@ namespace annex
 		ImGui::SameLine();
 		if (!gFrozen && ImGui::Button("Freeze"))
 		{
-			gSoloud.setFilterParameter(gBus1handle, 0, SoLoud::FreeverbFilter::MODE, 1);
+			gSoloud.setFilterParameter(gBus1handle, 0, SoLoud::FreeverbFilter::FREEZE, 1);
 			gFrozen = 1;
 		} 
 		if (gFrozen && ImGui::Button("Thaw"))
 		{
-			gSoloud.setFilterParameter(gBus1handle, 0, SoLoud::FreeverbFilter::MODE, 0);
+			gSoloud.setFilterParameter(gBus1handle, 0, SoLoud::FreeverbFilter::FREEZE, 0);
 			gFrozen = 0;
 		}
 

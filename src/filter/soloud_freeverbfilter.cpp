@@ -468,7 +468,7 @@ namespace SoLoud
 
 		mModel = new FreeverbImpl::Revmodel();
 
-		mParam[MODE] = aParent->mMode;
+		mParam[FREEZE] = aParent->mMode;
 		mParam[ROOMSIZE] = aParent->mRoomSize;
 		mParam[DAMP] = aParent->mDamp;
 		mParam[WIDTH] = aParent->mWidth;
@@ -481,7 +481,7 @@ namespace SoLoud
 		if (mParamChanged)
 		{
 			mModel->setdamp(mParam[DAMP]);
-			mModel->setmode(mParam[MODE]);
+			mModel->setmode(mParam[FREEZE]);
 			mModel->setroomsize(mParam[ROOMSIZE]);
 			mModel->setwidth(mParam[WIDTH]);
 			mModel->setwet(mParam[WET]);
@@ -501,18 +501,53 @@ namespace SoLoud
 		setParams(0, 0.5, 0.5, 1);
 	}
 
-	result FreeverbFilter::setParams(float aMode, float aRoomSize, float aDamp, float aWidth)
+	result FreeverbFilter::setParams(float aFreeze, float aRoomSize, float aDamp, float aWidth)
 	{
-		if (aMode < 0 || aMode > 1 || aRoomSize <= 0 || aDamp < 0 || aWidth <= 0)
+		if (aFreeze < 0 || aFreeze > 1 || aRoomSize <= 0 || aDamp < 0 || aWidth <= 0)
 			return INVALID_PARAMETER;
 
-		mMode = aMode;
+		mMode = aFreeze;
 		mRoomSize = aRoomSize;
 		mDamp = aDamp;
 		mWidth = aWidth;
 
 		return 0;
 	}
+
+	int FreeverbFilter::getParamCount()
+	{
+		return 5;
+	}
+
+	const char* FreeverbFilter::getParamName(unsigned int aParamIndex)
+	{
+		switch (aParamIndex)
+		{
+		case FREEZE: return "Freeze";
+		case ROOMSIZE: return "Room size";
+		case DAMP: return "Damp";
+		case WIDTH: return "Width";
+		}
+		return "Wet";
+	}
+
+	unsigned int FreeverbFilter::getParamType(unsigned int aParamIndex)
+	{
+		if (aParamIndex == FREEZE)
+			return BOOL_PARAM;
+		return FLOAT_PARAM;
+	}
+
+	float FreeverbFilter::getParamMax(unsigned int aParamIndex)
+	{
+		return 1;
+	}
+
+	float FreeverbFilter::getParamMin(unsigned int aParamIndex)
+	{
+		return 0;
+	}
+
 
 	FreeverbFilter::~FreeverbFilter()
 	{

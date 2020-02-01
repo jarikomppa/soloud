@@ -1,6 +1,6 @@
 /*
 SoLoud audio engine
-Copyright (c) 2013-2018 Jari Komppa
+Copyright (c) 2013-2020 Jari Komppa
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -106,6 +106,21 @@ namespace monotone
 			if (ImGui::RadioButton("SawSin", waveform == SoLoud::Monotone::SAWSIN))
 			{
 				waveform = SoLoud::Monotone::SAWSIN;
+				gMusic.setParams(hwchannels, waveform);
+			}
+			if (ImGui::RadioButton("Bounce", waveform == SoLoud::Monotone::BOUNCE))
+			{
+				waveform = SoLoud::Monotone::BOUNCE;
+				gMusic.setParams(hwchannels, waveform);
+			}
+			if (ImGui::RadioButton("Jaws", waveform == SoLoud::Monotone::JAWS))
+			{
+				waveform = SoLoud::Monotone::JAWS;
+				gMusic.setParams(hwchannels, waveform);
+			}
+			if (ImGui::RadioButton("Humps", waveform == SoLoud::Monotone::HUMPS))
+			{
+				waveform = SoLoud::Monotone::HUMPS;
 				gMusic.setParams(hwchannels, waveform);
 			}
 		}

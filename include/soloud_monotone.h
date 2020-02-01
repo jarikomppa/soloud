@@ -1,6 +1,6 @@
 /*
 MONOTONE module for SoLoud audio engine
-Copyright (c) 2013-2015 Jari Komppa
+Copyright (c) 2013-2020 Jari Komppa
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -93,7 +93,10 @@ namespace SoLoud
 			SQUARE = 0,
 			SAW    = 1,
 			SIN    = 2,
-			SAWSIN = 3
+			SAWSIN = 3,
+			BOUNCE = 4,
+			JAWS   = 5,
+			HUMPS  = 6
 		};
 		
 		int mNotesHz[800];

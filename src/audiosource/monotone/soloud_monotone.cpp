@@ -1,6 +1,6 @@
 /*
 MONOTONE module for SoLoud audio engine
-Copyright (c) 2013-2015 Jari Komppa
+Copyright (c) 2013-2020 Jari Komppa
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -309,6 +309,44 @@ namespace SoLoud
 						mOutput[j].mSamplePos = bleh - (long)bleh;
 						// square:
 						aBuffer[i] += (mOutput[j].mSamplePos > 0.5f) ? 0.25f : -0.25f;
+					}
+				}
+				break;
+			case Monotone::BOUNCE:
+				for (j = 0; j < 12; j++)
+				{
+					if (mOutput[j].mEnabled)
+					{
+						float bleh = mOutput[j].mSamplePos + mOutput[j].mSamplePosInc;
+						mOutput[j].mSamplePos = bleh - (long)bleh;
+						// bounce: 
+						aBuffer[i] += fabs((float)sin(mOutput[j].mSamplePos * M_PI * 2) * 0.5f);
+					}
+				}
+				break;
+			case Monotone::JAWS:
+				for (j = 0; j < 12; j++)
+				{
+					if (mOutput[j].mEnabled)
+					{
+						float bleh = mOutput[j].mSamplePos + mOutput[j].mSamplePosInc;
+						mOutput[j].mSamplePos = bleh - (long)bleh;
+						// jaws: 
+						if (mOutput[j].mSamplePos < 0.25)
+						aBuffer[i] += (float)sin(mOutput[j].mSamplePos * M_PI * 2) * 0.5f;
+					}
+				}
+				break;
+			case Monotone::HUMPS:
+				for (j = 0; j < 12; j++)
+				{
+					if (mOutput[j].mEnabled)
+					{
+						float bleh = mOutput[j].mSamplePos + mOutput[j].mSamplePosInc;
+						mOutput[j].mSamplePos = bleh - (long)bleh;
+						// humps: 
+						if (mOutput[j].mSamplePos < 0.5)
+							aBuffer[i] += (float)sin(mOutput[j].mSamplePos * M_PI * 2) * 0.5f;
 					}
 				}
 				break;

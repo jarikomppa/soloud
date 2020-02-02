@@ -53,7 +53,7 @@ namespace SoLoud
 
 	RobotizeFilter::RobotizeFilter()
 	{
-		mFreq = 10;
+		mFreq = 30;
 	}
 
 	void RobotizeFilter::setParams(float aFreq)
@@ -63,7 +63,7 @@ namespace SoLoud
 
 	int RobotizeFilter::getParamCount()
 	{
-		return 30;
+		return 2;
 	}
 
 	const char* RobotizeFilter::getParamName(unsigned int aParamIndex)

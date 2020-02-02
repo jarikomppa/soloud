@@ -25,6 +25,7 @@ freely, subject to the following restrictions:
 #include <string.h>
 #include <stdlib.h>
 #include <math.h> // sin
+#include <float.h> // _controlfp
 #include "soloud_internal.h"
 #include "soloud_thread.h"
 #include "soloud_fft.h"
@@ -39,9 +40,6 @@ freely, subject to the following restrictions:
 
 //#define FLOATING_POINT_DEBUG
 
-#ifdef FLOATING_POINT_DEBUG
-#include <float.h>
-#endif
 
 #if !defined(WITH_SDL2) && !defined(WITH_SDL1) && !defined(WITH_PORTAUDIO) && \
    !defined(WITH_OPENAL) && !defined(WITH_XAUDIO2) && !defined(WITH_WINMM) && \
@@ -1845,6 +1843,10 @@ namespace SoLoud
 			done = 1;
 		}
 #endif
+		if (mFlags & AUDIOTHREAD_FPU_DENORMAL_FLUSH)
+		{
+			_controlfp(_DN_FLUSH, _MCW_DN);
+		}
 
 		float buffertime = aSamples / (float)mSamplerate;
 		float globalVolume[2];

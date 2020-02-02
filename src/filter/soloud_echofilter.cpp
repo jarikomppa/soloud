@@ -52,7 +52,6 @@ namespace SoLoud
 			{
 				mBuffer[i] = 0;
 			}
-			mBufferLength = mBufferMaxLength;
 		}
 
 		mBufferLength = (int)ceil(mParam[EchoFilter::DELAY] * aSamplerate);

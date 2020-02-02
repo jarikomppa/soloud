@@ -1843,9 +1843,16 @@ namespace SoLoud
 			done = 1;
 		}
 #endif
-		if (mFlags & AUDIOTHREAD_FPU_DENORMAL_FLUSH)
 		{
-			_controlfp(_DN_FLUSH, _MCW_DN);
+			bool once = false;
+			if (!once)
+			{
+				once = true;
+				if (mFlags & AUDIOTHREAD_FPU_DENORMAL_FLUSH)
+				{
+					_controlfp(_DN_FLUSH, _MCW_DN);
+				}
+			}
 		}
 
 		float buffertime = aSamples / (float)mSamplerate;

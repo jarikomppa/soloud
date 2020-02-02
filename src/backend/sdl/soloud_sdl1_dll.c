@@ -26,10 +26,8 @@ freely, subject to the following restrictions:
 #include <stdlib.h>
 #if defined(_MSC_VER)
 #define WINDOWS_VERSION
-#include <SDL.h>
-#else
-#include <SDL/SDL.h>
 #endif
+#include "SDL.h"
 #include <math.h>
 
 typedef int (*SDLOpenAudio)(SDL_AudioSpec *desired, SDL_AudioSpec *obtained);

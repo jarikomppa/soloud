@@ -90,7 +90,7 @@ namespace SoLoud
 		mParam[SAMPLERATE] = aParent->mSampleRate;
 		mParam[RESONANCE] = aParent->mResonance;
 		mParam[FREQUENCY] = aParent->mFrequency;
-		mParam[TYPE] = aParent->mFilterType;
+		mParam[TYPE] = (float)aParent->mFilterType;
 		mParam[WET] = 1;
 
 		calcBQRParams();
@@ -197,7 +197,7 @@ namespace SoLoud
 		case WET: return 1;
 		case TYPE: return 2;
 		case SAMPLERATE: return 44100;
-		case FREQUENCY: return 22000;
+		case FREQUENCY: return 8000;
 		case RESONANCE: return 20;
 		}
 		return 1;
@@ -208,8 +208,8 @@ namespace SoLoud
 		switch (aParamIndex)
 		{
 		case SAMPLERATE: return 100;
-		case FREQUENCY: return 1;
-		case RESONANCE: return 0.1;
+		case FREQUENCY: return 10;
+		case RESONANCE: return 0.1f;
 		}
 		return 0;
 	}

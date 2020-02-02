@@ -320,7 +320,7 @@ namespace SoLoud
 						float bleh = mOutput[j].mSamplePos + mOutput[j].mSamplePosInc;
 						mOutput[j].mSamplePos = bleh - (long)bleh;
 						// bounce: 
-						aBuffer[i] += fabs((float)sin(mOutput[j].mSamplePos * M_PI * 2) * 0.5f);
+						aBuffer[i] += (float)fabs((float)sin(mOutput[j].mSamplePos * M_PI * 2) * 0.5f);
 					}
 				}
 				break;

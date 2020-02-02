@@ -32,6 +32,7 @@ freely, subject to the following restrictions:
 #include "soloud_wav.h"
 #include "soloud_wavstream.h"
 #include "soloud_sfxr.h"
+#include "soloud_speech.h"
 
 #include "soloud_bassboostfilter.h"
 #include "soloud_biquadresonantfilter.h"
@@ -48,6 +49,7 @@ namespace filterfolio
 {
 	SoLoud::Soloud gSoloud;
 	SoLoud::Sfxr gSfx;
+	SoLoud::Speech gSpeech;
 	SoLoud::WavStream gMusic1, gMusic2, gMusic3;
 	int gMusichandle1, gMusichandle2, gMusichandle3;
 	SoLoud::Filter *gFilter[10];
@@ -84,6 +86,8 @@ namespace filterfolio
 		gFilter[8] = new SoLoud::RobotizeFilter;
 		gFilter[9] = new SoLoud::WaveShaperFilter;
 
+		gSpeech.setText("My banana is yellow");
+
 		return 0;
 	}
 
@@ -103,8 +107,8 @@ namespace filterfolio
 
 		ONCE(ImGui::SetNextWindowPos(ImVec2(20, 20)));
 		ImGui::Begin("Control");
-
-		if (ImGui::Button("Toggle Music 1"))
+		bool b = gSoloud.getVolume(gMusichandle1) > 0.5;
+		if (ImGui::Checkbox("Toggle Music 1", &b))
 		{
 			if (gSoloud.getVolume(gMusichandle1) > 0.5)
 				gSoloud.fadeVolume(gMusichandle1, 0, 0.5);
@@ -112,21 +116,6 @@ namespace filterfolio
 				gSoloud.fadeVolume(gMusichandle1, 1, 0.5);
 		}
 		ImGui::SameLine();
-		if (ImGui::Button("Toggle Music 2"))
-		{
-			if (gSoloud.getVolume(gMusichandle2) > 0.5)
-				gSoloud.fadeVolume(gMusichandle2, 0, 0.5);
-			else
-				gSoloud.fadeVolume(gMusichandle2, 1, 0.5);
-		}
-		ImGui::SameLine();
-		if (ImGui::Button("Toggle Music 3"))
-		{
-			if (gSoloud.getVolume(gMusichandle3) > 0.5)
-				gSoloud.fadeVolume(gMusichandle3, 0, 0.5);
-			else
-				gSoloud.fadeVolume(gMusichandle3, 1, 0.5);
-		}
 		if (ImGui::Button("SFXR EXPLOSION"))
 		{
 			gSfx.loadPreset(SoLoud::Sfxr::EXPLOSION, rand());
@@ -144,6 +133,16 @@ namespace filterfolio
 			gSfx.loadPreset(SoLoud::Sfxr::COIN, rand());
 			gSoloud.play(gSfx, 2, ((rand() % 512) - 256) / 256.0f);
 		}
+
+		b = gSoloud.getVolume(gMusichandle2) > 0.5;
+		if (ImGui::Checkbox("Toggle Music 2", &b))
+		{
+			if (gSoloud.getVolume(gMusichandle2) > 0.5)
+				gSoloud.fadeVolume(gMusichandle2, 0, 0.5);
+			else
+				gSoloud.fadeVolume(gMusichandle2, 1, 0.5);
+		}
+		ImGui::SameLine();
 		if (ImGui::Button("SFXR HURT"))
 		{
 			gSfx.loadPreset(SoLoud::Sfxr::HURT, rand());
@@ -161,7 +160,23 @@ namespace filterfolio
 			gSfx.loadPreset(SoLoud::Sfxr::LASER, rand());
 			gSoloud.play(gSfx, 2, ((rand() % 512) - 256) / 256.0f);
 		}
+
+		b = gSoloud.getVolume(gMusichandle3) > 0.5;
+		if (ImGui::Checkbox("Toggle Music 3", &b))
+		{
+			if (gSoloud.getVolume(gMusichandle3) > 0.5)
+				gSoloud.fadeVolume(gMusichandle3, 0, 0.5);
+			else
+				gSoloud.fadeVolume(gMusichandle3, 1, 0.5);
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Speech"))
+		{
+			gSoloud.play(gSpeech, 1);
+		}
+
 		ImGui::End();
+
 		
 		ONCE(ImGui::SetNextWindowPos(ImVec2(20, 140)));
 		ONCE(ImGui::SetNextWindowSize(ImVec2(350, 250)));
@@ -207,9 +222,9 @@ namespace filterfolio
 						int v = (int)gSoloud.getFilterParameter(0, filterindex, i);
 						char temp[128];
 						sprintf(temp, "%s##%d-%d", f->getParamName(i), filterindex, i);
-						if (ImGui::SliderInt(temp, &v, filtermin, filtermax))
+						if (ImGui::SliderInt(temp, &v, (int)filtermin, (int)filtermax))
 						{
-							gSoloud.setFilterParameter(0, filterindex, i, v);
+							gSoloud.setFilterParameter(0, filterindex, i, (float)v);
 						}
 					}
 
@@ -233,7 +248,7 @@ namespace filterfolio
 						if (ImGui::Checkbox(temp, &bv))
 							//SliderFloat(temp, &v, filtermin, filtermax))
 						{
-							gSoloud.setFilterParameter(0, filterindex, i, bv?1:0);
+							gSoloud.setFilterParameter(0, filterindex, i, bv?1.0f:0.0f);
 						}
 					}
 				}

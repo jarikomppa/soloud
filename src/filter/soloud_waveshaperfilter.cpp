@@ -1,6 +1,6 @@
 /*
 SoLoud audio engine
-Copyright (c) 2013-2018 Jari Komppa
+Copyright (c) 2013-2020 Jari Komppa
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -34,8 +34,7 @@ namespace SoLoud
 	{
 		mParent = aParent;
 		initParams(2);
-		mParam[0] = mParent->mWet;
-		mParam[1] = mParent->mAmount;
+		mParam[WaveShaperFilter::AMOUNT] = mParent->mAmount;
 	}
 
 	void WaveShaperFilterInstance::filterChannel(float *aBuffer, unsigned int aSamples, float /*aSamplerate*/, double aTime, unsigned int /*aChannel*/, unsigned int /*aChannels*/)
@@ -45,15 +44,15 @@ namespace SoLoud
 		unsigned int i;
 		float k = 0;
 		if (mParam[1] == 1)
-			k = 2 * mParam[1] / 0.01f;
+			k = 2 * mParam[WaveShaperFilter::AMOUNT] / 0.01f;
 		else
-			k = 2 * mParam[1] / (1 - mParam[1]);	
+			k = 2 * mParam[WaveShaperFilter::AMOUNT] / (1 - mParam[1]);
 
 		for (i = 0; i < aSamples; i++)
 		{
 			float dry = aBuffer[i];
 			float wet = (1 + k) * aBuffer[i] / (1 + k * (float)fabs(aBuffer[i]));
-			aBuffer[i] += (wet - dry) * mParam[0];
+			aBuffer[i] += (wet - dry) * mParam[WaveShaperFilter::WET];
 		}
 	}
 
@@ -61,19 +60,46 @@ namespace SoLoud
 	{
 	}
 
-	result WaveShaperFilter::setParams(float aAmount, float aWet)
+	result WaveShaperFilter::setParams(float aAmount)
 	{
-		if (aAmount < -1 || aAmount > 1 || aWet < 0 || aWet > 1)
+		if (aAmount < -1 || aAmount > 1)
 			return INVALID_PARAMETER;
 		mAmount = aAmount;
-		mWet = aWet;
 		return 0;
 	}
 
 	WaveShaperFilter::WaveShaperFilter()
 	{
 		mAmount = 0.0f;
-		mWet = 0.0f;
+	}
+
+	int WaveShaperFilter::getParamCount()
+	{
+		return 2;
+	}
+
+	const char* WaveShaperFilter::getParamName(unsigned int aParamIndex)
+	{
+		if (aParamIndex == 1)
+			return "Amount";
+		return "Wet";
+	}
+
+	unsigned int WaveShaperFilter::getParamType(unsigned int aParamIndex)
+	{
+		return FLOAT_PARAM;
+	}
+
+	float WaveShaperFilter::getParamMax(unsigned int aParamIndex)
+	{
+		return 1;
+	}
+
+	float WaveShaperFilter::getParamMin(unsigned int aParamIndex)
+	{
+		if (aParamIndex == AMOUNT)
+			return -1;
+		return 0;
 	}
 
 	WaveShaperFilter::~WaveShaperFilter()

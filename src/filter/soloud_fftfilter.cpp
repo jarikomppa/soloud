@@ -1,6 +1,6 @@
 /*
 SoLoud audio engine
-Copyright (c) 2013-2015 Jari Komppa
+Copyright (c) 2013-2020 Jari Komppa
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -120,8 +120,8 @@ namespace SoLoud
 		}
 		for (i = 0; i < 4; i++)
 		{
-			aFFTBuffer[aSamples - 4 * 2 + i * 2] = 0;
-			aFFTBuffer[aSamples - 4 * 2 + i * 2 + 1] = 0;
+			aFFTBuffer[(aSamples - 4) * 2 + i * 2] = 0;
+			aFFTBuffer[(aSamples - 4) * 2 + i * 2 + 1] = 0;
 		}
 	}
 

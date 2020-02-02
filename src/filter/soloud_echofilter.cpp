@@ -1,6 +1,6 @@
 /*
 SoLoud audio engine
-Copyright (c) 2013-2015 Jari Komppa
+Copyright (c) 2013-2020 Jari Komppa
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -29,30 +29,36 @@ namespace SoLoud
 {
 	EchoFilterInstance::EchoFilterInstance(EchoFilter *aParent)
 	{
-		mParent = aParent;
 		mBuffer = 0;
 		mBufferLength = 0;
+		mBufferMaxLength = 0;
 		mOffset = 0;
-		initParams(1);
-
+		initParams(4);
+		mParam[EchoFilter::DELAY] = aParent->mDelay;
+		mParam[EchoFilter::DECAY] = aParent->mDecay;
+		mParam[EchoFilter::FILTER] = aParent->mFilter;
 	}
 
 	void EchoFilterInstance::filter(float *aBuffer, unsigned int aSamples, unsigned int aChannels, float aSamplerate, double aTime)
 	{
 		updateParams(aTime);
-
 		if (mBuffer == 0)
 		{
-			mBufferLength = (int)ceil(mParent->mDelay * aSamplerate);
-			mBuffer = new float[mBufferLength * aChannels];
+			// We only know channels and sample rate at this point.. not really optimal
+			mBufferMaxLength = (int)ceil(mParam[EchoFilter::DELAY] * aSamplerate);
+			mBuffer = new float[mBufferMaxLength * aChannels];
 			unsigned int i;
-			for (i = 0; i < mBufferLength * aChannels; i++)
+			for (i = 0; i < mBufferMaxLength * aChannels; i++)
 			{
 				mBuffer[i] = 0;
 			}
+			mBufferLength = mBufferMaxLength;
 		}
 
-		float decay = mParent->mDecay;
+		mBufferLength = (int)ceil(mParam[EchoFilter::DELAY] * aSamplerate);
+		if (mBufferLength > mBufferMaxLength)
+			mBufferLength = mBufferMaxLength;
+
 		unsigned int i, j;
 		int prevofs = (mOffset + mBufferLength - 1) % mBufferLength;
 		for (i = 0; i < aSamples; i++)
@@ -62,12 +68,12 @@ namespace SoLoud
 				int chofs = j * mBufferLength;
 				int bchofs = j * aSamples;
 				
-				mBuffer[mOffset + chofs] = mParent->mFilter * mBuffer[prevofs + chofs] + (1 - mParent->mFilter) * mBuffer[mOffset + chofs];
+				mBuffer[mOffset + chofs] = mParam[EchoFilter::FILTER] * mBuffer[prevofs + chofs] + (1 - mParam[EchoFilter::FILTER]) * mBuffer[mOffset + chofs];
 				
-				float n = aBuffer[i + bchofs] + mBuffer[mOffset + chofs] * decay;
+				float n = aBuffer[i + bchofs] + mBuffer[mOffset + chofs] * mParam[EchoFilter::DECAY];
 				mBuffer[mOffset + chofs] = n;
 
-				aBuffer[i + bchofs] += (n - aBuffer[i + bchofs]) * mParam[0];
+				aBuffer[i + bchofs] += (n - aBuffer[i + bchofs]) * mParam[EchoFilter::WET];
 			}
 			prevofs = mOffset;
 			mOffset = (mOffset + 1) % mBufferLength;
@@ -98,6 +104,42 @@ namespace SoLoud
 		return 0;
 	}
 
+	int EchoFilter::getParamCount()
+	{
+		return 4;
+	}
+
+	const char* EchoFilter::getParamName(unsigned int aParamIndex)
+	{
+		if (aParamIndex < 0 || aParamIndex > 3)
+			return 0;
+		const char *names[4] = {
+			"Wet",
+			"Delay",
+			"Decay",
+			"Filter"
+		};
+		return names[aParamIndex];
+	}
+
+	unsigned int EchoFilter::getParamType(unsigned int aParamIndex)
+	{
+		return FLOAT_PARAM;
+	}
+
+	float EchoFilter::getParamMax(unsigned int aParamIndex)
+	{
+		switch (aParamIndex)
+		{
+		case DELAY: return mDelay;
+		}
+		return 1;
+	}
+
+	float EchoFilter::getParamMin(unsigned int aParamIndex)
+	{
+		return 0;
+	}
 
 	FilterInstance *EchoFilter::createInstance()
 	{

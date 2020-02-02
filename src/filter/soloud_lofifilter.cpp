@@ -1,6 +1,6 @@
 /*
 SoLoud audio engine
-Copyright (c) 2013-2014 Jari Komppa
+Copyright (c) 2013-2020 Jari Komppa
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -53,7 +53,7 @@ namespace SoLoud
 			{
 				mChannelData[aChannel].mSamplesToSkip += (aSamplerate / mParam[SAMPLERATE]) - 1;
 				float q = (float)pow(2, mParam[BITDEPTH]);
-				mChannelData[aChannel].mSample = (float)floor(q*aBuffer[i])/q;
+				mChannelData[aChannel].mSample = (float)floor(q * aBuffer[i]) / q;
 			}
 			else
 			{
@@ -87,6 +87,47 @@ namespace SoLoud
 	{
 	}
 
+	int LofiFilter::getParamCount()
+	{
+		return 3;
+	}
+
+	const char* LofiFilter::getParamName(unsigned int aParamIndex)
+	{
+		if (aParamIndex < 0 || aParamIndex > 2)
+			return 0;
+		const char *names[3] = {
+			"Wet",
+			"Samplerate",
+			"Bitdepth"
+		};
+		return names[aParamIndex];
+	}
+
+	unsigned int LofiFilter::getParamType(unsigned int aParamIndex)
+	{
+		return FLOAT_PARAM;
+	}
+
+	float LofiFilter::getParamMax(unsigned int aParamIndex)
+	{
+		switch (aParamIndex)
+		{
+		case SAMPLERATE: return 22000;
+		case BITDEPTH: return 16;
+		}
+		return 1;
+	}
+
+	float LofiFilter::getParamMin(unsigned int aParamIndex)
+	{
+		switch (aParamIndex)
+		{
+		case SAMPLERATE: return 100;
+		case BITDEPTH: return 0.5;
+		}
+		return 0;
+	}
 
 	LofiFilterInstance *LofiFilter::createInstance()
 	{

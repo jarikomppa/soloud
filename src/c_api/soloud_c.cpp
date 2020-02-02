@@ -2215,10 +2215,10 @@ int WaveShaperFilter_setParams(void * aClassPtr, float aAmount)
 	return cl->setParams(aAmount);
 }
 
-int WaveShaperFilter_setParamsEx(void * aClassPtr, float aAmount, float aWet)
+int WaveShaperFilter_setParamsEx(void * aClassPtr, float aAmount)
 {
 	WaveShaperFilter * cl = (WaveShaperFilter *)aClassPtr;
-	return cl->setParams(aAmount, aWet);
+	return cl->setParams(aAmount);
 }
 
 void * WaveShaperFilter_create()

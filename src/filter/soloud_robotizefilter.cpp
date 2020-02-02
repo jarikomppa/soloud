@@ -1,6 +1,6 @@
 /*
 SoLoud audio engine
-Copyright (c) 2013-2018 Jari Komppa
+Copyright (c) 2020 Jari Komppa
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -32,22 +32,68 @@ namespace SoLoud
 	RobotizeFilterInstance::RobotizeFilterInstance(RobotizeFilter *aParent)
 	{
 		mParent = aParent;
-		initParams(1);
-		mParam[WET] = 1.0;
+		initParams(2);
+		mParam[FREQ] = aParent->mFreq;
 	}
 
-	void RobotizeFilterInstance::fftFilterChannel(float *aFFTBuffer, unsigned int aSamples, float /*aSamplerate*/, time /*aTime*/, unsigned int /*aChannel*/, unsigned int /*aChannels*/)
+	void RobotizeFilterInstance::filterChannel(float *aBuffer, unsigned int aSamples, float aSamplerate, time aTime, unsigned int aChannel, unsigned int aChannels)
 	{
 		unsigned int i;
+		int period = (int)(aSamplerate / mParam[FREQ]);
+		int start = (int)(aTime * aSamplerate) % period;
 		for (i = 0; i < aSamples; i++)
 		{
-			aFFTBuffer[i*2] = 0;
+			float s = aBuffer[i];
+			float wpos = ((start + i) % period) / (float)period;
+			if (wpos > 0.5)
+				s = 0;
+			aBuffer[i] += (s - aBuffer[i]) * mParam[WET];
 		}
 	}
 
 	RobotizeFilter::RobotizeFilter()
 	{
-		mBoost = 0;
+		mFreq = 10;
+	}
+
+	void RobotizeFilter::setParams(float aFreq)
+	{
+		mFreq = aFreq;
+	}
+
+	int RobotizeFilter::getParamCount()
+	{
+		return 30;
+	}
+
+	const char* RobotizeFilter::getParamName(unsigned int aParamIndex)
+	{
+		if (aParamIndex < 0 || aParamIndex > 1)
+			return 0;
+		const char* names[2] = {
+			"Wet",
+			"Frequency"
+		};
+		return names[aParamIndex];
+	}
+
+	unsigned int RobotizeFilter::getParamType(unsigned int aParamIndex)
+	{
+		return FLOAT_PARAM;
+	}
+
+	float RobotizeFilter::getParamMax(unsigned int aParamIndex)
+	{
+		if (aParamIndex == FREQ)
+			return 100;
+		return 1;
+	}
+
+	float RobotizeFilter::getParamMin(unsigned int aParamIndex)
+	{
+		if (aParamIndex == FREQ)
+			return 0.1f;
+		return 0;
 	}
 
 	FilterInstance *RobotizeFilter::createInstance()

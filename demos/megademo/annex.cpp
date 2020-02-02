@@ -61,7 +61,7 @@ namespace annex
 		gMusic.setLooping(1);
 
 		gLofi.setParams(1000, 6);
-		gBiquad.setParams(SoLoud::BiquadResonantFilter::HIGHPASS, 44100, 500, 2);
+		gBiquad.setParams(SoLoud::BiquadResonantFilter::HIGHPASS, 500, 2);
 		gEcho.setParams(0.25f,0.9f);
 
 		gBus2.setFilter(0, &gLofi);

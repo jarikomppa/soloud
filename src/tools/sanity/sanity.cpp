@@ -984,14 +984,14 @@ void testFilters()
 	CHECKLASTKNOWN(scratch, 2000);
 	CHECK_BUF_DIFF(ref, scratch, 2000);
 
-	biquad.setParams(SoLoud::BiquadResonantFilter::LOWPASS, 8000, 2000, 5);
+	biquad.setParams(SoLoud::BiquadResonantFilter::LOWPASS, 2000, 5);
 	wav.setFilter(0, &biquad);
 	soloud.play(wav);
 	soloud.mix(ref2, 1000);
 	CHECKLASTKNOWN(ref2, 2000);
 	CHECK_BUF_DIFF(ref, ref2, 2000);
 	soloud.stopAll();
-	biquad.setParams(SoLoud::BiquadResonantFilter::HIGHPASS, 8000, 1000, 5);
+	biquad.setParams(SoLoud::BiquadResonantFilter::HIGHPASS, 1000, 5);
 	soloud.play(wav);
 	soloud.mix(scratch, 1000);
 	CHECKLASTKNOWN(scratch, 2000);

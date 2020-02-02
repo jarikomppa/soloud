@@ -147,7 +147,7 @@ namespace monotone
 		gMusic.setParams(10);
 
 		gEcho.setParams(0.2f, 0.5f, 0.05f);
-		gBiquad.setParams(SoLoud::BiquadResonantFilter::LOWPASS, 44100, 4000, 2);
+		gBiquad.setParams(SoLoud::BiquadResonantFilter::LOWPASS, 4000, 2);
 
 		gMusic.setLooping(1);
 		gMusic.setFilter(0, &gBiquad);

@@ -720,10 +720,10 @@ void * BiquadResonantFilter_create()
   return (void *)new BiquadResonantFilter;
 }
 
-int BiquadResonantFilter_setParams(void * aClassPtr, int aType, float aSampleRate, float aFrequency, float aResonance)
+int BiquadResonantFilter_setParams(void * aClassPtr, int aType, float aFrequency, float aResonance)
 {
 	BiquadResonantFilter * cl = (BiquadResonantFilter *)aClassPtr;
-	return cl->setParams(aType, aSampleRate, aFrequency, aResonance);
+	return cl->setParams(aType, aFrequency, aResonance);
 }
 
 void Bus_destroy(void * aClassPtr)

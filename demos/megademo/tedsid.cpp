@@ -54,7 +54,7 @@ namespace tedsid
 		gMusic2.load("audio/ted_storm.prg.dump");
 
 		gEcho.setParams(0.2f, 0.5f, 0.05f);
-		gBiquad.setParams(SoLoud::BiquadResonantFilter::LOWPASS, 44100, 4000, 2);
+		gBiquad.setParams(SoLoud::BiquadResonantFilter::LOWPASS, 4000, 2);
 
 		gMusic1.setLooping(1);
 		gMusic2.setLooping(1);

@@ -265,7 +265,7 @@ int DemoEntry(int argc, char *argv[])
 	gWind.setLooping(1);
 	gMusic.load("audio/tetsno.ogg");
 	gMusic.setLooping(1);
-	gLPFilter.setParams(SoLoud::BiquadResonantFilter::LOWPASS, 44100, 100, 10);
+	gLPFilter.setParams(SoLoud::BiquadResonantFilter::LOWPASS, 100, 10);
 	gMusic.setFilter(0, &gLPFilter);
 
 	gRainHandle = gSoloud.play(gRain, 1);

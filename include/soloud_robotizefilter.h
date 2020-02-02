@@ -27,6 +27,7 @@ freely, subject to the following restrictions:
 
 #include "soloud.h"
 #include "soloud_filter.h"
+#include "soloud_misc.h"
 
 namespace SoLoud
 {
@@ -37,7 +38,8 @@ namespace SoLoud
 		enum FILTERATTRIBUTE
 		{
 			WET = 0,
-			FREQ
+			FREQ,
+			WAVE
 		};
 		RobotizeFilter *mParent;
 	public:
@@ -51,15 +53,17 @@ namespace SoLoud
 		enum FILTERATTRIBUTE
 		{
 			WET = 0,
-			FREQ
+			FREQ,
+			WAVE
 		};
 		float mFreq;
+		int mWave;
 		virtual int getParamCount();
 		virtual const char* getParamName(unsigned int aParamIndex);
 		virtual unsigned int getParamType(unsigned int aParamIndex);
 		virtual float getParamMax(unsigned int aParamIndex);
 		virtual float getParamMin(unsigned int aParamIndex);
-		void setParams(float aFreq);
+		void setParams(float aFreq, int aWaveform);
 		virtual FilterInstance *createInstance();
 		RobotizeFilter();
 	};

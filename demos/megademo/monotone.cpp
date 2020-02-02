@@ -88,39 +88,34 @@ namespace monotone
 		}
 		if (ImGui::CollapsingHeader("Waveform", (const char*)0, true, false))
 		{
-			if (ImGui::RadioButton("Square", waveform == SoLoud::Monotone::SQUARE))
+			if (ImGui::RadioButton("Square", waveform == SoLoud::Misc::WAVE_SQUARE))
 			{
-				waveform = SoLoud::Monotone::SQUARE;
+				waveform = SoLoud::Misc::WAVE_SQUARE;
 				gMusic.setParams(hwchannels, waveform);
 			}
-			if (ImGui::RadioButton("Saw", waveform == SoLoud::Monotone::SAW))
+			if (ImGui::RadioButton("Saw", waveform == SoLoud::Misc::WAVE_SAW))
 			{
-				waveform = SoLoud::Monotone::SAW;
+				waveform = SoLoud::Misc::WAVE_SAW;
 				gMusic.setParams(hwchannels, waveform);
 			}
-			if (ImGui::RadioButton("Sin", waveform == SoLoud::Monotone::SIN))
+			if (ImGui::RadioButton("Sin", waveform == SoLoud::Misc::WAVE_SIN))
 			{
-				waveform = SoLoud::Monotone::SIN;
+				waveform = SoLoud::Misc::WAVE_SIN;
 				gMusic.setParams(hwchannels, waveform);
 			}
-			if (ImGui::RadioButton("SawSin", waveform == SoLoud::Monotone::SAWSIN))
+			if (ImGui::RadioButton("Bounce", waveform == SoLoud::Misc::WAVE_BOUNCE))
 			{
-				waveform = SoLoud::Monotone::SAWSIN;
+				waveform = SoLoud::Misc::WAVE_BOUNCE;
 				gMusic.setParams(hwchannels, waveform);
 			}
-			if (ImGui::RadioButton("Bounce", waveform == SoLoud::Monotone::BOUNCE))
+			if (ImGui::RadioButton("Jaws", waveform == SoLoud::Misc::WAVE_JAWS))
 			{
-				waveform = SoLoud::Monotone::BOUNCE;
+				waveform = SoLoud::Misc::WAVE_JAWS;
 				gMusic.setParams(hwchannels, waveform);
 			}
-			if (ImGui::RadioButton("Jaws", waveform == SoLoud::Monotone::JAWS))
+			if (ImGui::RadioButton("Humps", waveform == SoLoud::Misc::WAVE_HUMPS))
 			{
-				waveform = SoLoud::Monotone::JAWS;
-				gMusic.setParams(hwchannels, waveform);
-			}
-			if (ImGui::RadioButton("Humps", waveform == SoLoud::Monotone::HUMPS))
-			{
-				waveform = SoLoud::Monotone::HUMPS;
+				waveform = SoLoud::Misc::WAVE_HUMPS;
 				gMusic.setParams(hwchannels, waveform);
 			}
 		}
@@ -163,7 +158,7 @@ namespace monotone
 		gSoloud.init(SoLoud::Soloud::CLIP_ROUNDOFF | SoLoud::Soloud::ENABLE_VISUALIZATION);
 
 		gMusichandle = gSoloud.play(gMusic);
-		waveform = SoLoud::Monotone::SAW;
+		waveform = SoLoud::Misc::WAVE_SAW;
 		gMusic.setParams(hwchannels, waveform);
 
 		return 0;

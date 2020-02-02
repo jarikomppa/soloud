@@ -259,97 +259,14 @@ namespace SoLoud
 			
 			aBuffer[i] = 0;
 			int j;
-			switch (mParent->mWaveform)
+			for (j = 0; j < 12; j++)
 			{
-			case Monotone::SAW:
-				for (j = 0; j < 12; j++)
+				if (mOutput[j].mEnabled)
 				{
-					if (mOutput[j].mEnabled)
-					{
-						float bleh = mOutput[j].mSamplePos + mOutput[j].mSamplePosInc;
-						mOutput[j].mSamplePos = bleh - (long)bleh;
-						// saw:
-						aBuffer[i] += ((mOutput[j].mSamplePos) - 0.5f) * 0.5f;
-					}
+					float bleh = mOutput[j].mSamplePos + mOutput[j].mSamplePosInc;
+					mOutput[j].mSamplePos = bleh - (long)bleh;					
+					aBuffer[i] += SoLoud::Misc::generateWaveform(mParent->mWaveform, mOutput[j].mSamplePos) * 0.5f;
 				}
-				break;
-			case Monotone::SIN:
-				for (j = 0; j < 12; j++)
-				{
-					if (mOutput[j].mEnabled)
-					{
-						float bleh = mOutput[j].mSamplePos + mOutput[j].mSamplePosInc;
-						mOutput[j].mSamplePos = bleh - (long)bleh;
-						// sin: 
-						aBuffer[i] += (float)sin(mOutput[j].mSamplePos * M_PI * 2) * 0.5f;
-					}
-				}
-				break;
-			case Monotone::SAWSIN:
-				for (j = 0; j < 12; j++)
-				{
-					if (mOutput[j].mEnabled)
-					{
-						float bleh = mOutput[j].mSamplePos + mOutput[j].mSamplePosInc;
-						mOutput[j].mSamplePos = bleh - (long)bleh;
-						// sawsin:
-						bleh = ((mOutput[j].mSamplePos) - 0.5f);
-						bleh *= (float)sin(mOutput[j].mSamplePos * M_PI * 2);
-						aBuffer[i] += bleh;
-					}
-				}
-				break;
-			case Monotone::SQUARE:
-			default:
-				for (j = 0; j < 12; j++)
-				{
-					if (mOutput[j].mEnabled)
-					{
-						float bleh = mOutput[j].mSamplePos + mOutput[j].mSamplePosInc;
-						mOutput[j].mSamplePos = bleh - (long)bleh;
-						// square:
-						aBuffer[i] += (mOutput[j].mSamplePos > 0.5f) ? 0.25f : -0.25f;
-					}
-				}
-				break;
-			case Monotone::BOUNCE:
-				for (j = 0; j < 12; j++)
-				{
-					if (mOutput[j].mEnabled)
-					{
-						float bleh = mOutput[j].mSamplePos + mOutput[j].mSamplePosInc;
-						mOutput[j].mSamplePos = bleh - (long)bleh;
-						// bounce: 
-						aBuffer[i] += (float)fabs((float)sin(mOutput[j].mSamplePos * M_PI * 2) * 0.5f);
-					}
-				}
-				break;
-			case Monotone::JAWS:
-				for (j = 0; j < 12; j++)
-				{
-					if (mOutput[j].mEnabled)
-					{
-						float bleh = mOutput[j].mSamplePos + mOutput[j].mSamplePosInc;
-						mOutput[j].mSamplePos = bleh - (long)bleh;
-						// jaws: 
-						if (mOutput[j].mSamplePos < 0.25)
-						aBuffer[i] += (float)sin(mOutput[j].mSamplePos * M_PI * 2) * 0.5f;
-					}
-				}
-				break;
-			case Monotone::HUMPS:
-				for (j = 0; j < 12; j++)
-				{
-					if (mOutput[j].mEnabled)
-					{
-						float bleh = mOutput[j].mSamplePos + mOutput[j].mSamplePosInc;
-						mOutput[j].mSamplePos = bleh - (long)bleh;
-						// humps: 
-						if (mOutput[j].mSamplePos < 0.5)
-							aBuffer[i] += (float)sin(mOutput[j].mSamplePos * M_PI * 2) * 0.5f;
-					}
-				}
-				break;
 			}
 
 			mSampleCount++;
@@ -400,7 +317,7 @@ namespace SoLoud
 		mChannels = 1;
 
 		mHardwareChannels = 1;
-		mWaveform = SQUARE;
+		mWaveform = SoLoud::Misc::WAVE_SQUARE;
 	}
 
 	void Monotone::clear()

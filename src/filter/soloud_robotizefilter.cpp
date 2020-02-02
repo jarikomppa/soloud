@@ -24,16 +24,17 @@ freely, subject to the following restrictions:
 
 #include <string.h>
 #include "soloud.h"
+#include "soloud_misc.h"
 #include "soloud_robotizefilter.h"
-
 
 namespace SoLoud
 {
 	RobotizeFilterInstance::RobotizeFilterInstance(RobotizeFilter *aParent)
 	{
 		mParent = aParent;
-		initParams(2);
+		initParams(3);
 		mParam[FREQ] = aParent->mFreq;
+		mParam[WAVE] = (float)aParent->mWave;
 	}
 
 	void RobotizeFilterInstance::filterChannel(float *aBuffer, unsigned int aSamples, float aSamplerate, time aTime, unsigned int aChannel, unsigned int aChannels)
@@ -45,8 +46,7 @@ namespace SoLoud
 		{
 			float s = aBuffer[i];
 			float wpos = ((start + i) % period) / (float)period;
-			if (wpos > 0.5)
-				s = 0;
+			s *= SoLoud::Misc::generateWaveform((int)mParam[WAVE], wpos) + 0.5f;
 			aBuffer[i] += (s - aBuffer[i]) * mParam[WET];
 		}
 	}
@@ -54,36 +54,43 @@ namespace SoLoud
 	RobotizeFilter::RobotizeFilter()
 	{
 		mFreq = 30;
+		mWave = 0;
 	}
 
-	void RobotizeFilter::setParams(float aFreq)
+	void RobotizeFilter::setParams(float aFreq, int aWaveform)
 	{
 		mFreq = aFreq;
+		mWave = aWaveform;
 	}
 
 	int RobotizeFilter::getParamCount()
 	{
-		return 2;
+		return 3;
 	}
 
 	const char* RobotizeFilter::getParamName(unsigned int aParamIndex)
 	{
-		if (aParamIndex < 0 || aParamIndex > 1)
+		if (aParamIndex < 0 || aParamIndex > 2)
 			return 0;
-		const char* names[2] = {
+		const char* names[3] = {
 			"Wet",
-			"Frequency"
+			"Frequency",
+			"Waveform"
 		};
 		return names[aParamIndex];
 	}
 
 	unsigned int RobotizeFilter::getParamType(unsigned int aParamIndex)
 	{
+		if (aParamIndex == WAVE)
+			return INT_PARAM;
 		return FLOAT_PARAM;
 	}
 
 	float RobotizeFilter::getParamMax(unsigned int aParamIndex)
 	{
+		if (aParamIndex == WAVE)
+			return 6;
 		if (aParamIndex == FREQ)
 			return 100;
 		return 1;

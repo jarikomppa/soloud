@@ -296,6 +296,25 @@ namespace SoLoud
 		}
 #endif
 
+#if defined(WITH_MINIAUDIO)
+		if (!inited &&
+			(aBackend == Soloud::MINIAUDIO ||
+				aBackend == Soloud::AUTO))
+		{
+			if (aBufferSize == Soloud::AUTO) buffersize = 2048;
+
+			int ret = miniaudio_init(this, aFlags, samplerate, buffersize, aChannels);
+			if (ret == 0)
+			{
+				inited = 1;
+				mBackendID = Soloud::MINIAUDIO;
+			}
+
+			if (ret != 0 && aBackend != Soloud::AUTO)
+				return ret;
+		}
+#endif
+
 #if defined(WITH_PORTAUDIO)
 		if (!inited &&
 			(aBackend == Soloud::PORTAUDIO ||
@@ -501,25 +520,6 @@ namespace SoLoud
 
 			if (ret != 0 && aBackend != Soloud::AUTO)
 				return ret;			
-		}
-#endif
-
-#if defined(WITH_MINIAUDIO)
-		if (!inited &&
-			(aBackend == Soloud::MINIAUDIO ||
-				aBackend == Soloud::AUTO))
-		{
-			if (aBufferSize == Soloud::AUTO) buffersize = 2048;
-
-			int ret = miniaudio_init(this, aFlags, samplerate, buffersize, aChannels);
-			if (ret == 0)
-			{
-				inited = 1;
-				mBackendID = Soloud::MINIAUDIO;
-			}
-
-			if (ret != 0 && aBackend != Soloud::AUTO)
-				return ret;
 		}
 #endif
 

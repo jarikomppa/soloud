@@ -1844,7 +1844,7 @@ namespace SoLoud
 		}
 #endif
 		{
-			bool once = false;
+			static bool once = false;
 			if (!once)
 			{
 				once = true;

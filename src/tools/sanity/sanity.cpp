@@ -1077,14 +1077,14 @@ void testFilters()
 	soloud.stopAll();
 	wav.setFilter(0, 0);
 
-	wshap.setParams(0.05f, 1);
+	wshap.setParams(0.05f);
 	wav.setFilter(0, &wshap);
 	soloud.play(wav);
 	soloud.mix(ref2, 1000);
 	CHECKLASTKNOWN(ref2, 2000);
 	CHECK_BUF_DIFF(ref, ref2, 2000);
 	soloud.stopAll();
-	wshap.setParams(0.005f, 1);
+	wshap.setParams(0.005f);
 	soloud.play(wav);
 	soloud.mix(scratch, 1000);
 	CHECKLASTKNOWN(scratch, 2000);

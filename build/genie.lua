@@ -218,7 +218,7 @@ if _OPTIONS["with-sdl"] then
 end
 
 if _OPTIONS["with-sdl2"] then
-	WITH_SDL = 1
+	WITH_SDL2 = 1
 end
 
 if _OPTIONS["with-wasapi"] then
@@ -578,7 +578,7 @@ end
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 
-if (WITH_SDL2 == 1) then
+if (WITH_SDL2 == 1 or WITH_SDL2STATIC) then
 
 	project "SoloudDemoCommon"
 		kind "StaticLib"
@@ -951,7 +951,7 @@ end
 --  The rest of the projects require SDL
 --
 
-if (WITH_SDL2 == 1) then
+if (WITH_SDL2 == 1 or WITH_SDL2STATIC) then
 
 function sdl2_lib()
     configuration { "x32" } 

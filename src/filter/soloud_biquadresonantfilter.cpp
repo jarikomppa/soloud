@@ -98,6 +98,7 @@ namespace SoLoud
 
 	void BiquadResonantFilterInstance::filterChannel(float *aBuffer, unsigned int aSamples, float aSamplerate, double aTime, unsigned int aChannel, unsigned int /*aChannels*/)
 	{
+		unsigned int osamples = aSamples;
 		if (aChannel == 0)
 		{
 			updateParams(aTime);
@@ -107,14 +108,16 @@ namespace SoLoud
 				mSamplerate = aSamplerate;
 				calcBQRParams();
 			}
-			mParamChanged = 0;
+			mParamChanged = 0;			
 		}		
-
 		float x;
 		unsigned int i;
 		int c = 0;
 
 		BQRStateData &s = mState[aChannel];
+
+		// make sure we access pairs of samples (one sample may be skipped)
+		aSamples = aSamples & ~1; 
 
 		for (i = 0; i < aSamples; i +=2, c++)
 		{
@@ -135,10 +138,9 @@ namespace SoLoud
 			s.mX1 = s.mX2;
 			s.mX2 = x;
 		}
-
-		// Apply a small impulse to filter to prevent arithmetic underflow,
-		// which can cause the FPU to interrupt the CPU.
-		s.mY1 += (float) 1.0E-26;		
+		// If we skipped a sample earlier, patch it by just copying the previous.
+		if (osamples != aSamples)
+			aBuffer[c] = aBuffer[c - 1];
 	}
 
 

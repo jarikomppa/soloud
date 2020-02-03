@@ -106,9 +106,19 @@ EXPORTS
 	Soloud_mix
 	Soloud_mixSigned16
 	BassboostFilter_destroy
+	BassboostFilter_getParamCount
+	BassboostFilter_getParamName
+	BassboostFilter_getParamType
+	BassboostFilter_getParamMax
+	BassboostFilter_getParamMin
 	BassboostFilter_setParams
 	BassboostFilter_create
 	BiquadResonantFilter_destroy
+	BiquadResonantFilter_getParamCount
+	BiquadResonantFilter_getParamName
+	BiquadResonantFilter_getParamType
+	BiquadResonantFilter_getParamMax
+	BiquadResonantFilter_getParamMin
 	BiquadResonantFilter_create
 	BiquadResonantFilter_setParams
 	Bus_destroy
@@ -124,9 +134,11 @@ EXPORTS
 	Bus_play3dClockedEx
 	Bus_setChannels
 	Bus_setVisualizationEnable
+	Bus_annexSound
 	Bus_calcFFT
 	Bus_getWave
 	Bus_getApproximateVolume
+	Bus_getActiveVoiceCount
 	Bus_setVolume
 	Bus_setLooping
 	Bus_set3dMinMaxDistance
@@ -145,16 +157,49 @@ EXPORTS
 	DCRemovalFilter_create
 	DCRemovalFilter_setParams
 	DCRemovalFilter_setParamsEx
+	DCRemovalFilter_getParamCount
+	DCRemovalFilter_getParamName
+	DCRemovalFilter_getParamType
+	DCRemovalFilter_getParamMax
+	DCRemovalFilter_getParamMin
 	EchoFilter_destroy
+	EchoFilter_getParamCount
+	EchoFilter_getParamName
+	EchoFilter_getParamType
+	EchoFilter_getParamMax
+	EchoFilter_getParamMin
 	EchoFilter_create
 	EchoFilter_setParams
 	EchoFilter_setParamsEx
 	FFTFilter_destroy
 	FFTFilter_create
+	FFTFilter_getParamCount
+	FFTFilter_getParamName
+	FFTFilter_getParamType
+	FFTFilter_getParamMax
+	FFTFilter_getParamMin
 	FlangerFilter_destroy
+	FlangerFilter_getParamCount
+	FlangerFilter_getParamName
+	FlangerFilter_getParamType
+	FlangerFilter_getParamMax
+	FlangerFilter_getParamMin
 	FlangerFilter_create
 	FlangerFilter_setParams
+	FreeverbFilter_destroy
+	FreeverbFilter_getParamCount
+	FreeverbFilter_getParamName
+	FreeverbFilter_getParamType
+	FreeverbFilter_getParamMax
+	FreeverbFilter_getParamMin
+	FreeverbFilter_create
+	FreeverbFilter_setParams
 	LofiFilter_destroy
+	LofiFilter_getParamCount
+	LofiFilter_getParamName
+	LofiFilter_getParamType
+	LofiFilter_getParamMax
+	LofiFilter_getParamMin
 	LofiFilter_create
 	LofiFilter_setParams
 	Monotone_destroy
@@ -225,6 +270,12 @@ EXPORTS
 	Queue_setFilter
 	Queue_stop
 	RobotizeFilter_destroy
+	RobotizeFilter_getParamCount
+	RobotizeFilter_getParamName
+	RobotizeFilter_getParamType
+	RobotizeFilter_getParamMax
+	RobotizeFilter_getParamMin
+	RobotizeFilter_setParams
 	RobotizeFilter_create
 	Prg_destroy
 	Prg_create
@@ -365,8 +416,12 @@ EXPORTS
 	Wav_stop
 	WaveShaperFilter_destroy
 	WaveShaperFilter_setParams
-	WaveShaperFilter_setParamsEx
 	WaveShaperFilter_create
+	WaveShaperFilter_getParamCount
+	WaveShaperFilter_getParamName
+	WaveShaperFilter_getParamType
+	WaveShaperFilter_getParamMax
+	WaveShaperFilter_getParamMin
 	WavStream_destroy
 	WavStream_create
 	WavStream_load

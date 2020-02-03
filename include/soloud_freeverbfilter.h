@@ -37,7 +37,7 @@ namespace SoLoud
 
 	class FreeverbFilterInstance : public FilterInstance
 	{
-		enum {
+		enum FILTERPARAM {
 			WET = 0,
 			FREEZE,
 			ROOMSIZE,
@@ -56,7 +56,7 @@ namespace SoLoud
 	class FreeverbFilter : public Filter
 	{
 	public:
-		enum {
+		enum FILTERPARAM {
 			WET = 0,
 			FREEZE,
 			ROOMSIZE,

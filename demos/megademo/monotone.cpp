@@ -118,6 +118,16 @@ namespace monotone
 				waveform = SoLoud::Misc::WAVE_HUMPS;
 				gMusic.setParams(hwchannels, waveform);
 			}
+			if (ImGui::RadioButton("Fourier square", waveform == SoLoud::Misc::WAVE_FSQUARE))
+			{
+				waveform = SoLoud::Misc::WAVE_FSQUARE;
+				gMusic.setParams(hwchannels, waveform);
+			}			
+			if (ImGui::RadioButton("Fourier saw", waveform == SoLoud::Misc::WAVE_FSAW))
+			{
+				waveform = SoLoud::Misc::WAVE_FSAW;
+				gMusic.setParams(hwchannels, waveform);
+			}
 		}
 		ImGui::Separator();
 		ImGui::Text("Biquad filter (lowpass)");

@@ -48,6 +48,27 @@ namespace SoLoud
 				return (p < 0.25f ? (float)sin(p * M_PI * 2.0f) * 0.5f : 0) - 0.5f;
 			case WAVE_HUMPS:
 				return (p < 0.5f ? (float)sin(p * M_PI * 2.0f) * 0.5f : 0) - 0.5f;
+			case WAVE_FSQUARE:
+				{
+					float f = 0;
+					for (int i = 1; i < 22; i += 2)
+					{
+						f += (4.0f / (M_PI * i)) * (float)sin(2 * M_PI * i * p);
+					}
+					return f * 0.5f;
+				}
+			case WAVE_FSAW:
+				{
+					float f = 0;
+					for (int i = 1; i < 15; i++)
+					{
+						if (i & 1)
+							f += (1.0f / (M_PI * i)) * sin(p * 2 * M_PI * i);
+						else
+							f -= (1.0f / (M_PI * i)) * sin(p * 2 * M_PI * i);
+					}
+					return f;
+				}
 			}
 		}
 	}

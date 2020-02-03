@@ -73,7 +73,7 @@ namespace SoLoud
             return UNKNOWN_ERROR;
         }
 
-        aSoloud->postinit(gDevice.sampleRate, gDevice.playback.internalBufferSizeInFrames, aFlags, gDevice.playback.channels);
+        aSoloud->postinit_internal(gDevice.sampleRate, gDevice.playback.internalBufferSizeInFrames, aFlags, gDevice.playback.channels);
 
         aSoloud->mBackendCleanupFunc = soloud_miniaudio_deinit;
 

@@ -105,7 +105,7 @@ namespace SoLoud
         data->mSoloud = aSoloud;
         data->mBuffer.init(data->mSamples * aChannels);
 		data->mRunning = true;
-        aSoloud->postinit(aSamplerate, data->mSamples * aChannels, aFlags, aChannels);
+        aSoloud->postinit_internal(aSamplerate, data->mSamples * aChannels, aFlags, aChannels);
         data->mThreadHandle = Thread::createThread(nosoundThread, data);
         if (0 == data->mThreadHandle)
         {

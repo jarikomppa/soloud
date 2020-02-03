@@ -58,7 +58,7 @@ namespace SoLoud
 			mScratch.init(mScratchSize * MAX_CHANNELS);
 		}
 		
-		s->mixBus(aBuffer, aSamplesToRead, aBufferSize, mScratch.mData, handle, mSamplerate, mChannels);
+		s->mixBus_internal(aBuffer, aSamplesToRead, aBufferSize, mScratch.mData, handle, mSamplerate, mChannels);
 
 		int i;
 		if (mParent->mFlags & AudioSource::VISUALIZATION_DATA)
@@ -117,7 +117,7 @@ namespace SoLoud
 		{
 			if (s->mVoice[i] && s->mVoice[i]->mBusHandle == mParent->mChannelHandle)
 			{
-				s->stopVoice(i);
+				s->stopVoice_internal(i);
 			}
 		}
 	}
@@ -156,7 +156,7 @@ namespace SoLoud
 			{
 				if (mSoloud->mVoice[i] == mInstance)
 				{
-					mChannelHandle = mSoloud->getHandleFromVoice(i);
+					mChannelHandle = mSoloud->getHandleFromVoice_internal(i);
 				}
 			}
 		}
@@ -245,7 +245,7 @@ namespace SoLoud
 
 		if (mInstance)
 		{
-			mSoloud->lockAudioMutex();
+			mSoloud->lockAudioMutex_internal();
 			delete mInstance->mFilter[aFilterId];
 			mInstance->mFilter[aFilterId] = 0;
 		
@@ -253,7 +253,7 @@ namespace SoLoud
 			{
 				mInstance->mFilter[aFilterId] = mFilter[aFilterId]->createInstance();
 			}
-			mSoloud->unlockAudioMutex();
+			mSoloud->unlockAudioMutex_internal();
 		}
 	}
 
@@ -281,7 +281,7 @@ namespace SoLoud
 	{
 		if (mInstance && mSoloud)
 		{
-			mSoloud->lockAudioMutex();
+			mSoloud->lockAudioMutex_internal();
 			float temp[1024];
 			int i;
 			for (i = 0; i < 256; i++)
@@ -291,7 +291,7 @@ namespace SoLoud
 				temp[i+512] = 0;
 				temp[i+768] = 0;
 			}
-			mSoloud->unlockAudioMutex();
+			mSoloud->unlockAudioMutex_internal();
 
 			SoLoud::FFT::fft1024(temp);
 
@@ -311,10 +311,10 @@ namespace SoLoud
 		if (mInstance && mSoloud)
 		{
 			int i;
-			mSoloud->lockAudioMutex();
+			mSoloud->lockAudioMutex_internal();
 			for (i = 0; i < 256; i++)
 				mWaveData[i] = mInstance->mVisualizationWaveData[i];
-			mSoloud->unlockAudioMutex();
+			mSoloud->unlockAudioMutex_internal();
 		}
 		return mWaveData;
 	}
@@ -326,9 +326,9 @@ namespace SoLoud
 		float vol = 0;
 		if (mInstance && mSoloud)
 		{
-			mSoloud->lockAudioMutex();
+			mSoloud->lockAudioMutex_internal();
 			vol = mInstance->mVisualizationChannelVolume[aChannel];
-			mSoloud->unlockAudioMutex();
+			mSoloud->unlockAudioMutex_internal();
 		}
 		return vol;
 	}
@@ -338,11 +338,11 @@ namespace SoLoud
 		int i;
 		unsigned int count = 0;
 		findBusHandle();
-		mSoloud->lockAudioMutex();
+		mSoloud->lockAudioMutex_internal();
 		for (i = 0; i < VOICE_COUNT; i++)
 			if (mSoloud->mVoice[i] && mSoloud->mVoice[i]->mBusHandle == mChannelHandle)
 				count++;
-		mSoloud->unlockAudioMutex();
+		mSoloud->unlockAudioMutex_internal();
 		return count;
 	}
 };

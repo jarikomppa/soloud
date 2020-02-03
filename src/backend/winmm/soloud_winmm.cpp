@@ -194,7 +194,7 @@ namespace SoLoud
                 return UNKNOWN_ERROR;
             }
         }
-        aSoloud->postinit(aSamplerate, data->samples * format.nChannels, aFlags, aChannels);
+        aSoloud->postinit_internal(aSamplerate, data->samples * format.nChannels, aFlags, aChannels);
         data->threadHandle = Thread::createThread(winMMThread, data);
         if (0 == data->threadHandle)
         {

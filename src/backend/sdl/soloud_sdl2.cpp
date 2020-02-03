@@ -115,7 +115,7 @@ namespace SoLoud
 			}
 		}
 
-		aSoloud->postinit(gActiveAudioSpec.freq, gActiveAudioSpec.samples, aFlags, gActiveAudioSpec.channels);
+		aSoloud->postinit_internal(gActiveAudioSpec.freq, gActiveAudioSpec.samples, aFlags, gActiveAudioSpec.channels);
 
 		aSoloud->mBackendCleanupFunc = soloud_sdl2_deinit;
 

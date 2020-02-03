@@ -566,7 +566,7 @@ namespace SoLoud
 		return 0;
 	}
 
-	void Soloud::postinit(unsigned int aSamplerate, unsigned int aBufferSize, unsigned int aFlags, unsigned int aChannels)
+	void Soloud::postinit_internal(unsigned int aSamplerate, unsigned int aBufferSize, unsigned int aFlags, unsigned int aChannels)
 	{		
 		mGlobalVolume = 1;
 		mChannels = aChannels;
@@ -700,10 +700,10 @@ namespace SoLoud
 	float * Soloud::getWave()
 	{
 		int i;
-		lockAudioMutex();
+		lockAudioMutex_internal();
 		for (i = 0; i < 256; i++)
 			mWaveData[i] = mVisualizationWaveData[i];
-		unlockAudioMutex();
+		unlockAudioMutex_internal();
 		return mWaveData;
 	}
 
@@ -712,16 +712,16 @@ namespace SoLoud
 		if (aChannel > mChannels)
 			return 0;
 		float vol = 0;
-		lockAudioMutex();
+		lockAudioMutex_internal();
 		vol = mVisualizationChannelVolume[aChannel];
-		unlockAudioMutex();
+		unlockAudioMutex_internal();
 		return vol;
 	}
 
 
 	float * Soloud::calcFFT()
 	{
-		lockAudioMutex();
+		lockAudioMutex_internal();
 		float temp[1024];
 		int i;
 		for (i = 0; i < 256; i++)
@@ -731,7 +731,7 @@ namespace SoLoud
 			temp[i+512] = 0;
 			temp[i+768] = 0;
 		}
-		unlockAudioMutex();
+		unlockAudioMutex_internal();
 
 		SoLoud::FFT::fft1024(temp);
 
@@ -746,7 +746,7 @@ namespace SoLoud
 	}
 
 #if defined(SOLOUD_SSE_INTRINSICS)
-	void Soloud::clip(AlignedFloatBuffer &aBuffer, AlignedFloatBuffer &aDestBuffer, unsigned int aSamples, float aVolume0, float aVolume1)
+	void Soloud::clip_internal(AlignedFloatBuffer &aBuffer, AlignedFloatBuffer &aDestBuffer, unsigned int aSamples, float aVolume0, float aVolume1)
 	{
 		float vd = (aVolume1 - aVolume0) / aSamples;
 		float v = aVolume0;
@@ -852,7 +852,7 @@ namespace SoLoud
 		}
 	}
 #else // fallback code
-	void Soloud::clip(AlignedFloatBuffer &aBuffer, AlignedFloatBuffer &aDestBuffer, unsigned int aSamples, float aVolume0, float aVolume1)
+	void Soloud::clip_internal(AlignedFloatBuffer &aBuffer, AlignedFloatBuffer &aDestBuffer, unsigned int aSamples, float aVolume0, float aVolume1)
 	{
 		float vd = (aVolume1 - aVolume0) / aSamples;
 		float v = aVolume0;
@@ -1403,7 +1403,7 @@ namespace SoLoud
 			aVoice->mCurrentChannelVolume[k] = pand[k];
 	}
 
-	void Soloud::mixBus(float *aBuffer, unsigned int aSamplesToRead, unsigned int aBufferSize, float *aScratch, unsigned int aBus, float aSamplerate, unsigned int aChannels)
+	void Soloud::mixBus_internal(float *aBuffer, unsigned int aSamplesToRead, unsigned int aBufferSize, float *aScratch, unsigned int aBus, float aSamplerate, unsigned int aChannels)
 	{
 		unsigned int i, j;
 		// Clear accumulation buffer
@@ -1573,7 +1573,7 @@ namespace SoLoud
 				// clear voice if the sound is over
 				if (!(voice->mFlags & AudioSourceInstance::LOOPING) && voice->hasEnded())
 				{
-					stopVoice(mActiveVoice[i]);
+					stopVoice_internal(mActiveVoice[i]);
 				}
 			}
 			else
@@ -1682,13 +1682,13 @@ namespace SoLoud
 				// clear voice if the sound is over
 				if (!(voice->mFlags & AudioSourceInstance::LOOPING) && voice->hasEnded())
 				{
-					stopVoice(mActiveVoice[i]);
+					stopVoice_internal(mActiveVoice[i]);
 				}
 			}
 		}
 	}
 
-	void Soloud::mapResampleBuffers()
+	void Soloud::mapResampleBuffers_internal()
 	{
 		SOLOUD_ASSERT(mMaxActiveVoices < 256);
 		char live[256];
@@ -1740,7 +1740,7 @@ namespace SoLoud
 		}
 	}
 
-	void Soloud::calcActiveVoices()
+	void Soloud::calcActiveVoices_internal()
 	{
 		// TODO: consider whether we need to re-evaluate the active voices all the time.
 		// It is a must when new voices are started, but otherwise we could get away
@@ -1772,7 +1772,7 @@ namespace SoLoud
 		{
 			// everything is audible, early out
 			mActiveVoiceCount = candidates;
-			mapResampleBuffers();
+			mapResampleBuffers_internal();
 			return;
 		}
 
@@ -1826,7 +1826,7 @@ namespace SoLoud
 			len = stack[--pos];          
 		}	
 		// TODO: should the rest of the voices be flagged INAUDIBLE?
-		mapResampleBuffers();
+		mapResampleBuffers_internal();
 	}
 
 	void Soloud::mix_internal(unsigned int aSamples)
@@ -1867,7 +1867,7 @@ namespace SoLoud
 		}
 		globalVolume[1] = mGlobalVolume;
 
-		lockAudioMutex();
+		lockAudioMutex_internal();
 
 		// Process faders. May change scratch size.
 		int i;
@@ -1892,7 +1892,7 @@ namespace SoLoud
 				if (mVoice[i]->mRelativePlaySpeedFader.mActive > 0)
 				{
 					float speed = mVoice[i]->mRelativePlaySpeedFader.get(mVoice[i]->mStreamTime);
-					setVoiceRelativePlaySpeed(i, speed);
+					setVoiceRelativePlaySpeed_internal(i, speed);
 				}
 
 				volume[0] = mVoice[i]->mOverallVolume;
@@ -1900,7 +1900,7 @@ namespace SoLoud
 				{
 					mVoice[i]->mSetVolume = mVoice[i]->mVolumeFader.get(mVoice[i]->mStreamTime);
 					mVoice[i]->mActiveFader = 1;
-					updateVoiceVolume(i);
+					updateVoiceVolume_internal(i);
 					mActiveVoiceDirty = true;
 				}
 				volume[1] = mVoice[i]->mOverallVolume;
@@ -1908,7 +1908,7 @@ namespace SoLoud
 				if (mVoice[i]->mPanFader.mActive > 0)
 				{
 					float pan = mVoice[i]->mPanFader.get(mVoice[i]->mStreamTime);
-					setVoicePan(i, pan);
+					setVoicePan_internal(i, pan);
 					mVoice[i]->mActiveFader = 1;
 				}
 
@@ -1918,7 +1918,7 @@ namespace SoLoud
 					if (mVoice[i]->mPauseScheduler.mActive == -1)
 					{
 						mVoice[i]->mPauseScheduler.mActive = 0;
-						setVoicePause(i, 1);
+						setVoicePause_internal(i, 1);
 					}
 				}
 
@@ -1928,14 +1928,14 @@ namespace SoLoud
 					if (mVoice[i]->mStopScheduler.mActive == -1)
 					{
 						mVoice[i]->mStopScheduler.mActive = 0;
-						stopVoice(i);
+						stopVoice_internal(i);
 					}
 				}
 			}
 		}
 
 		if (mActiveVoiceDirty)
-			calcActiveVoices();
+			calcActiveVoices_internal();
 
 		// Resize scratch if needed.
 		if (mScratchSize < mScratchNeeded)
@@ -1944,7 +1944,7 @@ namespace SoLoud
 			mScratch.init(mScratchSize * MAX_CHANNELS);
 		}
 		
-		mixBus(mOutputScratch.mData, aSamples, aSamples, mScratch.mData, 0, (float)mSamplerate, mChannels);
+		mixBus_internal(mOutputScratch.mData, aSamples, aSamples, mScratch.mData, 0, (float)mSamplerate, mChannels);
 
 		for (i = 0; i < FILTERS_PER_STREAM; i++)
 		{
@@ -1954,9 +1954,9 @@ namespace SoLoud
 			}
 		}
 
-		unlockAudioMutex();
+		unlockAudioMutex_internal();
 
-		clip(mOutputScratch, mScratch, aSamples, globalVolume[0], globalVolume[1]);
+		clip_internal(mOutputScratch, mScratch, aSamples, globalVolume[0], globalVolume[1]);
 
 		if (mFlags & ENABLE_VISUALIZATION)
 		{
@@ -2160,7 +2160,7 @@ namespace SoLoud
 		}
 	}
 
-	void Soloud::lockAudioMutex()
+	void Soloud::lockAudioMutex_internal()
 	{
 		if (mAudioThreadMutex)
 		{
@@ -2170,7 +2170,7 @@ namespace SoLoud
 		mInsideAudioThreadMutex = true;
 	}
 
-	void Soloud::unlockAudioMutex()
+	void Soloud::unlockAudioMutex_internal()
 	{
 		SOLOUD_ASSERT(mInsideAudioThreadMutex);
 		mInsideAudioThreadMutex = false;

@@ -97,7 +97,7 @@ namespace SoLoud
 		{
 			if (mSoloud->mVoice[i] == mInstance)
 			{
-				mQueueHandle = mSoloud->getHandleFromVoice(i);
+				mQueueHandle = mSoloud->getHandleFromVoice_internal(i);
 			}
 		}
 	}
@@ -132,11 +132,11 @@ namespace SoLoud
 		instance->init(aSound, 0);
 		instance->mAudioSourceID = aSound.mAudioSourceID;
 
-		mSoloud->lockAudioMutex();
+		mSoloud->lockAudioMutex_internal();
 		mSource[mWriteIndex] = instance;
 		mWriteIndex = (mWriteIndex + 1) % SOLOUD_QUEUE_MAX;
 		mCount++;
-		mSoloud->unlockAudioMutex();
+		mSoloud->unlockAudioMutex_internal();
 
 		return SO_NO_ERROR;
 	}
@@ -145,9 +145,9 @@ namespace SoLoud
 	unsigned int Queue::getQueueCount()
 	{
 		unsigned int count;
-		mSoloud->lockAudioMutex();
+		mSoloud->lockAudioMutex_internal();
 		count = mCount;
-		mSoloud->unlockAudioMutex();
+		mSoloud->unlockAudioMutex_internal();
 		return count;
 	}
 
@@ -155,9 +155,9 @@ namespace SoLoud
 	{
 		if (mCount == 0 || aSound.mAudioSourceID == 0)
 			return false;
-		mSoloud->lockAudioMutex();
+		mSoloud->lockAudioMutex_internal();
 		bool res = mSource[mReadIndex]->mAudioSourceID == aSound.mAudioSourceID;
-		mSoloud->unlockAudioMutex();
+		mSoloud->unlockAudioMutex_internal();
 		return res;
 	}
 

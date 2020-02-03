@@ -33,8 +33,12 @@ freely, subject to the following restrictions:
 #else
 #ifdef _MSC_VER
 #include <stdio.h> // for sprintf in asserts
+#ifndef VC_EXTRALEAN
 #define VC_EXTRALEAN
+#endif
+#ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
+#endif
 #include <windows.h> // only needed for OutputDebugStringA, should be solved somehow.
 #define SOLOUD_ASSERT(x) if (!(x)) { char temp[200]; sprintf(temp, "%s(%d): assert(%s) failed.\n", __FILE__, __LINE__, #x); OutputDebugStringA(temp); __debugbreak(); }
 #else
@@ -418,14 +422,48 @@ namespace SoLoud
 		void mix_internal(unsigned int aSamples);
 
 		// Handle rest of initialization (called from backend)
-		void postinit(unsigned int aSamplerate, unsigned int aBufferSize, unsigned int aFlags, unsigned int aChannels);
+		void postinit_internal(unsigned int aSamplerate, unsigned int aBufferSize, unsigned int aFlags, unsigned int aChannels);
 
 		// Update list of active voices
-		void calcActiveVoices();
+		void calcActiveVoices_internal();
 		// Map resample buffers to active voices
-		void mapResampleBuffers();
+		void mapResampleBuffers_internal();
 		// Perform mixing for a specific bus
-		void mixBus(float *aBuffer, unsigned int aSamplesToRead, unsigned int aBufferSize, float *aScratch, unsigned int aBus, float aSamplerate, unsigned int aChannels);
+		void mixBus_internal(float *aBuffer, unsigned int aSamplesToRead, unsigned int aBufferSize, float *aScratch, unsigned int aBus, float aSamplerate, unsigned int aChannels);
+		// Find a free voice, stopping the oldest if no free voice is found.
+		int findFreeVoice_internal();
+		// Converts handle to voice, if the handle is valid. Returns -1 if not.
+		int getVoiceFromHandle_internal(handle aVoiceHandle) const;
+		// Converts voice + playindex into handle
+		handle getHandleFromVoice_internal(unsigned int aVoice) const;
+		// Stop voice (not handle).
+		void stopVoice_internal(unsigned int aVoice);
+		// Set voice (not handle) pan.
+		void setVoicePan_internal(unsigned int aVoice, float aPan);
+		// Set voice (not handle) relative play speed.
+		result setVoiceRelativePlaySpeed_internal(unsigned int aVoice, float aSpeed);
+		// Set voice (not handle) volume.
+		void setVoiceVolume_internal(unsigned int aVoice, float aVolume);
+		// Set voice (not handle) pause state.
+		void setVoicePause_internal(unsigned int aVoice, int aPause);
+		// Update overall volume from set and 3d volumes
+		void updateVoiceVolume_internal(unsigned int aVoice);
+		// Update overall relative play speed from set and 3d speeds
+		void updateVoiceRelativePlaySpeed_internal(unsigned int aVoice);
+		// Perform 3d audio calculation for array of voices
+		void update3dVoices_internal(unsigned int *aVoiceList, unsigned int aVoiceCount);
+		// Clip the samples in the buffer
+		void clip_internal(AlignedFloatBuffer &aBuffer, AlignedFloatBuffer &aDestBuffer, unsigned int aSamples, float aVolume0, float aVolume1);
+		// Remove all non-active voices from group
+		void trimVoiceGroup_internal(handle aVoiceGroupHandle);
+		// Get pointer to the zero-terminated array of voice handles in a voice group
+		handle * voiceGroupHandleToArray_internal(handle aVoiceGroupHandle) const;
+
+		// Lock audio thread mutex.
+		void lockAudioMutex_internal();
+		// Unlock audio thread mutex.
+		void unlockAudioMutex_internal();
+
 		// Max. number of active voices. Busses and tickable inaudibles also count against this.
 		unsigned int mMaxActiveVoices;
 		// Highest voice in use so far
@@ -474,30 +512,7 @@ namespace SoLoud
 		Filter *mFilter[FILTERS_PER_STREAM];
 		// Global filter instance
 		FilterInstance *mFilterInstance[FILTERS_PER_STREAM];
-		// Find a free voice, stopping the oldest if no free voice is found.
-		int findFreeVoice();
-		// Converts handle to voice, if the handle is valid. Returns -1 if not.
-		int getVoiceFromHandle(handle aVoiceHandle) const;
-		// Converts voice + playindex into handle
-		handle getHandleFromVoice(unsigned int aVoice) const;
-		// Stop voice (not handle).
-		void stopVoice(unsigned int aVoice);
-		// Set voice (not handle) pan.
-		void setVoicePan(unsigned int aVoice, float aPan);
-		// Set voice (not handle) relative play speed.
-		result setVoiceRelativePlaySpeed(unsigned int aVoice, float aSpeed);
-		// Set voice (not handle) volume.
-		void setVoiceVolume(unsigned int aVoice, float aVolume);
-		// Set voice (not handle) pause state.
-		void setVoicePause(unsigned int aVoice, int aPause);
-		// Update overall volume from set and 3d volumes
-		void updateVoiceVolume(unsigned int aVoice);
-		// Update overall relative play speed from set and 3d speeds
-		void updateVoiceRelativePlaySpeed(unsigned int aVoice);
-		// Perform 3d audio calculation for array of voices
-		void update3dVoices(unsigned int *aVoiceList, unsigned int aVoiceCount);
-		// Clip the samples in the buffer
-		void clip(AlignedFloatBuffer &aBuffer, AlignedFloatBuffer &aDestBuffer, unsigned int aSamples, float aVolume0, float aVolume1);
+
 		// Approximate volume for channels.
 		float mVisualizationChannelVolume[MAX_CHANNELS];
 		// Mono-mixed wave data for visualization and for visualization FFT input
@@ -534,16 +549,6 @@ namespace SoLoud
 		unsigned int mActiveVoiceCount;
 		// Active voices list needs to be recalculated
 		bool mActiveVoiceDirty;
-
-		// Remove all non-active voices from group
-		void trimVoiceGroup(handle aVoiceGroupHandle);
-		// Get pointer to the zero-terminated array of voice handles in a voice group
-		handle * voiceGroupHandleToArray(handle aVoiceGroupHandle) const;
-
-		// Lock audio thread mutex.
-		void lockAudioMutex();
-		// Unlock audio thread mutex.
-		void unlockAudioMutex();
 	};
 };
 

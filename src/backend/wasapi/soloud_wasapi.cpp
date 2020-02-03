@@ -362,7 +362,7 @@ namespace SoLoud
 		data->sampleRate = format.nSamplesPerSec;
         data->channels = format.nChannels;
         data->soloud = aSoloud;
-        aSoloud->postinit(format.nSamplesPerSec, data->bufferFrames * format.nChannels, aFlags, 2);
+        aSoloud->postinit_internal(format.nSamplesPerSec, data->bufferFrames * format.nChannels, aFlags, 2);
         data->thread = Thread::createThread(wasapiThread, data);
         if (0 == data->thread)
         {

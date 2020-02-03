@@ -49,7 +49,7 @@ namespace SoLoud
         aSoloud->mBackendData = 0;
         aSoloud->mBackendCleanupFunc = nullCleanup;
 
-        aSoloud->postinit(aSamplerate, aBuffer, aFlags, aChannels);
+        aSoloud->postinit_internal(aSamplerate, aBuffer, aFlags, aChannels);
         aSoloud->mBackendString = "null driver";
         return SO_NO_ERROR;
     }

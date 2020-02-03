@@ -288,7 +288,7 @@ namespace SoLoud
 		}
 
 		//
-		aSoloud->postinit(aSamplerate,data->bufferSize,aFlags,2);
+		aSoloud->postinit_internal(aSamplerate,data->bufferSize,aFlags,2);
 		aSoloud->mBackendCleanupFunc = soloud_opensles_deinit;
 
 		LOG_INFO( "Creating audio thread." );

@@ -43,17 +43,17 @@ namespace SoLoud
 		return mGlobalVolume;
 	}
 
-	handle Soloud::getHandleFromVoice(unsigned int aVoice) const
+	handle Soloud::getHandleFromVoice_internal(unsigned int aVoice) const
 	{
 		if (mVoice[aVoice] == 0)
 			return 0;
 		return (aVoice + 1) | (mVoice[aVoice]->mPlayIndex << 12);
 	}
 
-	int Soloud::getVoiceFromHandle(handle aVoiceHandle) const
+	int Soloud::getVoiceFromHandle_internal(handle aVoiceHandle) const
 	{
 		// If this is a voice group handle, pick the first handle from the group
-		handle *h = voiceGroupHandleToArray(aVoiceHandle);
+		handle *h = voiceGroupHandleToArray_internal(aVoiceHandle);
 		if (h != NULL) aVoiceHandle = *h;
 
 		if (aVoiceHandle == 0) 
@@ -78,17 +78,17 @@ namespace SoLoud
 
 	unsigned int Soloud::getActiveVoiceCount()
 	{
-		lockAudioMutex();
+		lockAudioMutex_internal();
 		if (mActiveVoiceDirty)
-			calcActiveVoices();
+			calcActiveVoices_internal();
 		unsigned int c = mActiveVoiceCount;
-		unlockAudioMutex();
+		unlockAudioMutex_internal();
 		return c;
 	}
 
 	unsigned int Soloud::getVoiceCount()
 	{
-		lockAudioMutex();
+		lockAudioMutex_internal();
 		int i;
 		int c = 0;
 		for (i = 0; i < (signed)mHighestVoice; i++)
@@ -98,7 +98,7 @@ namespace SoLoud
 				c++;
 			}
 		}
-		unlockAudioMutex();
+		unlockAudioMutex_internal();
 		return c;
 	}
 
@@ -108,186 +108,186 @@ namespace SoLoud
 		if ((aVoiceHandle & 0xfffff000) == 0xfffff000)
 			return 0;
 
-		lockAudioMutex();
-		if (getVoiceFromHandle(aVoiceHandle) != -1) 
+		lockAudioMutex_internal();
+		if (getVoiceFromHandle_internal(aVoiceHandle) != -1)
 		{
-			unlockAudioMutex();
+			unlockAudioMutex_internal();
 			return 1;
 		}
-		unlockAudioMutex();
+		unlockAudioMutex_internal();
 		return 0;
 	}
 
 
 	time Soloud::getLoopPoint(handle aVoiceHandle)
 	{
-		lockAudioMutex();
-		int ch = getVoiceFromHandle(aVoiceHandle);
+		lockAudioMutex_internal();
+		int ch = getVoiceFromHandle_internal(aVoiceHandle);
 		if (ch == -1)
 		{
-			unlockAudioMutex();
+			unlockAudioMutex_internal();
 			return 0;
 		}
 		time v = mVoice[ch]->mLoopPoint;
-		unlockAudioMutex();
+		unlockAudioMutex_internal();
 		return v;
 	}
 
 	bool Soloud::getLooping(handle aVoiceHandle)
 	{
-		lockAudioMutex();
-		int ch = getVoiceFromHandle(aVoiceHandle);
+		lockAudioMutex_internal();
+		int ch = getVoiceFromHandle_internal(aVoiceHandle);
 		if (ch == -1)
 		{
-			unlockAudioMutex();
+			unlockAudioMutex_internal();
 			return 0;
 		}
 		bool v = (mVoice[ch]->mFlags & AudioSourceInstance::LOOPING) != 0;
-		unlockAudioMutex();
+		unlockAudioMutex_internal();
 		return v;
 	}
 
 	float Soloud::getInfo(handle aVoiceHandle, unsigned int mInfoKey)
 	{
-		lockAudioMutex();
-		int ch = getVoiceFromHandle(aVoiceHandle);
+		lockAudioMutex_internal();
+		int ch = getVoiceFromHandle_internal(aVoiceHandle);
 		if (ch == -1)
 		{
-			unlockAudioMutex();
+			unlockAudioMutex_internal();
 			return 0;
 		}
 		float v = mVoice[ch]->getInfo(mInfoKey);
-		unlockAudioMutex();
+		unlockAudioMutex_internal();
 		return v;
 	}
 
 	float Soloud::getVolume(handle aVoiceHandle)
 	{
-		lockAudioMutex();
-		int ch = getVoiceFromHandle(aVoiceHandle);
+		lockAudioMutex_internal();
+		int ch = getVoiceFromHandle_internal(aVoiceHandle);
 		if (ch == -1) 
 		{
-			unlockAudioMutex();
+			unlockAudioMutex_internal();
 			return 0;
 		}
 		float v = mVoice[ch]->mSetVolume;
-		unlockAudioMutex();
+		unlockAudioMutex_internal();
 		return v;
 	}
 
 	float Soloud::getOverallVolume(handle aVoiceHandle)
 	{
-		lockAudioMutex();
-		int ch = getVoiceFromHandle(aVoiceHandle);
+		lockAudioMutex_internal();
+		int ch = getVoiceFromHandle_internal(aVoiceHandle);
 		if (ch == -1)
 		{
-			unlockAudioMutex();
+			unlockAudioMutex_internal();
 			return 0;
 		}
 		float v = mVoice[ch]->mOverallVolume;
-		unlockAudioMutex();
+		unlockAudioMutex_internal();
 		return v;
 	}
 
 	float Soloud::getPan(handle aVoiceHandle)
 	{
-		lockAudioMutex();
-		int ch = getVoiceFromHandle(aVoiceHandle);
+		lockAudioMutex_internal();
+		int ch = getVoiceFromHandle_internal(aVoiceHandle);
 		if (ch == -1) 
 		{
-			unlockAudioMutex();
+			unlockAudioMutex_internal();
 			return 0;
 		}
 		float v = mVoice[ch]->mPan;
-		unlockAudioMutex();
+		unlockAudioMutex_internal();
 		return v;
 	}
 
 	time Soloud::getStreamTime(handle aVoiceHandle)
 	{
-		lockAudioMutex();
-		int ch = getVoiceFromHandle(aVoiceHandle);
+		lockAudioMutex_internal();
+		int ch = getVoiceFromHandle_internal(aVoiceHandle);
 		if (ch == -1) 
 		{
-			unlockAudioMutex();
+			unlockAudioMutex_internal();
 			return 0;
 		}
 		double v = mVoice[ch]->mStreamTime;
-		unlockAudioMutex();
+		unlockAudioMutex_internal();
 		return v;
 	}
 
 	time Soloud::getStreamPosition(handle aVoiceHandle)
 	{
-		lockAudioMutex();
-		int ch = getVoiceFromHandle(aVoiceHandle);
+		lockAudioMutex_internal();
+		int ch = getVoiceFromHandle_internal(aVoiceHandle);
 		if (ch == -1)
 		{
-			unlockAudioMutex();
+			unlockAudioMutex_internal();
 			return 0;
 		}
 		double v = mVoice[ch]->mStreamPosition;
-		unlockAudioMutex();
+		unlockAudioMutex_internal();
 		return v;
 	}
 
 	float Soloud::getRelativePlaySpeed(handle aVoiceHandle)
 	{
-		lockAudioMutex();
-		int ch = getVoiceFromHandle(aVoiceHandle);
+		lockAudioMutex_internal();
+		int ch = getVoiceFromHandle_internal(aVoiceHandle);
 		if (ch == -1) 
 		{
-			unlockAudioMutex();
+			unlockAudioMutex_internal();
 			return 1;
 		}
 		float v = mVoice[ch]->mSetRelativePlaySpeed;
-		unlockAudioMutex();
+		unlockAudioMutex_internal();
 		return v;
 	}
 
 	float Soloud::getSamplerate(handle aVoiceHandle)
 	{
-		lockAudioMutex();
-		int ch = getVoiceFromHandle(aVoiceHandle);
+		lockAudioMutex_internal();
+		int ch = getVoiceFromHandle_internal(aVoiceHandle);
 		if (ch == -1) 
 		{
-			unlockAudioMutex();
+			unlockAudioMutex_internal();
 			return 0;
 		}
 		float v = mVoice[ch]->mBaseSamplerate;
-		unlockAudioMutex();
+		unlockAudioMutex_internal();
 		return v;
 	}
 
 	bool Soloud::getPause(handle aVoiceHandle)
 	{
-		lockAudioMutex();
-		int ch = getVoiceFromHandle(aVoiceHandle);
+		lockAudioMutex_internal();
+		int ch = getVoiceFromHandle_internal(aVoiceHandle);
 		if (ch == -1) 
 		{
-			unlockAudioMutex();
+			unlockAudioMutex_internal();
 			return 0;
 		}
 		int v = !!(mVoice[ch]->mFlags & AudioSourceInstance::PAUSED);
-		unlockAudioMutex();
+		unlockAudioMutex_internal();
 		return v != 0;
 	}
 
 	bool Soloud::getProtectVoice(handle aVoiceHandle)
 	{
-		lockAudioMutex();
-		int ch = getVoiceFromHandle(aVoiceHandle);
+		lockAudioMutex_internal();
+		int ch = getVoiceFromHandle_internal(aVoiceHandle);
 		if (ch == -1) 
 		{
-			unlockAudioMutex();
+			unlockAudioMutex_internal();
 			return 0;
 		}
 		int v = !!(mVoice[ch]->mFlags & AudioSourceInstance::PROTECTED);
-		unlockAudioMutex();
+		unlockAudioMutex_internal();
 		return v != 0;
 	}
 
-	int Soloud::findFreeVoice()
+	int Soloud::findFreeVoice_internal()
 	{
 		int i;
 		unsigned int lowest_play_index_value = 0xffffffff;
@@ -314,21 +314,21 @@ namespace SoLoud
 				lowest_play_index = i;
 			}
 		}
-		stopVoice(lowest_play_index);
+		stopVoice_internal(lowest_play_index);
 		return lowest_play_index;
 	}
 
 	unsigned int Soloud::getLoopCount(handle aVoiceHandle)
 	{
-		lockAudioMutex();
-		int ch = getVoiceFromHandle(aVoiceHandle);
+		lockAudioMutex_internal();
+		int ch = getVoiceFromHandle_internal(aVoiceHandle);
 		if (ch == -1) 
 		{
-			unlockAudioMutex();
+			unlockAudioMutex_internal();
 			return 0;
 		}
 		int v = mVoice[ch]->mLoopCount;
-		unlockAudioMutex();
+		unlockAudioMutex_internal();
 		return v;
 	}
 
@@ -373,6 +373,4 @@ namespace SoLoud
 		aZ = m3dSpeakerPosition[3 * aChannel + 2];
 		return SO_NO_ERROR;
 	}
-
-
 }

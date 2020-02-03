@@ -75,7 +75,7 @@ namespace SoLoud
 
 	result coreaudio_init(SoLoud::Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer, unsigned int aChannels)
 	{
-		aSoloud->postinit(aSamplerate, aBuffer, aFlags, 2);
+		aSoloud->postinit_internal(aSamplerate, aBuffer, aFlags, 2);
 		aSoloud->mBackendCleanupFunc = soloud_coreaudio_deinit;
 
 		AudioStreamBasicDescription audioFormat;

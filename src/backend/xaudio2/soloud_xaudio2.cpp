@@ -232,7 +232,7 @@ namespace SoLoud
         }
         data->samples = aBuffer;
         data->soloud = aSoloud;
-        aSoloud->postinit(aSamplerate, aBuffer * format.nChannels, aFlags, 2);
+        aSoloud->postinit_internal(aSamplerate, aBuffer * format.nChannels, aFlags, 2);
         data->thread = Thread::createThread(xaudio2Thread, data);
         if (0 == data->thread)
         {

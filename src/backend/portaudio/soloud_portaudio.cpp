@@ -113,7 +113,7 @@ namespace SoLoud
 			return UNKNOWN_ERROR;
 		}
 
-		aSoloud->postinit(aSamplerate, aBuffer * aChannels, aFlags, aChannels);
+		aSoloud->postinit_internal(aSamplerate, aBuffer * aChannels, aFlags, aChannels);
 		dll_Pa_StartStream(gStream);
 		aSoloud->mBackendString = "PortAudio";
 

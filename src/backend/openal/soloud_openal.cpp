@@ -158,7 +158,7 @@ namespace SoLoud
 		if (!dll_al_found())
 			return DLL_NOT_FOUND;
 
-		aSoloud->postinit(aSamplerate,aBuffer,aFlags,2);
+		aSoloud->postinit_internal(aSamplerate,aBuffer,aFlags,2);
 		aSoloud->mBackendCleanupFunc = soloud_openal_deinit;
 
 		device = dll_alc_OpenDevice(NULL);

@@ -85,7 +85,7 @@ namespace SoLoud
 			return UNKNOWN_ERROR;
 		}
 
-		aSoloud->postinit(gActiveAudioSpec.freq, gActiveAudioSpec.samples, aFlags, gActiveAudioSpec.channels);
+		aSoloud->postinit_internal(gActiveAudioSpec.freq, gActiveAudioSpec.samples, aFlags, gActiveAudioSpec.channels);
 
 		aSoloud->mBackendCleanupFunc = soloud_sdl1_deinit;
 

@@ -101,7 +101,7 @@ namespace SoLoud
             }
         }
 
-        aSoloud->postinit(aSamplerate, aBuffer, aFlags, aChannels);
+        aSoloud->postinit_internal(aSamplerate, aBuffer, aFlags, aChannels);
         aSoloud->mBackendString = "JACK driver";
         return SO_NO_ERROR;
     }

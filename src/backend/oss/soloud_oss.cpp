@@ -166,7 +166,7 @@ namespace SoLoud
         }
         data->buffer = new float[data->samples*data->channels];
         data->sampleBuffer = new short[data->samples*data->channels];
-        aSoloud->postinit(aSamplerate, data->samples * data->channels, aFlags, 2);
+        aSoloud->postinit_internal(aSamplerate, data->samples * data->channels, aFlags, 2);
         data->threadHandle = Thread::createThread(ossThread, data);
         if (0 == data->threadHandle)
         {

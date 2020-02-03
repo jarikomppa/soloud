@@ -96,12 +96,12 @@ namespace SoLoud
 #define FOR_ALL_VOICES_PRE \
 		handle *h_ = NULL; \
 		handle th_[2] = { aVoiceHandle, 0 }; \
-		lockAudioMutex(); \
-		h_ = voiceGroupHandleToArray(aVoiceHandle); \
+		lockAudioMutex_internal(); \
+		h_ = voiceGroupHandleToArray_internal(aVoiceHandle); \
 		if (h_ == NULL) h_ = th_; \
 		while (*h_) \
 		{ \
-			int ch = getVoiceFromHandle(*h_); \
+			int ch = getVoiceFromHandle_internal(*h_); \
 			if (ch != -1)  \
 			{
 
@@ -109,12 +109,12 @@ namespace SoLoud
 			} \
 			h_++; \
 		} \
-		unlockAudioMutex();
+		unlockAudioMutex_internal();
 
 #define FOR_ALL_VOICES_PRE_3D \
 		handle *h_ = NULL; \
 		handle th_[2] = { aVoiceHandle, 0 }; \
-		h_ = voiceGroupHandleToArray(aVoiceHandle); \
+		h_ = voiceGroupHandleToArray_internal(aVoiceHandle); \
 		if (h_ == NULL) h_ = th_; \
 				while (*h_) \
 						{ \
@@ -130,12 +130,12 @@ namespace SoLoud
 #define FOR_ALL_VOICES_PRE_EXT \
 		handle *h_ = NULL; \
 		handle th_[2] = { aVoiceHandle, 0 }; \
-		mSoloud->lockAudioMutex(); \
-		h_ = mSoloud->voiceGroupHandleToArray(aVoiceHandle); \
+		mSoloud->lockAudioMutex_internal(); \
+		h_ = mSoloud->voiceGroupHandleToArray_internal(aVoiceHandle); \
 		if (h_ == NULL) h_ = th_; \
 		while (*h_) \
 		{ \
-			int ch = mSoloud->getVoiceFromHandle(*h_); \
+			int ch = mSoloud->getVoiceFromHandle_internal(*h_); \
 			if (ch != -1)  \
 			{
 
@@ -143,7 +143,7 @@ namespace SoLoud
 			} \
 			h_++; \
 		} \
-		mSoloud->unlockAudioMutex();
+		mSoloud->unlockAudioMutex_internal();
 
 #define FOR_ALL_VOICES_PRE_3D_EXT \
 		handle *h_ = NULL; \

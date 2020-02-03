@@ -107,7 +107,7 @@ namespace SoLoud
 		aSoloud->mBackendData = data;
 		aSoloud->mBackendCleanupFunc = vita_cleanup;
 
-		aSoloud->postinit(aSamplerate, data->samples * aChannels, aFlags, aChannels);
+		aSoloud->postinit_internal(aSamplerate, data->samples * aChannels, aFlags, aChannels);
 
 		data->tid = sceKernelCreateThread("soloud audio output", vita_thread, 0x10000100, 0x10000, 0, 0, NULL);
 		sceKernelStartThread(data->tid, sizeof(data), &data);

@@ -44,7 +44,7 @@ namespace SoLoud
 		result retVal = 0;
 		FOR_ALL_VOICES_PRE
 			mVoice[ch]->mRelativePlaySpeedFader.mActive = 0;
-			retVal = setVoiceRelativePlaySpeed(ch, aSpeed);
+			retVal = setVoiceRelativePlaySpeed_internal(ch, aSpeed);
 			FOR_ALL_VOICES_POST
 		return retVal;
 	}
@@ -53,14 +53,14 @@ namespace SoLoud
 	{
 		FOR_ALL_VOICES_PRE
 			mVoice[ch]->mBaseSamplerate = aSamplerate;
-			updateVoiceRelativePlaySpeed(ch);		
+			updateVoiceRelativePlaySpeed_internal(ch);
 		FOR_ALL_VOICES_POST
 	}
 
 	void Soloud::setPause(handle aVoiceHandle, bool aPause)
 	{
 		FOR_ALL_VOICES_PRE
-			setVoicePause(ch, aPause);
+			setVoicePause_internal(ch, aPause);
 		FOR_ALL_VOICES_POST
 	}
 
@@ -68,7 +68,7 @@ namespace SoLoud
 	{
 		if (aVoiceCount == 0 || aVoiceCount >= VOICE_COUNT)
 			return INVALID_PARAMETER;
-		lockAudioMutex();
+		lockAudioMutex_internal();
 		mMaxActiveVoices = aVoiceCount;
 		delete[] mResampleData;
 		delete[] mResampleDataOwner;
@@ -80,19 +80,19 @@ namespace SoLoud
 		for (i = 0; i < aVoiceCount; i++)
 			mResampleDataOwner[i] = NULL;
 		mActiveVoiceDirty = true;
-		unlockAudioMutex();
+		unlockAudioMutex_internal();
 		return SO_NO_ERROR;
 	}
 
 	void Soloud::setPauseAll(bool aPause)
 	{
-		lockAudioMutex();
+		lockAudioMutex_internal();
 		int ch;
 		for (ch = 0; ch < (signed)mHighestVoice; ch++)
 		{
-			setVoicePause(ch, aPause);
+			setVoicePause_internal(ch, aPause);
 		}
-		unlockAudioMutex();
+		unlockAudioMutex_internal();
 	}
 
 	void Soloud::setProtectVoice(handle aVoiceHandle, bool aProtect)
@@ -112,7 +112,7 @@ namespace SoLoud
 	void Soloud::setPan(handle aVoiceHandle, float aPan)
 	{		
 		FOR_ALL_VOICES_PRE
-			setVoicePan(ch, aPan);
+			setVoicePan_internal(ch, aPan);
 		FOR_ALL_VOICES_POST
 	}
 
@@ -187,7 +187,7 @@ namespace SoLoud
 	{
 		FOR_ALL_VOICES_PRE
 			mVoice[ch]->mVolumeFader.mActive = 0;
-			setVoiceVolume(ch, aVolume);
+			setVoiceVolume_internal(ch, aVolume);
 		FOR_ALL_VOICES_POST
 	}
 

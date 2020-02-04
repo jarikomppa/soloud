@@ -18,6 +18,7 @@ C_TO_CS_TYPES = {
     "float *":"float[]",
     "File *":"SoloudObject",
     "unsigned char *":"IntPtr",
+    "const unsigned char *":"IntPtr",
     "unsigned char":"byte",
     "short *":"IntPtr"
 }
@@ -151,6 +152,9 @@ for x in soloud_codegen.soloud_type:
                 floatptr = False
                 ret = C_TO_CS_TYPES[y[0]]
                 if y[0] == 'const char *':                    
+                    charptr = True
+                    ret = 'IntPtr'
+                if y[0] == 'const unsigned char *':                    
                     charptr = True
                     ret = 'IntPtr'
                 if y[0] == 'float *':

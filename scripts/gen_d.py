@@ -17,6 +17,7 @@ C_TO_D_TYPES = {
     "double":"double",
     "float *":"float[]",
     "File *":"SoloudObject",
+    "const unsigned char *":"ubyte*",
     "unsigned char *":"ubyte*",
     "unsigned char":"ubyte",
     "short *":"short[]"

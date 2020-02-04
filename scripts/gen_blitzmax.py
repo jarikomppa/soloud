@@ -21,6 +21,7 @@ C_TO_BMX_TYPES = {
     "int":"Int",
     "void":"Int",
     "const char *":"Byte Ptr",
+    "const unsigned char *":"Byte Ptr",
     "unsigned int":"Int",
     "float":"Float",
     "double":"Double",

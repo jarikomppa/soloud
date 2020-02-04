@@ -21,6 +21,7 @@ UNSUPPORTED_TYPES = {
     "float *":1,
     "File *":1,
     "unsigned char *":1,
+    "const unsigned char *":1,
     "short *":1
 }
 
@@ -63,7 +64,8 @@ C_TO_GMX_TYPES = {
     "float":"2",
     "double":"2",
     "float *":PTRTYPE,
-    "unsigned char *":PTRTYPE
+    "unsigned char *":PTRTYPE,
+    "const unsigned char *":PTRTYPE
 }
 
 for soloud_type in soloud_codegen.soloud_type:
@@ -254,7 +256,8 @@ MASK_TYPES = {
     "float":"float",
     "double":"double",
     "float *":"float *",
-    "unsigned char *":"usigned char *"
+    "unsigned char *":"usigned char *",
+    "const unsigned char *":"const usigned char *"
 }
 
 for soloud_type in soloud_codegen.soloud_type:
@@ -289,7 +292,8 @@ C_TO_GMX_DLL_TYPES = {
     "float":"double",
     "double":"double",
     "float *":"char *",
-    "unsigned char *":"char *"
+    "unsigned char *":"char *",
+    "const unsigned char *":"char *"
 }
 
 for soloud_type in soloud_codegen.soloud_type:
@@ -300,6 +304,7 @@ IS_HANDLE_TYPE = {
     "void":0,
     "const char *":0,
     "char *":0,
+    "const unsigned char *":0,
     "unsigned int":0,
     "float":0,
     "double":0,

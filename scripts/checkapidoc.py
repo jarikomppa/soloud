@@ -8,7 +8,7 @@ import os
 def checkfile(apifunc, fname):
     """ Checks whether the string can be found in a file """
     if apifunc in open(fname).read():
-        print(apifunc + " found in " + fname)
+        #print("; " + apifunc + " found in " + fname)
         return True
     return False
     
@@ -17,7 +17,7 @@ def checkfiles(apifunc):
         them to checkfile. If found, early out.
     """
     for file in glob.glob("../docsrc/*.mmd"):
-        #if checkfile(apifunc, file):
+        if checkfile(apifunc, file):
             return True
     return False
 

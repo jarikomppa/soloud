@@ -33,7 +33,6 @@ Currently, four parameters can be adjusted:
 Parameter   Description
 ----        ------------
 WET         Filter's wet signal; 1.0f for fully filtered, 0.0f for original, 0.5f for half and half.
-SAMPLERATE  Filter's samplerate parameter
 FREQUENCY   Filter's cutoff frequency
 RESONANCE   Filter's resonance - higher means sharper cutoff
 
@@ -47,3 +46,14 @@ Set the parameters of the filter.
     
 Changing the parameters does not affect "live" sounds. If invalid parameters are
 given, the function will return error.
+
+
+### Live Parameter Access
+
+All filters inherit the live parameter access functions.
+
+- BiquadResonantFilter.getParamCount()
+- BiquadResonantFilter.getParamName()
+- BiquadResonantFilter.getParamType()
+- BiquadResonantFilter.getParamMax()
+- BiquadResonantFilter.getParamMin()

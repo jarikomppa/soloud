@@ -1,0 +1,27 @@
+## SoLoud::FreeverbFilter
+
+Freeverb is a reverb filter based on the code written by Jezar at Dreampoint, 
+June 2000 http://www.dreampoint.co.uk, and placed under public domain. There
+are other versions of Freeverb out there with different licenses. 
+
+While it sounds great, the filter is relatively heavy.
+
+### FreeverbFilter.setParams()
+
+Set parameters of the filter. Does not affect "live" filters.
+
+    verb.setParams(0, 0.5f, 0.5f, 1);
+    
+The mode parameter freezes the audio currently flowing through the
+filter; setting it to 1 before playing audio will cause the filter
+to just replicate silence.
+
+### Live Parameter Access
+
+All filters inherit the live parameter access functions.
+
+- FreeverbFilter.getParamCount()
+- FreeverbFilter.getParamName()
+- FreeverbFilter.getParamType()
+- FreeverbFilter.getParamMax()
+- FreeverbFilter.getParamMin()

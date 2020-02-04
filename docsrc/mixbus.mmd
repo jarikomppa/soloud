@@ -152,6 +152,22 @@ inaudible.
 Set the default volume of the bus.
 
     gMusicBus.setVolume(11);
+
+### Bus.annexSound()
+
+Move live audio stream under this bus. This can be useful if you have
+some heavy filtering under one bus and want to move playing sounds in
+and out of the bus.
+
+    gTunnelBus.annexSound(sfxBus);
+    
+
+### Bus.getActiveVoiceCount()
+
+Returns the number of concurrent sounds that are playing through this bus
+at the moment.
+
+    if (sfxbus.getActiveVoiceCount() == 0) enjoy_the_silence();
     
 ### Inherited 3d audio interfaces
 

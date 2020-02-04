@@ -156,3 +156,22 @@ parameters. The default implementation uses the mParamFader array.
 
 Unless you do something unexpected, you shouldn't need to touch
 this function.
+
+
+### Live Parameter Access
+
+All filters inherit the live parameter access functions.
+
+- getParamCount()
+- getParamName()
+- getParamType()
+- getParamMax()
+- getParamMin()
+
+These functions are mostly useful online, to get information about
+filters without knowing which filter you're talking with, such as
+with an editor. See "Filter Folio" demo as an example.
+
+The max/min values are suggestions; filters may function outside
+the suggested ranges, but in some cases (especially with value zero)
+may lead to very bad audio or possibly even crashes.

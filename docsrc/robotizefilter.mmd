@@ -1,0 +1,22 @@
+## SoLoud::RobotizeFilter
+
+The robotize filter modulates the signal with a waveform. By default this is a square wave
+adjusted to have half of its period at zero, resulting at a choppy sound. Various waveforms
+can be selected for different effects.
+
+### RobotizeFilter.setParams()
+
+Set the parameters for the filter. Does not affect "live" sounds.
+
+    robo.setParams(30, 0);
+
+
+### Live Parameter Access
+
+All filters inherit the live parameter access functions.
+
+- RobotizeFilter.getParamCount()
+- RobotizeFilter.getParamName()
+- RobotizeFilter.getParamType()
+- RobotizeFilter.getParamMax()
+- RobotizeFilter.getParamMin()

@@ -58,6 +58,8 @@ src = [
     "fftfilter.mmd",
     "bassboostfilter.mmd",
     "waveshaperfilter.mmd",
+    "robotizefilter.mmd",
+    "freeverbfilter.mmd",
     "mixbus.mmd",
     "queue.mmd",
     "collider.mmd",
@@ -96,9 +98,9 @@ subprocess.call(callp)
 
 print("- -- --- -- - Generating web site")
 for x in src:
-    subprocess.call(["pandoc", "--template=html.pandoc", "-f", "markdown-smart", "--metadata", 'title="SoLoud ' + datestring + ' ' + x[:len(x)-4] + '"', "-B", "htmlpre.txt", "-A", "htmlpost.txt", "--default-image-extension=png", x, "-o", datestring + "/web/" + x[:len(x)-3]+"html.bak"])
+    subprocess.call(["pandoc", "--template=html.pandoc", "-f", "markdown-smart", "-t", "html5", "--metadata", 'title="SoLoud ' + datestring + ' ' + x[:len(x)-4] + '"', "-B", "htmlpre.txt", "-A", "htmlpost.txt", "--default-image-extension=png", x, "-o", "temp/" + x[:len(x)-3]+"orig.html"])
     with open(datestring + "/web/" + x[:len(x)-3]+"html", "w") as file_out:
-        with open(datestring + "/web/" + x[:len(x)-3]+"html.bak", "r") as file_in:
+        with open("temp/" + x[:len(x)-3]+"orig.html", "r") as file_in:
             for line in file_in:
                 file_out.write(line.replace('code>', 'code>\n').replace('::','::<wbr>').replace('\xc2','').replace('\xa0',''))
     if x == "intro.mmd":
@@ -115,22 +117,22 @@ for x in src:
 subprocess.call(callp)
 
 print("- -- --- -- - Converting epub -> mobi (kindlegen_output.txt)")
-with open('kindlegen_output.txt', 'w') as outfile:
+with open('temp/kindlegen_output.txt', 'w') as outfile:
     subprocess.call(["kindlegen", datestring + "/soloud_" + datestring + ".epub", "-c2"], stdout=outfile)
 
 print("- -- --- -- - Generating LaTex")
 
 for x in src:
     if x not in website_only:
-        subprocess.call(["pandoc", "-t", "latex", "--listings", "--default-image-extension=pdf", "--top-level-division=chapter", x, "-o", "temp/" + x[:len(x)-3]+"tex.orig"])
+        subprocess.call(["pandoc", "-t", "latex", "-f", "markdown-smart", "--listings", "--default-image-extension=pdf", "--top-level-division=chapter", x, "-o", "temp/" + x[:len(x)-3]+"orig.tex"])
         with open("temp/" + x[:len(x)-3]+"tex", "w") as file_out:
-            with open("temp/" + x[:len(x)-3]+"tex.orig", "r") as file_in:
+            with open("temp/" + x[:len(x)-3]+"orig.tex", "r") as file_in:
                 for line in file_in:
                     file_out.write(line.replace('\\begin{longtable}[]{@{}ll@{}}', '\\begin{tabulary}{\\textwidth}{lJ}').replace('\\begin{longtable}[]{@{}lll@{}}', '\\begin{tabulary}{\\textwidth}{lJJ}').replace('\\begin{longtable}[]{@{}llll@{}}', '\\begin{tabulary}{\\textwidth}{lJJJ}').replace('\\endhead','').replace('\\end{longtable}','\\end{tabulary}'))
 
 print("- -- --- -- - Generating pdf (xelatex_output.txt)")
 
-with open('xelatex_output.txt', 'w') as outfile:
+with open('temp/xelatex_output.txt', 'w') as outfile:
     subprocess.call(["xelatex", "SoLoud.tex"], stdout=outfile)
     print("- -- --- -- - Generating pdf pass 2..")
     subprocess.call(["xelatex", "SoLoud.tex"], stdout=outfile)

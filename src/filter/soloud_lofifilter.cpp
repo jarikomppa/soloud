@@ -94,7 +94,7 @@ namespace SoLoud
 
 	const char* LofiFilter::getParamName(unsigned int aParamIndex)
 	{
-		if (aParamIndex < 0 || aParamIndex > 2)
+		if (aParamIndex > 2)
 			return 0;
 		const char *names[3] = {
 			"Wet",

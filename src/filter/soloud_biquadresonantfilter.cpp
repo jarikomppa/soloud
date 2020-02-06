@@ -172,7 +172,7 @@ namespace SoLoud
 
 	const char* BiquadResonantFilter::getParamName(unsigned int aParamIndex)
 	{
-		if (aParamIndex < 0 || aParamIndex > 3)
+		if (aParamIndex > 3)
 			return 0;
 
 		const char* name[4] = {

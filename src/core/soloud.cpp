@@ -1885,7 +1885,7 @@ namespace SoLoud
 				}
 
 				mVoice[i]->mStreamTime += buffertime;
-				mVoice[i]->mStreamPosition += buffertime * mVoice[i]->mOverallRelativePlaySpeed;
+				mVoice[i]->mStreamPosition += (double)buffertime * (double)mVoice[i]->mOverallRelativePlaySpeed;
 
 				// TODO: this is actually unstable, because mStreamTime depends on the relative
 				// play speed. 

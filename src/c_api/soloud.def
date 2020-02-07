@@ -225,6 +225,25 @@ EXPORTS
 	Monotone_getLoopPoint
 	Monotone_setFilter
 	Monotone_stop
+	Noise_destroy
+	Noise_create
+	Noise_setOctaveScale
+	Noise_setType
+	Noise_setVolume
+	Noise_setLooping
+	Noise_set3dMinMaxDistance
+	Noise_set3dAttenuation
+	Noise_set3dDopplerFactor
+	Noise_set3dListenerRelative
+	Noise_set3dDistanceDelay
+	Noise_set3dCollider
+	Noise_set3dColliderEx
+	Noise_set3dAttenuator
+	Noise_setInaudibleBehavior
+	Noise_setLoopPoint
+	Noise_getLoopPoint
+	Noise_setFilter
+	Noise_stop
 	Openmpt_destroy
 	Openmpt_create
 	Openmpt_load

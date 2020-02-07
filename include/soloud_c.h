@@ -84,6 +84,10 @@ enum SOLOUD_ENUMS
 	LOFIFILTER_WET = 0,
 	LOFIFILTER_SAMPLERATE = 1,
 	LOFIFILTER_BITDEPTH = 2,
+	NOISE_WHITE = 0,
+	NOISE_PINK = 1,
+	NOISE_BROWNISH = 2,
+	NOISE_BLUEISH = 3,
 	ROBOTIZEFILTER_WET = 0,
 	ROBOTIZEFILTER_FREQ = 1,
 	ROBOTIZEFILTER_WAVE = 2,
@@ -131,6 +135,7 @@ typedef void * FlangerFilter;
 typedef void * FreeverbFilter;
 typedef void * LofiFilter;
 typedef void * Monotone;
+typedef void * Noise;
 typedef void * Openmpt;
 typedef void * Queue;
 typedef void * RobotizeFilter;
@@ -413,6 +418,29 @@ void Monotone_setLoopPoint(Monotone * aMonotone, double aLoopPoint);
 double Monotone_getLoopPoint(Monotone * aMonotone);
 void Monotone_setFilter(Monotone * aMonotone, unsigned int aFilterId, Filter * aFilter);
 void Monotone_stop(Monotone * aMonotone);
+
+/*
+ * Noise
+ */
+void Noise_destroy(Noise * aNoise);
+Noise * Noise_create();
+void Noise_setOctaveScale(Noise * aNoise, float aOct0, float aOct1, float aOct2, float aOct3, float aOct4, float aOct5, float aOct6, float aOct7, float aOct8, float aOct9);
+void Noise_setType(Noise * aNoise, int aType);
+void Noise_setVolume(Noise * aNoise, float aVolume);
+void Noise_setLooping(Noise * aNoise, int aLoop);
+void Noise_set3dMinMaxDistance(Noise * aNoise, float aMinDistance, float aMaxDistance);
+void Noise_set3dAttenuation(Noise * aNoise, unsigned int aAttenuationModel, float aAttenuationRolloffFactor);
+void Noise_set3dDopplerFactor(Noise * aNoise, float aDopplerFactor);
+void Noise_set3dListenerRelative(Noise * aNoise, int aListenerRelative);
+void Noise_set3dDistanceDelay(Noise * aNoise, int aDistanceDelay);
+void Noise_set3dCollider(Noise * aNoise, AudioCollider * aCollider);
+void Noise_set3dColliderEx(Noise * aNoise, AudioCollider * aCollider, int aUserData /* = 0 */);
+void Noise_set3dAttenuator(Noise * aNoise, AudioAttenuator * aAttenuator);
+void Noise_setInaudibleBehavior(Noise * aNoise, int aMustTick, int aKill);
+void Noise_setLoopPoint(Noise * aNoise, double aLoopPoint);
+double Noise_getLoopPoint(Noise * aNoise);
+void Noise_setFilter(Noise * aNoise, unsigned int aFilterId, Filter * aFilter);
+void Noise_stop(Noise * aNoise);
 
 /*
  * Openmpt

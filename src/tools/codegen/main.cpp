@@ -61,6 +61,7 @@ char *gIncludeFile[] =
 	"../include/soloud_lofifilter.h",
 //	"../include/soloud_misc.h",
 	"../include/soloud_monotone.h",
+	"../include/soloud_noise.h",
 	"../include/soloud_openmpt.h",
 	"../include/soloud_queue.h",
 	"../include/soloud_robotizefilter.h",

@@ -73,6 +73,7 @@ ga('send', 'pageview');
 <a href="tedsid.html">SoLoud::TedSid</a><br>
 <a href="vizsn.html">SoLoud::Vizsn</a><br>
 <a href="vic.html">SoLoud::Vic</a><br>
+<a href="noise.html">SoLoud::Noise</a><br>
 <br>
 <a href="filters.html">SoLoud::Filter</a><br>
 <a href="biquadfilter.html">SoLoud::BiquadReso..</a><br>

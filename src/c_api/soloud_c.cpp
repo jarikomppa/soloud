@@ -44,6 +44,7 @@ freely, subject to the following restrictions:
 #include "../include/soloud_freeverbfilter.h"
 #include "../include/soloud_lofifilter.h"
 #include "../include/soloud_monotone.h"
+#include "../include/soloud_noise.h"
 #include "../include/soloud_openmpt.h"
 #include "../include/soloud_queue.h"
 #include "../include/soloud_robotizefilter.h"
@@ -1392,6 +1393,118 @@ void Monotone_setFilter(void * aClassPtr, unsigned int aFilterId, Filter * aFilt
 void Monotone_stop(void * aClassPtr)
 {
 	Monotone * cl = (Monotone *)aClassPtr;
+	cl->stop();
+}
+
+void Noise_destroy(void * aClassPtr)
+{
+  delete (Noise *)aClassPtr;
+}
+
+void * Noise_create()
+{
+  return (void *)new Noise;
+}
+
+void Noise_setOctaveScale(void * aClassPtr, float aOct0, float aOct1, float aOct2, float aOct3, float aOct4, float aOct5, float aOct6, float aOct7, float aOct8, float aOct9)
+{
+	Noise * cl = (Noise *)aClassPtr;
+	cl->setOctaveScale(aOct0, aOct1, aOct2, aOct3, aOct4, aOct5, aOct6, aOct7, aOct8, aOct9);
+}
+
+void Noise_setType(void * aClassPtr, int aType)
+{
+	Noise * cl = (Noise *)aClassPtr;
+	cl->setType(aType);
+}
+
+void Noise_setVolume(void * aClassPtr, float aVolume)
+{
+	Noise * cl = (Noise *)aClassPtr;
+	cl->setVolume(aVolume);
+}
+
+void Noise_setLooping(void * aClassPtr, int aLoop)
+{
+	Noise * cl = (Noise *)aClassPtr;
+	cl->setLooping(!!aLoop);
+}
+
+void Noise_set3dMinMaxDistance(void * aClassPtr, float aMinDistance, float aMaxDistance)
+{
+	Noise * cl = (Noise *)aClassPtr;
+	cl->set3dMinMaxDistance(aMinDistance, aMaxDistance);
+}
+
+void Noise_set3dAttenuation(void * aClassPtr, unsigned int aAttenuationModel, float aAttenuationRolloffFactor)
+{
+	Noise * cl = (Noise *)aClassPtr;
+	cl->set3dAttenuation(aAttenuationModel, aAttenuationRolloffFactor);
+}
+
+void Noise_set3dDopplerFactor(void * aClassPtr, float aDopplerFactor)
+{
+	Noise * cl = (Noise *)aClassPtr;
+	cl->set3dDopplerFactor(aDopplerFactor);
+}
+
+void Noise_set3dListenerRelative(void * aClassPtr, int aListenerRelative)
+{
+	Noise * cl = (Noise *)aClassPtr;
+	cl->set3dListenerRelative(!!aListenerRelative);
+}
+
+void Noise_set3dDistanceDelay(void * aClassPtr, int aDistanceDelay)
+{
+	Noise * cl = (Noise *)aClassPtr;
+	cl->set3dDistanceDelay(!!aDistanceDelay);
+}
+
+void Noise_set3dCollider(void * aClassPtr, AudioCollider * aCollider)
+{
+	Noise * cl = (Noise *)aClassPtr;
+	cl->set3dCollider(aCollider);
+}
+
+void Noise_set3dColliderEx(void * aClassPtr, AudioCollider * aCollider, int aUserData)
+{
+	Noise * cl = (Noise *)aClassPtr;
+	cl->set3dCollider(aCollider, aUserData);
+}
+
+void Noise_set3dAttenuator(void * aClassPtr, AudioAttenuator * aAttenuator)
+{
+	Noise * cl = (Noise *)aClassPtr;
+	cl->set3dAttenuator(aAttenuator);
+}
+
+void Noise_setInaudibleBehavior(void * aClassPtr, int aMustTick, int aKill)
+{
+	Noise * cl = (Noise *)aClassPtr;
+	cl->setInaudibleBehavior(!!aMustTick, !!aKill);
+}
+
+void Noise_setLoopPoint(void * aClassPtr, double aLoopPoint)
+{
+	Noise * cl = (Noise *)aClassPtr;
+	cl->setLoopPoint(aLoopPoint);
+}
+
+double Noise_getLoopPoint(void * aClassPtr)
+{
+	Noise * cl = (Noise *)aClassPtr;
+	return cl->getLoopPoint();
+}
+
+void Noise_setFilter(void * aClassPtr, unsigned int aFilterId, Filter * aFilter)
+{
+	Noise * cl = (Noise *)aClassPtr;
+	cl->setFilter(aFilterId, aFilter);
+}
+
+void Noise_stop(void * aClassPtr)
+{
+	Noise * cl = (Noise *)aClassPtr;
 	cl->stop();
 }
 

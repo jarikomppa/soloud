@@ -49,6 +49,7 @@ src = [
     "tedsid.mmd",
     "vizsn.mmd",
     "vic.mmd",
+    "noise.mmd",
     "filters.mmd",
     "biquadfilter.mmd",
     "echofilter.mmd",

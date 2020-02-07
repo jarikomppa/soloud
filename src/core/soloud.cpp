@@ -1843,6 +1843,8 @@ namespace SoLoud
 			done = 1;
 		}
 #endif
+
+#ifdef _MCW_DN
 		{
 			static bool once = false;
 			if (!once)
@@ -1854,6 +1856,7 @@ namespace SoLoud
 				}
 			}
 		}
+#endif
 
 		float buffertime = aSamples / (float)mSamplerate;
 		float globalVolume[2];

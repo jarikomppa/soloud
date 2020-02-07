@@ -28,6 +28,10 @@ To play a stream through the mixing bus, use the bus play() command.
     int fxhandle = gBus.play(gSoundEffect); // Play sound effect through bus
     gSoloud.setVolume(fxhandle, 0.5f); // set sound effect volume
 
+When chaining busses care should be taken, as resampling will offset the output
+by a number of samples. Point sampling by 0, linear by 1, and higher resamplers
+with higher number of samples.
+
 ### Bus.setChannels()
 
 Set the number of channels this bus should handle. Defaults to 2 (stereo).

@@ -46,11 +46,12 @@ it prefers, and its default parameters.
 
 Currently, you can select from these flags:
 
-Flag                 | Description
-----                 | ------------
-CLIP_ROUNDOFF        | Use roundoff clipper. Without this flag the clipper defaults to "hard" clipping to -1/+1
-ENABLE_VISUALIZATION | Enable gathering of visualization data. Can be changed at runtime with setVisualizationEnable()
-LEFT_HANDED_3D       | Use left-handed (Direct3D) 3d coordinates. Default is right-handed (OpenGL) coordinates.
+Flag                   | Description
+----                   | ------------
+CLIP_ROUNDOFF          | Use roundoff clipper. Without this flag the clipper defaults to "hard" clipping to -1/+1
+ENABLE_VISUALIZATION   | Enable gathering of visualization data. Can be changed at runtime with setVisualizationEnable()
+LEFT_HANDED_3D         | Use left-handed (Direct3D) 3d coordinates. Default is right-handed (OpenGL) coordinates.
+NO_FPU_REGISTER_CHANGE | Do not alter the FPU state in audio threads. By default, SoLoud uses "fast" fpu options.
 
 Current set of back-ends is:
 
@@ -60,15 +61,18 @@ AUTO          | Select backend automatically
 SDL1          | SDL1 dynamic or static linking
 SDL2          | SDL2 dynamic or static linking
 PORTAUDIO     | PortAudio
+MINIAUDIO     | MiniAudio
 WINMM         | Windows MultiMedia
 XAUDIO2       | XAudio2
 WASAPI        | Windows Audio Session API
 ALSA          | Advanced Linux Sound Architecture
+JACK          | JACK Audio Connection Kit
 OSS           | Open Sound System
 OPENAL        | OpenAL (high latency)
 COREAUDIO     | OSX CoreAudio
 OPENSLES      | OpenSL ES
 VITA_HOMEBREW | Vita console homebrew SDK
+NOSOUND       | No-sound driver
 NULLDRIVER    | Null driver
 
 \pagebreak
@@ -156,6 +160,9 @@ SoLoud will then use that time (as well as the time you previously
 used) to calculate the delay between two sound effects. If a output
 sound buffer threshold is passed between the two sounds, SoLoud will
 adjust the delay accordingly.
+
+Note that if your "physics time" granularity is low, playClocked is
+not really useful. Audio buffers tend to be 40ms long at most.
 
 \pagebreak
 

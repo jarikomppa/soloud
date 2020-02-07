@@ -15,7 +15,7 @@ The resonance parameter adjusts the sharpness (or bandwidth) of the
 cutoff.
 
     // Set up low-pass filter
-    gBQRFilter.setParams(SoLoud::BiquadResonantFilter::LOWPASS, 44100, 500, 2);  
+    gBQRFilter.setParams(SoLoud::BiquadResonantFilter::LOWPASS, 500, 2);  
     // Set the filter as the second filter of the bus
     gBus.setFilter(1, &gBQRFilter); 
 

@@ -6,7 +6,7 @@ In practise, all the "3d audio" does is adjust panning and play speed of your au
 
 Any audio source can be 3d, including mixing busses. However, true 3d positioning only really makes sense for mono audio sources.
 
-The doppler and attenuation calculations follow the OpenAL functions.
+The doppler and attenuation calculations follow the OpenAL equations.
 
 In order to use the 3d audio, use the 3d versions of the play commands, adjust the positions and velocities of your audio sources and listener with the set3dSource...() and set3dListener...() calls, and call update3dAudio() to ask SoLoud to recalculate the proper panning (and play speed, for doppler).
 

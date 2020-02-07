@@ -10,14 +10,14 @@ addition to the optional mutex function pointers.
 Studying the existing back-end implementations' source code, in addition
 to this page, will help creating new ones.
 
-### Soloud.postinit()
+### Soloud.postinit_internal()
 
 
-The back-end should call Soloud.postinit() once it knows what it can do.
+The back-end should call Soloud.postinit_internal() once it knows what it can do.
 
-    void postinit(int aSamplerate, // Sample rate, in Hz
-                  int aBufferSize, // Buffer size, in samples
-                  int aFlags);     // Flags
+    void postinit_internal(int aSamplerate, // Sample rate, in Hz
+                           int aBufferSize, // Buffer size, in samples
+                           int aFlags);     // Flags
 
 The channels and flags most likely come directly from the application,
 while sample rate and buffer size may depend on how the back-end does
@@ -93,12 +93,15 @@ SDL/SDL2 DLL   Yes  Most tested, primary development platform. Cross-platform. L
 SDL Static     ?    Mostly meant for emscripten use.
 SDL2 Static    Yes  Can be used to statically link to SDL2.
 PortAudio      ?    Cross-platform. Very low latency. Dynamic linking.
+MiniAudio      Yes  Cross-platform, very low latency. Included with SoLoud.
 WinMM          Yes  Simplest back-end for Windows-only programs.
 ALSA           Yes  Default audio interface for Linux
+JACK           ?    Alternative audio interface for Linux
 oss (/dev/dsp) Yes  Simplest back-end for Linux-only programs. Experimental.
 OpenAL         ?    Very experimental. Very high latency; if this is your only option, you're probably better off using OpenAL directly.
 WASAPI         Yes  Experimental
 XAudio2        Yes  Experimental
+Nosound        Yes  Plays audio, throws it away.
 Null driver    Yes  Can be used to use SoLoud without audio device.
 
 Some of the backends have not been tested in x64 builds, but as long as everything is x64, there's no real reason why they don't work.

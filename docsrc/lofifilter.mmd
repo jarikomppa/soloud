@@ -26,6 +26,8 @@ WET         Filter's wet signal; 1.0f for fully filtered, 0.0f for original, 0.5
 SAMPLERATE  Filter's samplerate parameter
 BITDEPTH    Filter's bit-depth parameter
 
+Note that the bit depth does not need to be an integer value.
+
 ### LofiFilter.setParams()
 
 Set the parameters of the filter.
@@ -35,7 +37,7 @@ Set the parameters of the filter.
 Changing the parameters does not affect "live" sounds. If invalid parameters are
 given, the function will return error.
 
-
+\pagebreak
 ### Live Parameter Access
 
 All filters inherit the live parameter access functions.

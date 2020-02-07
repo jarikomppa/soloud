@@ -44,8 +44,8 @@ channels), but surround sound audio sources may practically have any
 number of channels.
 
 In module music (such as mod, s3m, xm, it), "channel" means one of the
-concurrent sounds played, regardless of speaker configuration. Confusing,
-yes.
+concurrent sounds played, regardless of speaker configuration. Confusing?
+Yes.
 
 ### Voice
 
@@ -219,12 +219,12 @@ directly, if needed.
 
 
 SoLoud uses throwaway handles to control sounds. The handle is an
-integer, and internally tracks the channel and sound id, as well as an
+integer, and internally tracks the voice and sound id, as well as an
 "uniqueness" value.
 
 If you try to use a handle after the sound it represents has stopped,
 the operation is quietly discarded (or if you're requesting information,
-some kind of generic value is returned). You can also query the validity
+some kind of generic value is returned, usually 0). You can also query the validity
 of a handle.
 
 ### Latency
@@ -244,8 +244,9 @@ there's no data ready to be played) and the sound breaks down horribly.
 Assuming there's no other sources of latency (and there quite likely
 is), with 2048 sample buffer and 44100Hz playback, the latency is around
 46 milliseconds, which is tolerable in most computer game use cases. A 
-100ms latency is already easily noticeable. For playing drums, 40ms 
-is too much.
+100ms latency is already easily noticeable. In music terms, when playing
+drums, 40ms is too much, but when playing slowly evolving atmospheric pads,
+200ms is fine.
 
 ### Filter
 
@@ -254,7 +255,7 @@ Audio streams can also be modified on the fly for various effects.
 Typical uses are different environmental effects such as echoes or
 reverb, or low pass (bassy sound) / high pass (tinny sound) filters, but
 basically any kind of modification can be done; the primary limitations
-are processor power, imagination, and developer's skill in digital
+are processor power, imagination, and the developer's skill in digital
 signal processing.
 
 SoLoud lets you hook several filters to a single audio stream, as well

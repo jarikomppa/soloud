@@ -13,26 +13,28 @@ on the <http://soloud-audio.com/downloads.html> page.
 #### Add SoLoud to your project
 
 
-There's a few ways to include SoLoud to your project. Probably the
-easiest is to use GENie / premake4 to create the build files, and build a 
-static library for your compiler / environment.
+There's a few ways to include SoLoud to your project. 
+
+You can, for example, include all the SoLoud source files to your project,
+define one or more of the backend defines (see table below), and you're good
+to go.
+
+A bit more structured way is to use GENie / premake4 to create the build
+files, and build a static library for your compiler / environment.
 
 Note that the Windows DLL only exports the  "C" API, which may not 
-be what you want.
+be what you want - it's primarily meant for foreign interface use.
 
-You can go the lazy way and just add all of the sources to your project,
-or you can copy the things you need to a single directory and include
-those. 
-
-You'll need the core files, at least one backend, and at least one 
-audio source. For example, for wav file playing, you'll need the files from
+If you're including the sources directly to your project, You'll need the 
+core files, at least one backend, and at least one audio source. For 
+example, for wav file playing, you'll need the files from
 audiosource/wav. 
 
-If you go this route, you'll need to enable one or more of the back-ends 
-via preprocessor defines. The current list is:
+The current list of back-ends is:
 
 Preprocessor macro  Description
 ----                ------------
+WITH_MINIAUDIO      MiniAudio cross-platform audio backend
 WITH_SDL            SDL or SDL2 via runtime dyndll linking
 WITH_SDL1           SDL1 via runtime dyndll linking
 WITH_SDL2           SDL2 via runtime dyndll linking
@@ -49,7 +51,9 @@ WITH_ALSA           Linux ALSA
 WITH_OPENSLES       OpenSL ES
 WITH_COREAUDIO		OSX CoreAudio
 WITH_VITA_HOMEBREW	Sony Vita homebrew backend
-WITH_NULL           No audio device
+WITH_JACK           Linux JACK
+WITH_NOSOUND        Nosound audio device
+WITH_NULL           Special use "no backend"
 
 The backend with no audio device may seem odd, but that can be used to
 call SoLoud's mix function manually, which can be useful in some cases

@@ -9,7 +9,20 @@ can be selected for different effects.
 Set the parameters for the filter. Does not affect "live" sounds.
 
     robo.setParams(30, 0);
+    
+Supported waveforms include:
 
+| Waveform | Description |
+|:---------|:-----------------------|
+|WAVE_SQUARE|Raw, harsh square wave|
+|WAVE_SAW|Raw, harsh saw wave|
+|WAVE_SIN|Sine wave|
+|WAVE_TRIANGLE|Triangle wave|
+|WAVE_BOUNCE|Bounce, i.e, abs(sin())|
+|WAVE_JAWS|Quater sine wave, rest of period quiet|
+|WAVE_HUMPS|Half sine wave, rest of period quiet|
+|WAVE_FSQUARE|"Fourier" square wave; less noisy|
+|WAVE_FSAW|"Fourier" saw wave; less noisy|
 
 ### Live Parameter Access
 

@@ -11,8 +11,8 @@ available at the time of this writing). You can pick the number of
 "hardware" voices used - typically the songs are composed for a single
 voice (PC beeper).
 
-The waveform used is square wave. Other waveforms can be used by 
-modifying the soloud_monotone.cpp.
+The default waveform used is square wave, but other waveforms
+are also supported.
 
 ### Monotone.clear()
 
@@ -67,8 +67,20 @@ MONOTONE file.
 Most songs are composed for a single hardware channel. SoLoud supports
 up to 12 hardware channels (more can be easily added by editing soloud_monotone.cpp)
 
-For waveform, along with the default SQUARE, the SAW, SIN and SAWSIN waveforms are 
-supported. The SAWSIN is simply saw(t)*sin(t).
+The supported waveforms include:
+
+| Waveform | Description |
+|:---------|:-----------------------|
+|WAVE_SQUARE|Raw, harsh square wave|
+|WAVE_SAW|Raw, harsh saw wave|
+|WAVE_SIN|Sine wave|
+|WAVE_TRIANGLE|Triangle wave|
+|WAVE_BOUNCE|Bounce, i.e, abs(sin())|
+|WAVE_JAWS|Quater sine wave, rest of period quiet|
+|WAVE_HUMPS|Half sine wave, rest of period quiet|
+|WAVE_FSQUARE|"Fourier" square wave; less noisy|
+|WAVE_FSAW|"Fourier" saw wave; less noisy|
+
 
 
 ### Monotone.setLooping()

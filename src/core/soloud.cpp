@@ -66,11 +66,11 @@ namespace SoLoud
 		mBasePtr = 0;
 		mData = 0;
 		mFloats = aFloats;
-#ifdef DISABLE_SIMD
+#ifndef SOLOUD_SSE_INTRINSICS
 		mBasePtr = new unsigned char[aFloats * sizeof(float)];
 		if (mBasePtr == NULL)
 			return OUT_OF_MEMORY;
-		mData = mBasePtr;
+		mData = (float*)mBasePtr;
 #else
 		mBasePtr = new unsigned char[aFloats * sizeof(float) + 16];
 		if (mBasePtr == NULL)
@@ -1854,6 +1854,21 @@ namespace SoLoud
 				}
 			}
 		}
+
+#ifdef SOLOUD_SSE_INTRINSICS
+		{
+			static bool once = false;
+			if (!once)
+			{
+				once = true;
+				// Set denorm clear to zero (CTZ) and denorms are zero (DAZ) flags on.
+				// This causes all math to consider really tiny values as zero, which
+				// helps performance. I'd rather use constants from the sse headers,
+				// but for some reason the DAZ value is not defined there(!)
+				_mm_setcsr(_mm_getcsr() | 0x8040); 
+			}
+		}
+#endif
 
 		float buffertime = aSamples / (float)mSamplerate;
 		float globalVolume[2];

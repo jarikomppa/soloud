@@ -1,6 +1,6 @@
 /*
 SoLoud audio engine
-Copyright (c) 2013-2018 Jari Komppa
+Copyright (c) 2013-2020 Jari Komppa
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -1471,6 +1471,10 @@ void testMixer()
 	soloud.deinit();
 }
 
+// 4.8 base
+// 5.1 disable_simd
+// 4.6 with DAZ/FTZ
+
 void testSpeedThings()
 {
 	float scratch[2048];
@@ -1482,6 +1486,7 @@ void testSpeedThings()
 	int j;
 	generateTestWave(wav);
 	int k;
+	long fst = getmsec();
 	for (k = 0; k < 10; k++)
 	{
 		long st = getmsec();
@@ -1498,6 +1503,8 @@ void testSpeedThings()
 		long et = getmsec();
 		printf("Mix loop took %3.3f sec\n", (et - st) / 1000.0f);
 	}
+	long fet = getmsec();
+	printf("Total %3.3f sec\n", (fet - fst) / 1000.0f);
 	soloud.deinit();
 }
 
@@ -1530,7 +1537,7 @@ int main(int parc, char ** pars)
 	testCore();
 	testSpeech();
 //	testSpeedThings();
-	//testMixer();
+//	testMixer();
 	printf("\n%d tests, %d error(s) ", tests, errorcount);
 	if (!lastknownwrite && errorcount)
 		printf("(To rebuild lastknown.wav, simply delete it)\n");

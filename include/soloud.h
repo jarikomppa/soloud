@@ -198,7 +198,7 @@ namespace SoLoud
 			CLIP_ROUNDOFF = 1,
 			ENABLE_VISUALIZATION = 2,
 			LEFT_HANDED_3D = 4,
-			AUDIOTHREAD_FPU_DENORMAL_FLUSH = 8
+			NO_FPU_REGISTER_CHANGE = 8
 		};
 
 		// Initialize SoLoud. Must be called before SoLoud can be used.

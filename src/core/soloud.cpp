@@ -1850,7 +1850,7 @@ namespace SoLoud
 			if (!once)
 			{
 				once = true;
-				if (mFlags & AUDIOTHREAD_FPU_DENORMAL_FLUSH)
+				if (!(mFlags & NO_FPU_REGISTER_CHANGE))
 				{
 					_controlfp(_DN_FLUSH, _MCW_DN);
 				}
@@ -1868,7 +1868,10 @@ namespace SoLoud
 				// This causes all math to consider really tiny values as zero, which
 				// helps performance. I'd rather use constants from the sse headers,
 				// but for some reason the DAZ value is not defined there(!)
-				_mm_setcsr(_mm_getcsr() | 0x8040); 
+				if (!(mFlags & NO_FPU_REGISTER_CHANGE))
+				{
+					_mm_setcsr(_mm_getcsr() | 0x8040);
+				}
 			}
 		}
 #endif

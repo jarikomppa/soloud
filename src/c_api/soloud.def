@@ -277,10 +277,6 @@ EXPORTS
 	RobotizeFilter_getParamMin
 	RobotizeFilter_setParams
 	RobotizeFilter_create
-	Prg_destroy
-	Prg_create
-	Prg_rand
-	Prg_srand
 	Sfxr_destroy
 	Sfxr_create
 	Sfxr_resetParams

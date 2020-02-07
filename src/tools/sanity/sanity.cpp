@@ -225,7 +225,7 @@ void testMisc()
 	CHECK_BUF_NONZERO(scratch, 2000);
 	CHECK_BUF_NONZERO(scratch_i16, 2000);
 
-	SoLoud::Prg prg;
+	SoLoud::Misc::Prg prg;
 	prg.srand(0x1337);
 	int a = prg.rand();
 	prg.srand(0x1337);

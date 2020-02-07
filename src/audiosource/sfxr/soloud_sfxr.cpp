@@ -31,37 +31,6 @@ freely, subject to the following restrictions:
 
 namespace SoLoud
 {
-
-	Prg::Prg()
-	{
-		srand(0);
-	}
-
-	void Prg::srand(int aSeed)
-	{
-		index = 0;
-		int i;
-		for (i = 0; i < 16; i++)
-			state[i] = aSeed + i * aSeed + i;
-	}
-
-	// WELL512 implementation, public domain by Chris Lomont
-	unsigned int Prg::rand()
-	{
-		unsigned int a, b, c, d;
-		a = state[index];
-		c = state[(index+13)&15];
-		b = a^c^(a<<16)^(c<<15);
-		c = state[(index+9)&15];
-		c ^= (c>>11);
-		a = state[index] = b^c;
-		d = a^((a<<5)&0xDA442D24UL);
-		index = (index + 15)&15;
-		a = state[index];
-		state[index] = a^b^d^(a<<2)^(b<<18)^(c<<28);
-		return state[index];
-	}
-
 	SfxrInstance::SfxrInstance(Sfxr *aParent)
 	{
 		mParent = aParent;

@@ -1701,28 +1701,6 @@ void * RobotizeFilter_create()
   return (void *)new RobotizeFilter;
 }
 
-void Prg_destroy(void * aClassPtr)
-{
-  delete (Prg *)aClassPtr;
-}
-
-void * Prg_create()
-{
-  return (void *)new Prg;
-}
-
-unsigned int Prg_rand(void * aClassPtr)
-{
-	Prg * cl = (Prg *)aClassPtr;
-	return cl->rand();
-}
-
-void Prg_srand(void * aClassPtr, int aSeed)
-{
-	Prg * cl = (Prg *)aClassPtr;
-	cl->srand(aSeed);
-}
-
 void Sfxr_destroy(void * aClassPtr)
 {
   delete (Sfxr *)aClassPtr;

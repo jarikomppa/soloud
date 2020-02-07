@@ -27,21 +27,11 @@ freely, subject to the following restrictions:
 #define SFXR_H
 
 #include "soloud.h"
+#include "soloud_misc.h"
 
 namespace SoLoud
 {
 	class File;
-
-	class Prg
-	{
-	public:
-		// random generator
-		Prg();
-		unsigned int state[16];
-		unsigned int index;
-		unsigned int rand();
-		void srand(int aSeed);
-	};
 
 	struct SfxrParams
 	{
@@ -89,7 +79,7 @@ namespace SoLoud
 	{
 		Sfxr *mParent;
 
-		Prg mRand;
+		Misc::Prg mRand;
 		SfxrParams mParams;
 
 		bool playing_sample;
@@ -152,7 +142,7 @@ namespace SoLoud
 			BLIP
 		};
 
-		Prg mRand;
+		Misc::Prg mRand;
 		
 		Sfxr();
 		virtual ~Sfxr();

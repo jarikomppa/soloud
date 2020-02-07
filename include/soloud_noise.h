@@ -22,43 +22,53 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#ifndef SOLOUD_MISC_H
-#define SOLOUD_MISC_H
+#ifndef SOLOUD_NOISE_H
+#define SOLOUD_NOISE_H
 
 #include "soloud.h"
+#include "soloud_misc.h"
 
 namespace SoLoud
 {
-	namespace Misc
+	class Noise;
+
+	class NoiseInstance : public AudioSourceInstance
 	{
-		enum WAVEFORM
-		{
-			WAVE_SQUARE = 0,
-			WAVE_SAW,
-			WAVE_SIN,
-			WAVE_TRIANGLE,
-			WAVE_BOUNCE,
-			WAVE_JAWS,
-			WAVE_HUMPS,
-			WAVE_FSQUARE,
-			WAVE_FSAW
-		};
-		// Generate a waveform.
-		float generateWaveform(int aWaveform, float p);
+	public:
+		NoiseInstance(Noise *aParent);
+		~NoiseInstance();
 
-		// WELL512 random
-		class Prg
+		virtual unsigned int getAudio(float *aBuffer, unsigned int aSamplesToRead, unsigned int aBufferSize);
+		virtual bool hasEnded();
+
+	public:
+		float mOctaveScale[10];
+	    Misc::Prg mPrg;
+	};
+
+	class Noise : public AudioSource
+	{
+	public:
+
+		enum NOISETYPES
 		{
-		public:
-			// random generator
-			Prg();
-			unsigned int mState[16];
-			unsigned int mIndex;
-			unsigned int rand();
-			float rand_float();
-			void srand(int aSeed);
+			WHITE = 0,
+			PINK,
+			BROWNISH,
+			DARK,
+			TINNY
 		};
 
+		Noise();
+
+		void setOctaveScale(float aOct0, float aOct1, float aOct2, float aOct3, float aOct4, float aOct5, float aOct6, float aOct7, float aOct8, float aOct9);
+		void setType(int aType);
+
+		virtual ~Noise();
+		
+	public:
+		virtual AudioSourceInstance *createInstance();
+		float mOctaveScale[10];
 	};
 };
 

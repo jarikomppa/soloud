@@ -33,6 +33,7 @@ freely, subject to the following restrictions:
 #include "soloud_wavstream.h"
 #include "soloud_sfxr.h"
 #include "soloud_speech.h"
+#include "soloud_noise.h"
 
 #include "soloud_bassboostfilter.h"
 #include "soloud_biquadresonantfilter.h"
@@ -53,6 +54,8 @@ namespace filterfolio
 	SoLoud::WavStream gMusic1, gMusic2, gMusic3;
 	int gMusichandle1, gMusichandle2, gMusichandle3;
 	SoLoud::Filter *gFilter[10];
+	SoLoud::Noise gNoise;
+	int gNoisehandle;
 
 	int gFilterSelect[4] = { 0, 0, 0, 0 };
 
@@ -74,6 +77,8 @@ namespace filterfolio
 		gSoloud.setProtectVoice(gMusichandle1, 1);
 		gSoloud.setProtectVoice(gMusichandle2, 1);
 		gSoloud.setProtectVoice(gMusichandle3, 1);
+
+		gNoisehandle = gSoloud.play(gNoise, 0);
 
 		gFilter[0] = new SoLoud::BassboostFilter;
 		gFilter[1] = new SoLoud::BiquadResonantFilter;
@@ -174,6 +179,16 @@ namespace filterfolio
 		{
 			gSoloud.play(gSpeech, 1);
 		}
+		ImGui::SameLine();
+		b = gSoloud.getVolume(gNoisehandle) > 0.5;
+		if (ImGui::Checkbox("Toggle Noise", &b))
+		{
+			if (gSoloud.getVolume(gNoisehandle) > 0.5)
+				gSoloud.fadeVolume(gNoisehandle, 0, 0.5);
+			else
+				gSoloud.fadeVolume(gNoisehandle, 1, 0.5);
+		}
+
 
 		ImGui::End();
 

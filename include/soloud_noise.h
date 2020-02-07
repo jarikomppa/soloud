@@ -55,8 +55,7 @@ namespace SoLoud
 			WHITE = 0,
 			PINK,
 			BROWNISH,
-			DARK,
-			TINNY
+			BLUEISH
 		};
 
 		Noise();

@@ -45,6 +45,7 @@ sources = [
 "bin/audio/rainy_ambience.ogg",
 "bin/audio/ted_storm.prg.dump",
 "bin/audio/tetsno.ogg",
+"bin/audio/delphi_loop.ogg",
 "bin/audio/war_loop.ogg",
 "bin/audio/windy_ambience.ogg",
 "bin/audio/wavformats/ch1.flac",
@@ -369,7 +370,22 @@ sources = [
 "src/tools/tedsid2dump/tedplay.cpp",
 "src/tools/tedsid2dump/tedplay.h",
 "src/tools/tedsid2dump/tedsound.cpp",
-"src/tools/tedsid2dump/types.h"
+"src/tools/tedsid2dump/types.h",
+"demos/megademo/annex.cpp",
+"demos/megademo/filterfolio.cpp",
+"demos/piano/RtMidi.cpp",
+"demos/piano/RtMidi.h",
+"src/audiosource/noise/soloud_noise.cpp",
+"src/audiosource/tedsid/readme.txt",
+"src/backend/jack/soloud_jack.cpp",
+"src/backend/miniaudio/miniaudio.h",
+"src/backend/miniaudio/soloud_miniaudio.cpp",
+"src/backend/nosound/soloud_nosound.cpp",
+"src/core/soloud_misc.cpp",
+"src/filter/soloud_freeverbfilter.cpp",
+"include/soloud_freeverbfilter.h",
+"include/soloud_misc.h",
+"include/soloud_noise.h"
 ]
 
 notfound = []
@@ -386,6 +402,17 @@ def missingfiles(globpath):
                     notfound.append(x)
         else:
             missingfiles(x+"/*")
+
+def missingsources(globpath):
+    global notfound
+    for x in glob.glob(globpath):    
+        if os.path.isfile(x):
+            if x[-4:] not in [".bak", ".pyc", ".dll"] :
+                x=x.replace('\\','/')
+                if x[len(root):] not in sources:        
+                    notfound.append(x)
+        else:
+            missingsources(x+"/*")
     
 
 def checkfile(findstring, fname):
@@ -426,32 +453,29 @@ for x in sources:
     
 print("All listed files exist.")
 
-#    
-# Check that all of the listed assets are referenced in demos
-#    
-
-for x in sources:
-    if "bin/audio" in x or "bin/graphics" in x:
-        checkuse(x[x.rfind("/")+1:])
- 
-if len(notfound) > 0:
-    print("Data files not found in any of the demo sources:")
-    for x in notfound:
-        print(x)
-    exit()
-
-print("All listed assets can be found in at least one demo source.")
-
 #
 # Verify that there are no new assets that are referenced in the demos
 # but not listed for release
 #
 
+missingsources(root+"demos/*")
+missingsources(root+"include/*")
+missingsources(root+"src/audiosource/*")
+missingsources(root+"src/backend/*")
+missingsources(root+"src/core/*")
+missingsources(root+"src/filter/*")
+
+if len(notfound) > 0:
+    print("Source files/directories found, but not in the list; edit makerel.py or remove them:")
+    for x in notfound:
+        print(x)
+    exit()
+
 missingfiles(root+"bin/audio/*")
 missingfiles(root+"bin/graphics/*")
 
 if len(notfound) > 0:
-    print("Data files found in directory and sources, but not in the list:")
+    print("Data files found in directory and source files, but not in the list:")
     for x in notfound:
         print(x)
     exit()
@@ -473,6 +497,22 @@ if len(notfound) > 0:
     exit()
 
 print("All prebuilt binaries are fresh enough.")
+
+#    
+# Check that all of the listed assets are referenced in demos
+#    
+
+for x in sources:
+    if "bin/audio" in x or "bin/graphics" in x:
+        checkuse(x[x.rfind("/")+1:])
+ 
+if len(notfound) > 0:
+    print("Data files not found in any of the demo sources:")
+    for x in notfound:
+        print(x)
+    exit()
+
+print("All listed assets can be found in at least one demo source.")
 
 #
 # Target directory

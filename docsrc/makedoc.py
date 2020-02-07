@@ -151,4 +151,10 @@ for file in glob.glob("temp/*"):
    os.remove(file)
 os.rmdir("temp")
 
+print("- -- --- -- - Copying release docs to /doc")
+shutil.copy(datestring + "/soloud_" + datestring + ".epub", "../doc/soloud.epub")
+shutil.copy(datestring + "/soloud_" + datestring + ".mobi", "../doc/soloud.mobi")
+shutil.copy(datestring + "/soloud_" + datestring + ".html", "../doc/soloud.html")
+shutil.copy(datestring + "/soloud_" + datestring + ".pdf", "../doc/soloud.pdf")
+
 print("- -- --- -- - Done - " + datestring)

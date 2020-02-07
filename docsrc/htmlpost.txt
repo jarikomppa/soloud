@@ -1,4 +1,4 @@
-<p>Copyright&copy;2013-2018 <a href="http://iki.fi/sol/">Jari Komppa</a></p>
+<p>Copyright&copy;2013-2020 <a href="http://iki.fi/sol/">Jari Komppa</a></p>
 
 <div class="advert">
 <script type="text/javascript"><!--

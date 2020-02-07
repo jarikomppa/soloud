@@ -5,11 +5,11 @@ This page lists SoLoud downloads, as well as other relevant information.
 
 Latest stable release
 ---------------------
-[soloud_20181119.zip](soloud_20181119.zip) <<- Download here (~47 MB)
+[soloud_20200207.zip](soloud_20200207.zip) <<- Download here (~47 MB)
 
-[soloud_20181119_lite.zip](soloud_20181119_lite.zip)  (~3 MB)
+[soloud_20200207_lite.zip](soloud_20200207_lite.zip)  (~3 MB)
 
-Documentation: [PDF](soloud_20181119.pdf) | [EPUB](soloud_20181119.epub) | [MOBI](soloud_20181119.mobi) | [HTML](soloud_20181119.html) 
+Documentation: [PDF](soloud_20200207.pdf) | [EPUB](soloud_20200207.epub) | [MOBI](soloud_20200207.mobi) | [HTML](soloud_20200207.html) 
 
 Book
 ----
@@ -20,6 +20,8 @@ You can also buy the documentation as a physical book (version 20181119):
 - [bod.fi](https://www.bod.fi/kirjakauppa/soloud-audio-engine-jari-komppa-9789528003595)
 - [bookdepository](https://www.bookdepository.com/SoLoud-Audio-Engine-Jari-Komppa/9789528003595)
 - [blackwell's](https://blackwells.co.uk/bookshop/product/9789528003595)
+
+There won't be new versions of the physical book every time SoLoud releases because those things cost money and unless they suddely start selling hundreds of copies, it's not financially viable.
 
 Development
 -----------
@@ -45,6 +47,40 @@ Additional files
 
 Release history
 ---------------
+[soloud_20200207.zip](soloud_20200207.zip) <<- Download here (~47 MB)
+
+[soloud_20200207_lite.zip](soloud_20200207_lite.zip)  (~3 MB)
+
+Documentation: [PDF](soloud_20200207.pdf) | [EPUB](soloud_20200207.epub) | [MOBI](soloud_20200207.mobi) | [HTML](soloud_20200207.html) 
+
+- Oops, it's over a year already, let's do a refresh
+- Hilights:
+    - Python 3 migration
+    - Updated dr_ and stb_ libraries
+    - Changing volume while paused should now work
+    - Filters can now be queried for live parameters and ranges
+    - Set FPU flags in audio threads to ignore denorms, performance gain (can be disabled at runtime)
+    - New feature: ability to move live sounds from one bus to another (annexSound)
+    - New backend: JACK
+    - New backend: Nosound
+    - New backend: MiniAudio
+    - New demo: annex
+    - New demo: Filter Folio for playing with filters
+    - New audio source: Noise
+    - New filter: FreeVerb
+    - New namespace: Misc, including pseudorandom generator and waveform generator
+    - Monotone now has new waveforms
+    - Rewritten robotize filter
+    - Internal calls in Soloud class renamed to _internal to avoid confusion
+    - sdl headers now loaded as "sdl.h" instead of "sdl/sdl.h"
+    - Removed portmidi, using rtmidi instead (piano example)
+    - Added const in several places due to peer pressure
+    - WinMM backend no longer leaks resources if init fails
+    - Several queue fixes
+    - WASAPI backend fixes
+    - deprecated usleep -> nanosleep
+    - A lot of cppcheck, lgtm, pvs-studio and other static code analysis fixes
+    - A pile of smaller bug fixes and inevitably new bugs.
 
 [soloud_20181119.zip](soloud_20181119.zip) <<- Download here (~47 MB)
 

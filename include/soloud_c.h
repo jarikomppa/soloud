@@ -59,7 +59,7 @@ enum SOLOUD_ENUMS
 	SOLOUD_CLIP_ROUNDOFF = 1,
 	SOLOUD_ENABLE_VISUALIZATION = 2,
 	SOLOUD_LEFT_HANDED_3D = 4,
-	SOLOUD_AUDIOTHREAD_FPU_DENORMAL_FLUSH = 8,
+	SOLOUD_NO_FPU_REGISTER_CHANGE = 8,
 	BASSBOOSTFILTER_WET = 0,
 	BASSBOOSTFILTER_BOOST = 1,
 	BIQUADRESONANTFILTER_LOWPASS = 0,
@@ -134,7 +134,6 @@ typedef void * Monotone;
 typedef void * Openmpt;
 typedef void * Queue;
 typedef void * RobotizeFilter;
-typedef void * Prg;
 typedef void * Sfxr;
 typedef void * Speech;
 typedef void * TedSid;
@@ -478,14 +477,6 @@ float RobotizeFilter_getParamMax(RobotizeFilter * aRobotizeFilter, unsigned int 
 float RobotizeFilter_getParamMin(RobotizeFilter * aRobotizeFilter, unsigned int aParamIndex);
 void RobotizeFilter_setParams(RobotizeFilter * aRobotizeFilter, float aFreq, int aWaveform);
 RobotizeFilter * RobotizeFilter_create();
-
-/*
- * Prg
- */
-void Prg_destroy(Prg * aPrg);
-Prg * Prg_create();
-unsigned int Prg_rand(Prg * aPrg);
-void Prg_srand(Prg * aPrg, int aSeed);
 
 /*
  * Sfxr

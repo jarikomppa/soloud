@@ -72,8 +72,11 @@ fo.write('\n')
 fo.write('try:\n')
 fo.write('\tsoloud_dll = ctypes.CDLL("soloud_x86")\n')
 fo.write('except:\n')
-fo.write('\tprint("SoLoud dynamic link library (soloud_x86.dll on Windows) not found. Terminating.")\n')
-fo.write('\tsys.exit()')
+fo.write('\ttry:\n')
+fo.write('\t\tsoloud_dll = ctypes.CDLL("soloud_x64")\n')
+fo.write('\texcept:\n')
+fo.write('\t\tprint("SoLoud dynamic link library (soloud_x86.dll / soloud_x64.dll on Windows, .so on Linux / OSX) not found. Terminating.")\n')
+fo.write('\t\tsys.exit()')
 fo.write("\n")
 
 # Since there's no reason to use the "raw" data anymore,

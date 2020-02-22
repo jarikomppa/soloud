@@ -70,10 +70,10 @@ int lastknownwrite = 0;
 #define CHECK_RES(x) tests++; if ((x)) { errorcount++; printf("Error on line %d, %s(): %s\n",__LINE__,__FUNCTION__, soloud.getErrorString((x)));}
 #define CHECK(x) tests++; if (!(x)) { errorcount++; printf("Error on line %d, %s(): Check \"%s\" fail\n",__LINE__,__FUNCTION__,#x);}
 #define CHECK_BUF_NONZERO(x, n) tests++; { int i, zero = 1; for (i = 0; i < (n); i++) if ((x)[i] != 0) zero = 0; if (zero) { errorcount++; printf("Error on line %d, %s(): buffer not nonzero\n",__LINE__,__FUNCTION__);}}
-#define CHECK_BUF_ZERO(x, n) tests++; { int i, zero = 1; for (i = 0; i < (n); i++) if ((x)[i] != 0) zero = 0; if (!zero) { errorcount++; printf("Error on line %d, %s(): buffer not zero\n",__LINE__,__FUNCTION__);}}
+#define CHECK_BUF_ZERO(x, n) tests++; { int i, diff = 0; for (i = 0; i < (n); i++) if ((x)[i] != 0) diff++; if (diff) { errorcount++; printf("Error on line %d, %s(): buffer not zero (%d / %d)\n",__LINE__,__FUNCTION__,diff,(n));}}
 #define CHECK_BUF_DIFF(x, y, n) tests++; { int i, same = 1; for (i = 0; i < (n); i++) if (fabs((x)[i] - (y)[i]) > 0.00001) same = 0; if (same) { errorcount++; printf("Error on line %d, %s(): buffers are equal\n",__LINE__,__FUNCTION__);}}
-#define CHECK_BUF_SAME(x, y, n) tests++; { int i, same = 1; for (i = 0; i < (n); i++) if (fabs((x)[i] - (y)[i]) > 0.00001) same = 0; if (!same) { errorcount++; printf("Error on line %d, %s(): buffers differ\n",__LINE__,__FUNCTION__);}}
-#define CHECK_BUF_SAME_LASTKNOWN(x, n) tests++; { int i, same = 1; for (i = 0; i < (n); i++) if (fabs((x)[i] - lastknownscratch[i]) > 0.00001) same = 0; if (!same) { errorcount++; printf("Error on line %d, %s(): output differs from last known\n",__LINE__,__FUNCTION__);}}
+#define CHECK_BUF_SAME(x, y, n) tests++; { int i, diff = 0; for (i = 0; i < (n); i++) if (fabs((x)[i] - (y)[i]) > 0.00001) diff++; if (diff) { errorcount++; printf("Error on line %d, %s(): buffers differ (%d / %d)\n",__LINE__,__FUNCTION__, diff, (n));}}
+#define CHECK_BUF_SAME_LASTKNOWN(x, n) tests++; { int i, diff = 0, ofs = 0; float maxdiff = 0.0f; for (i = 0; i < (n); i++) { if (fabs((x)[i] - lastknownscratch[i]) > 0.00001) diff++; if (fabs((x)[i] - lastknownscratch[i]) > maxdiff) { ofs = i; maxdiff = (float)fabs((x)[i] - lastknownscratch[i]); }} if (diff) { errorcount++; printf("Error on line %d, %s(): output differs from last known (%d / %d) maxdiff %1.5f at ofs %d\n",__LINE__,__FUNCTION__, diff, (n), maxdiff, ofs);}}
 #define CHECK_BUF_GTE(x, y, n) tests++; { int i, lt = 0; for (i = 0; i < (n); i++) if (fabs((x)[i]) - fabs((y)[i]) < 0) lt = 1; if (lt) { errorcount++; printf("Error on line %d, %s(): buffer %s magnitude not bigger than buffer %s \n",__LINE__,__FUNCTION__,#x, #y);}}
 #define CHECKLASTKNOWN(x, n) if (lastknownwrite && lastknownfile) { fwrite((x),1,(n)*sizeof(float),lastknownfile); } else if (lastknownfile) { fread(lastknownscratch,1,(n)*sizeof(float),lastknownfile); CHECK_BUF_SAME_LASTKNOWN((x), n); }
 
@@ -971,18 +971,21 @@ void testFilters()
 	soloud.mix(scratch, 1000);
 	CHECKLASTKNOWN(scratch, 2000);
 	CHECK_BUF_DIFF(ref, scratch, 2000);
+	soloud.stopAll();
 	lofi.setParams(4000, 5);
 	h = soloud.play(wav);
 	soloud.fadeFilterParameter(h, 0, 0, 0.5f, 1.0f);
 	soloud.mix(scratch, 1000);
 	CHECKLASTKNOWN(scratch, 2000);
 	CHECK_BUF_DIFF(ref, scratch, 2000);
+	soloud.stopAll();
 	lofi.setParams(4000, 5);
 	h = soloud.play(wav);
 	soloud.oscillateFilterParameter(h, 0, 0, 0.25f, 0.75f, 0.5f);
 	soloud.mix(scratch, 1000);
 	CHECKLASTKNOWN(scratch, 2000);
 	CHECK_BUF_DIFF(ref, scratch, 2000);
+	soloud.stopAll();
 
 	biquad.setParams(SoLoud::BiquadResonantFilter::LOWPASS, 2000, 5);
 	wav.setFilter(0, &biquad);
@@ -1471,9 +1474,15 @@ void testMixer()
 	soloud.deinit();
 }
 
-// 4.8 base
-// 5.1 disable_simd
-// 4.6 with DAZ/FTZ
+// base
+// avg 0.459, med 0.467 +- 0.033 (0.450 - 0.483)
+// avg 0.462, med 0.477 + -0.063 (0.446 - 0.509)
+// avg 0.466, med 0.485 +- 0.056 (0.457 - 0.513)
+
+// resamplers
+// avg 0.474, med 0.477 +- 0.037 (0.458 - 0.495)
+// avg 0.474, med 0.479 +- 0.029 (0.465 - 0.494)
+// avg 0.470, med 0.474 +- 0.033 (0.457 - 0.490)
 
 void testSpeedThings()
 {
@@ -1486,8 +1495,9 @@ void testSpeedThings()
 	int j;
 	generateTestWave(wav);
 	int k;
+	long t = 0, c = 0, mn = 1000000, mx = 0;
 	long fst = getmsec();
-	for (k = 0; k < 10; k++)
+	for (k = 0; k < 100; k++)
 	{
 		long st = getmsec();
 		for (j = 0; j < 500; j++)
@@ -1501,7 +1511,13 @@ void testSpeedThings()
 				soloud.mix(scratch, 1000);
 		}
 		long et = getmsec();
-		printf("Mix loop took %3.3f sec\n", (et - st) / 1000.0f);
+		c++;
+		long d = et - st;
+		t += d;
+		if (mn > d) mn = d;
+		if (mx < d) mx = d;
+
+		printf("Mix loop took %3.3f sec, avg %3.3f, med %3.3f +- %3.3f (%3.3f - %3.3f)\n", (et - st) / 1000.0f, t / (c * 1000.0f), (mn+mx) / 2000.0f, (mx-mn) / 1000.0f, mn / 1000.0f, mx / 1000.0f);
 	}
 	long fet = getmsec();
 	printf("Total %3.3f sec\n", (fet - fst) / 1000.0f);

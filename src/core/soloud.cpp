@@ -1111,6 +1111,55 @@ namespace SoLoud
 				}
 				break;
 			case 2: // 2->2
+#if defined(SOLOUD_SSE_INTRINSICS)
+				if ((aSamplesToRead & 3) || (aBufferSize & 3))
+				{
+					// If buffer size or samples to read are not divisible by 4, fall back to non-simd
+					for (j = 0; j < aSamplesToRead; j++)
+					{
+						pan[0] += pani[0];
+						pan[1] += pani[1];
+						float s1 = aScratch[j];
+						float s2 = aScratch[aBufferSize + j];
+						aBuffer[j + 0] += s1 * pan[0];
+						aBuffer[j + aBufferSize] += s2 * pan[1];
+					}
+				}
+				else
+				{
+					unsigned int samplequads = aSamplesToRead / 4;
+					TinyAlignedFloatBuffer pan0;
+					pan0.mData[0] = pan[0] + pani[0];
+					pan0.mData[1] = pan[0] + pani[0] * 2;
+					pan0.mData[2] = pan[0] + pani[0] * 3;
+					pan0.mData[3] = pan[0] + pani[0] * 4;
+					TinyAlignedFloatBuffer pan1;
+					pan1.mData[0] = pan[1] + pani[1];
+					pan1.mData[1] = pan[1] + pani[1] * 2;
+					pan1.mData[2] = pan[1] + pani[1] * 3;
+					pan1.mData[3] = pan[1] + pani[1] * 4;
+					pani[0] *= 4;
+					pani[1] *= 4;
+					__m128 pan0delta = _mm_load_ps1(&pani[0]);
+					__m128 pan1delta = _mm_load_ps1(&pani[1]);
+					int c = 0;
+					__m128 p0 = _mm_load_ps(pan0.mData);
+					__m128 p1 = _mm_load_ps(pan1.mData);
+
+					for (j = 0; j < samplequads; j++)
+					{
+						__m128 f0 = _mm_load_ps(aScratch + c);
+						__m128 c0 = _mm_mul_ps(f0, p0);
+						__m128 f1 = _mm_load_ps(aScratch + c + aBufferSize);
+						__m128 c1 = _mm_mul_ps(f1, p1);
+						_mm_store_ps(aBuffer + c, c0);
+						_mm_store_ps(aBuffer + c + aBufferSize, c1);
+						p0 = _mm_add_ps(p0, pan0delta);
+						p1 = _mm_add_ps(p1, pan1delta);
+						c += 4;
+					}
+				}
+#else // fallback
 				for (j = 0; j < aSamplesToRead; j++)
 				{
 					pan[0] += pani[0];
@@ -1120,8 +1169,59 @@ namespace SoLoud
 					aBuffer[j + 0] += s1 * pan[0];
 					aBuffer[j + aBufferSize] += s2 * pan[1];
 				}
+#endif
 				break;
 			case 1: // 1->2
+#if defined(SOLOUD_SSE_INTRINSICS)
+				if ((aSamplesToRead & 3) || (aBufferSize & 3))
+				{
+					// If buffer size or samples to read are not divisible by 4, fall back to non-simd
+					for (j = 0; j < aSamplesToRead; j++)
+					{
+						pan[0] += pani[0];
+						pan[1] += pani[1];
+						float s = aScratch[j];
+						aBuffer[j + 0] += s * pan[0];
+						aBuffer[j + aBufferSize] += s * pan[1];
+					}
+				} 
+				else
+				{
+					// base: 0.450
+					// nop: 0.300
+					// simd: 0.330(!)
+					unsigned int samplequads = aSamplesToRead / 4;
+					TinyAlignedFloatBuffer pan0;
+					pan0.mData[0] = pan[0] + pani[0];
+					pan0.mData[1] = pan[0] + pani[0] * 2;
+					pan0.mData[2] = pan[0] + pani[0] * 3;
+					pan0.mData[3] = pan[0] + pani[0] * 4;
+					TinyAlignedFloatBuffer pan1;
+					pan1.mData[0] = pan[1] + pani[1];
+					pan1.mData[1] = pan[1] + pani[1] * 2;
+					pan1.mData[2] = pan[1] + pani[1] * 3;
+					pan1.mData[3] = pan[1] + pani[1] * 4;
+					pani[0] *= 4;
+					pani[1] *= 4;
+					__m128 pan0delta = _mm_load_ps1(&pani[0]);
+					__m128 pan1delta = _mm_load_ps1(&pani[1]);
+					int c = 0;
+					__m128 p0 = _mm_load_ps(pan0.mData);
+					__m128 p1 = _mm_load_ps(pan1.mData);
+
+					for (j = 0; j < samplequads; j++)
+					{
+						__m128 f = _mm_load_ps(aScratch + c);
+						__m128 c0 = _mm_mul_ps(f, p0);
+						__m128 c1 = _mm_mul_ps(f, p1);
+						_mm_store_ps(aBuffer + c, c0);
+						_mm_store_ps(aBuffer + c + aBufferSize, c1);
+						p0 = _mm_add_ps(p0, pan0delta);
+						p1 = _mm_add_ps(p1, pan1delta);
+						c += 4;
+					}
+				}
+#else // fallback
 				for (j = 0; j < aSamplesToRead; j++)
 				{
 					pan[0] += pani[0];
@@ -1130,6 +1230,7 @@ namespace SoLoud
 					aBuffer[j + 0] += s * pan[0];
 					aBuffer[j + aBufferSize] += s * pan[1];
 				}
+#endif
 				break;
 			}
 			break;

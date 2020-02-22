@@ -43,13 +43,21 @@ If an invalid handle is given to getPan, it will return 0.
 
 ### Soloud.setPanAbsolute()
 
-These function can be used to set the left/right volumes directly.
+This function can be used to set the left/right volumes directly.
 
     soloud.setPanAbsolute(h, 1, 1); // full blast
 
 Note that this does not affect the value returned by getPan.
 
-If an invalid handle is given to getPan, it will return 0.
+If the audio source has more than two channels, volume is adjusted for all channels.
+
+### Soloud.setChannelVolume()
+
+This function can be used to adjust specific channel (speaker) volume for a handle.
+
+    soloud.setChannelVolume(h, 1, 1.1f); // set right channel to 110%
+    
+If an invalid channel number is given, nothing happens.
 
 ### Soloud.getSamplerate(), Soloud.setSamplerate()
 

@@ -201,6 +201,19 @@ namespace SoLoud
 			NO_FPU_REGISTER_CHANGE = 8
 		};
 
+		enum WAVEFORM
+		{
+			WAVE_SQUARE = 0,
+			WAVE_SAW,
+			WAVE_SIN,
+			WAVE_TRIANGLE,
+			WAVE_BOUNCE,
+			WAVE_JAWS,
+			WAVE_HUMPS,
+			WAVE_FSQUARE,
+			WAVE_FSAW
+		};
+
 		// Initialize SoLoud. Must be called before SoLoud can be used.
 		result init(unsigned int aFlags = Soloud::CLIP_ROUNDOFF, unsigned int aBackend = Soloud::AUTO, unsigned int aSamplerate = Soloud::AUTO, unsigned int aBufferSize = Soloud::AUTO, unsigned int aChannels = 2);
 
@@ -320,7 +333,9 @@ namespace SoLoud
 		// Set panning value; -1 is left, 0 is center, 1 is right
 		void setPan(handle aVoiceHandle, float aPan);
 		// Set absolute left/right volumes
-		void setPanAbsolute(handle aVoiceHandle, float aLVolume, float aRVolume, float aLBVolume = 0, float aRBVolume = 0, float aCVolume = 0, float aSVolume = 0);
+		void setPanAbsolute(handle aVoiceHandle, float aLVolume, float aRVolume);
+		// Set channel volume (volume for a specific speaker)
+		void setChannelVolume(handle aVoiceHandle, unsigned int aChannel, float aVolume);
 		// Set overall volume
 		void setVolume(handle aVoiceHandle, float aVolume);
 		// Set delay, in samples, before starting to play samples. Calling this on a live sound will cause glitches.

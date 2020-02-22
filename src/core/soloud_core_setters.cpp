@@ -116,7 +116,17 @@ namespace SoLoud
 		FOR_ALL_VOICES_POST
 	}
 
-	void Soloud::setPanAbsolute(handle aVoiceHandle, float aLVolume, float aRVolume, float aLBVolume, float aRBVolume, float aCVolume, float aSVolume)
+	void Soloud::setChannelVolume(handle aVoiceHandle, unsigned int aChannel, float aVolume)
+	{		
+		FOR_ALL_VOICES_PRE
+			if (mVoice[ch]->mChannels > aChannel)
+			{
+				mVoice[ch]->mChannelVolume[aChannel] = aVolume;
+			}
+		FOR_ALL_VOICES_POST
+	}
+
+	void Soloud::setPanAbsolute(handle aVoiceHandle, float aLVolume, float aRVolume)
 	{
 		FOR_ALL_VOICES_PRE
 			mVoice[ch]->mPanFader.mActive = 0;	
@@ -124,26 +134,26 @@ namespace SoLoud
 			mVoice[ch]->mChannelVolume[1] = aRVolume;
 			if (mVoice[ch]->mChannels == 4)
 			{
-				mVoice[ch]->mChannelVolume[2] = aLBVolume;
-				mVoice[ch]->mChannelVolume[3] = aRBVolume;
+				mVoice[ch]->mChannelVolume[2] = aLVolume;
+				mVoice[ch]->mChannelVolume[3] = aRVolume;
 			}
 			if (mVoice[ch]->mChannels == 6)
 			{
-				mVoice[ch]->mChannelVolume[2] = aCVolume;
-				mVoice[ch]->mChannelVolume[3] = aSVolume;
-				mVoice[ch]->mChannelVolume[4] = aLBVolume;
-				mVoice[ch]->mChannelVolume[5] = aRBVolume;
+				mVoice[ch]->mChannelVolume[2] = (aLVolume + aRVolume) * 0.5f;
+				mVoice[ch]->mChannelVolume[3] = (aLVolume + aRVolume) * 0.5f;
+				mVoice[ch]->mChannelVolume[4] = aLVolume;
+				mVoice[ch]->mChannelVolume[5] = aRVolume;
 			}
 			if (mVoice[ch]->mChannels == 8)
 			{
-				mVoice[ch]->mChannelVolume[2] = aCVolume;
-				mVoice[ch]->mChannelVolume[3] = aSVolume;
-				mVoice[ch]->mChannelVolume[4] = (aLVolume + aLBVolume) * 0.5f;
-				mVoice[ch]->mChannelVolume[5] = (aRVolume + aRBVolume) * 0.5f;
-				mVoice[ch]->mChannelVolume[6] = aLBVolume;
-				mVoice[ch]->mChannelVolume[7] = aRBVolume;
+				mVoice[ch]->mChannelVolume[2] = (aLVolume + aRVolume) * 0.5f;
+				mVoice[ch]->mChannelVolume[3] = (aLVolume + aRVolume) * 0.5f;
+				mVoice[ch]->mChannelVolume[4] = aLVolume;
+				mVoice[ch]->mChannelVolume[5] = aRVolume;
+				mVoice[ch]->mChannelVolume[6] = aLVolume;
+				mVoice[ch]->mChannelVolume[7] = aRVolume;
 			}
-			FOR_ALL_VOICES_POST
+		FOR_ALL_VOICES_POST
 	}
 
 	void Soloud::setInaudibleBehavior(handle aVoiceHandle, bool aMustTick, bool aKill)

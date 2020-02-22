@@ -438,10 +438,10 @@ void Soloud_setPanAbsolute(void * aClassPtr, unsigned int aVoiceHandle, float aL
 	cl->setPanAbsolute(aVoiceHandle, aLVolume, aRVolume);
 }
 
-void Soloud_setPanAbsoluteEx(void * aClassPtr, unsigned int aVoiceHandle, float aLVolume, float aRVolume, float aLBVolume, float aRBVolume, float aCVolume, float aSVolume)
+void Soloud_setChannelVolume(void * aClassPtr, unsigned int aVoiceHandle, unsigned int aChannel, float aVolume)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
-	cl->setPanAbsolute(aVoiceHandle, aLVolume, aRVolume, aLBVolume, aRBVolume, aCVolume, aSVolume);
+	cl->setChannelVolume(aVoiceHandle, aChannel, aVolume);
 }
 
 void Soloud_setVolume(void * aClassPtr, unsigned int aVoiceHandle, float aVolume)

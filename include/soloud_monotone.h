@@ -97,7 +97,7 @@ namespace SoLoud
 		MonotoneSong mSong;
 		Monotone();
 		~Monotone();
-		result setParams(int aHardwareChannels, int aWaveform = SoLoud::Misc::WAVE_SQUARE);
+		result setParams(int aHardwareChannels, int aWaveform = Soloud::WAVE_SQUARE);
 		result load(const char *aFilename);
 		result loadMem(const unsigned char *aMem, unsigned int aLength, bool aCopy = false, bool aTakeOwnership = true);
 		result loadFile(File *aFile);

@@ -60,6 +60,15 @@ enum SOLOUD_ENUMS
 	SOLOUD_ENABLE_VISUALIZATION = 2,
 	SOLOUD_LEFT_HANDED_3D = 4,
 	SOLOUD_NO_FPU_REGISTER_CHANGE = 8,
+	SOLOUD_WAVE_SQUARE = 0,
+	SOLOUD_WAVE_SAW = 1,
+	SOLOUD_WAVE_SIN = 2,
+	SOLOUD_WAVE_TRIANGLE = 3,
+	SOLOUD_WAVE_BOUNCE = 4,
+	SOLOUD_WAVE_JAWS = 5,
+	SOLOUD_WAVE_HUMPS = 6,
+	SOLOUD_WAVE_FSQUARE = 7,
+	SOLOUD_WAVE_FSAW = 8,
 	BASSBOOSTFILTER_WET = 0,
 	BASSBOOSTFILTER_BOOST = 1,
 	BIQUADRESONANTFILTER_LOWPASS = 0,
@@ -215,7 +224,7 @@ void Soloud_setProtectVoice(Soloud * aSoloud, unsigned int aVoiceHandle, int aPr
 void Soloud_setSamplerate(Soloud * aSoloud, unsigned int aVoiceHandle, float aSamplerate);
 void Soloud_setPan(Soloud * aSoloud, unsigned int aVoiceHandle, float aPan);
 void Soloud_setPanAbsolute(Soloud * aSoloud, unsigned int aVoiceHandle, float aLVolume, float aRVolume);
-void Soloud_setPanAbsoluteEx(Soloud * aSoloud, unsigned int aVoiceHandle, float aLVolume, float aRVolume, float aLBVolume /* = 0 */, float aRBVolume /* = 0 */, float aCVolume /* = 0 */, float aSVolume /* = 0 */);
+void Soloud_setChannelVolume(Soloud * aSoloud, unsigned int aVoiceHandle, unsigned int aChannel, float aVolume);
 void Soloud_setVolume(Soloud * aSoloud, unsigned int aVoiceHandle, float aVolume);
 void Soloud_setDelaySamples(Soloud * aSoloud, unsigned int aVoiceHandle, unsigned int aSamples);
 void Soloud_fadeVolume(Soloud * aSoloud, unsigned int aVoiceHandle, float aTo, double aTime);
@@ -398,7 +407,7 @@ int LofiFilter_setParams(LofiFilter * aLofiFilter, float aSampleRate, float aBit
 void Monotone_destroy(Monotone * aMonotone);
 Monotone * Monotone_create();
 int Monotone_setParams(Monotone * aMonotone, int aHardwareChannels);
-int Monotone_setParamsEx(Monotone * aMonotone, int aHardwareChannels, int aWaveform /* = SoLoud::Misc::WAVE_SQUARE */);
+int Monotone_setParamsEx(Monotone * aMonotone, int aHardwareChannels, int aWaveform /* = Soloud::WAVE_SQUARE */);
 int Monotone_load(Monotone * aMonotone, const char * aFilename);
 int Monotone_loadMem(Monotone * aMonotone, const unsigned char * aMem, unsigned int aLength);
 int Monotone_loadMemEx(Monotone * aMonotone, const unsigned char * aMem, unsigned int aLength, int aCopy /* = false */, int aTakeOwnership /* = true */);

@@ -88,44 +88,44 @@ namespace monotone
 		}
 		if (ImGui::CollapsingHeader("Waveform", (const char*)0, true, false))
 		{
-			if (ImGui::RadioButton("Square", waveform == SoLoud::Misc::WAVE_SQUARE))
+			if (ImGui::RadioButton("Square", waveform == SoLoud::Soloud::WAVE_SQUARE))
 			{
-				waveform = SoLoud::Misc::WAVE_SQUARE;
+				waveform = SoLoud::Soloud::WAVE_SQUARE;
 				gMusic.setParams(hwchannels, waveform);
 			}
-			if (ImGui::RadioButton("Saw", waveform == SoLoud::Misc::WAVE_SAW))
+			if (ImGui::RadioButton("Saw", waveform == SoLoud::Soloud::WAVE_SAW))
 			{
-				waveform = SoLoud::Misc::WAVE_SAW;
+				waveform = SoLoud::Soloud::WAVE_SAW;
 				gMusic.setParams(hwchannels, waveform);
 			}
-			if (ImGui::RadioButton("Sin", waveform == SoLoud::Misc::WAVE_SIN))
+			if (ImGui::RadioButton("Sin", waveform == SoLoud::Soloud::WAVE_SIN))
 			{
-				waveform = SoLoud::Misc::WAVE_SIN;
+				waveform = SoLoud::Soloud::WAVE_SIN;
 				gMusic.setParams(hwchannels, waveform);
 			}
-			if (ImGui::RadioButton("Bounce", waveform == SoLoud::Misc::WAVE_BOUNCE))
+			if (ImGui::RadioButton("Bounce", waveform == SoLoud::Soloud::WAVE_BOUNCE))
 			{
-				waveform = SoLoud::Misc::WAVE_BOUNCE;
+				waveform = SoLoud::Soloud::WAVE_BOUNCE;
 				gMusic.setParams(hwchannels, waveform);
 			}
-			if (ImGui::RadioButton("Jaws", waveform == SoLoud::Misc::WAVE_JAWS))
+			if (ImGui::RadioButton("Jaws", waveform == SoLoud::Soloud::WAVE_JAWS))
 			{
-				waveform = SoLoud::Misc::WAVE_JAWS;
+				waveform = SoLoud::Soloud::WAVE_JAWS;
 				gMusic.setParams(hwchannels, waveform);
 			}
-			if (ImGui::RadioButton("Humps", waveform == SoLoud::Misc::WAVE_HUMPS))
+			if (ImGui::RadioButton("Humps", waveform == SoLoud::Soloud::WAVE_HUMPS))
 			{
-				waveform = SoLoud::Misc::WAVE_HUMPS;
+				waveform = SoLoud::Soloud::WAVE_HUMPS;
 				gMusic.setParams(hwchannels, waveform);
 			}
-			if (ImGui::RadioButton("Fourier square", waveform == SoLoud::Misc::WAVE_FSQUARE))
+			if (ImGui::RadioButton("Fourier square", waveform == SoLoud::Soloud::WAVE_FSQUARE))
 			{
-				waveform = SoLoud::Misc::WAVE_FSQUARE;
+				waveform = SoLoud::Soloud::WAVE_FSQUARE;
 				gMusic.setParams(hwchannels, waveform);
 			}			
-			if (ImGui::RadioButton("Fourier saw", waveform == SoLoud::Misc::WAVE_FSAW))
+			if (ImGui::RadioButton("Fourier saw", waveform == SoLoud::Soloud::WAVE_FSAW))
 			{
-				waveform = SoLoud::Misc::WAVE_FSAW;
+				waveform = SoLoud::Soloud::WAVE_FSAW;
 				gMusic.setParams(hwchannels, waveform);
 			}
 		}
@@ -168,7 +168,7 @@ namespace monotone
 		gSoloud.init(SoLoud::Soloud::CLIP_ROUNDOFF | SoLoud::Soloud::ENABLE_VISUALIZATION);
 
 		gMusichandle = gSoloud.play(gMusic);
-		waveform = SoLoud::Misc::WAVE_SAW;
+		waveform = SoLoud::Soloud::WAVE_SAW;
 		gMusic.setParams(hwchannels, waveform);
 
 		return 0;

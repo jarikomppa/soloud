@@ -62,7 +62,7 @@ EXPORTS
 	Soloud_setSamplerate
 	Soloud_setPan
 	Soloud_setPanAbsolute
-	Soloud_setPanAbsoluteEx
+	Soloud_setChannelVolume
 	Soloud_setVolume
 	Soloud_setDelaySamples
 	Soloud_fadeVolume

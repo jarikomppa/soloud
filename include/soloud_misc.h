@@ -31,18 +31,6 @@ namespace SoLoud
 {
 	namespace Misc
 	{
-		enum WAVEFORM
-		{
-			WAVE_SQUARE = 0,
-			WAVE_SAW,
-			WAVE_SIN,
-			WAVE_TRIANGLE,
-			WAVE_BOUNCE,
-			WAVE_JAWS,
-			WAVE_HUMPS,
-			WAVE_FSQUARE,
-			WAVE_FSAW
-		};
 		// Generate a waveform.
 		float generateWaveform(int aWaveform, float p);
 

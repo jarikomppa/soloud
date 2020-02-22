@@ -58,7 +58,7 @@ namespace SoLoud
 			mScratch.init(mScratchSize * MAX_CHANNELS);
 		}
 		
-		s->mixBus_internal(aBuffer, aSamplesToRead, aBufferSize, mScratch.mData, handle, mSamplerate, mChannels);
+		s->mixBus_internal(aBuffer, aSamplesToRead, aBufferSize, mScratch.mData, handle, mSamplerate, mChannels, mParent->mResampler);
 
 		int i;
 		if (mParent->mFlags & AudioSource::VISUALIZATION_DATA)
@@ -127,6 +127,7 @@ namespace SoLoud
 		mChannelHandle = 0;
 		mInstance = 0;
 		mChannels = 2;
+		mResampler = SOLOUD_DEFAULT_RESAMPLER;
 		for (int i = 0; i < 256; i++)
 		{
 			mFFTData[i] = 0;
@@ -345,4 +346,16 @@ namespace SoLoud
 		mSoloud->unlockAudioMutex_internal();
 		return count;
 	}
+
+	unsigned int Bus::getResampler()
+	{
+		return mResampler;
+	}
+
+	void Bus::setResampler(unsigned int aResampler)
+	{
+		if (aResampler <= Soloud::RESAMPLER_CATMULLROM)
+			mResampler = aResampler;
+	}
+
 };

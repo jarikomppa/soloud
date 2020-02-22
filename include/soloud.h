@@ -88,11 +88,11 @@ freely, subject to the following restrictions:
 // Maximum number of concurrent voices (hard limit is 4095)
 #define VOICE_COUNT 1024
 
-// Use linear resampler
-#define RESAMPLER_LINEAR
-
 // 1)mono, 2)stereo 4)quad 6)5.1 8)7.1
 #define MAX_CHANNELS 8
+
+// Default resampler for both main and bus mixers
+#define SOLOUD_DEFAULT_RESAMPLER SoLoud::Soloud::RESAMPLER_LINEAR
 
 //
 /////////////////////////////////////////////////////////////////////
@@ -214,6 +214,13 @@ namespace SoLoud
 			WAVE_FSAW
 		};
 
+		enum RESAMPLER
+		{
+			RESAMPLER_POINT,
+			RESAMPLER_LINEAR,
+			RESAMPLER_CATMULLROM
+		};
+
 		// Initialize SoLoud. Must be called before SoLoud can be used.
 		result init(unsigned int aFlags = Soloud::CLIP_ROUNDOFF, unsigned int aBackend = Soloud::AUTO, unsigned int aSamplerate = Soloud::AUTO, unsigned int aBufferSize = Soloud::AUTO, unsigned int aChannels = 2);
 
@@ -299,6 +306,8 @@ namespace SoLoud
 		float getRelativePlaySpeed(handle aVoiceHandle);
 		// Get current post-clip scaler value.
 		float getPostClipScaler() const;
+		// Get the current main resampler
+		unsigned int getMainResampler() const;
 		// Get current global volume
 		float getGlobalVolume() const;
 		// Get current maximum active voice setting
@@ -320,6 +329,8 @@ namespace SoLoud
 		void setGlobalVolume(float aVolume);
 		// Set the post clip scaler value
 		void setPostClipScaler(float aScaler);
+		// Set the main resampler
+		void setMainResampler(unsigned int aResampler);
 		// Set the pause state
 		void setPause(handle aVoiceHandle, bool aPause);
 		// Pause all voices
@@ -444,7 +455,7 @@ namespace SoLoud
 		// Map resample buffers to active voices
 		void mapResampleBuffers_internal();
 		// Perform mixing for a specific bus
-		void mixBus_internal(float *aBuffer, unsigned int aSamplesToRead, unsigned int aBufferSize, float *aScratch, unsigned int aBus, float aSamplerate, unsigned int aChannels);
+		void mixBus_internal(float *aBuffer, unsigned int aSamplesToRead, unsigned int aBufferSize, float *aScratch, unsigned int aBus, float aSamplerate, unsigned int aChannels, unsigned int aResampler);
 		// Find a free voice, stopping the oldest if no free voice is found.
 		int findFreeVoice_internal();
 		// Converts handle to voice, if the handle is valid. Returns -1 if not.
@@ -497,6 +508,8 @@ namespace SoLoud
 		AudioSourceInstance **mResampleDataOwner;
 		// Audio voices.
 		AudioSourceInstance *mVoice[VOICE_COUNT];
+		// Resampler for the main bus
+		unsigned int mResampler;
 		// Output sample rate (not float)
 		unsigned int mSamplerate;
 		// Output channel count

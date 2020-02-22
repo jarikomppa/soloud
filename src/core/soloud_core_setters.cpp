@@ -33,6 +33,12 @@ namespace SoLoud
 		mPostClipScaler = aScaler;
 	}
 
+	void Soloud::setMainResampler(unsigned int aResampler)
+	{
+		if (aResampler <= RESAMPLER_CATMULLROM)
+			mResampler = aResampler;
+	}
+
 	void Soloud::setGlobalVolume(float aVolume)
 	{
 		mGlobalVolumeFader.mActive = 0;

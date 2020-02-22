@@ -38,6 +38,11 @@ namespace SoLoud
 		return mPostClipScaler;
 	}
 
+	unsigned int Soloud::getMainResampler() const
+	{
+		return mResampler;
+	}
+
 	float Soloud::getGlobalVolume() const
 	{
 		return mGlobalVolume;

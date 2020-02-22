@@ -1,6 +1,6 @@
 /*
 SoLoud audio engine
-Copyright (c) 2013-2018 Jari Komppa
+Copyright (c) 2013-2020 Jari Komppa
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -104,6 +104,7 @@ namespace SoLoud
 		u = u & ~(_EM_INVALID | /*_EM_DENORMAL |*/ _EM_ZERODIVIDE | _EM_OVERFLOW /*| _EM_UNDERFLOW  | _EM_INEXACT*/);
 		_controlfp(u, _MCW_EM);
 #endif
+		mResampler = SOLOUD_DEFAULT_RESAMPLER;
 		mInsideAudioThreadMutex = false;
 		mScratchSize = 0;
 		mScratchNeeded = 0;
@@ -918,18 +919,77 @@ namespace SoLoud
 #define FIXPOINT_FRAC_MUL (1 << FIXPOINT_FRAC_BITS)
 #define FIXPOINT_FRAC_MASK ((1 << FIXPOINT_FRAC_BITS) - 1)
 
-	void resample(float *aSrc,
-		          float *aSrc1, 
-				  float *aDst, 
-				  int aSrcOffset,
-				  int aDstSampleCount,
-				  float /*aSrcSamplerate*/, 
-				  float /*aDstSamplerate*/,
-				  int aStepFixed)
+	static float catmullrom(float t, float p0, float p1, float p2, float p3)
 	{
-#if 0
+		return 0.5f * (
+			(2 * p1) +
+			(-p0 + p2) * t +
+			(2 * p0 - 5 * p1 + 4 * p2 - p3) * t * t +
+			(-p0 + 3 * p1 - 3 * p2 + p3) * t * t * t
+			);
+	}
 
-#elif defined(RESAMPLER_LINEAR)
+	static void resample_catmullrom(float* aSrc,
+		float* aSrc1,
+		float* aDst,
+		int aSrcOffset,
+		int aDstSampleCount,
+		float /*aSrcSamplerate*/,
+		float /*aDstSamplerate*/,
+		int aStepFixed)
+	{
+		int i;
+		int pos = aSrcOffset;
+
+		for (i = 0; i < aDstSampleCount; i++, pos += aStepFixed)
+		{
+			int p = pos >> FIXPOINT_FRAC_BITS;
+			int f = pos & FIXPOINT_FRAC_MASK;
+
+			float s0, s1, s2, s3;
+
+			if (p < 3)
+			{
+				s3 = aSrc1[512 + p - 3];
+			}
+			else
+			{
+				s3 = aSrc[p - 3];
+			}
+
+			if (p < 2)
+			{
+				s2 = aSrc1[512 + p - 2];
+			}
+			else
+			{
+				s2 = aSrc[p - 2];
+			}
+
+			if (p < 1)
+			{
+				s1 = aSrc1[512 + p - 1];
+			}
+			else
+			{
+				s1 = aSrc[p - 1];
+			}
+
+			s0 = aSrc[p];
+
+			aDst[i] = catmullrom(f / (float)FIXPOINT_FRAC_MUL, s3, s2, s1, s0);
+		}
+	}
+
+	static void resample_linear(float* aSrc,
+		float* aSrc1,
+		float* aDst,
+		int aSrcOffset,
+		int aDstSampleCount,
+		float /*aSrcSamplerate*/,
+		float /*aDstSamplerate*/,
+		int aStepFixed)
+	{
 		int i;
 		int pos = aSrcOffset;
 
@@ -948,11 +1008,21 @@ namespace SoLoud
 			float s2 = aSrc[p];
 			if (p != 0)
 			{
-				s1 = aSrc[p-1];
+				s1 = aSrc[p - 1];
 			}
 			aDst[i] = s1 + (s2 - s1) * f * (1 / (float)FIXPOINT_FRAC_MUL);
 		}
-#else // Point sample
+	}
+
+	static void resample_point(float* aSrc,
+		float* aSrc1,
+		float* aDst,
+		int aSrcOffset,
+		int aDstSampleCount,
+		float /*aSrcSamplerate*/,
+		float /*aDstSamplerate*/,
+		int aStepFixed)
+	{
 		int i;
 		int pos = aSrcOffset;
 
@@ -961,8 +1031,9 @@ namespace SoLoud
 			int p = pos >> FIXPOINT_FRAC_BITS;
 			aDst[i] = aSrc[p];
 		}
-#endif
 	}
+
+
 
 	void panAndExpand(AudioSourceInstance *aVoice, float *aBuffer, unsigned int aSamplesToRead, unsigned int aBufferSize, float *aScratch, unsigned int aChannels)
 	{
@@ -1403,7 +1474,7 @@ namespace SoLoud
 			aVoice->mCurrentChannelVolume[k] = pand[k];
 	}
 
-	void Soloud::mixBus_internal(float *aBuffer, unsigned int aSamplesToRead, unsigned int aBufferSize, float *aScratch, unsigned int aBus, float aSamplerate, unsigned int aChannels)
+	void Soloud::mixBus_internal(float *aBuffer, unsigned int aSamplesToRead, unsigned int aBufferSize, float *aScratch, unsigned int aBus, float aSamplerate, unsigned int aChannels, unsigned int aResampler)
 	{
 		unsigned int i, j;
 		// Clear accumulation buffer
@@ -1549,14 +1620,40 @@ namespace SoLoud
 					{
 						for (j = 0; j < voice->mChannels; j++)
 						{
-							resample(voice->mResampleData[0]->mData + SAMPLE_GRANULARITY * j,
-								voice->mResampleData[1]->mData + SAMPLE_GRANULARITY * j,
-									 aScratch + aBufferSize * j + outofs, 
-									 voice->mSrcOffset,
-									 writesamples,
-									 voice->mSamplerate,
-									 aSamplerate,
-									 step_fixed);
+							switch (aResampler)
+							{
+							case RESAMPLER_POINT:
+								resample_point(voice->mResampleData[0]->mData + SAMPLE_GRANULARITY * j,
+									voice->mResampleData[1]->mData + SAMPLE_GRANULARITY * j,
+									aScratch + aBufferSize * j + outofs,
+									voice->mSrcOffset,
+									writesamples,
+									voice->mSamplerate,
+									aSamplerate,
+									step_fixed);
+								break;
+							case RESAMPLER_CATMULLROM:
+								resample_catmullrom(voice->mResampleData[0]->mData + SAMPLE_GRANULARITY * j,
+									voice->mResampleData[1]->mData + SAMPLE_GRANULARITY * j,
+									aScratch + aBufferSize * j + outofs,
+									voice->mSrcOffset,
+									writesamples,
+									voice->mSamplerate,
+									aSamplerate,
+									step_fixed);
+								break;
+							default:
+							//case RESAMPLER_LINEAR:
+								resample_linear(voice->mResampleData[0]->mData + SAMPLE_GRANULARITY * j,
+									voice->mResampleData[1]->mData + SAMPLE_GRANULARITY * j,
+									aScratch + aBufferSize * j + outofs,
+									voice->mSrcOffset,
+									writesamples,
+									voice->mSamplerate,
+									aSamplerate,
+									step_fixed);
+								break;
+							}
 						}
 					}
 
@@ -1965,7 +2062,7 @@ namespace SoLoud
 			mScratch.init(mScratchSize * MAX_CHANNELS);
 		}
 		
-		mixBus_internal(mOutputScratch.mData, aSamples, aSamples, mScratch.mData, 0, (float)mSamplerate, mChannels);
+		mixBus_internal(mOutputScratch.mData, aSamples, aSamples, mScratch.mData, 0, (float)mSamplerate, mChannels, mResampler);
 
 		for (i = 0; i < FILTERS_PER_STREAM; i++)
 		{

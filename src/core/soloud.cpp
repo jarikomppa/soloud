@@ -107,7 +107,6 @@ namespace SoLoud
 		mResampler = SOLOUD_DEFAULT_RESAMPLER;
 		mInsideAudioThreadMutex = false;
 		mScratchSize = 0;
-		mScratchNeeded = 0;
 		mSamplerate = 0;
 		mBufferSize = 0;
 		mFlags = 0;
@@ -576,7 +575,6 @@ namespace SoLoud
 		mScratchSize = aBufferSize;
 		if (mScratchSize < SAMPLE_GRANULARITY * 2) mScratchSize = SAMPLE_GRANULARITY * 2;
 		if (mScratchSize < 4096) mScratchSize = 4096;
-		mScratchNeeded = mScratchSize;
 		mScratch.init(mScratchSize * MAX_CHANNELS);
 		mOutputScratch.init(mScratchSize * MAX_CHANNELS);
 		mResampleData = new AlignedFloatBuffer[mMaxActiveVoices * 2];
@@ -2163,14 +2161,7 @@ namespace SoLoud
 
 		if (mActiveVoiceDirty)
 			calcActiveVoices_internal();
-
-		// Resize scratch if needed.
-		if (mScratchSize < mScratchNeeded)
-		{
-			mScratchSize = mScratchNeeded;
-			mScratch.init(mScratchSize * MAX_CHANNELS);
-		}
-		
+	
 		mixBus_internal(mOutputScratch.mData, aSamples, aSamples, mScratch.mData, 0, (float)mSamplerate, mChannels, mResampler);
 
 		for (i = 0; i < FILTERS_PER_STREAM; i++)

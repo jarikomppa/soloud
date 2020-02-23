@@ -52,9 +52,9 @@ namespace SoLoud
 		}
 		
 		Soloud *s = mParent->mSoloud;
-		if (s->mScratchNeeded != mScratchSize)
+		if (mScratchSize ==  0)
 		{
-			mScratchSize = s->mScratchNeeded;
+			mScratchSize = SAMPLE_GRANULARITY;
 			mScratch.init(mScratchSize * MAX_CHANNELS);
 		}
 		

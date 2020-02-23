@@ -498,8 +498,6 @@ namespace SoLoud
 		AlignedFloatBuffer mScratch;
 		// Current size of the scratch, in samples.
 		unsigned int mScratchSize;
-		// Amount of scratch needed.
-		unsigned int mScratchNeeded;
 		// Output scratch buffer, used in mix_().
 		AlignedFloatBuffer mOutputScratch;
 		// Resampler buffers, two per active voice.

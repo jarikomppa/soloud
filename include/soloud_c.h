@@ -69,6 +69,9 @@ enum SOLOUD_ENUMS
 	SOLOUD_WAVE_HUMPS = 6,
 	SOLOUD_WAVE_FSQUARE = 7,
 	SOLOUD_WAVE_FSAW = 8,
+	SOLOUD_RESAMPLER_POINT = 0,
+	SOLOUD_RESAMPLER_LINEAR = 1,
+	SOLOUD_RESAMPLER_CATMULLROM = 2,
 	BASSBOOSTFILTER_WET = 0,
 	BASSBOOSTFILTER_BOOST = 1,
 	BIQUADRESONANTFILTER_LOWPASS = 0,
@@ -207,6 +210,7 @@ unsigned int Soloud_getVoiceCount(Soloud * aSoloud);
 int Soloud_isValidVoiceHandle(Soloud * aSoloud, unsigned int aVoiceHandle);
 float Soloud_getRelativePlaySpeed(Soloud * aSoloud, unsigned int aVoiceHandle);
 float Soloud_getPostClipScaler(Soloud * aSoloud);
+unsigned int Soloud_getMainResampler(Soloud * aSoloud);
 float Soloud_getGlobalVolume(Soloud * aSoloud);
 unsigned int Soloud_getMaxActiveVoiceCount(Soloud * aSoloud);
 int Soloud_getLooping(Soloud * aSoloud, unsigned int aVoiceHandle);
@@ -217,6 +221,7 @@ int Soloud_setMaxActiveVoiceCount(Soloud * aSoloud, unsigned int aVoiceCount);
 void Soloud_setInaudibleBehavior(Soloud * aSoloud, unsigned int aVoiceHandle, int aMustTick, int aKill);
 void Soloud_setGlobalVolume(Soloud * aSoloud, float aVolume);
 void Soloud_setPostClipScaler(Soloud * aSoloud, float aScaler);
+void Soloud_setMainResampler(Soloud * aSoloud, unsigned int aResampler);
 void Soloud_setPause(Soloud * aSoloud, unsigned int aVoiceHandle, int aPause);
 void Soloud_setPauseAll(Soloud * aSoloud, int aPause);
 int Soloud_setRelativePlaySpeed(Soloud * aSoloud, unsigned int aVoiceHandle, float aSpeed);
@@ -313,6 +318,8 @@ float * Bus_calcFFT(Bus * aBus);
 float * Bus_getWave(Bus * aBus);
 float Bus_getApproximateVolume(Bus * aBus, unsigned int aChannel);
 unsigned int Bus_getActiveVoiceCount(Bus * aBus);
+unsigned int Bus_getResampler(Bus * aBus);
+void Bus_setResampler(Bus * aBus, unsigned int aResampler);
 void Bus_setVolume(Bus * aBus, float aVolume);
 void Bus_setLooping(Bus * aBus, int aLoop);
 void Bus_set3dMinMaxDistance(Bus * aBus, float aMinDistance, float aMaxDistance);

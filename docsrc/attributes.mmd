@@ -184,3 +184,14 @@ inaudible.
 
     // The dictator's speech must go on even if not heard
     soloud.setInaudibleBehavior(h, true, false);
+
+
+### Soloud.getMainResampler(), Soloud.setMainResampler()
+
+Set or get the main resampler. The default is linear interpolator.
+
+This is the resampler for the main mixer. Setting the main resampler does not change the resamplers busses use.
+
+    // Use point-sample resampler
+    soloud.setMainResampler(SoLoud::Soloud::RESAMPLER_POINT);
+    

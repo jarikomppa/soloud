@@ -336,6 +336,12 @@ float Soloud_getPostClipScaler(void * aClassPtr)
 	return cl->getPostClipScaler();
 }
 
+unsigned int Soloud_getMainResampler(void * aClassPtr)
+{
+	Soloud * cl = (Soloud *)aClassPtr;
+	return cl->getMainResampler();
+}
+
 float Soloud_getGlobalVolume(void * aClassPtr)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
@@ -394,6 +400,12 @@ void Soloud_setPostClipScaler(void * aClassPtr, float aScaler)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
 	cl->setPostClipScaler(aScaler);
+}
+
+void Soloud_setMainResampler(void * aClassPtr, unsigned int aResampler)
+{
+	Soloud * cl = (Soloud *)aClassPtr;
+	cl->setMainResampler(aResampler);
 }
 
 void Soloud_setPause(void * aClassPtr, unsigned int aVoiceHandle, int aPause)
@@ -892,6 +904,18 @@ unsigned int Bus_getActiveVoiceCount(void * aClassPtr)
 {
 	Bus * cl = (Bus *)aClassPtr;
 	return cl->getActiveVoiceCount();
+}
+
+unsigned int Bus_getResampler(void * aClassPtr)
+{
+	Bus * cl = (Bus *)aClassPtr;
+	return cl->getResampler();
+}
+
+void Bus_setResampler(void * aClassPtr, unsigned int aResampler)
+{
+	Bus * cl = (Bus *)aClassPtr;
+	cl->setResampler(aResampler);
 }
 
 void Bus_setVolume(void * aClassPtr, float aVolume)

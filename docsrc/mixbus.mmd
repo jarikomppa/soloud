@@ -172,6 +172,17 @@ Returns the number of concurrent sounds that are playing through this bus
 at the moment.
 
     if (sfxbus.getActiveVoiceCount() == 0) enjoy_the_silence();
+
+
+### Bus.getResampler(), Bus.setResampler()
+
+Set or get the resampler for this bus. The default is linear interpolator.
+
+Setting the resampler does not change the resampler other busses or the main mixer uses.
+
+    // Use point-sample resampler for the music
+    gMusicBus.setResampler(SoLoud::Soloud::RESAMPLER_POINT);
+
     
 ### Inherited 3d audio interfaces
 

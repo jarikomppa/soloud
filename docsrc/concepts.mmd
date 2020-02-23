@@ -196,15 +196,17 @@ resampling is needed, but this is often not true.
 
 ![Different resamplers (Point / linear / catmull-rom). Red is the ideal signal.](images/resampler)\ 
 
-Currently, SoLoud supports "linear interpolation", which calculates linear 
-interpolation of samples, as well as "point sample" resampling, which 
-means it simply skips or repeats samples as needed.
-
-Picking the resampler is done by editing the soloud.h file.
+Currently, SoLoud supports "point sample" resampling, which means it simply skips 
+or repeats samples as needed, "linear interpolation", which calculates linear 
+interpolation of samples, as well as "catmull-rom" which, instead of doing
+linear interpolation, uses a catmull-rom spline to interpolate the samples.
 
 The linear interpolation resampler is used by default.
 
-Higher quality resamplers are planned.
+The resampler can be set on a per-bus basis, so if you want to use a higher (or lower) quality
+resampler for a certain bus, you can do so. Note that if all sample data has the same
+sample rate, the point sample resampler will actually produce the best results, as it
+will not affect the signal (in that, and only in that case).
 
 ### Pan
 

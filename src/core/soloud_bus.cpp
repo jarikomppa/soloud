@@ -37,6 +37,8 @@ namespace SoLoud
 			mVisualizationChannelVolume[i] = 0;
 		for (int i = 0; i < 256; i++)
 			mVisualizationWaveData[i] = 0;
+		mScratchSize = SAMPLE_GRANULARITY;
+		mScratch.init(mScratchSize * MAX_CHANNELS);
 	}
 	
 	unsigned int BusInstance::getAudio(float *aBuffer, unsigned int aSamplesToRead, unsigned int aBufferSize)
@@ -52,11 +54,6 @@ namespace SoLoud
 		}
 		
 		Soloud *s = mParent->mSoloud;
-		if (mScratchSize ==  0)
-		{
-			mScratchSize = SAMPLE_GRANULARITY;
-			mScratch.init(mScratchSize * MAX_CHANNELS);
-		}
 		
 		s->mixBus_internal(aBuffer, aSamplesToRead, aBufferSize, mScratch.mData, handle, mSamplerate, mChannels, mParent->mResampler);
 

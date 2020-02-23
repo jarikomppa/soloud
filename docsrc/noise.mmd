@@ -1,0 +1,88 @@
+## SoLoud::Noise
+
+
+The SoLoud::Noise audio source generates... noise. This can be useful in some situations, such as when you want to drown out everything into white noise,
+or when you want to have some other kind of noise in the background. Noise can also be filtered to produce different kinds of sounds, such as wind hissing
+or water pouring.
+
+### Noise.setType()
+
+
+The type of the desired noise can be set before playing.
+
+|Parameter|Effect|
+|:--------|:---------------------|
+|WHITE|White noise. 100% weight on the first octave.|
+|PINK|Pink noise. Equal weight on all octaves.|
+|BROWNISH|Brown-ish noise, increasing weight on deeper octaves.|
+|BLUEISH|Blue-ish noise, decreasing weight on deeper octaves.|
+
+White noise is harsh, new random value on every sample kind of noise. This is the most useful one as base for filtering. The other kinds of noises may be useful
+as they are for background noise at low volume.
+    
+    gNoise.setType(SoLoud::Noise::PINK); // Some pink noise, please
+
+### Noise.setOctaveScale()
+
+
+Instead of selecting the noise type, you can also define the octave weights manually. The noise genrator has 10 octaves; the first one generates new value for
+every sample, the second for every second sample, the third for every 4 samples, 8, 16, 32, and so on. 
+
+    gNoise.setOctaveScale(0,0,0,0,0,1,0,0,0,0); // Very particular noise
+
+The weight values do not need to sum up to 1; the total will be used as a divisor. As such, the total must not be zero.
+
+### Noise.setLooping(), Noise.setLoopPoint(), Noise.getLoopPoint()
+
+
+Adjusting the looping of a noise sound does not have any effect.
+
+\pagebreak
+### Noise.setFilter()
+
+
+As with any other audio source, you can attach filters to 
+monotone audio sources.
+
+    gMusic.setFilter(0, &gLofi);
+
+
+### Noise.stop()
+
+
+You can stop all instances of a noise sound source with
+stop(). This is equivalent of calling soloud.stopAudioSource()
+with the sound source.
+
+    gMusic.stop();
+
+### Noise.setInaudibleBehavior()
+
+Set the inaudible behavior of the sound. By default, if a sound is
+inaudible, it's paused, and will resume when it becomes audible again.
+With this function you can tell SoLoud to either kill the sound if
+it becomes inaudible, or to keep ticking the sound even if it's 
+inaudible.
+
+	// Keep on talking even if I'm not around
+	gSpeech.setInaudibleBehavior(true, false);
+
+### Noise.setVolume()
+
+Set the default volume of the instances created from this audio source.
+
+    gTinyVoice.setVolume(0.1);
+       
+
+### Inherited 3d audio interfaces
+
+Like all other audio sources, monotone inherits the 3d audio interfaces. Please refer to the 3d audio chapter for details on:
+
+- Noise.set3dMinMaxDistance()
+- Noise.set3dAttenuation()
+- Noise.set3dDopplerFactor()
+- Noise.set3dProcessing()
+- Noise.set3dListenerRelative()
+- Noise.set3dDistanceDelay()
+- Noise.set3dCollider()
+- Noise.set3dAttenuator()

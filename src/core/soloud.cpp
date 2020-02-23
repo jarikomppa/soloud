@@ -1152,6 +1152,10 @@ namespace SoLoud
 						__m128 c0 = _mm_mul_ps(f0, p0);
 						__m128 f1 = _mm_load_ps(aScratch + c + aBufferSize);
 						__m128 c1 = _mm_mul_ps(f1, p1);
+						__m128 o0 = _mm_load_ps(aBuffer + c);
+						__m128 o1 = _mm_load_ps(aBuffer + c + aBufferSize);
+						c0 = _mm_add_ps(c0, o0);
+						c1 = _mm_add_ps(c1, o1);
 						_mm_store_ps(aBuffer + c, c0);
 						_mm_store_ps(aBuffer + c + aBufferSize, c1);
 						p0 = _mm_add_ps(p0, pan0delta);
@@ -1214,6 +1218,10 @@ namespace SoLoud
 						__m128 f = _mm_load_ps(aScratch + c);
 						__m128 c0 = _mm_mul_ps(f, p0);
 						__m128 c1 = _mm_mul_ps(f, p1);
+						__m128 o0 = _mm_load_ps(aBuffer + c);
+						__m128 o1 = _mm_load_ps(aBuffer + c + aBufferSize);
+						c0 = _mm_add_ps(c0, o0);
+						c1 = _mm_add_ps(c1, o1);
 						_mm_store_ps(aBuffer + c, c0);
 						_mm_store_ps(aBuffer + c + aBufferSize, c1);
 						p0 = _mm_add_ps(p0, pan0delta);

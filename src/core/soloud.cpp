@@ -933,8 +933,6 @@ namespace SoLoud
 		float* aDst,
 		int aSrcOffset,
 		int aDstSampleCount,
-		float /*aSrcSamplerate*/,
-		float /*aDstSamplerate*/,
 		int aStepFixed)
 	{
 		int i;
@@ -985,8 +983,6 @@ namespace SoLoud
 		float* aDst,
 		int aSrcOffset,
 		int aDstSampleCount,
-		float /*aSrcSamplerate*/,
-		float /*aDstSamplerate*/,
 		int aStepFixed)
 	{
 		int i;
@@ -1018,8 +1014,6 @@ namespace SoLoud
 		float* aDst,
 		int aSrcOffset,
 		int aDstSampleCount,
-		float /*aSrcSamplerate*/,
-		float /*aDstSamplerate*/,
 		int aStepFixed)
 	{
 		int i;
@@ -1736,8 +1730,8 @@ namespace SoLoud
 									aScratch + aBufferSize * j + outofs,
 									voice->mSrcOffset,
 									writesamples,
-									voice->mSamplerate,
-									aSamplerate,
+									/*voice->mSamplerate,
+									aSamplerate,*/
 									step_fixed);
 								break;
 							case RESAMPLER_CATMULLROM:
@@ -1746,8 +1740,8 @@ namespace SoLoud
 									aScratch + aBufferSize * j + outofs,
 									voice->mSrcOffset,
 									writesamples,
-									voice->mSamplerate,
-									aSamplerate,
+									/*voice->mSamplerate,
+									aSamplerate,*/
 									step_fixed);
 								break;
 							default:
@@ -1757,8 +1751,8 @@ namespace SoLoud
 									aScratch + aBufferSize * j + outofs,
 									voice->mSrcOffset,
 									writesamples,
-									voice->mSamplerate,
-									aSamplerate,
+									/*voice->mSamplerate,
+									aSamplerate,*/
 									step_fixed);
 								break;
 							}

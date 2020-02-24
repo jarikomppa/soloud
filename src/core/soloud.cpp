@@ -577,11 +577,12 @@ namespace SoLoud
 		if (mScratchSize < 4096) mScratchSize = 4096;
 		mScratch.init(mScratchSize * MAX_CHANNELS);
 		mOutputScratch.init(mScratchSize * MAX_CHANNELS);
-		mResampleData = new AlignedFloatBuffer[mMaxActiveVoices * 2];
+		mResampleData = new float*[mMaxActiveVoices * 2];
 		mResampleDataOwner = new AudioSourceInstance*[mMaxActiveVoices];
-		unsigned int i;
+		mResampleDataBuffer.init(mMaxActiveVoices * 2 * SAMPLE_GRANULARITY * MAX_CHANNELS);
+		unsigned int i;		
 		for (i = 0; i < mMaxActiveVoices * 2; i++)
-			mResampleData[i].init(SAMPLE_GRANULARITY * MAX_CHANNELS);
+			mResampleData[i] = mResampleDataBuffer.mData + (SAMPLE_GRANULARITY * MAX_CHANNELS * i);
 		for (i = 0; i < mMaxActiveVoices; i++)
 			mResampleDataOwner[i] = NULL;
 		mFlags = aFlags;
@@ -1635,7 +1636,7 @@ namespace SoLoud
 					if (voice->mLeftoverSamples == 0)
 					{
 						// Swap resample buffers (ping-pong)
-						AlignedFloatBuffer * t = voice->mResampleData[0];
+						float * t = voice->mResampleData[0];
 						voice->mResampleData[0] = voice->mResampleData[1];
 						voice->mResampleData[1] = t;
 
@@ -1644,7 +1645,7 @@ namespace SoLoud
 						int readcount = 0;
 						if (!voice->hasEnded() || voice->mFlags & AudioSourceInstance::LOOPING)
 						{
-							readcount = voice->getAudio(voice->mResampleData[0]->mData, SAMPLE_GRANULARITY, SAMPLE_GRANULARITY);
+							readcount = voice->getAudio(voice->mResampleData[0], SAMPLE_GRANULARITY, SAMPLE_GRANULARITY);
 							if (readcount < SAMPLE_GRANULARITY)
 							{
 								if (voice->mFlags & AudioSourceInstance::LOOPING)
@@ -1652,7 +1653,7 @@ namespace SoLoud
 									while (readcount < SAMPLE_GRANULARITY && voice->seek(voice->mLoopPoint, mScratch.mData, mScratchSize) == SO_NO_ERROR)
 									{
 										voice->mLoopCount++;
-										int inc = voice->getAudio(voice->mResampleData[0]->mData + readcount, SAMPLE_GRANULARITY - readcount, SAMPLE_GRANULARITY);
+										int inc = voice->getAudio(voice->mResampleData[0] + readcount, SAMPLE_GRANULARITY - readcount, SAMPLE_GRANULARITY);
 										readcount += inc;
 										if (inc == 0) break;
 									}
@@ -1665,7 +1666,7 @@ namespace SoLoud
 						{
 							unsigned int k;
 							for (k = 0; k < voice->mChannels; k++)
-								memset(voice->mResampleData[0]->mData + readcount + SAMPLE_GRANULARITY * k, 0, sizeof(float) * (SAMPLE_GRANULARITY - readcount));
+								memset(voice->mResampleData[0] + readcount + SAMPLE_GRANULARITY * k, 0, sizeof(float) * (SAMPLE_GRANULARITY - readcount));
 						}
 
 						// If we go past zero, crop to zero (a bit of a kludge)
@@ -1687,7 +1688,7 @@ namespace SoLoud
 							if (voice->mFilter[j])
 							{
 								voice->mFilter[j]->filter(
-									voice->mResampleData[0]->mData,
+									voice->mResampleData[0],
 									SAMPLE_GRANULARITY, 
 									voice->mChannels,
 									voice->mSamplerate,
@@ -1730,8 +1731,8 @@ namespace SoLoud
 							switch (aResampler)
 							{
 							case RESAMPLER_POINT:
-								resample_point(voice->mResampleData[0]->mData + SAMPLE_GRANULARITY * j,
-									voice->mResampleData[1]->mData + SAMPLE_GRANULARITY * j,
+								resample_point(voice->mResampleData[0] + SAMPLE_GRANULARITY * j,
+									voice->mResampleData[1] + SAMPLE_GRANULARITY * j,
 									aScratch + aBufferSize * j + outofs,
 									voice->mSrcOffset,
 									writesamples,
@@ -1740,8 +1741,8 @@ namespace SoLoud
 									step_fixed);
 								break;
 							case RESAMPLER_CATMULLROM:
-								resample_catmullrom(voice->mResampleData[0]->mData + SAMPLE_GRANULARITY * j,
-									voice->mResampleData[1]->mData + SAMPLE_GRANULARITY * j,
+								resample_catmullrom(voice->mResampleData[0] + SAMPLE_GRANULARITY * j,
+									voice->mResampleData[1] + SAMPLE_GRANULARITY * j,
 									aScratch + aBufferSize * j + outofs,
 									voice->mSrcOffset,
 									writesamples,
@@ -1751,8 +1752,8 @@ namespace SoLoud
 								break;
 							default:
 							//case RESAMPLER_LINEAR:
-								resample_linear(voice->mResampleData[0]->mData + SAMPLE_GRANULARITY * j,
-									voice->mResampleData[1]->mData + SAMPLE_GRANULARITY * j,
+								resample_linear(voice->mResampleData[0] + SAMPLE_GRANULARITY * j,
+									voice->mResampleData[1] + SAMPLE_GRANULARITY * j,
 									aScratch + aBufferSize * j + outofs,
 									voice->mSrcOffset,
 									writesamples,
@@ -1811,7 +1812,7 @@ namespace SoLoud
 					if (voice->mLeftoverSamples == 0)
 					{
 						// Swap resample buffers (ping-pong)
-						AlignedFloatBuffer * t = voice->mResampleData[0];
+						float * t = voice->mResampleData[0];
 						voice->mResampleData[0] = voice->mResampleData[1];
 						voice->mResampleData[1] = t;
 
@@ -1820,7 +1821,7 @@ namespace SoLoud
 						int readcount = 0;
 						if (!voice->hasEnded() || voice->mFlags & AudioSourceInstance::LOOPING)
 						{
-							readcount = voice->getAudio(voice->mResampleData[0]->mData, SAMPLE_GRANULARITY, SAMPLE_GRANULARITY);
+							readcount = voice->getAudio(voice->mResampleData[0], SAMPLE_GRANULARITY, SAMPLE_GRANULARITY);
 							if (readcount < SAMPLE_GRANULARITY)
 							{
 								if (voice->mFlags & AudioSourceInstance::LOOPING)
@@ -1828,7 +1829,7 @@ namespace SoLoud
 									while (readcount < SAMPLE_GRANULARITY && voice->seek(voice->mLoopPoint, mScratch.mData, mScratchSize) == SO_NO_ERROR)
 									{
 										voice->mLoopCount++;
-										readcount += voice->getAudio(voice->mResampleData[0]->mData + readcount, SAMPLE_GRANULARITY - readcount, SAMPLE_GRANULARITY);
+										readcount += voice->getAudio(voice->mResampleData[0] + readcount, SAMPLE_GRANULARITY - readcount, SAMPLE_GRANULARITY);
 									}
 								}
 							}
@@ -1935,10 +1936,10 @@ namespace SoLoud
 				}
 				SOLOUD_ASSERT(found != -1);
 				mResampleDataOwner[found] = mVoice[mActiveVoice[i]];
-				mResampleDataOwner[found]->mResampleData[0] = &mResampleData[found * 2 + 0];
-				mResampleDataOwner[found]->mResampleData[1] = &mResampleData[found * 2 + 1];
-				mResampleDataOwner[found]->mResampleData[0]->clear();
-				mResampleDataOwner[found]->mResampleData[1]->clear();
+				mResampleDataOwner[found]->mResampleData[0] = mResampleData[found * 2 + 0];
+				mResampleDataOwner[found]->mResampleData[1] = mResampleData[found * 2 + 1];
+				memset(mResampleDataOwner[found]->mResampleData[0], 0, sizeof(float) * SAMPLE_GRANULARITY * MAX_CHANNELS);
+				memset(mResampleDataOwner[found]->mResampleData[1], 0, sizeof(float) * SAMPLE_GRANULARITY * MAX_CHANNELS);
 				latestfree = found + 1;
 			}
 		}

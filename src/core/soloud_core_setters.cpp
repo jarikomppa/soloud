@@ -78,11 +78,12 @@ namespace SoLoud
 		mMaxActiveVoices = aVoiceCount;
 		delete[] mResampleData;
 		delete[] mResampleDataOwner;
-		mResampleData = new AlignedFloatBuffer[aVoiceCount * 2];
+		mResampleData = new float*[aVoiceCount * 2];
 		mResampleDataOwner = new AudioSourceInstance*[aVoiceCount];
+		mResampleDataBuffer.init(SAMPLE_GRANULARITY * MAX_CHANNELS * aVoiceCount * 2);
 		unsigned int i;
 		for (i = 0; i < aVoiceCount * 2; i++)
-			mResampleData[i].init(SAMPLE_GRANULARITY * MAX_CHANNELS);
+			mResampleData[i] = mResampleDataBuffer.mData + (SAMPLE_GRANULARITY * MAX_CHANNELS * i);
 		for (i = 0; i < aVoiceCount; i++)
 			mResampleDataOwner[i] = NULL;
 		mActiveVoiceDirty = true;

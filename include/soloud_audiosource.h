@@ -175,8 +175,8 @@ namespace SoLoud
 		FilterInstance *mFilter[FILTERS_PER_STREAM];
 		// Initialize instance. Mostly internal use.
 		void init(AudioSource &aSource, int aPlayIndex);
-		// Buffers for the resampler
-		AlignedFloatBuffer *mResampleData[2];
+		// Pointers to buffers for the resampler
+		float *mResampleData[2];
 		// Sub-sample playhead; 16.16 fixed point
 		unsigned int mSrcOffset;
 		// Samples left over from earlier pass

@@ -40,7 +40,7 @@ namespace SoLoud
 		int mOffset;
 
 	public:
-		virtual void filter(float *aBuffer, unsigned int aSamples, unsigned int aChannels, float aSamplerate, time aTime);
+		virtual void filter(float *aBuffer, unsigned int aSamples, unsigned int aBufferSize, unsigned int aChannels, float aSamplerate, time aTime);
 		virtual ~DCRemovalFilterInstance();
 		DCRemovalFilterInstance(DCRemovalFilter *aParent);
 	};

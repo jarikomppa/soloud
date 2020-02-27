@@ -38,7 +38,7 @@ namespace SoLoud
 
 	}
 
-	void DCRemovalFilterInstance::filter(float *aBuffer, unsigned int aSamples, unsigned int aChannels, float aSamplerate, double aTime)
+	void DCRemovalFilterInstance::filter(float *aBuffer, unsigned int aSamples, unsigned int aBufferSize, unsigned int aChannels, float aSamplerate, double aTime)
 	{
 		updateParams(aTime);
 
@@ -65,7 +65,7 @@ namespace SoLoud
 			for (j = 0; j < aChannels; j++)
 			{
 				int chofs = j * mBufferLength;
-				int bchofs = j * aSamples;
+				int bchofs = j * aBufferSize;
 								
 				float n = aBuffer[i + bchofs];
 				mTotals[j] -= mBuffer[mOffset + chofs];

@@ -121,7 +121,7 @@ namespace SoLoud
 		public:
 			Revmodel();
 			void	mute();
-			void	process(float* aSampleData, long aNumSamples);
+			void	process(float* aSampleData, long aNumSamples, long aStride);
 			void	setroomsize(float aValue);
 			void	setdamp(float aValue);
 			void	setwet(float aValue);
@@ -349,11 +349,11 @@ namespace SoLoud
 			}
 		}
 
-		void Revmodel::process(float* aSampleData, long aNumSamples)
+		void Revmodel::process(float* aSampleData, long aNumSamples, long aStride)
 		{
 			float* inputL, * inputR;
 			inputL = aSampleData;
-			inputR = aSampleData + aNumSamples;
+			inputR = aSampleData + aStride;
 
 			if (mDirty)
 				update();
@@ -475,7 +475,7 @@ namespace SoLoud
 		mParam[WET] = 1;
 	}
 
-	void FreeverbFilterInstance::filter(float* aBuffer, unsigned int aSamples, unsigned int aChannels, float aSamplerate, time aTime)
+	void FreeverbFilterInstance::filter(float* aBuffer, unsigned int aSamples, unsigned int aBufferSize, unsigned int aChannels, float aSamplerate, time aTime)
 	{
 		SOLOUD_ASSERT(aChannels == 2); // Only stereo supported at this time
 		if (mParamChanged)
@@ -488,7 +488,7 @@ namespace SoLoud
 			mModel->setdry(1 - mParam[WET]);
 			mParamChanged = 0;
 		}
-		mModel->process(aBuffer, aSamples);
+		mModel->process(aBuffer, aSamples, aBufferSize);
 	}
 
 	FreeverbFilterInstance::~FreeverbFilterInstance()

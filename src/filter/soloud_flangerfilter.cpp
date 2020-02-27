@@ -40,7 +40,7 @@ namespace SoLoud
 		mParam[FlangerFilter::DELAY] = mParent->mDelay;
 	}
 
-	void FlangerFilterInstance::filter(float *aBuffer, unsigned int aSamples, unsigned int aChannels, float aSamplerate, double aTime)
+	void FlangerFilterInstance::filter(float *aBuffer, unsigned int aSamples, unsigned int aBufferSize, unsigned int aChannels, float aSamplerate, double aTime)
 	{
 		updateParams(aTime);
 
@@ -63,7 +63,7 @@ namespace SoLoud
 		for (i = 0; i < aChannels; i++)
 		{
 			int mbofs = i * mBufferLength;
-			int abofs = i * aSamples;
+			int abofs = i * aBufferSize;
 			for (j = 0; j < aSamples; j++, abofs++)
 			{
 				int delay = (int)floor(maxsamples * (1 + cos(mIndex))) / 2;

@@ -445,7 +445,7 @@ namespace SoLoud
 		void mixSigned16(short *aBuffer, unsigned int aSamples);
 	public:
 		// Mix N samples * M channels. Called by other mix_ functions.
-		void mix_internal(unsigned int aSamples);
+		void mix_internal(unsigned int aSamples, unsigned int aStride);
 
 		// Handle rest of initialization (called from backend)
 		void postinit_internal(unsigned int aSamplerate, unsigned int aBufferSize, unsigned int aFlags, unsigned int aChannels);

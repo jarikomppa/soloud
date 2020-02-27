@@ -39,7 +39,7 @@ namespace SoLoud
 		mParam[EchoFilter::FILTER] = aParent->mFilter;
 	}
 
-	void EchoFilterInstance::filter(float *aBuffer, unsigned int aSamples, unsigned int aChannels, float aSamplerate, double aTime)
+	void EchoFilterInstance::filter(float *aBuffer, unsigned int aSamples, unsigned int aBufferSize, unsigned int aChannels, float aSamplerate, double aTime)
 	{
 		updateParams(aTime);
 		if (mBuffer == 0)
@@ -65,7 +65,7 @@ namespace SoLoud
 			for (j = 0; j < aChannels; j++)
 			{
 				int chofs = j * mBufferLength;
-				int bchofs = j * aSamples;
+				int bchofs = j * aBufferSize;
 				
 				mBuffer[mOffset + chofs] = mParam[EchoFilter::FILTER] * mBuffer[prevofs + chofs] + (1 - mParam[EchoFilter::FILTER]) * mBuffer[mOffset + chofs];
 				

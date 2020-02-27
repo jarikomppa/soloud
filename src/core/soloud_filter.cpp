@@ -150,12 +150,12 @@ namespace SoLoud
 		return mParam[aAttributeId];
 	}
 
-	void FilterInstance::filter(float *aBuffer, unsigned int aSamples, unsigned int aChannels, float aSamplerate, double aTime)
+	void FilterInstance::filter(float *aBuffer, unsigned int aSamples, unsigned int aBufferSize, unsigned int aChannels, float aSamplerate, double aTime)
 	{
 		unsigned int i;
 		for (i = 0; i < aChannels; i++)
 		{
-			filterChannel(aBuffer + i * aSamples, aSamples, aSamplerate, aTime, i, aChannels);
+			filterChannel(aBuffer + i * aBufferSize, aSamples, aSamplerate, aTime, i, aChannels);
 		}
 	}
 

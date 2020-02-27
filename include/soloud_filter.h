@@ -43,7 +43,7 @@ namespace SoLoud
 		FilterInstance();
 		virtual result initParams(int aNumParams);
 		virtual void updateParams(time aTime);
-		virtual void filter(float *aBuffer, unsigned int aSamples, unsigned int aChannels, float aSamplerate, time aTime);
+		virtual void filter(float *aBuffer, unsigned int aSamples, unsigned int aBufferSize, unsigned int aChannels, float aSamplerate, time aTime);
 		virtual void filterChannel(float *aBuffer, unsigned int aSamples, float aSamplerate, time aTime, unsigned int aChannel, unsigned int aChannels);
 		virtual float getFilterParameter(unsigned int aAttributeId);
 		virtual void setFilterParameter(unsigned int aAttributeId, float aValue);

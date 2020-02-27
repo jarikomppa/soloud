@@ -1108,40 +1108,43 @@ namespace SoLoud
 			case 2: // 2->2
 #if defined(SOLOUD_SSE_INTRINSICS)
 				{
-					unsigned int samplequads = aSamplesToRead / 4; // rounded down
-					TinyAlignedFloatBuffer pan0;
-					pan0.mData[0] = pan[0] + pani[0];
-					pan0.mData[1] = pan[0] + pani[0] * 2;
-					pan0.mData[2] = pan[0] + pani[0] * 3;
-					pan0.mData[3] = pan[0] + pani[0] * 4;
-					TinyAlignedFloatBuffer pan1;
-					pan1.mData[0] = pan[1] + pani[1];
-					pan1.mData[1] = pan[1] + pani[1] * 2;
-					pan1.mData[2] = pan[1] + pani[1] * 3;
-					pan1.mData[3] = pan[1] + pani[1] * 4;
-					pani[0] *= 4;
-					pani[1] *= 4;
-					__m128 pan0delta = _mm_load_ps1(&pani[0]);
-					__m128 pan1delta = _mm_load_ps1(&pani[1]);
 					int c = 0;
-					__m128 p0 = _mm_load_ps(pan0.mData);
-					__m128 p1 = _mm_load_ps(pan1.mData);
-
-					for (j = 0; j < samplequads; j++)
+					if ((aBufferSize & 3) == 0)
 					{
-						__m128 f0 = _mm_load_ps(aScratch + c);
-						__m128 c0 = _mm_mul_ps(f0, p0);
-						__m128 f1 = _mm_load_ps(aScratch + c + aBufferSize);
-						__m128 c1 = _mm_mul_ps(f1, p1);
-						__m128 o0 = _mm_load_ps(aBuffer + c);
-						__m128 o1 = _mm_load_ps(aBuffer + c + aBufferSize);
-						c0 = _mm_add_ps(c0, o0);
-						c1 = _mm_add_ps(c1, o1);
-						_mm_store_ps(aBuffer + c, c0);
-						_mm_store_ps(aBuffer + c + aBufferSize, c1);
-						p0 = _mm_add_ps(p0, pan0delta);
-						p1 = _mm_add_ps(p1, pan1delta);
-						c += 4;
+						unsigned int samplequads = aSamplesToRead / 4; // rounded down
+						TinyAlignedFloatBuffer pan0;
+						pan0.mData[0] = pan[0] + pani[0];
+						pan0.mData[1] = pan[0] + pani[0] * 2;
+						pan0.mData[2] = pan[0] + pani[0] * 3;
+						pan0.mData[3] = pan[0] + pani[0] * 4;
+						TinyAlignedFloatBuffer pan1;
+						pan1.mData[0] = pan[1] + pani[1];
+						pan1.mData[1] = pan[1] + pani[1] * 2;
+						pan1.mData[2] = pan[1] + pani[1] * 3;
+						pan1.mData[3] = pan[1] + pani[1] * 4;
+						pani[0] *= 4;
+						pani[1] *= 4;
+						__m128 pan0delta = _mm_load_ps1(&pani[0]);
+						__m128 pan1delta = _mm_load_ps1(&pani[1]);
+						__m128 p0 = _mm_load_ps(pan0.mData);
+						__m128 p1 = _mm_load_ps(pan1.mData);
+
+						for (j = 0; j < samplequads; j++)
+						{
+							__m128 f0 = _mm_load_ps(aScratch + c);
+							__m128 c0 = _mm_mul_ps(f0, p0);
+							__m128 f1 = _mm_load_ps(aScratch + c + aBufferSize);
+							__m128 c1 = _mm_mul_ps(f1, p1);
+							__m128 o0 = _mm_load_ps(aBuffer + c);
+							__m128 o1 = _mm_load_ps(aBuffer + c + aBufferSize);
+							c0 = _mm_add_ps(c0, o0);
+							c1 = _mm_add_ps(c1, o1);
+							_mm_store_ps(aBuffer + c, c0);
+							_mm_store_ps(aBuffer + c + aBufferSize, c1);
+							p0 = _mm_add_ps(p0, pan0delta);
+							p1 = _mm_add_ps(p1, pan1delta);
+							c += 4;
+						}
 					}
 					
 					// If buffer size or samples to read are not divisible by 4, handle leftovers
@@ -1170,39 +1173,42 @@ namespace SoLoud
 			case 1: // 1->2
 #if defined(SOLOUD_SSE_INTRINSICS)
 				{
-					unsigned int samplequads = aSamplesToRead / 4; // rounded down
-					TinyAlignedFloatBuffer pan0;
-					pan0.mData[0] = pan[0] + pani[0];
-					pan0.mData[1] = pan[0] + pani[0] * 2;
-					pan0.mData[2] = pan[0] + pani[0] * 3;
-					pan0.mData[3] = pan[0] + pani[0] * 4;
-					TinyAlignedFloatBuffer pan1;
-					pan1.mData[0] = pan[1] + pani[1];
-					pan1.mData[1] = pan[1] + pani[1] * 2;
-					pan1.mData[2] = pan[1] + pani[1] * 3;
-					pan1.mData[3] = pan[1] + pani[1] * 4;
-					pani[0] *= 4;
-					pani[1] *= 4;
-					__m128 pan0delta = _mm_load_ps1(&pani[0]);
-					__m128 pan1delta = _mm_load_ps1(&pani[1]);
 					int c = 0;
-					__m128 p0 = _mm_load_ps(pan0.mData);
-					__m128 p1 = _mm_load_ps(pan1.mData);
-
-					for (j = 0; j < samplequads; j++)
+					if ((aBufferSize & 3) == 0)
 					{
-						__m128 f = _mm_load_ps(aScratch + c);
-						__m128 c0 = _mm_mul_ps(f, p0);
-						__m128 c1 = _mm_mul_ps(f, p1);
-						__m128 o0 = _mm_load_ps(aBuffer + c);
-						__m128 o1 = _mm_load_ps(aBuffer + c + aBufferSize);
-						c0 = _mm_add_ps(c0, o0);
-						c1 = _mm_add_ps(c1, o1);
-						_mm_store_ps(aBuffer + c, c0);
-						_mm_store_ps(aBuffer + c + aBufferSize, c1);
-						p0 = _mm_add_ps(p0, pan0delta);
-						p1 = _mm_add_ps(p1, pan1delta);
-						c += 4;
+						unsigned int samplequads = aSamplesToRead / 4; // rounded down
+						TinyAlignedFloatBuffer pan0;
+						pan0.mData[0] = pan[0] + pani[0];
+						pan0.mData[1] = pan[0] + pani[0] * 2;
+						pan0.mData[2] = pan[0] + pani[0] * 3;
+						pan0.mData[3] = pan[0] + pani[0] * 4;
+						TinyAlignedFloatBuffer pan1;
+						pan1.mData[0] = pan[1] + pani[1];
+						pan1.mData[1] = pan[1] + pani[1] * 2;
+						pan1.mData[2] = pan[1] + pani[1] * 3;
+						pan1.mData[3] = pan[1] + pani[1] * 4;
+						pani[0] *= 4;
+						pani[1] *= 4;
+						__m128 pan0delta = _mm_load_ps1(&pani[0]);
+						__m128 pan1delta = _mm_load_ps1(&pani[1]);
+						__m128 p0 = _mm_load_ps(pan0.mData);
+						__m128 p1 = _mm_load_ps(pan1.mData);
+
+						for (j = 0; j < samplequads; j++)
+						{
+							__m128 f = _mm_load_ps(aScratch + c);
+							__m128 c0 = _mm_mul_ps(f, p0);
+							__m128 c1 = _mm_mul_ps(f, p1);
+							__m128 o0 = _mm_load_ps(aBuffer + c);
+							__m128 o1 = _mm_load_ps(aBuffer + c + aBufferSize);
+							c0 = _mm_add_ps(c0, o0);
+							c1 = _mm_add_ps(c1, o1);
+							_mm_store_ps(aBuffer + c, c0);
+							_mm_store_ps(aBuffer + c + aBufferSize, c1);
+							p0 = _mm_add_ps(p0, pan0delta);
+							p1 = _mm_add_ps(p1, pan1delta);
+							c += 4;
+						}
 					}
 					// If buffer size or samples to read are not divisible by 4, handle leftovers
 					for (j = c; j < aSamplesToRead; j++)

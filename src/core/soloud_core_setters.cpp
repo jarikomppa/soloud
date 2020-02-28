@@ -199,6 +199,19 @@ namespace SoLoud
 		FOR_ALL_VOICES_POST
 	}
 
+	void Soloud::setAutoStop(handle aVoiceHandle, bool aAutoStop)
+	{
+		FOR_ALL_VOICES_PRE
+			if (aAutoStop)
+			{
+				mVoice[ch]->mFlags &= ~AudioSourceInstance::DISABLE_AUTOSTOP;
+			}
+			else
+			{
+				mVoice[ch]->mFlags |= AudioSourceInstance::DISABLE_AUTOSTOP;
+			}
+		FOR_ALL_VOICES_POST
+	}
 
 	void Soloud::setVolume(handle aVoiceHandle, float aVolume)
 	{

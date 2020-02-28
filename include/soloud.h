@@ -314,6 +314,8 @@ namespace SoLoud
 		unsigned int getMaxActiveVoiceCount() const;
 		// Query whether a voice is set to loop.
 		bool getLooping(handle aVoiceHandle);
+		// Query whether a voice is set to auto-stop when it ends.
+		bool getAutoStop(handle aVoiceHandle);
 		// Get voice loop point value
 		time getLoopPoint(handle aVoiceHandle);
 
@@ -321,6 +323,8 @@ namespace SoLoud
 		void setLoopPoint(handle aVoiceHandle, time aLoopPoint);
 		// Set voice's loop state
 		void setLooping(handle aVoiceHandle, bool aLooping);
+		// Set whether sound should auto-stop when it ends
+		void setAutoStop(handle aVoiceHandle, bool aAutoStop);
 		// Set current maximum active voice setting
 		result setMaxActiveVoiceCount(unsigned int aVoiceCount);
 		// Set behavior for inaudible sounds

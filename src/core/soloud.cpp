@@ -1770,7 +1770,7 @@ namespace SoLoud
 				panAndExpand(voice, aBuffer, aSamplesToRead, aBufferSize, aScratch, aChannels);
 
 				// clear voice if the sound is over
-				if (!(voice->mFlags & AudioSourceInstance::LOOPING) && voice->hasEnded())
+				if (!(voice->mFlags & (AudioSourceInstance::LOOPING | AudioSourceInstance::DISABLE_AUTOSTOP)) && voice->hasEnded())
 				{
 					stopVoice_internal(mActiveVoice[i]);
 				}
@@ -1879,7 +1879,7 @@ namespace SoLoud
 				}
 
 				// clear voice if the sound is over
-				if (!(voice->mFlags & AudioSourceInstance::LOOPING) && voice->hasEnded())
+				if (!(voice->mFlags & (AudioSourceInstance::LOOPING | AudioSourceInstance::DISABLE_AUTOSTOP)) && voice->hasEnded())
 				{
 					stopVoice_internal(mActiveVoice[i]);
 				}

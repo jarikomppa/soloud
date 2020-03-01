@@ -30,10 +30,9 @@ class ChipPlayer
 
    unsigned locate(unsigned tick);
    unsigned playtick;
-   unsigned playpos, loop;
+   unsigned playpos;
    unsigned system_clock_rate;
    unsigned ticks_per_buffer;
-   bool loop_enabled;
 
    unsigned get_time(unsigned tick);
 };

@@ -66,19 +66,19 @@ void SNDCHIP::flush(unsigned chiptick)
          }
       }
 
-      unsigned en, mix_l, mix_r;
+      unsigned en, l, r;
 
       en = ((ea & env) | va) & ((bitA | bit0) & (bitN | bit3));
-      mix_l  = vols[0][en]; mix_r  = vols[1][en];
+      l  = vols[0][en]; r  = vols[1][en];
 
       en = ((eb & env) | vb) & ((bitB | bit1) & (bitN | bit4));
-      mix_l += vols[2][en]; mix_r += vols[3][en];
+      l += vols[2][en]; r += vols[3][en];
 
       en = ((ec & env) | vc) & ((bitC | bit2) & (bitN | bit5));
-      mix_l += vols[4][en]; mix_r += vols[5][en];
+      l += vols[4][en]; r += vols[5][en];
 
-      if ((mix_l ^ SNDRENDER::mix_l) | (mix_r ^ SNDRENDER::mix_r)) // similar check inside update()
-         update(t, mix_l, mix_r);
+      if ((l ^ SNDRENDER::mix_l) | (r ^ SNDRENDER::mix_r)) // similar check inside update()
+         update(t, l, r);
    }
 }
 

@@ -11,7 +11,7 @@ void ChipPlayer::reg_out(uint64_t tick, unsigned char reg, unsigned char val)
                 dump = (REG_OUT*)realloc(dump, (dump_alloc = 2*dump_alloc + 0x10000) * sizeof(REG_OUT));
         REG_OUT *item = dump + dumpsize; // `volatile` disables optimizations, that can ruin writes to overlapped union
         if (tick != (int)tick) printf("Tick too big\n");
-        lasttick = tick;
+        lasttick = (int)tick;
         item->time = (int)tick;
         item->num = reg;
         item->val = val;

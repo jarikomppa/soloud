@@ -8,6 +8,11 @@
 ChipPlayer::ChipPlayer(SoLoud::File *aFile)
 	: buffer(8192), chip(buffer), chip2(buffer), mFile(aFile)
 {
+	playtick = 0;
+	playpos = 0;
+	system_clock_rate = 0;
+	ticks_per_buffer = 0;
+
 	set_timings(SNDR_DEFAULT_SYSTICK_RATE, SNDR_DEFAULT_AY_RATE, SNDR_DEFAULT_SAMPLE_RATE);
 	set_volumes(SNDCHIP::CHIP_YM, 0x7FFF, SNDR_VOL_YM, SNDR_PAN_ABC);
 }
@@ -24,9 +29,9 @@ unsigned ChipPlayer::get_time(unsigned tick)
 
 
 
-void ChipPlayer::set_timings(unsigned system_clock_rate, unsigned chip_clock_rate, unsigned sample_rate)
+void ChipPlayer::set_timings(unsigned aSystem_clock_rate, unsigned chip_clock_rate, unsigned sample_rate)
 {
-	ChipPlayer::system_clock_rate = system_clock_rate;
+	ChipPlayer::system_clock_rate = aSystem_clock_rate;
 	ticks_per_buffer = (unsigned)((long long)system_clock_rate * (buffer.size - 20) / sample_rate);
 	ticks_per_buffer /= 2; // for safety
 	chip.set_timings(system_clock_rate, chip_clock_rate, sample_rate);

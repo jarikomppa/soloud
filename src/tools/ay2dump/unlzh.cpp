@@ -119,7 +119,7 @@ int fread_crc(uchar *p, int n, FILE *f)
 
 void fwrite_crc(uchar *p, int n, FILE *f)
 {
-	if (fwrite(p, 1, n, f) < n) error("Unable to write");
+	if ((signed)fwrite(p, 1, n, f) < n) error("Unable to write");
 	while (--n >= 0) UPDATE_CRC(*p++);
 }
 
@@ -468,7 +468,7 @@ void make_table(int nchar, uchar bitlen[], int tablebits, ushort table[])
 	uint i, k, len, ch, jutbits, avail, nextcode, mask;
 
 	for (i = 1; i <= 16; i++) count[i] = 0;
-	for (i = 0; i < nchar; i++) count[bitlen[i]]++;
+	for (i = 0; i < (unsigned)nchar; i++) count[bitlen[i]]++;
 
 	start[1] = 0;
 	for (i = 1; i <= 16; i++)
@@ -476,7 +476,7 @@ void make_table(int nchar, uchar bitlen[], int tablebits, ushort table[])
 	if (start[17] != (ushort)(1U << 16)) error("Bad table");
 
 	jutbits = 16 - tablebits;
-	for (i = 1; i <= tablebits; i++) {
+	for (i = 1; i <= (unsigned)tablebits; i++) {
 		start[i] >>= jutbits;
 		weight[i] = 1U << (tablebits - i);
 	}
@@ -490,10 +490,10 @@ void make_table(int nchar, uchar bitlen[], int tablebits, ushort table[])
 
 	avail = nchar;
 	mask = 1U << (15 - tablebits);
-	for (ch = 0; ch < nchar; ch++) {
+	for (ch = 0; ch < (unsigned)nchar; ch++) {
 		if ((len = bitlen[ch]) == 0) continue;
 		nextcode = start[len] + weight[len];
-		if (len <= tablebits) {
+		if (len <= (unsigned)tablebits) {
 			for (i = start[len]; i < nextcode; i++) table[i] = ch;
 		}
 		else {

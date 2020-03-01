@@ -55,15 +55,15 @@ void SNDRENDER::end_frame(unsigned endframe_sys_tick)
         passed_snd_ticks += (ready_samples << TICK_FF);
 }
 
-void SNDRENDER::set_timings(unsigned sys_clock_rate, unsigned sample_rate)
+void SNDRENDER::set_timings(unsigned aSys_clock_rate, unsigned aSample_rate)
 {
-        SNDRENDER::sys_clock_rate = sys_clock_rate;
-        SNDRENDER::sample_rate = sample_rate;
+        SNDRENDER::sys_clock_rate = aSys_clock_rate;
+        SNDRENDER::sample_rate = aSample_rate;
 
         tick = 0; dstpos = dst_start = 0;
         passed_snd_ticks = passed_sys_ticks = 0;
 
-        mult_const = (unsigned) (((long long)sample_rate << (MULT_C+TICK_FF)) / sys_clock_rate);
+        mult_const = (unsigned) (((long long)aSample_rate << (MULT_C+TICK_FF)) / aSys_clock_rate);
         // sndbuffer.reset(); // must be done globally - avoid many renders to do many resets
 }
 
@@ -84,7 +84,6 @@ void SNDRENDER::flush(unsigned endtick)
                 s2_r += mix_r * scale;
 
                 scale = filter_diff[endtick & (TICK_F-1)] - filter_diff[tick & (TICK_F-1)];
-                tick = endtick;
                 s1_l += mix_l * scale;
                 s1_r += mix_r * scale;
 
@@ -184,6 +183,21 @@ void init_diff()
 SNDRENDER::SNDRENDER(SNDBUFFER& _sndbuffer)
                 : sndbuffer(_sndbuffer), buffer(_sndbuffer.buffer), bufsize(_sndbuffer.size)
 {
+        tick = 0;
+        base_tick = 0;
+        s1_l = 0;
+        s1_r = 0;
+        s2_l = 0;
+        s2_r = 0;
+        mix_l = 0;
+        mix_r = 0;
+
+        sys_clock_rate = 0;
+        sample_rate = 0;
+        passed_sys_ticks = 0; 
+        passed_snd_ticks = 0;
+        mult_const = 0;
+
         set_timings(SNDR_DEFAULT_SYSTICK_RATE, SNDR_DEFAULT_SAMPLE_RATE);
 
         static char diff_ready = 0;

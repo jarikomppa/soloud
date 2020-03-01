@@ -4,15 +4,17 @@
 #include "malloc.h"
 #include "memory.h"
 
-SNDBUFFER::SNDBUFFER(unsigned size) {
+SNDBUFFER::SNDBUFFER(unsigned aSize) {
+        read_position = 0;
+        samples_ready = 0;
         // size must be power of 2 for faster calc cyclic position: pos = (pos+1) & (size-1)
-        if (size & (size-1)) {
+        if (aSize & (aSize-1)) {
                 unsigned i = 1;
-                for (i = 1; i < size; i *= 2);
-                size = i;
+                while (i < aSize) i *= 2;                
+                aSize = i;
         }
-        SNDBUFFER::size = size;
-        buffer = (SNDSAMPLE*)malloc(size * sizeof(SNDSAMPLE));
+        SNDBUFFER::size = aSize;
+        buffer = (SNDSAMPLE*)malloc(aSize * sizeof(SNDSAMPLE));
         reset();
 }
 

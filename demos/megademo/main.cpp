@@ -64,6 +64,8 @@ extern void DemoMainloop_annex();
 extern int DemoEntry_annex(int argc, char* argv[]);
 extern void DemoMainloop_filterfolio();
 extern int DemoEntry_filterfolio(int argc, char* argv[]);
+extern void DemoMainloop_ay();
+extern int DemoEntry_ay(int argc, char* argv[]);
 
 void DemoMainloop()
 {
@@ -74,8 +76,8 @@ void DemoMainloop_megademo()
 {
 	DemoUpdateStart();
 
-	ONCE(ImGui::SetNextWindowPos(ImVec2(20, 0)));
-	ImGui::Begin("Select sub-demo to run");
+	ONCE(ImGui::SetNextWindowPos(ImVec2(400, 0)));
+	ImGui::Begin("Or some of these");
 
 	if (ImGui::Button("Multimusic"))
 	{
@@ -83,7 +85,7 @@ void DemoMainloop_megademo()
 		DemoMainloopPtr = DemoMainloop_multimusic;
 	}
 	ImGui::Text("Multimusic demo plays multiple music tracks\n"
-		        "with interactive options to fade between them.");
+		"with interactive options to fade between them.");
 
 	ImGui::Separator();
 
@@ -93,9 +95,50 @@ void DemoMainloop_megademo()
 		DemoMainloopPtr = DemoMainloop_monotone;
 	}
 	ImGui::Text("Monotone demo plays a \"monotone\" tracker song\n"
-		        "with various interative options and filters.");
+		"with various interative options and filters.");
 
 	ImGui::Separator();
+	if (ImGui::Button("tedsid"))
+	{
+		DemoEntry_tedsid(gArgc, gArgv);
+		DemoMainloopPtr = DemoMainloop_tedsid;
+	}
+	ImGui::Text("tedsid demonstrates the MOS TED and SID\n"
+		"synthesis engines.");
+
+	ImGui::Separator();
+	if (ImGui::Button("wavformats"))
+	{
+		DemoEntry_wavformats(gArgc, gArgv);
+		DemoMainloopPtr = DemoMainloop_wavformats;
+	}
+	ImGui::Text("wavformats test plays files with\n"
+		"all sorts of wave file formats.");
+
+	ImGui::Separator();
+
+	if (ImGui::Button("speakers"))
+	{
+		DemoEntry_speakers(gArgc, gArgv);
+		DemoMainloopPtr = DemoMainloop_speakers;
+	}
+	ImGui::Text("speakers test plays single sounds\n"
+		"through surround speakers.\n");
+
+	ImGui::Separator();
+
+	if (ImGui::Button("ay"))
+	{
+		DemoEntry_ay(gArgc, gArgv);
+		DemoMainloopPtr = DemoMainloop_ay;
+	}
+	ImGui::Text("ay demonstrates the AY-3-8912 synthesis\n"
+		"engine (zx spectrum 128k music).");
+
+	ImGui::End();
+
+	ONCE(ImGui::SetNextWindowPos(ImVec2(20, 0)));
+	ImGui::Begin("Select sub-demo to run");
 
 	if (ImGui::Button("Mixbusses"))
 	{
@@ -160,15 +203,6 @@ void DemoMainloop_megademo()
 
 	ImGui::Separator();
 
-	if (ImGui::Button("tedsid"))
-	{
-		DemoEntry_tedsid(gArgc, gArgv);
-		DemoMainloopPtr = DemoMainloop_tedsid;
-	}
-	ImGui::Text("tedsid demonstrates the MOS TED and SID\n"
-	            "synthesis engines.");
-
-	ImGui::Separator();
 
 	if (ImGui::Button("virtualvoices"))
 	{
@@ -181,25 +215,6 @@ void DemoMainloop_megademo()
 
 	ImGui::Separator();
 
-	if (ImGui::Button("wavformats"))
-	{
-		DemoEntry_wavformats(gArgc, gArgv);
-		DemoMainloopPtr = DemoMainloop_wavformats;
-	}
-	ImGui::Text("wavformats test plays files with\n"
-				"all sorts of wave file formats.");
-
-	ImGui::Separator();
-
-	if (ImGui::Button("speakers"))
-	{
-		DemoEntry_speakers(gArgc, gArgv);
-		DemoMainloopPtr = DemoMainloop_speakers;
-	}
-	ImGui::Text("speakers test plays single sounds\n"
-				"through surround speakers.\n");
-
-	ImGui::Separator();
 
 	if (ImGui::Button("thebutton"))
 	{

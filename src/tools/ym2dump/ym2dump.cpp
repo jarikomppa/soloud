@@ -19,6 +19,7 @@ char *loadfile(const char *fn, int &len)
     }
     fseek(f, 0, SEEK_SET);
     fread(b, 1, len, f);
+    fclose(f);
     return b;
 }
 
@@ -140,6 +141,5 @@ int main(int parc, char ** pars)
     }
     fclose(f);
     printf("%s written.\n", temp);
-    o += frames * 16;
     return 0;
 }

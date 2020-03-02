@@ -56,6 +56,9 @@ namespace SoLoud
 	result AyInstance::rewind()
 	{
 		mParent->mFile->seek(4);
+		// Reset the chip.
+		delete mChip;
+		mChip = new ChipPlayer(mParent->mFile);
 		return SO_NO_ERROR;
 	}
 

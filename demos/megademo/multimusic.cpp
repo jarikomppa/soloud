@@ -79,7 +79,7 @@ namespace multimusic
 		ImGui::Text("Music1 volume    : %d%%", (int)floor(gSoloud.getVolume(gMusichandle1) * 100));
 		ImGui::Text("Music2 volume    : %d%%", (int)floor(gSoloud.getVolume(gMusichandle2) * 100));
 		ImGui::Text("Music rel. speed : %d%%", (int)floor(gSoloud.getRelativePlaySpeed(gMusichandle2) * 100));
-		ImGui::Text("Music position   : %d%%", (int)floor(gSoloud.getStreamPosition(gMusichandle2) * 100 / gMusic1.getLength()));
+		ImGui::Text("Music position   : %d%% (%3.3fs/%3.3fs)", (int)floor(gSoloud.getStreamPosition(gMusichandle2) * 100 / gMusic1.getLength()), gSoloud.getStreamPosition(gMusichandle2), gMusic1.getLength());
 		ImGui::Text("Active voices    : %d", gSoloud.getActiveVoiceCount());
 		ImGui::End();
 
@@ -115,6 +115,19 @@ namespace multimusic
 		{
 			gSoloud.fadeRelativePlaySpeed(gMusichandle1, 1.5f, 5);
 			gSoloud.fadeRelativePlaySpeed(gMusichandle2, 1.5f, 5);
+		}
+
+		if (ImGui::Button("Main resampler pointsample"))
+		{
+			gSoloud.setMainResampler(SoLoud::Soloud::RESAMPLER_POINT);
+		}
+		if (ImGui::Button("Main resampler linear"))
+		{
+			gSoloud.setMainResampler(SoLoud::Soloud::RESAMPLER_LINEAR);
+		}
+		if (ImGui::Button("Main resampler catmullrom"))
+		{
+			gSoloud.setMainResampler(SoLoud::Soloud::RESAMPLER_CATMULLROM);
 		}
 
 		ImGui::Separator();

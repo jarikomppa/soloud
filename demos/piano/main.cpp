@@ -73,7 +73,7 @@ RtMidiIn *midi = NULL;
 void plonk(float rel, float vol = 0x50)
 {
 	int i = 0;
-	while (gPlonked[i].mHandle != 0 && i < 128) i++;
+	while (i < 128 && gPlonked[i].mHandle != 0) i++;
 	if (i == 128) return;
 
 	vol = (vol + 10) / (float)(0x7f + 10);
@@ -102,7 +102,7 @@ void plonk(float rel, float vol = 0x50)
 void unplonk(float rel)
 {
 	int i = 0;
-	while (gPlonked[i].mRel != rel &&i < 128) i++;
+	while (i < 128 && gPlonked[i].mRel != rel) i++;
 	if (i == 128) return;
 	gSoloud.fadeVolume(gPlonked[i].mHandle, 0, gRelease);
 	gSoloud.scheduleStop(gPlonked[i].mHandle, gRelease);
@@ -112,7 +112,7 @@ void unplonk(float rel)
 void replonk(float vol = 0x50)
 {
 	int i = 0;
-	while (gPlonked[i].mHandle != 0 && i < 128) i++;
+	while (i < 128 && gPlonked[i].mHandle != 0) i++;
 	if (i == 128) return;
 
 	vol = (vol + 10) / (float)(0x7f + 10);

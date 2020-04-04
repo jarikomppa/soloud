@@ -32,14 +32,17 @@ freely, subject to the following restrictions:
 #include "chipplayer.h"
 #include "soloud_ay.h"
 #include "soloud_file.h"
+#include "zx7decompress.h"
+
 
 namespace SoLoud
 {
 
 	AyInstance::AyInstance(Ay *aParent)
 	{
+		mPos = 0;
 		mParent = aParent;
-		mChip = new ChipPlayer(aParent->mFile);
+		mChip = new ChipPlayer(this);
 	}
 
 	unsigned int AyInstance::getAudio(float *aBuffer, unsigned int aSamplesToRead, unsigned int /*aBufferSize*/)
@@ -50,15 +53,12 @@ namespace SoLoud
 	
 	bool AyInstance::hasEnded()
 	{
-		return mParent->mFile->eof();
+		return mParent->mLength <= mPos;
 	}
 
 	result AyInstance::rewind()
 	{
-		mParent->mFile->seek(4);
-		// Reset the chip.
-		delete mChip;
-		mChip = new ChipPlayer(mParent->mFile);
+		mPos = 0;
 		return SO_NO_ERROR;
 	}
 
@@ -74,7 +74,6 @@ namespace SoLoud
 		return 0;
 	}
 
-
 	AyInstance::~AyInstance()
 	{
 		delete mChip;
@@ -84,15 +83,13 @@ namespace SoLoud
 	{
 		mBaseSamplerate = 44100;
 		mChannels = 2;
-		mFile = 0;
-		mFileOwned = false;
+		mOps = 0;
 	}
 
 	Ay::~Ay()
 	{
 		stop();
-		if (mFileOwned)
-			delete mFile;
+		delete[] mOps;
 	}
 
 	result Ay::loadMem(const unsigned char *aMem, unsigned int aLength, bool aCopy, bool aTakeOwnership)
@@ -109,14 +106,8 @@ namespace SoLoud
 			return res;
 		}
 		res = loadFile(mf);
-		if (res != SO_NO_ERROR)
-		{
-			delete mf;
-			return res;
-		}
-		mFileOwned = aCopy || aTakeOwnership;
-
-		return SO_NO_ERROR;
+		delete mf;
+		return res;
 	}
 
 	result Ay::load(const char *aFilename)
@@ -132,78 +123,54 @@ namespace SoLoud
 			return res;
 		}
 		res = loadFile(df);
-		if (res != SO_NO_ERROR)
-		{
-			delete df;
-			return res;
-		}
-		mFileOwned = true;				
-		return SO_NO_ERROR;
-	}
 
-	result Ay::loadToMem(const char *aFilename)
-	{
-		if (!aFilename)
-			return INVALID_PARAMETER;
-		MemoryFile *mf = new MemoryFile;
-		if (!mf) return OUT_OF_MEMORY;
-		int res = mf->openToMem(aFilename);
-		if (res != SO_NO_ERROR)
-		{
-			delete mf;
-			return res;
-		}
-		res = loadFile(mf);
-		if (res != SO_NO_ERROR)
-		{
-			delete mf;
-			return res;
-		}
-		mFileOwned = true;
-		return SO_NO_ERROR;
-	}
-
-	result Ay::loadFileToMem(File *aFile)
-	{
-		if (!aFile)
-			return INVALID_PARAMETER;
-		MemoryFile *mf = new MemoryFile;
-		if (!mf) return OUT_OF_MEMORY;
-		int res = mf->openFileToMem(aFile);
-		if (res != SO_NO_ERROR)
-		{
-			delete mf;
-			return res;
-		}
-		res = loadFile(mf);
-		if (res != SO_NO_ERROR)
-		{
-			delete mf;
-			return res;
-		}
-		mFileOwned = true;
-		return SO_NO_ERROR;
+		delete df;
+		return res;
 	}
 
 	result Ay::loadFile(File *aFile)
 	{
 		if (aFile == NULL)
 			return INVALID_PARAMETER;
-		if (mFileOwned)
-			delete mFile;
 		// Expect a file wih header and at least one reg write
-		if (aFile->length() < 4+4+2) return FILE_LOAD_FAILED;
+		if (aFile->length() < 34) return FILE_LOAD_FAILED;
 
 		aFile->seek(0);
-		if (aFile->read8() != 'D') return FILE_LOAD_FAILED;
-		if (aFile->read8() != 'U') return FILE_LOAD_FAILED;
-		if (aFile->read8() != 'm') return FILE_LOAD_FAILED;
-		if (aFile->read8() != 'p') return FILE_LOAD_FAILED;
-
-		mFile = aFile;
-		mFileOwned = false;
-
-
+		if (aFile->read32() != 'PIHC') return FILE_LOAD_FAILED; // CHIP
+		if (aFile->read32() != 'ENUT') return FILE_LOAD_FAILED; // TUNE
+		int dataofs = aFile->read16();
+		int chiptype = aFile->read8();
+		// check if this file is for AY / YM, turbosound or turbosound next
+		if (!(chiptype == 1 || chiptype == 2 || chiptype == 3)) return FILE_LOAD_FAILED;
+		int flags = aFile->read8();
+		int kchunks = aFile->read16();
+		int lastchunk = aFile->read16();
+		mLength = (kchunks - 1) * 1024 + lastchunk;
+		mLooppos = aFile->read32();
+		mCpuspeed = aFile->read32();
+		mChipspeed = aFile->read32();
+		mYm = false;
+		if (flags & 64) mYm = true;
+		mOps = new unsigned short[mLength];
+		aFile->seek(dataofs);
+		if (flags & 1)
+		{
+			// uncompressed
+			aFile->read((unsigned char*)mOps, mLength);
+		}
+		else
+		{
+			// compressed
+			int len = aFile->length() - dataofs;
+			unsigned char* buf = new unsigned char[len];
+			aFile->read(buf, len);
+			int bufofs = 0;
+			for (int i = 0; i < kchunks; i++)
+			{
+				bufofs += zx7_decompress(buf + bufofs, ((unsigned char*)mOps) + i * 1024);
+			}
+			delete[] buf;
+		}
 		return SO_NO_ERROR;
 	}
 

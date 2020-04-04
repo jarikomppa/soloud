@@ -35,9 +35,10 @@ namespace SoLoud
 	class File;
 	class AyInstance : public AudioSourceInstance
 	{
+	public:
 		Ay *mParent;
 		ChipPlayer *mChip;
-	public:
+		int mPos;
 
 		AyInstance(Ay *aParent);
 		~AyInstance();
@@ -50,15 +51,18 @@ namespace SoLoud
 	class Ay : public AudioSource
 	{
 	public:
-		File *mFile;
-		bool mFileOwned;
+		bool mYm;
+		int mChipspeed;
+		int mCpuspeed;
+		int mLooppos;
+		int mLength;
+		unsigned short* mOps;
+	public:
 		Ay();
 		~Ay();
 		result load(const char *aFilename);
-		result loadToMem(const char *aFilename);
-		result loadMem(const unsigned char *aMem, unsigned int aLength, bool aCopy = false, bool aTakeOwnership = true);
-		result loadFileToMem(File *aFile);
 		result loadFile(File *aFile);
+		result loadMem(const unsigned char* aMem, unsigned int aLength, bool aCopy, bool aTakeOwnership);
 		virtual AudioSourceInstance *createInstance();
 	};
 };

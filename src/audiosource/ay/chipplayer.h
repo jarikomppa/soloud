@@ -5,7 +5,7 @@
 
 namespace SoLoud
 {
-	class File;
+    class AyInstance;
 }
 
 class ChipPlayer
@@ -19,14 +19,15 @@ class ChipPlayer
    void set_timings(unsigned system_clock_rate, unsigned chip_clock_rate, unsigned sample_rate);
    void set_volumes(SNDCHIP::CHIP_TYPE t, unsigned global_vol, const SNDCHIP_VOLTAB *vt, const SNDCHIP_PANTAB *pt);
 
-   ChipPlayer(SoLoud::File *aFile);
+   ChipPlayer(SoLoud::AyInstance *aInstance);
    ~ChipPlayer();
 
  //private:
-   SoLoud::File *mFile;
+   SoLoud::AyInstance *mInstance;
    SNDBUFFER buffer;
    SNDCHIP chip;
    SNDCHIP chip2;
+
 
    unsigned locate(unsigned tick);
    unsigned playtick;

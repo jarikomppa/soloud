@@ -50,8 +50,8 @@ namespace tedsid
 	// Entry point
 	int DemoEntry(int argc, char *argv[])
 	{
-		gMusic1.load("audio/Modulation.sid.dump");
-		gMusic2.load("audio/ted_storm.prg.dump");
+		gMusic1.load("audio/Angel_Project.sid_sid.zak");
+		gMusic2.load("audio/ted_storm.prg_ted.zak");
 
 		gEcho.setParams(0.2f, 0.5f, 0.05f);
 		gBiquad.setParams(SoLoud::BiquadResonantFilter::LOWPASS, 4000, 2);

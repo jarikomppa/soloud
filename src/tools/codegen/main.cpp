@@ -40,6 +40,7 @@ using namespace std;
 char *gIncludeFile[] =
 {
 	"../include/soloud.h",
+	"../include/soloud_ay.h",
 	"../include/soloud_audiosource.h",
 	"../include/soloud_bassboostfilter.h",
 	"../include/soloud_biquadresonantfilter.h",

@@ -1,6 +1,6 @@
 /*
 TED/SID module for SoLoud audio engine
-Copyright (c) 2015 Jari Komppa
+Copyright (c) 2015-2020 Jari Komppa
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -30,6 +30,7 @@ freely, subject to the following restrictions:
 #include "ted.h"
 #include "soloud_tedsid.h"
 #include "soloud_file.h"
+#include "zx7decompress.h"
 
 namespace SoLoud
 {
@@ -46,11 +47,11 @@ namespace SoLoud
 		mTED = new TED();
 		mTED->oscillatorInit();
 
-		mNextReg = 100; // NOP
-		mNextVal = 0;
 		int i;
 		for (i = 0; i < 128; i++)
 			mRegValues[i] = 0;
+
+		mPos = 0;
 	}
 
 	unsigned int TedSidInstance::getAudio(float *aBuffer, unsigned int aSamplesToRead, unsigned int /*aBufferSize*/)
@@ -71,33 +72,33 @@ namespace SoLoud
 	
 	void TedSidInstance::tick()
 	{
-	    if (mParent->mFile == 0)
+	    if (mParent->mOps == 0)
 	        return;
 
 		while (mSampleCount == 0)
 		{
-			mRegValues[mNextReg] = mNextVal;
-			if (mNextReg < 64)
+			unsigned short op = mParent->mOps[mPos / 2];
+			mPos += 2;
+			if (mPos >= mParent->mLength) mPos = 0;
+			if (op & 0x8000)
 			{
-				mSID->write(mNextReg, (unsigned char)mNextVal);
+				mSampleCount = op & 0x7fff;
 			}
 			else
-			if (mNextReg < 64 + 5)
 			{
-				mTED->writeSoundReg(mNextReg - 64, (unsigned char)mNextVal);
+				int reg = (op >> 8) & 0xff;
+				int val = op & 0xff;
+				mRegValues[reg] = val;
+				if (reg < 64)
+				{
+					mSID->write(reg, val);
+				}
+				else
+				if (reg < 64 + 5)
+				{
+					mTED->writeSoundReg(reg - 64, val);
+				}
 			}
-//			mSampleCount = mParent->mFile->read16();
-			mNextVal = mParent->mFile->read8();
-			mNextReg = mParent->mFile->read8();
-			if (mNextReg & 0x80)
-			{
-				// timestamp!
-				mSampleCount = ((int)(mNextReg & 0x7f) << 8) | mNextVal;
-				mNextVal = mParent->mFile->read8();
-				mNextReg = mParent->mFile->read8();
-			}
-			if (mParent->mFile->eof())
-				mParent->mFile->seek(8);
 		}
 	}
 
@@ -121,16 +122,16 @@ namespace SoLoud
 	{
 		mBaseSamplerate = TED_SOUND_CLOCK;
 		mChannels = 1;
-		mFile = 0;
-		mFileOwned = false;
+		mOps = 0;
 		mModel = 0;
+		mLength = 0;
 	}
 
 	TedSid::~TedSid()
 	{
 		stop();
-		if (mFileOwned)
-			delete mFile;
+		delete[] mOps;
+		mOps = 0;
 	}
 
 	result TedSid::loadMem(const unsigned char *aMem, unsigned int aLength, bool aCopy, bool aTakeOwnership)
@@ -147,14 +148,8 @@ namespace SoLoud
 			return res;
 		}
 		res = loadFile(mf);
-		if (res != SO_NO_ERROR)
-		{
-			delete mf;
-			return res;
-		}
-		mFileOwned = aCopy || aTakeOwnership;
-
-		return SO_NO_ERROR;
+		delete mf;
+		return res;
 	}
 
 	result TedSid::load(const char *aFilename)
@@ -170,80 +165,57 @@ namespace SoLoud
 			return res;
 		}
 		res = loadFile(df);
-		if (res != SO_NO_ERROR)
-		{
-			delete df;
-			return res;
-		}
-		mFileOwned = true;				
-		return SO_NO_ERROR;
-	}
-
-	result TedSid::loadToMem(const char *aFilename)
-	{
-		if (!aFilename)
-			return INVALID_PARAMETER;
-		MemoryFile *mf = new MemoryFile;
-		if (!mf) return OUT_OF_MEMORY;
-		int res = mf->openToMem(aFilename);
-		if (res != SO_NO_ERROR)
-		{
-			delete mf;
-			return res;
-		}
-		res = loadFile(mf);
-		if (res != SO_NO_ERROR)
-		{
-			delete mf;
-			return res;
-		}
-		mFileOwned = true;
-		return SO_NO_ERROR;
-	}
-
-	result TedSid::loadFileToMem(File *aFile)
-	{
-		if (!aFile)
-			return INVALID_PARAMETER;
-		MemoryFile *mf = new MemoryFile;
-		if (!mf) return OUT_OF_MEMORY;
-		int res = mf->openFileToMem(aFile);
-		if (res != SO_NO_ERROR)
-		{
-			delete mf;
-			return res;
-		}
-		res = loadFile(mf);
-		if (res != SO_NO_ERROR)
-		{
-			delete mf;
-			return res;
-		}
-		mFileOwned = true;
-		return SO_NO_ERROR;
+		delete df;
+		return res;
 	}
 
 	result TedSid::loadFile(File *aFile)
 	{
 		if (aFile == NULL)
 			return INVALID_PARAMETER;
-		if (mFileOwned)
-			delete mFile;
+		delete[] mOps;
+		mOps = 0;
 		// Expect a file wih header and at least one reg write
-		if (aFile->length() < 4+4+2+2) return FILE_LOAD_FAILED;
+		if (aFile->length() < 34) return FILE_LOAD_FAILED;
 
 		aFile->seek(0);
-		if (aFile->read8() != 'D') return FILE_LOAD_FAILED;
-		if (aFile->read8() != 'u') return FILE_LOAD_FAILED;
-		if (aFile->read8() != 'm') return FILE_LOAD_FAILED;
-		if (aFile->read8() != 'p') return FILE_LOAD_FAILED;
-		if (aFile->read8() != 0) return FILE_LOAD_FAILED;
-		mModel = aFile->read8();
-		aFile->seek(8);
-
-		mFile = aFile;
-		mFileOwned = false;
-
+		if (aFile->read32() != 'PIHC') return FILE_LOAD_FAILED; // CHIP
+		if (aFile->read32() != 'ENUT') return FILE_LOAD_FAILED; // TUNE
+		int dataofs = aFile->read16();
+		int chiptype = aFile->read8();
+		// check if this file is for sid, ted, or combination of several
+		if (!(chiptype == 0 || chiptype == 4 || chiptype == 5 || chiptype == 6)) return FILE_LOAD_FAILED;
+		int flags = aFile->read8();
+		int kchunks = aFile->read16();
+		int lastchunk = aFile->read16();
+		mLength = (kchunks - 1) * 1024 + lastchunk;
+		mLooppos = aFile->read32();
+		aFile->read32(); // cpuspeed
+		aFile->read32(); // chipspeed
+		if ((mFlags & (16 | 32)) ==  0) mModel = SID6581;
+		if ((mFlags & (16 | 32)) == 16) mModel = SID8580;
+		if ((mFlags & (16 | 32)) == 32) mModel = SID8580DB;
+		if ((mFlags & (16 | 32)) == 48) mModel = SID6581R1;
+		mOps = new unsigned short[mLength];
+		aFile->seek(dataofs);
+		if (flags & 1)
+		{
+			// uncompressed
+			aFile->read((unsigned char*)mOps, mLength);
+		}
+		else
+		{
+			// compressed
+			int len = aFile->length() - dataofs;
+			unsigned char* buf = new unsigned char[len];
+			aFile->read(buf, len);
+			int bufofs = 0;
+			for (int i = 0; i < kchunks; i++)
+			{
+				bufofs += zx7_decompress(buf + bufofs, ((unsigned char*)mOps) + i * 1024);
+			}
+			delete[] buf;
+		}
 
 		return SO_NO_ERROR;
 	}

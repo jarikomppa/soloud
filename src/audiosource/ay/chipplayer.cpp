@@ -4,17 +4,23 @@
 #include <malloc.h>
 #include "chipplayer.h"
 #include "soloud_file.h"
+#include "soloud_ay.h"
 
-ChipPlayer::ChipPlayer(SoLoud::File *aFile)
-	: buffer(8192), chip(buffer), chip2(buffer), mFile(aFile)
+ChipPlayer::ChipPlayer(SoLoud::AyInstance *aInstance)
+	: buffer(8192), chip(buffer), chip2(buffer), mInstance(aInstance)
 {
 	playtick = 0;
 	playpos = 0;
 	system_clock_rate = 0;
 	ticks_per_buffer = 0;
 
-	set_timings(SNDR_DEFAULT_SYSTICK_RATE, SNDR_DEFAULT_AY_RATE, SNDR_DEFAULT_SAMPLE_RATE);
-	set_volumes(SNDCHIP::CHIP_YM, 0x7FFF, SNDR_VOL_YM, SNDR_PAN_ABC);
+	//set_timings(SNDR_DEFAULT_SYSTICK_RATE * 40 / 17, SNDR_DEFAULT_AY_RATE * 20 / 17, SNDR_DEFAULT_SAMPLE_RATE);
+	set_timings(aInstance->mParent->mCpuspeed, aInstance->mParent->mChipspeed, SNDR_DEFAULT_SAMPLE_RATE);
+	//set_volumes(SNDCHIP::CHIP_YM, 0x7FFF, SNDR_VOL_YM, SNDR_PAN_ABC);
+	if (aInstance->mParent->mYm)
+		set_volumes(SNDCHIP::CHIP_YM, 0x7FFF, SNDR_VOL_YM, SNDR_PAN_ABC);
+	else
+		set_volumes(SNDCHIP::CHIP_AY, 0x7FFF, SNDR_VOL_AY, SNDR_PAN_ABC);
 }
 
 ChipPlayer::~ChipPlayer()
@@ -50,7 +56,6 @@ void ChipPlayer::set_volumes(SNDCHIP::CHIP_TYPE t, unsigned global_vol, const SN
 	chip2.set_volumes(global_vol / VOL_DIV, vt, pt);
 }
 
-
 inline int _min(int a, int b) { return (a < b) ? a : b; }
 
 unsigned ChipPlayer::play(float *dst, unsigned need_samples)
@@ -85,7 +90,7 @@ unsigned ChipPlayer::play(float *dst, unsigned need_samples)
 		need_samples -= from_buffer;
 		if (!need_samples) return stride;
 
-		if (mFile->eof())
+		if (mInstance->mPos >= mInstance->mParent->mLength)
 			return stride - need_samples;
 
 		// render to buffer
@@ -99,14 +104,15 @@ unsigned ChipPlayer::play(float *dst, unsigned need_samples)
 			unsigned short rd;
 			do
 			{
-				rd = mFile->read16();
+				rd = mInstance->mParent->mOps[mInstance->mPos/2];
+				mInstance->mPos += 2;
 				if (rd & 0x8000)
 				{
 					playtick += rd ^ 0x8000;
 				}
-			} while ((rd & 0x8000) && !mFile->eof());
+			} while ((rd & 0x8000) && !(mInstance->mPos >= mInstance->mParent->mLength));
 			
-			if (mFile->eof())
+			if (mInstance->mPos >= mInstance->mParent->mLength)
 				break;
 
 			unsigned char reg = rd >> 8;

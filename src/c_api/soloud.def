@@ -49,9 +49,11 @@ EXPORTS
 	Soloud_getGlobalVolume
 	Soloud_getMaxActiveVoiceCount
 	Soloud_getLooping
+	Soloud_getAutoStop
 	Soloud_getLoopPoint
 	Soloud_setLoopPoint
 	Soloud_setLooping
+	Soloud_setAutoStop
 	Soloud_setMaxActiveVoiceCount
 	Soloud_setInaudibleBehavior
 	Soloud_setGlobalVolume
@@ -107,6 +109,24 @@ EXPORTS
 	Soloud_set3dSourceDopplerFactor
 	Soloud_mix
 	Soloud_mixSigned16
+	Ay_destroy
+	Ay_create
+	Ay_setVolume
+	Ay_setLooping
+	Ay_setAutoStop
+	Ay_set3dMinMaxDistance
+	Ay_set3dAttenuation
+	Ay_set3dDopplerFactor
+	Ay_set3dListenerRelative
+	Ay_set3dDistanceDelay
+	Ay_set3dCollider
+	Ay_set3dColliderEx
+	Ay_set3dAttenuator
+	Ay_setInaudibleBehavior
+	Ay_setLoopPoint
+	Ay_getLoopPoint
+	Ay_setFilter
+	Ay_stop
 	BassboostFilter_destroy
 	BassboostFilter_getParamCount
 	BassboostFilter_getParamName
@@ -145,6 +165,7 @@ EXPORTS
 	Bus_setResampler
 	Bus_setVolume
 	Bus_setLooping
+	Bus_setAutoStop
 	Bus_set3dMinMaxDistance
 	Bus_set3dAttenuation
 	Bus_set3dDopplerFactor
@@ -216,6 +237,7 @@ EXPORTS
 	Monotone_loadFile
 	Monotone_setVolume
 	Monotone_setLooping
+	Monotone_setAutoStop
 	Monotone_set3dMinMaxDistance
 	Monotone_set3dAttenuation
 	Monotone_set3dDopplerFactor
@@ -235,6 +257,7 @@ EXPORTS
 	Noise_setType
 	Noise_setVolume
 	Noise_setLooping
+	Noise_setAutoStop
 	Noise_set3dMinMaxDistance
 	Noise_set3dAttenuation
 	Noise_set3dDopplerFactor
@@ -256,6 +279,7 @@ EXPORTS
 	Openmpt_loadFile
 	Openmpt_setVolume
 	Openmpt_setLooping
+	Openmpt_setAutoStop
 	Openmpt_set3dMinMaxDistance
 	Openmpt_set3dAttenuation
 	Openmpt_set3dDopplerFactor
@@ -279,6 +303,7 @@ EXPORTS
 	Queue_setParamsEx
 	Queue_setVolume
 	Queue_setLooping
+	Queue_setAutoStop
 	Queue_set3dMinMaxDistance
 	Queue_set3dAttenuation
 	Queue_set3dDopplerFactor
@@ -310,6 +335,7 @@ EXPORTS
 	Sfxr_loadPreset
 	Sfxr_setVolume
 	Sfxr_setLooping
+	Sfxr_setAutoStop
 	Sfxr_set3dMinMaxDistance
 	Sfxr_set3dAttenuation
 	Sfxr_set3dDopplerFactor
@@ -330,6 +356,7 @@ EXPORTS
 	Speech_setParamsEx
 	Speech_setVolume
 	Speech_setLooping
+	Speech_setAutoStop
 	Speech_set3dMinMaxDistance
 	Speech_set3dAttenuation
 	Speech_set3dDopplerFactor
@@ -346,13 +373,12 @@ EXPORTS
 	TedSid_destroy
 	TedSid_create
 	TedSid_load
-	TedSid_loadToMem
 	TedSid_loadMem
 	TedSid_loadMemEx
-	TedSid_loadFileToMem
 	TedSid_loadFile
 	TedSid_setVolume
 	TedSid_setLooping
+	TedSid_setAutoStop
 	TedSid_set3dMinMaxDistance
 	TedSid_set3dAttenuation
 	TedSid_set3dDopplerFactor
@@ -374,6 +400,7 @@ EXPORTS
 	Vic_getRegister
 	Vic_setVolume
 	Vic_setLooping
+	Vic_setAutoStop
 	Vic_set3dMinMaxDistance
 	Vic_set3dAttenuation
 	Vic_set3dDopplerFactor
@@ -392,6 +419,7 @@ EXPORTS
 	Vizsn_setText
 	Vizsn_setVolume
 	Vizsn_setLooping
+	Vizsn_setAutoStop
 	Vizsn_set3dMinMaxDistance
 	Vizsn_set3dAttenuation
 	Vizsn_set3dDopplerFactor
@@ -420,6 +448,7 @@ EXPORTS
 	Wav_getLength
 	Wav_setVolume
 	Wav_setLooping
+	Wav_setAutoStop
 	Wav_set3dMinMaxDistance
 	Wav_set3dAttenuation
 	Wav_set3dDopplerFactor
@@ -452,6 +481,7 @@ EXPORTS
 	WavStream_getLength
 	WavStream_setVolume
 	WavStream_setLooping
+	WavStream_setAutoStop
 	WavStream_set3dMinMaxDistance
 	WavStream_set3dAttenuation
 	WavStream_set3dDopplerFactor

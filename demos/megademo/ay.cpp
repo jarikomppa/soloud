@@ -50,7 +50,7 @@ namespace ay
 	// Entry point
 	int DemoEntry(int argc, char *argv[])
 	{
-		gMusic.load("audio/adversary.pt3.aydump");
+		gMusic.load("audio/adversary.pt3_2ay.zak");
 
 		gEcho.setParams(0.2f, 0.5f, 0.05f);
 		gBiquad.setParams(SoLoud::BiquadResonantFilter::LOWPASS, 4000, 2);

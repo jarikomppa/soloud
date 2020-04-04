@@ -40,9 +40,8 @@ namespace SoLoud
 		TedSid *mParent;		
 		SIDsound *mSID;
 		TED *mTED;
+		int mPos;
 		unsigned int mSampleCount;
-		int mNextReg;
-		int mNextVal;
 		int mRegValues[128];
 	public:
 
@@ -57,15 +56,14 @@ namespace SoLoud
 	class TedSid : public AudioSource
 	{
 	public:
-		File *mFile;
+		int mLooppos;
+		int mLength;
+		unsigned short* mOps;
 		int mModel;
-		bool mFileOwned;
 		TedSid();
 		~TedSid();
 		result load(const char *aFilename);
-		result loadToMem(const char *aFilename);
 		result loadMem(const unsigned char *aMem, unsigned int aLength, bool aCopy = false, bool aTakeOwnership = true);
-		result loadFileToMem(File *aFile);
 		result loadFile(File *aFile);
 		virtual AudioSourceInstance *createInstance();
 	};

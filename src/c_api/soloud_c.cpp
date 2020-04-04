@@ -30,6 +30,7 @@ freely, subject to the following restrictions:
 /* SoLoud C-Api Code Generator (c)2013-2020 Jari Komppa http://iki.fi/sol/ */
 
 #include "../include/soloud.h"
+#include "../include/soloud_ay.h"
 #include "../include/soloud_audiosource.h"
 #include "../include/soloud_bassboostfilter.h"
 #include "../include/soloud_biquadresonantfilter.h"
@@ -360,6 +361,12 @@ int Soloud_getLooping(void * aClassPtr, unsigned int aVoiceHandle)
 	return cl->getLooping(aVoiceHandle);
 }
 
+int Soloud_getAutoStop(void * aClassPtr, unsigned int aVoiceHandle)
+{
+	Soloud * cl = (Soloud *)aClassPtr;
+	return cl->getAutoStop(aVoiceHandle);
+}
+
 double Soloud_getLoopPoint(void * aClassPtr, unsigned int aVoiceHandle)
 {
 	Soloud * cl = (Soloud *)aClassPtr;
@@ -376,6 +383,12 @@ void Soloud_setLooping(void * aClassPtr, unsigned int aVoiceHandle, int aLooping
 {
 	Soloud * cl = (Soloud *)aClassPtr;
 	cl->setLooping(aVoiceHandle, !!aLooping);
+}
+
+void Soloud_setAutoStop(void * aClassPtr, unsigned int aVoiceHandle, int aAutoStop)
+{
+	Soloud * cl = (Soloud *)aClassPtr;
+	cl->setAutoStop(aVoiceHandle, !!aAutoStop);
 }
 
 int Soloud_setMaxActiveVoiceCount(void * aClassPtr, unsigned int aVoiceCount)
@@ -708,6 +721,112 @@ void Soloud_mixSigned16(void * aClassPtr, short * aBuffer, unsigned int aSamples
 	cl->mixSigned16(aBuffer, aSamples);
 }
 
+void Ay_destroy(void * aClassPtr)
+{
+  delete (Ay *)aClassPtr;
+}
+
+void * Ay_create()
+{
+  return (void *)new Ay;
+}
+
+void Ay_setVolume(void * aClassPtr, float aVolume)
+{
+	Ay * cl = (Ay *)aClassPtr;
+	cl->setVolume(aVolume);
+}
+
+void Ay_setLooping(void * aClassPtr, int aLoop)
+{
+	Ay * cl = (Ay *)aClassPtr;
+	cl->setLooping(!!aLoop);
+}
+
+void Ay_setAutoStop(void * aClassPtr, int aAutoStop)
+{
+	Ay * cl = (Ay *)aClassPtr;
+	cl->setAutoStop(!!aAutoStop);
+}
+
+void Ay_set3dMinMaxDistance(void * aClassPtr, float aMinDistance, float aMaxDistance)
+{
+	Ay * cl = (Ay *)aClassPtr;
+	cl->set3dMinMaxDistance(aMinDistance, aMaxDistance);
+}
+
+void Ay_set3dAttenuation(void * aClassPtr, unsigned int aAttenuationModel, float aAttenuationRolloffFactor)
+{
+	Ay * cl = (Ay *)aClassPtr;
+	cl->set3dAttenuation(aAttenuationModel, aAttenuationRolloffFactor);
+}
+
+void Ay_set3dDopplerFactor(void * aClassPtr, float aDopplerFactor)
+{
+	Ay * cl = (Ay *)aClassPtr;
+	cl->set3dDopplerFactor(aDopplerFactor);
+}
+
+void Ay_set3dListenerRelative(void * aClassPtr, int aListenerRelative)
+{
+	Ay * cl = (Ay *)aClassPtr;
+	cl->set3dListenerRelative(!!aListenerRelative);
+}
+
+void Ay_set3dDistanceDelay(void * aClassPtr, int aDistanceDelay)
+{
+	Ay * cl = (Ay *)aClassPtr;
+	cl->set3dDistanceDelay(!!aDistanceDelay);
+}
+
+void Ay_set3dCollider(void * aClassPtr, AudioCollider * aCollider)
+{
+	Ay * cl = (Ay *)aClassPtr;
+	cl->set3dCollider(aCollider);
+}
+
+void Ay_set3dColliderEx(void * aClassPtr, AudioCollider * aCollider, int aUserData)
+{
+	Ay * cl = (Ay *)aClassPtr;
+	cl->set3dCollider(aCollider, aUserData);
+}
+
+void Ay_set3dAttenuator(void * aClassPtr, AudioAttenuator * aAttenuator)
+{
+	Ay * cl = (Ay *)aClassPtr;
+	cl->set3dAttenuator(aAttenuator);
+}
+
+void Ay_setInaudibleBehavior(void * aClassPtr, int aMustTick, int aKill)
+{
+	Ay * cl = (Ay *)aClassPtr;
+	cl->setInaudibleBehavior(!!aMustTick, !!aKill);
+}
+
+void Ay_setLoopPoint(void * aClassPtr, double aLoopPoint)
+{
+	Ay * cl = (Ay *)aClassPtr;
+	cl->setLoopPoint(aLoopPoint);
+}
+
+double Ay_getLoopPoint(void * aClassPtr)
+{
+	Ay * cl = (Ay *)aClassPtr;
+	return cl->getLoopPoint();
+}
+
+void Ay_setFilter(void * aClassPtr, unsigned int aFilterId, Filter * aFilter)
+{
+	Ay * cl = (Ay *)aClassPtr;
+	cl->setFilter(aFilterId, aFilter);
+}
+
+void Ay_stop(void * aClassPtr)
+{
+	Ay * cl = (Ay *)aClassPtr;
+	cl->stop();
+}
+
 void BassboostFilter_destroy(void * aClassPtr)
 {
   delete (BassboostFilter *)aClassPtr;
@@ -928,6 +1047,12 @@ void Bus_setLooping(void * aClassPtr, int aLoop)
 {
 	Bus * cl = (Bus *)aClassPtr;
 	cl->setLooping(!!aLoop);
+}
+
+void Bus_setAutoStop(void * aClassPtr, int aAutoStop)
+{
+	Bus * cl = (Bus *)aClassPtr;
+	cl->setAutoStop(!!aAutoStop);
 }
 
 void Bus_set3dMinMaxDistance(void * aClassPtr, float aMinDistance, float aMaxDistance)
@@ -1342,6 +1467,12 @@ void Monotone_setLooping(void * aClassPtr, int aLoop)
 	cl->setLooping(!!aLoop);
 }
 
+void Monotone_setAutoStop(void * aClassPtr, int aAutoStop)
+{
+	Monotone * cl = (Monotone *)aClassPtr;
+	cl->setAutoStop(!!aAutoStop);
+}
+
 void Monotone_set3dMinMaxDistance(void * aClassPtr, float aMinDistance, float aMaxDistance)
 {
 	Monotone * cl = (Monotone *)aClassPtr;
@@ -1452,6 +1583,12 @@ void Noise_setLooping(void * aClassPtr, int aLoop)
 {
 	Noise * cl = (Noise *)aClassPtr;
 	cl->setLooping(!!aLoop);
+}
+
+void Noise_setAutoStop(void * aClassPtr, int aAutoStop)
+{
+	Noise * cl = (Noise *)aClassPtr;
+	cl->setAutoStop(!!aAutoStop);
 }
 
 void Noise_set3dMinMaxDistance(void * aClassPtr, float aMinDistance, float aMaxDistance)
@@ -1576,6 +1713,12 @@ void Openmpt_setLooping(void * aClassPtr, int aLoop)
 {
 	Openmpt * cl = (Openmpt *)aClassPtr;
 	cl->setLooping(!!aLoop);
+}
+
+void Openmpt_setAutoStop(void * aClassPtr, int aAutoStop)
+{
+	Openmpt * cl = (Openmpt *)aClassPtr;
+	cl->setAutoStop(!!aAutoStop);
 }
 
 void Openmpt_set3dMinMaxDistance(void * aClassPtr, float aMinDistance, float aMaxDistance)
@@ -1712,6 +1855,12 @@ void Queue_setLooping(void * aClassPtr, int aLoop)
 {
 	Queue * cl = (Queue *)aClassPtr;
 	cl->setLooping(!!aLoop);
+}
+
+void Queue_setAutoStop(void * aClassPtr, int aAutoStop)
+{
+	Queue * cl = (Queue *)aClassPtr;
+	cl->setAutoStop(!!aAutoStop);
 }
 
 void Queue_set3dMinMaxDistance(void * aClassPtr, float aMinDistance, float aMaxDistance)
@@ -1896,6 +2045,12 @@ void Sfxr_setLooping(void * aClassPtr, int aLoop)
 	cl->setLooping(!!aLoop);
 }
 
+void Sfxr_setAutoStop(void * aClassPtr, int aAutoStop)
+{
+	Sfxr * cl = (Sfxr *)aClassPtr;
+	cl->setAutoStop(!!aAutoStop);
+}
+
 void Sfxr_set3dMinMaxDistance(void * aClassPtr, float aMinDistance, float aMaxDistance)
 {
 	Sfxr * cl = (Sfxr *)aClassPtr;
@@ -2014,6 +2169,12 @@ void Speech_setLooping(void * aClassPtr, int aLoop)
 	cl->setLooping(!!aLoop);
 }
 
+void Speech_setAutoStop(void * aClassPtr, int aAutoStop)
+{
+	Speech * cl = (Speech *)aClassPtr;
+	cl->setAutoStop(!!aAutoStop);
+}
+
 void Speech_set3dMinMaxDistance(void * aClassPtr, float aMinDistance, float aMaxDistance)
 {
 	Speech * cl = (Speech *)aClassPtr;
@@ -2108,12 +2269,6 @@ int TedSid_load(void * aClassPtr, const char * aFilename)
 	return cl->load(aFilename);
 }
 
-int TedSid_loadToMem(void * aClassPtr, const char * aFilename)
-{
-	TedSid * cl = (TedSid *)aClassPtr;
-	return cl->loadToMem(aFilename);
-}
-
 int TedSid_loadMem(void * aClassPtr, const unsigned char * aMem, unsigned int aLength)
 {
 	TedSid * cl = (TedSid *)aClassPtr;
@@ -2124,12 +2279,6 @@ int TedSid_loadMemEx(void * aClassPtr, const unsigned char * aMem, unsigned int 
 {
 	TedSid * cl = (TedSid *)aClassPtr;
 	return cl->loadMem(aMem, aLength, !!aCopy, !!aTakeOwnership);
-}
-
-int TedSid_loadFileToMem(void * aClassPtr, File * aFile)
-{
-	TedSid * cl = (TedSid *)aClassPtr;
-	return cl->loadFileToMem(aFile);
 }
 
 int TedSid_loadFile(void * aClassPtr, File * aFile)
@@ -2148,6 +2297,12 @@ void TedSid_setLooping(void * aClassPtr, int aLoop)
 {
 	TedSid * cl = (TedSid *)aClassPtr;
 	cl->setLooping(!!aLoop);
+}
+
+void TedSid_setAutoStop(void * aClassPtr, int aAutoStop)
+{
+	TedSid * cl = (TedSid *)aClassPtr;
+	cl->setAutoStop(!!aAutoStop);
 }
 
 void TedSid_set3dMinMaxDistance(void * aClassPtr, float aMinDistance, float aMaxDistance)
@@ -2274,6 +2429,12 @@ void Vic_setLooping(void * aClassPtr, int aLoop)
 	cl->setLooping(!!aLoop);
 }
 
+void Vic_setAutoStop(void * aClassPtr, int aAutoStop)
+{
+	Vic * cl = (Vic *)aClassPtr;
+	cl->setAutoStop(!!aAutoStop);
+}
+
 void Vic_set3dMinMaxDistance(void * aClassPtr, float aMinDistance, float aMaxDistance)
 {
 	Vic * cl = (Vic *)aClassPtr;
@@ -2378,6 +2539,12 @@ void Vizsn_setLooping(void * aClassPtr, int aLoop)
 {
 	Vizsn * cl = (Vizsn *)aClassPtr;
 	cl->setLooping(!!aLoop);
+}
+
+void Vizsn_setAutoStop(void * aClassPtr, int aAutoStop)
+{
+	Vizsn * cl = (Vizsn *)aClassPtr;
+	cl->setAutoStop(!!aAutoStop);
 }
 
 void Vizsn_set3dMinMaxDistance(void * aClassPtr, float aMinDistance, float aMaxDistance)
@@ -2544,6 +2711,12 @@ void Wav_setLooping(void * aClassPtr, int aLoop)
 {
 	Wav * cl = (Wav *)aClassPtr;
 	cl->setLooping(!!aLoop);
+}
+
+void Wav_setAutoStop(void * aClassPtr, int aAutoStop)
+{
+	Wav * cl = (Wav *)aClassPtr;
+	cl->setAutoStop(!!aAutoStop);
 }
 
 void Wav_set3dMinMaxDistance(void * aClassPtr, float aMinDistance, float aMaxDistance)
@@ -2732,6 +2905,12 @@ void WavStream_setLooping(void * aClassPtr, int aLoop)
 {
 	WavStream * cl = (WavStream *)aClassPtr;
 	cl->setLooping(!!aLoop);
+}
+
+void WavStream_setAutoStop(void * aClassPtr, int aAutoStop)
+{
+	WavStream * cl = (WavStream *)aClassPtr;
+	cl->setAutoStop(!!aAutoStop);
 }
 
 void WavStream_set3dMinMaxDistance(void * aClassPtr, float aMinDistance, float aMaxDistance)

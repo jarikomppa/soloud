@@ -222,6 +222,10 @@ namespace SoLoud
 		mB = 100;
 		mOrgv = -1;
 		mGlotlast = 0;
+		mNper = 0;
+		mNmod = 0;
+		mNopen = 0;
+		memset(mBuf, 0, sizeof(float) * 2048);
 	}
 
 	VizsnInstance::~VizsnInstance()
@@ -434,11 +438,11 @@ namespace SoLoud
 				/* v */
 				const float *v = voo[aP - 8];
 
-				/*aB->voice =*/ *v++;
+				/*aB->voice = *v++; */ v++;
 				aB->aspir = *v++;
 				aB->frica = *v++;
 				aB->bypas = *v++;
-				/*aB->breth =*/ *v++;
+				/*aB->breth = *v++; */ v++;
 
 				int j;
 				for (j = 0; j < 10; j++)

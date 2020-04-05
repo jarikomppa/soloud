@@ -35,6 +35,17 @@ struct PT3_Channel
 		Loop_Sample_Position, Sample_Length, Position_In_Sample,
 		Volume, Number_Of_Notes_To_Skip, Note, Slide_To_Note, Amplitude;
 	bool    Envelope_Enabled, Enabled, SimpleGliss;
+	PT3_Channel() :
+	Address_In_Pattern(0), OrnamentPointer(0), SamplePointer(0), Ton(0),
+	Current_Amplitude_Sliding(0), Current_Noise_Sliding(0), Current_Envelope_Sliding(0),
+		Ton_Slide_Count(0), Current_OnOff(0), OnOff_Delay(0), OffOn_Delay(0),
+		Ton_Slide_Delay(0), Current_Ton_Sliding(0),
+		Ton_Accumulator(0), Ton_Slide_Step(0), Ton_Delta(0),
+	Note_Skip_Counter(0),
+	Loop_Ornament_Position(0), Ornament_Length(0), Position_In_Ornament(0),
+		Loop_Sample_Position(0), Sample_Length(0), Position_In_Sample(0),
+		Volume(0), Number_Of_Notes_To_Skip(0), Note(0), Slide_To_Note(0), Amplitude(0),
+		Envelope_Enabled(0), Enabled(0), SimpleGliss(0) {}
 };
 
 struct PT3_Module
@@ -43,17 +54,24 @@ struct PT3_Module
 	uint8_t Env_Base_lo, Env_Base_hi;
 	uint8_t Noise_Base, Delay, AddToNoise, DelayCounter, CurrentPosition;
 	int8_t  Cur_Env_Delay, Env_Delay;
+	PT3_Module() : Cur_Env_Slide(0), Env_Slide_Add(0), Env_Base_lo(0), Env_Base_hi(0), Noise_Base(0), Delay(0), AddToNoise(0), DelayCounter(0), CurrentPosition(0), Cur_Env_Delay(0), Env_Delay(0) {}
 };
 
 struct PlConst
 {
 	int TS;
+	PlConst() : TS(0) {}
 };
 
 class PT3Player
 {
 public:
-	PT3Player(uint8_t* _module, unsigned _mod_size) : body(_module), mod_size(_mod_size) { }
+	PT3Player(uint8_t* _module, unsigned _mod_size) : time(0), loop(0), tick(0), version(0), tsMode(false), body(_module), mod_size(_mod_size), cur_delay(0), AddToEnv(0), TempMixer(0) 
+	{ 
+		for (int i = 0; i < 2; i++)
+			for (int j = 0; j < 16; j++)
+				regs[i][j] = 0;
+	}
 
 	bool Init();
 	void Step();
@@ -72,8 +90,9 @@ protected:
 	bool GetTime(unsigned& time, unsigned& loop);
 
 	struct PatPtr {
-		struct {
-			unsigned a, aa, ip;
+		struct inner_pat {
+			unsigned int a, aa, ip;
+			inner_pat() : a(0), aa(0), ip(0) {}
 		} ch[3];
 	};
 	uint8_t cur_delay;
@@ -81,12 +100,13 @@ protected:
 	bool fastSimulatePattern(PatPtr& pat);
 
 	// full simulation
-	struct {
+	struct inner_chip {
 		PT3Header* header;
 		uint8_t* module;
 		PT3_Module mod;
 		PT3_Channel ch[3];
 		PlConst plconst;
+		inner_chip() : header(0), module(0) {}
 	} chip[2];
 
 	int GetNoteFreq(int cnum, int j);

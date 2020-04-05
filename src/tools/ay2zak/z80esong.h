@@ -12,7 +12,7 @@ class Z80EmulatedSong : public ChipSong
  public:
 
    virtual ChipPlayer *CreatePlayer(unsigned sample_fq);
-   Z80EmulatedSong(FILE *file) : ChipSong(file), frame(0), frame_start(0), done(0) {}
+   Z80EmulatedSong(FILE *file) : ChipSong(file), pl(0), frame(0), frame_start(0), done(0) {}
 
    void reg_out(unsigned char activereg, unsigned char val);
    virtual void z80_int_hook() {}

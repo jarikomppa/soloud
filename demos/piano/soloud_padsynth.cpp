@@ -37,7 +37,7 @@ class PADsynth {
 		number_harmonics - the number of harmonics that are computed */
 	PADsynth(int aSampleCount, float aSamplerate, int aHarmonicsCount);
 
-	~PADsynth();
+	virtual ~PADsynth();
 
 	/* set the amplitude of the n'th harmonic */
 	void setharmonic(int n,float value);

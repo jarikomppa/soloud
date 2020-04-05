@@ -8,11 +8,12 @@ SNDBUFFER::SNDBUFFER(unsigned size) {
         // size must be power of 2 for faster calc cyclic position: pos = (pos+1) & (size-1)
         if (size & (size-1)) {
                 unsigned i = 1;
-                for (i = 1; i < size; i *= 2);
+                while (i < size) i *= 2;
                 size = i;
         }
         SNDBUFFER::size = size;
         buffer = (SNDSAMPLE*)malloc(size * sizeof(SNDSAMPLE));
+        samples_ready = 0;
         reset();
 }
 

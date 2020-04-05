@@ -56,20 +56,17 @@ PsidHeader &getPsidHeader()
 unsigned int parsePsid(unsigned char *buf, PsidHeader &psidHdr_)
 {
 	char *buffer = (char *) buf;
+	psidHdr_.author[0] = 0;
+	psidHdr_.copyright[0] = 0;
+	memset(psidHdr_.title, 0, sizeof(psidHdr_.title));
 
 	if (buf) {
-		memset(psidHdr_.title, 0, sizeof(psidHdr_.title));
 		strncpy(psidHdr_.title, buffer + PSID_NAME, 32);
 		psidHdr_.title[PSID_NAME + 32] = 0;
 		strncpy(psidHdr_.author, buffer + PSID_AUTHOR, 32);
 		psidHdr_.author[PSID_AUTHOR + 32] = 0;
 		strncpy(psidHdr_.copyright, buffer + PSID_COPYRIGHT, 32);
 		psidHdr_.copyright[PSID_COPYRIGHT + 32] = 0;
-	} else {
-		memset(psidHdr_.title, 0, sizeof(psidHdr_.title));
-		memset(psidHdr_.author, 0, 32);
-		memset(psidHdr_.copyright, 0, 32);
-		memset(psidHdr_.copyright, 0, 32);
 	}
 	return 0;
 }

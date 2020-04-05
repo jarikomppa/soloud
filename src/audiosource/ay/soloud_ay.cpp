@@ -84,6 +84,11 @@ namespace SoLoud
 		mBaseSamplerate = 44100;
 		mChannels = 2;
 		mOps = 0;
+		mYm = false;
+		mChipspeed = 1774400;
+		mCpuspeed = 50;
+		mLooppos = 0;
+		mLength = 0;
 	}
 
 	Ay::~Ay()

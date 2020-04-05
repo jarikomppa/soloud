@@ -26,6 +26,7 @@ namespace SoLoud
 
 		float resonate(float i);
 		float antiresonate(float i);
+		VizsnResonator();
 	};
 
 	struct VizsnBank
@@ -33,6 +34,7 @@ namespace SoLoud
 		VizsnResonator r[10];
 		float pitch;
 		float frica, voice, aspir, bypas, breth;
+		VizsnBank();
 	};
 
 	class VizsnInstance : public AudioSourceInstance

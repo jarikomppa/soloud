@@ -718,7 +718,9 @@ bool PT3Player::GetTime(unsigned& time, unsigned& loop)
 		pat[0].ch[0].a = pat[0].ch[1].a = pat[0].ch[2].a = 1;
 		if (TS != 0x20) {
 			fastInitPattern(pat[1], TS * 3 - 3 - chip[0].header->PositionList[i]);
-			pat[1].ch[0].a = pat[1].ch[0].a = pat[1].ch[0].a = 1;
+			// no idea what the idea here was, maybe it was upposed to be ch0,1,2?
+			//pat[1].ch[0].a = pat[1].ch[0].a = pat[1].ch[0].a = 1;
+			pat[1].ch[0].a = 1;
 		}
 
 		for (;;) {
@@ -747,7 +749,7 @@ PT3Song::PT3Song(FILE* ff) : ChipSong(ff)
 
 PT3Song::~PT3Song()
 {
-        free(player);
+        delete player;
 }
 
 ChipPlayer *PT3Song::CreatePlayer(unsigned sample_fq)

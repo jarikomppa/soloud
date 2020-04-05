@@ -90,7 +90,7 @@ int CbmTune::parse(char *fName)
 	}
 	loadAddress = *((unsigned short *) (bufferPtr + dataIndex));
 	dataIndex += 2;
-	if (!playAddress) playAddress = 0; //loadAddress;
+//	if (!playAddress) playAddress = 0; //loadAddress;
 	return 0;
 }
 

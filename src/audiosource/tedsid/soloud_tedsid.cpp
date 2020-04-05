@@ -125,6 +125,7 @@ namespace SoLoud
 		mOps = 0;
 		mModel = 0;
 		mLength = 0;
+		mLooppos = 0;
 	}
 
 	TedSid::~TedSid()

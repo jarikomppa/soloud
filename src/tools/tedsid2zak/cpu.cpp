@@ -147,8 +147,9 @@ void CPU::process()
 		}
 #endif
 		PC=(PC+1)&0xFFFF;
+		return;
 	}
-	else 
+	
 
 	switch (currins){
 		case 0xea : // NOP

@@ -232,9 +232,14 @@ void testMisc()
 	int b = prg.rand();
 	CHECK(a == b);
 	a = 0;
+	int prev = prg.rand();
 	for (b = 0; b < 100; b++)
-		if (prg.rand() != prg.rand())
+	{
+		int next = prg.rand();
+		if (prev != next)
 			a = 1;
+		prev = next;
+	}
 	CHECK(a == 1);
 
 	soloud.deinit();
@@ -1552,7 +1557,7 @@ int main(int parc, char ** pars)
 	testFilters();
 	testCore();
 	testSpeech();
-//	testSpeedThings();
+	testSpeedThings();
 //	testMixer();
 	printf("\n%d tests, %d error(s) ", tests, errorcount);
 	if (!lastknownwrite && errorcount)

@@ -190,6 +190,9 @@ static const char keyz[] =
 
 namespace SoLoud
 {
+	VizsnResonator::VizsnResonator() : a(0), b(0), c(0), p1(0), p2(0) {}
+	VizsnBank::VizsnBank() : pitch(0), frica(0), voice(0), aspir(0), bypas(0), breth(0) {}
+
 	float VizsnResonator::resonate(float i)
 	{
 		float x = (a * i) + (b * p1) + (c * p2);
@@ -431,11 +434,11 @@ namespace SoLoud
 				/* v */
 				const float *v = voo[aP - 8];
 
-				aB->voice = *v++;
+				/*aB->voice =*/ *v++;
 				aB->aspir = *v++;
 				aB->frica = *v++;
 				aB->bypas = *v++;
-				aB->breth = *v++;
+				/*aB->breth =*/ *v++;
 
 				int j;
 				for (j = 0; j < 10; j++)
@@ -515,8 +518,8 @@ namespace SoLoud
 		for (i = 0; i < len; i++)
 		{
 			int c = mText[i + 1];
-			if (c == '\x84' || c == -124) c = '{'; // ä
-			if (c == '\x94' || c == -108) c = '|'; // ö
+			if (c == '\x84') c = '{'; // ä
+			if (c == '\x94') c = '|'; // ö
 			if (c >= 'a' && c <= '|')
 			{
 				mText[i + 1] = keyz[c - 'a'];

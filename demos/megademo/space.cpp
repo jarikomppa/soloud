@@ -145,7 +145,7 @@ namespace space
 			"parts of the audio pipeline.";
 		char temp[512];
 		int i = 0;
-		while (s[i] && i < (tick - gTickofs) / 70)
+		while (i < (tick - gTickofs) / 70 && s[i])
 		{
 			temp[i] = s[i];
 			i++;

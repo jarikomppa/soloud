@@ -97,7 +97,7 @@ void SIDsound::setModel(unsigned int model)
 					(20163.0 - 1315.0) * x + 1315.0;
 			}
 			dcWave = 0x380;
-			dcMixer = -0xFFF*0xFF/18 >> 7;
+			dcMixer = -454; // gcc and msvc agree that "-0xFFF * 0xFF / 18 >> 7" turns into -454;
 			dcVoice = 0x800*0xFF;
 			break;
 
@@ -111,7 +111,7 @@ void SIDsound::setModel(unsigned int model)
 					* (18000.0 - 4600.0) + 4600.0;
 			}
 			dcWave = 0x380;
-			dcMixer = -0xFFF*0xFF/18 >> 7;
+			dcMixer = -454; // gcc and msvc agree that "-0xFFF * 0xFF / 18 >> 7" turns into -454;
 			dcVoice = 0x800*0xFF;
 			break;
 	}

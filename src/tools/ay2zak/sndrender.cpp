@@ -52,7 +52,7 @@ void SNDRENDER::end_frame(unsigned endframe_sys_tick)
         unsigned ready_samples = dstpos - dst_start;
         if ((int)ready_samples < 0) ready_samples += bufsize;
         tick -= (ready_samples << TICK_FF);
-        passed_snd_ticks += (ready_samples << TICK_FF);
+        passed_snd_ticks += ((uint64_t)ready_samples << TICK_FF);
 }
 
 void SNDRENDER::set_timings(unsigned sys_clock_rate, unsigned sample_rate)
@@ -87,8 +87,6 @@ void SNDRENDER::flush(unsigned endtick)
                 tick = endtick;
                 s1_l += mix_l * scale;
                 s1_r += mix_r * scale;
-
-                tick = endtick;
 
         } else {
                 scale = filter_sum_full_u - filter_diff[(tick & (TICK_F-1)) + TICK_F];

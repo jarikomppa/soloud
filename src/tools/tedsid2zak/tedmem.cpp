@@ -1319,12 +1319,14 @@ void TED::ted_process(unsigned int count)
 			if (!(CycleCounter & 0x03) && int(count) > 0) {
 				static unsigned int remainder = 0;
 				unsigned int samples = (playbackSpeed + remainder) / 4;
+/*
 				if (samples) {
 					renderSound(samples);
 					if (sidCard) {
 						sidCard->calcSamples(samples);
 					}
 				}
+*/
 				remainder = (playbackSpeed + remainder) % 4;
 				count -= samples;
 				currtime += samples;

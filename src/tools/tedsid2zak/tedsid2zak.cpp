@@ -22,6 +22,7 @@ static void printUsage()
 		"-m model 0:6581 1:8580 2:8580DB 3:6581R1. Default 1\n"
 		"-t the number of sub-tune to play. Default 1\n"
 		"-i Show information and quit\n"
+		"-d Detect loop point and stop\n"
 		"-q Quantize timestamps by 1000 ticks\n\n"
 		"Example:\n"
 		"tedsid2dump foobar.sid 60000 -s 5 -m 0 -t 1\n\n");		
@@ -38,7 +39,8 @@ int currtime = 0;
 int firstwrite = 1;
 int quantize = 0;
 int regwrites = 0;
-
+int headersize = 0;
+int looppoint = 0;
 
 void write_dword(FILE* f, unsigned int dword)
 {
@@ -72,8 +74,62 @@ void write_string(FILE* f, const char* s)
 #define SONGDATAOFS 8
 #define SONGSIZEOFS 12
 
+unsigned short* op;
+int ops = 0;
+int detect = 0;
+int firstkofs = 0;
+
+struct hashitem
+{
+	hashitem* mNext;
+	int ofs;
+	unsigned int hash;
+};
+
+hashitem* hashbucket[256];
+hashitem* hashpile;
+int pileidx = 0;
+
+void store_hash(int ofs, unsigned int hash)
+{
+	if (pileidx == 0)
+	{
+		hashpile = new hashitem[1024 * 1024]; // million regwrites should be enough for everybody
+		for (int i = 0; i < 256; i++)
+			hashbucket[i] = 0;
+	}
+	hashpile[pileidx].hash = hash;
+	hashpile[pileidx].ofs = ofs;
+	hashpile[pileidx].mNext = hashbucket[hash % 256];
+	hashbucket[hash % 256] = &hashpile[pileidx];
+	pileidx++;
+}
+
+void finalize()
+{
+	fwrite(op, 2, ops, outfile);
+	int songdatasize = ftell(outfile) - headersize;
+	fseek(outfile, SONGSIZEOFS, SEEK_SET);
+	int chunks = songdatasize / 1024;
+	int lastchunk = songdatasize & 1023;
+	if (lastchunk == 0) lastchunk = 1024;
+	if (songdatasize & 1023) chunks++;
+	write_word(outfile, chunks); // number of 1024 chunks of song data
+	write_word(outfile, lastchunk); // bytes in last chunk
+	write_dword(outfile, looppoint);
+
+	fclose(outfile);
+}
+
 void storeregwrite(int reg, int value)
 {
+	static int first = 1;
+	if (first)
+	{
+		// ignore the very first write
+		first = 0;
+		return;
+	}
 	if (!outfile)
 		return;
 	if (oldregs[reg] != value)
@@ -89,26 +145,114 @@ void storeregwrite(int reg, int value)
 		while (timedelta > 0x7fff)
 		{
 			unsigned short stimedelta = 0xffff;
-			write_word(outfile, stimedelta);
+//			write_word(outfile, stimedelta);
+			op[ops++] = stimedelta;
 			timedelta -= 0x7fff;
 			lasttime += 0x7fff;
 		}
 		if (timedelta > 1000 * quantize)
 		{			
 			unsigned short stimedelta = timedelta | 0x8000;
-			write_word(outfile, stimedelta);
+//			write_word(outfile, stimedelta);
+			op[ops++] = stimedelta;
 			lasttime = currtime / 2;
 		}
-		unsigned short op = ((reg & 0x7f) << 8) | (value & 0xff);
-		write_word(outfile, op);
+		unsigned short opcode = ((reg & 0x7f) << 8) | (value & 0xff);
+//		write_word(outfile, opcode);
+		op[ops++] = opcode;
 		regwrites++;
 	}
+	
+	if (detect && ops > 1024)
+	{
+		if (firstkofs == 0)
+		{
+			int back1k = ops;
+			int count = 0;
+			unsigned int hash = 0;
+			while (back1k > 0 && count < 1024)
+			{
+				if ((op[back1k] & 0x8000) == 0)
+				{
+					count++;
+					hash = ((hash << 7) | (hash >> (32 - 7))) ^ op[back1k];
+				}
+				back1k--;
+			}
+			if (count == 1024)
+			{
+				store_hash(back1k, hash);
+			}
+			int p = 0;
+			
+			hashitem* walker = hashbucket[hash % 256];
+			while (walker)
+			{
+				if (walker->hash == hash && walker->ofs != back1k)
+				{
+					p = walker->ofs;
+					int c = 1;
+					if (op[back1k] == op[p])
+					{
+						int a = 0;
+						int b = 0;
+						do {
+							a++;
+							while (((back1k + a) < ops) && (op[back1k + a] & 0x8000)) a++;
+							b++;
+							while (((p + b) < ops) && (op[p + b] & 0x8000)) b++;
+							c++;
+						} while (c < 1024 && op[back1k + a] == op[p + b]);
+
+						if (c == 1024)
+						{
+							printf("\nFound loop point %d -> %d\n", back1k, p);
+							looppoint = p * 2;
+							ops = back1k;
+							finalize();
+							exit(1);
+						}
+					}
+				}
+				walker = walker->mNext;
+			}
+		}
+	}
 }
+
+#if defined(_MSC_VER)
+#include <windows.h>
+
+long getmsec()
+{
+	LARGE_INTEGER ts, freq;
+
+	QueryPerformanceCounter(&ts);
+	QueryPerformanceFrequency(&freq);
+	ts.QuadPart *= 1000;
+	ts.QuadPart /= freq.QuadPart;
+
+	return (long)ts.QuadPart;
+}
+#else
+#include <time.h>
+
+long getmsec()
+{
+	struct timespec ts;
+
+	clock_gettime(CLOCK_MONOTONIC, &ts);
+
+	return (ts->tv_sec * 1000) + (ts->tv_nsec / 1000000)
+}
+#endif
+
 
 extern int selected_model;
 
 int main(int argc, char *argv[])
 {
+	op = new unsigned short[4 * 1024 * 1024];
 	printHeader();
     if (argc < 3) {
         printUsage();
@@ -169,6 +313,10 @@ int main(int argc, char *argv[])
 			case 'q':
 			case 'Q':
 				quantize = 1;
+				break;
+			case 'd':
+			case 'D':
+				detect = 1;
 				break;
 			}
 		}
@@ -244,28 +392,40 @@ int main(int argc, char *argv[])
 		write_string(outfile, getPsidHeader().title);
 		write_string(outfile, getPsidHeader().author);
 		write_string(outfile, getPsidHeader().copyright);
-		int headersize = ftell(outfile);
+		headersize = ftell(outfile);
 		fseek(outfile, SONGDATAOFS, SEEK_SET);
 		write_word(outfile, headersize);
 		fseek(outfile, 0, SEEK_END);
 
-		for (i = 0; i < outputMilliseconds; i++)
+		long start_t = getmsec();
+		for (i = 0; detect || i < outputMilliseconds; i++)
 		{
-			if (i % 1000 == 0 || i == outputMilliseconds-1)
-			printf("\rRendering %02d:%02d (%3.1f%%)", (i+1) / (60 * 1000), ((i+1) / 1000) % 60, ((i+1)*100.0f)/outputMilliseconds);
+			if (i % 1000 == 0 || i == outputMilliseconds - 1)
+			{
+				long t = (getmsec() - start_t) / 1000;
+				if (detect)
+				{
+					printf("\rRendering %02d:%02d, realtime %02d:%02d",
+						(i + 1) / (60 * 1000),
+						((i + 1) / 1000) % 60,
+						t / 60,
+						t % 60);
+				}
+				else
+				{
+					printf("\rRendering %02d:%02d (%3.1f%%), realtime %02d:%02d",
+						(i + 1) / (60 * 1000),
+						((i + 1) / 1000) % 60,
+						((i + 1) * 100.0f) / outputMilliseconds,
+						t / 60,
+						t % 60);
+				}
+			}
 			process(TED_SOUND_CLOCK / 1000); // 1 ms
 		}
 
-		int songdatasize = ftell(outfile) - headersize;
-		fseek(outfile, SONGSIZEOFS, SEEK_SET);
-		int chunks = songdatasize / 1024;
-		int lastchunk = songdatasize & 1023;
-		if (lastchunk == 0) lastchunk = 1024;
-		if (songdatasize & 1023) chunks++;
-		write_word(outfile, chunks); // number of 1024 chunks of song data
-		write_word(outfile, lastchunk); // bytes in last chunk
+		finalize();
 
-		fclose(outfile);
 		printf("\n%d regwrites written to %s\n", regwrites, outfilename);
 		printf("\nAll done.\n");
 		tedplayClose();

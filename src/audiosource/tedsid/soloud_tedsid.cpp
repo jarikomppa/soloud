@@ -79,7 +79,7 @@ namespace SoLoud
 		{
 			unsigned short op = mParent->mOps[mPos / 2];
 			mPos += 2;
-			if (mPos >= mParent->mLength) mPos = 0;
+			if (mPos >= mParent->mLength) mPos = mParent->mLooppos;
 			if (op & 0x8000)
 			{
 				mSampleCount = op & 0x7fff;

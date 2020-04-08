@@ -23,12 +23,12 @@ static void printUsage()
 		"-t the number of sub-tune to play. Default 1\n"
 		"-i Show information and quit\n"
 		"-d Detect loop point and stop\n"
+		"-w number Loop detection window size, 1024 by default\n"
 		"-q Quantize timestamps by 1000 ticks\n\n"
 		"Example:\n"
-		"tedsid2dump foobar.sid 60000 -s 5 -m 0 -t 1\n\n");		
-// s = setplaybackSpeed(3);// 5);// 3);
-// m = setModel
-// t = ~psidChangeTrack
+		"tedsid2dump foobar.sid 60000 -s 5 -m 0 -t 1\n\n"
+		"In detection mode, msecs is the minimum length to record,\n"
+		"after which the loop detection starts.\n\n");
 }
 
 extern void process(int ticks);
@@ -78,6 +78,7 @@ unsigned short* op;
 int ops = 0;
 int detect = 0;
 int firstkofs = 0;
+int windowsize = 1024;
 
 struct hashitem
 {
@@ -121,27 +122,32 @@ void finalize()
 	fclose(outfile);
 }
 
+int mintime = 0;
+extern int reset_done;
 void storeregwrite(int reg, int value)
 {
-	static int first = 1;
-	if (first)
-	{
-		// ignore the very first write
-		first = 0;
+	if (!reset_done)
 		return;
-	}
+	
 	if (!outfile)
 		return;
+
 	if (oldregs[reg] != value)
 	{
-		oldregs[reg] = value;
 		int timedelta = (currtime / 2)- lasttime;
-		// skip start silence
-		if (firstwrite)
+
+		if (timedelta > 0x7fff && ops < 10)
 		{
+			// There may be a long pause at the start. Skip it and start over.
+			ops = 0;
+			regwrites = 0;
+			lasttime = currtime / 2;
 			timedelta = 0;
-			firstwrite = 0;
+			for (int i = 0; i < 1024; i++)
+				oldregs[i] = -1;
 		}
+
+		oldregs[reg] = value;
 		while (timedelta > 0x7fff)
 		{
 			unsigned short stimedelta = 0xffff;
@@ -163,14 +169,14 @@ void storeregwrite(int reg, int value)
 		regwrites++;
 	}
 	
-	if (detect && ops > 1024)
+	if (detect && ops > windowsize)
 	{
 		if (firstkofs == 0)
 		{
 			int back1k = ops;
 			int count = 0;
 			unsigned int hash = 0;
-			while (back1k > 0 && count < 1024)
+			while (back1k > 0 && count < windowsize)
 			{
 				if ((op[back1k] & 0x8000) == 0)
 				{
@@ -179,42 +185,45 @@ void storeregwrite(int reg, int value)
 				}
 				back1k--;
 			}
-			if (count == 1024)
+			if (count == windowsize)
 			{
 				store_hash(back1k, hash);
 			}
 			int p = 0;
 			
-			hashitem* walker = hashbucket[hash % 256];
-			while (walker)
+			if (mintime)
 			{
-				if (walker->hash == hash && walker->ofs != back1k)
+				hashitem* walker = hashbucket[hash % 256];
+				while (walker)
 				{
-					p = walker->ofs;
-					int c = 1;
-					if (op[back1k] == op[p])
+					if (walker->hash == hash && walker->ofs != back1k)
 					{
-						int a = 0;
-						int b = 0;
-						do {
-							a++;
-							while (((back1k + a) < ops) && (op[back1k + a] & 0x8000)) a++;
-							b++;
-							while (((p + b) < ops) && (op[p + b] & 0x8000)) b++;
-							c++;
-						} while (c < 1024 && op[back1k + a] == op[p + b]);
-
-						if (c == 1024)
+						p = walker->ofs;
+						int c = 1;
+						if (op[back1k] == op[p])
 						{
-							printf("\nFound loop point %d -> %d\n", back1k, p);
-							looppoint = p * 2;
-							ops = back1k;
-							finalize();
-							exit(1);
+							int a = 0;
+							int b = 0;
+							do {
+								a++;
+								while (((back1k + a) < ops) && (op[back1k + a] & 0x8000)) a++;
+								b++;
+								while (((p + b) < ops) && (op[p + b] & 0x8000)) b++;
+								c++;
+							} while (c < windowsize && op[back1k + a] == op[p + b]);
+
+							if (c == windowsize)
+							{
+								printf("\nFound loop point %d -> %d\n", back1k, p);
+								looppoint = p * 2;
+								ops = back1k;
+								finalize();
+								exit(1);
+							}
 						}
 					}
+					walker = walker->mNext;
 				}
-				walker = walker->mNext;
 			}
 		}
 	}
@@ -318,6 +327,16 @@ int main(int argc, char *argv[])
 			case 'D':
 				detect = 1;
 				break;
+			case 'w':
+			case 'W':				
+				i++;
+				windowsize = atoi(argv[i]);
+				if (windowsize <= 0)
+				{
+					printf("Error: invalid window size.\n");
+					return -1;
+				}
+				break;
 			}
 		}
 		else
@@ -397,15 +416,22 @@ int main(int argc, char *argv[])
 		write_word(outfile, headersize);
 		fseek(outfile, 0, SEEK_END);
 
+		if (detect)
+		{
+			printf("Rendering at least %02d:%02d, then detecting loop point\n", (outputMilliseconds / 1000) / 60, (outputMilliseconds / 1000) % 60);
+		}
+
 		long start_t = getmsec();
 		for (i = 0; detect || i < outputMilliseconds; i++)
 		{
+			mintime = i > outputMilliseconds;
 			if (i % 1000 == 0 || i == outputMilliseconds - 1)
 			{
 				long t = (getmsec() - start_t) / 1000;
 				if (detect)
 				{
-					printf("\rRendering %02d:%02d, realtime %02d:%02d",
+					printf("\r%sing %02d:%02d, realtime %02d:%02d",
+						mintime ? "Detect" : "Render",
 						(i + 1) / (60 * 1000),
 						((i + 1) / 1000) % 60,
 						t / 60,

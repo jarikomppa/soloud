@@ -320,6 +320,7 @@ void tedPlayGetInfo(void *file, PsidHeader &hdr)
 }
 
 int selected_model = 1;
+int reset_done = 0;
 
 int tedplayMain(char *fileName, int model)
 {
@@ -335,8 +336,8 @@ int tedplayMain(char *fileName, int model)
 		int i;
 		for (i = 0; i < 100; i++)
 		process(8192); // reset sequence
-
 		tedplayStop();
+		reset_done = 1;
 
 		psidHdr.fileName = fileName;
 

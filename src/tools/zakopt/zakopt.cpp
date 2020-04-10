@@ -38,11 +38,13 @@ void write_short(unsigned short v)
     outbuf_idx++;
 }
 
-void write_delay(int delay)
+int write_delay(int delay)
 {
+    int writes = 0;
     while (delay >= 0x7fff * 2)
     {
         write_short(0x8000);
+        writes++;
         delay -= 0x7fff * 2;
     }
     while (delay)
@@ -53,7 +55,9 @@ void write_delay(int delay)
         delay -= d;
         d |= 0x8000;
         write_short(d);
+        writes++;
     }
+    return writes;
 }
 
 void printPascalString(char* s)
@@ -273,7 +277,7 @@ public:
     {
         delete[] outbuf;
         outbuf_idx = 0;
-        outbuf = new unsigned short[totalsize]; // twice the size it should need
+        outbuf = new unsigned short[totalsize * 2]; // twice the size it should need
 
         int convert_delay_to_50hz = 0;
         int combine_small_delays = 1;
@@ -299,9 +303,12 @@ public:
 
         int skipped_regwrites = 0;
 
+        int looppos_adjust = 0;
+
         unsigned short* d = (unsigned short*)data;
         for (int i = 0; i < totalsize / 2; i++)
         {
+            if (i < (looppos / 2)) looppos_adjust -= 2;
             int delay = 0;
             if (d[i] & 0x8000)
             {
@@ -312,7 +319,8 @@ public:
                 {
                     if (dt > min_delay * 2 || delay > 1000)
                     {
-                        write_delay(delay);
+                        int wc = write_delay(delay);
+                        if (i < (looppos / 2)) looppos_adjust += 2 * wc;
                         delay = 0;
                     }
                 }
@@ -323,7 +331,8 @@ public:
                     }
                     else
                     {
-                        write_delay(delay);
+                        int wc = write_delay(delay);
+                        if (i < (looppos / 2)) looppos_adjust += 2 * wc;
                         delay = 0;
                     }
             }
@@ -339,7 +348,8 @@ public:
                     {
                         if (delay >= emuspeed / 50) // flush delays at least 50Hz
                         {
-                            write_delay(delay);
+                            int wc = write_delay(delay);
+                            if (i < (looppos / 2)) looppos_adjust += 2 * wc;
                             delay = 0;
                         }
                     }
@@ -353,10 +363,12 @@ public:
                                 delay -= min_delay;
                                 frames++;
                             }
-                            write_delay(frames);
+                            int wc = write_delay(frames);
+                            if (i < (looppos / 2)) looppos_adjust += 2 * wc;
                         }
                     }
                     write_short(d[i]);
+                    if (i < (looppos / 2)) looppos_adjust += 2;
                 }
                 else
                 {
@@ -381,6 +393,9 @@ public:
         delete[] data;
         data = (unsigned char*)outbuf;
         outbuf = 0;
+        looppos += looppos_adjust;
+        *(unsigned int*)(header + 16) = looppos;
+        printf("- Loop position moved %+d bytes\n", looppos_adjust);
     }
 
     void save(const char* filename)

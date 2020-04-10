@@ -1030,9 +1030,11 @@ namespace SoLoud
 
 	void panAndExpand(AudioSourceInstance *aVoice, float *aBuffer, unsigned int aSamplesToRead, unsigned int aBufferSize, float *aScratch, unsigned int aChannels)
 	{
+#ifdef SOLOUD_SSE_INTRINSICS
 		SOLOUD_ASSERT(((size_t)aBuffer & 0xf) == 0);
 		SOLOUD_ASSERT(((size_t)aScratch & 0xf) == 0);
 		SOLOUD_ASSERT(((size_t)aBufferSize & 0xf) == 0);
+#endif
 		float pan[MAX_CHANNELS]; // current speaker volume
 		float pand[MAX_CHANNELS]; // destination speaker volume
 		float pani[MAX_CHANNELS]; // speaker volume increment per sample

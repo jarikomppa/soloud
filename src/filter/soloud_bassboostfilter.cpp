@@ -38,11 +38,13 @@ namespace SoLoud
 
 	void BassboostFilterInstance::fftFilterChannel(float *aFFTBuffer, unsigned int /*aSamples*/, float /*aSamplerate*/, time /*aTime*/, unsigned int /*aChannel*/, unsigned int /*aChannels*/)
 	{
+		comp2MagPhase(aFFTBuffer, 2);
 		unsigned int i;
 		for (i = 0; i < 2; i++)
 		{
-			aFFTBuffer[i*2+1] *= mParam[BOOST];
+			aFFTBuffer[i*2] *= mParam[BOOST];
 		}
+		magPhase2Comp(aFFTBuffer, 2);
 	}
 
 	result BassboostFilter::setParams(float aBoost)

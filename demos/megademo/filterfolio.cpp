@@ -45,6 +45,7 @@ freely, subject to the following restrictions:
 #include "soloud_lofifilter.h"
 #include "soloud_robotizefilter.h"
 #include "soloud_waveshaperfilter.h"
+#include "soloud_eqfilter.h"
 
 namespace filterfolio
 {
@@ -53,7 +54,7 @@ namespace filterfolio
 	SoLoud::Speech gSpeech;
 	SoLoud::WavStream gMusic1, gMusic2, gMusic3;
 	int gMusichandle1, gMusichandle2, gMusichandle3;
-	SoLoud::Filter *gFilter[10];
+	SoLoud::Filter *gFilter[11];
 	SoLoud::Noise gNoise;
 	int gNoisehandle;
 
@@ -90,6 +91,7 @@ namespace filterfolio
 		gFilter[7] = new SoLoud::LofiFilter;
 		gFilter[8] = new SoLoud::RobotizeFilter;
 		gFilter[9] = new SoLoud::WaveShaperFilter;
+		gFilter[10] = new SoLoud::EqFilter;
 
 		gSpeech.setText("My banana is yellow");
 
@@ -214,7 +216,8 @@ namespace filterfolio
 				"FreeverbFilter\x00"
 				"LofiFilter\x00"
 				"RobotizeFilter\x00"
-				"WaveShaperFilter\x00\x00"))
+				"WaveShaperFilter\x00"
+				"EqFilter\x00\x00"))
 			{
 				if (gFilterSelect[filterindex])
 					gSoloud.setGlobalFilter(filterindex, gFilter[gFilterSelect[filterindex] - 1]);

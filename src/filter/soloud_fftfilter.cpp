@@ -156,7 +156,7 @@ namespace SoLoud
 
 	void FFTFilterInstance::comp2MagPhase(float* aFFTBuffer, unsigned int aSamples)
 	{
-		for (unsigned int i = 0; i < aSamples / 2; i++)
+		for (unsigned int i = 0; i < aSamples; i++)
 		{
 			float re = aFFTBuffer[i * 2];
 			float im = aFFTBuffer[i * 2 + 1];
@@ -170,7 +170,7 @@ namespace SoLoud
 		float stepsize = aSamples / aSamplerate;
 		float expct = (stepsize / aSamples) * 2.0f * (float)M_PI;
 		float freqPerBin = aSamplerate / aSamples;
-		for (unsigned int i = 0; i < aSamples / 2; i++)
+		for (unsigned int i = 0; i < aSamples; i++)
 		{
 			float mag = aFFTBuffer[i * 2];
 			float pha = aFFTBuffer[i * 2 + 1];
@@ -204,7 +204,7 @@ namespace SoLoud
 		float stepsize = aSamples / aSamplerate;
 		float expct = (stepsize / aSamples) * 2.0f * (float)M_PI;
 		float freqPerBin = aSamplerate / aSamples;
-		for (unsigned int i = 0; i < aSamples / 2; i++)
+		for (unsigned int i = 0; i < aSamples; i++)
 		{
 			/* get magnitude and true frequency from synthesis arrays */
 			float mag = aFFTBuffer[i * 2];
@@ -231,7 +231,7 @@ namespace SoLoud
 
 	void FFTFilterInstance::magPhase2Comp(float* aFFTBuffer, unsigned int aSamples)
 	{
-		for (unsigned int i = 0; i < aSamples / 2; i++)
+		for (unsigned int i = 0; i < aSamples; i++)
 		{
 			float mag = aFFTBuffer[i * 2];
 			float pha = aFFTBuffer[i * 2 + 1];

@@ -49,8 +49,8 @@ namespace SoLoud
 		FFTFilterInstance(FFTFilter *aParent);
 		FFTFilterInstance();
 		void comp2MagPhase(float* aFFTBuffer, unsigned int aSamples);
-		void magPhase2MagFreq(float* aFFTBuffer, unsigned int aSamples, float aSamplerate);
-		void magFreq2MagPhase(float* aFFTBuffer, unsigned int aSamples, float aSamplerate);
+		void magPhase2MagFreq(float* aFFTBuffer, unsigned int aSamples, float aSamplerate, unsigned int aChannel);
+		void magFreq2MagPhase(float* aFFTBuffer, unsigned int aSamples, float aSamplerate, unsigned int aChannel);
 		void magPhase2Comp(float* aFFTBuffer, unsigned int aSamples);
 		void init();
 	};

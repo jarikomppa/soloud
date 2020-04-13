@@ -92,12 +92,12 @@ namespace SoLoud
 			mInputBuffer = new float[STFT_WINDOW_TWICE * aChannels];
 			mMixBuffer = new float[STFT_WINDOW_TWICE * aChannels];
 			mTemp = new float[STFT_WINDOW_SIZE];
-			mLastPhase = new float[STFT_WINDOW_SIZE];
-			mSumPhase = new float[STFT_WINDOW_SIZE];
+			mLastPhase = new float[STFT_WINDOW_SIZE * aChannels];
+			mSumPhase = new float[STFT_WINDOW_SIZE * aChannels];
 			memset(mInputBuffer, 0, sizeof(float) * STFT_WINDOW_TWICE * aChannels);
 			memset(mMixBuffer, 0, sizeof(float) * STFT_WINDOW_TWICE * aChannels);
-			memset(mLastPhase, 0, sizeof(float) * STFT_WINDOW_SIZE);
-			memset(mSumPhase, 0, sizeof(float) * STFT_WINDOW_SIZE);
+			memset(mLastPhase, 0, sizeof(float) * STFT_WINDOW_SIZE * aChannels);
+			memset(mSumPhase, 0, sizeof(float) * STFT_WINDOW_SIZE * aChannels);
 		}
 
 		int i;
@@ -165,7 +165,7 @@ namespace SoLoud
 		}
 	}
 
-	void FFTFilterInstance::magPhase2MagFreq(float* aFFTBuffer, unsigned int aSamples, float aSamplerate)
+	void FFTFilterInstance::magPhase2MagFreq(float* aFFTBuffer, unsigned int aSamples, float aSamplerate, unsigned int aChannel)
 	{
 		float stepsize = aSamples / aSamplerate;
 		float expct = (stepsize / aSamples) * 2.0f * (float)M_PI;
@@ -176,8 +176,8 @@ namespace SoLoud
 			float pha = aFFTBuffer[i * 2 + 1];
 
 			/* compute phase difference */
-			float freq = pha - mLastPhase[i];
-			mLastPhase[i] = pha;
+			float freq = pha - mLastPhase[i + aChannel * STFT_WINDOW_SIZE];
+			mLastPhase[i + aChannel * STFT_WINDOW_SIZE] = pha;
 
 			/* subtract expected phase difference */
 			freq -= (float)i * expct;
@@ -199,7 +199,7 @@ namespace SoLoud
 		}
 	}
 
-	void FFTFilterInstance::magFreq2MagPhase(float* aFFTBuffer, unsigned int aSamples, float aSamplerate)
+	void FFTFilterInstance::magFreq2MagPhase(float* aFFTBuffer, unsigned int aSamples, float aSamplerate, unsigned int aChannel)
 	{
 		float stepsize = aSamples / aSamplerate;
 		float expct = (stepsize / aSamples) * 2.0f * (float)M_PI;
@@ -224,8 +224,8 @@ namespace SoLoud
 
 			/* accumulate delta phase to get bin phase */
 			
-			mSumPhase[i] += freq;
-			aFFTBuffer[i * 2 + 1] = mSumPhase[i];
+			mSumPhase[i + aChannel * STFT_WINDOW_SIZE] += freq;
+			aFFTBuffer[i * 2 + 1] = mSumPhase[i + aChannel * STFT_WINDOW_SIZE];
 		}
 	}
 
@@ -240,16 +240,16 @@ namespace SoLoud
 		}
 	}
 
-	void FFTFilterInstance::fftFilterChannel(float *aFFTBuffer, unsigned int aSamples, float aSamplerate, time /*aTime*/, unsigned int /*aChannel*/, unsigned int /*aChannels*/)
+	void FFTFilterInstance::fftFilterChannel(float *aFFTBuffer, unsigned int aSamples, float aSamplerate, time /*aTime*/, unsigned int aChannel, unsigned int /*aChannels*/)
 	{
 		comp2MagPhase(aFFTBuffer, aSamples);
-		magPhase2MagFreq(aFFTBuffer, aSamples, aSamplerate);
+		magPhase2MagFreq(aFFTBuffer, aSamples, aSamplerate, aChannel);
 		
 		float t[STFT_WINDOW_TWICE];
 		memcpy(t, aFFTBuffer, sizeof(float) * aSamples);
-		memset(aFFTBuffer, 0, sizeof(float) * aSamples);
+		memset(aFFTBuffer, 0, sizeof(float) * aSamples * 2);
 
-		for (unsigned int i = 0; i < aSamples / 2; i++)
+		for (unsigned int i = 0; i < aSamples / 4; i++)
 		{
 			unsigned int d = i * 2;
 			if (d < aSamples / 4)
@@ -259,7 +259,7 @@ namespace SoLoud
 			}
 		}
 
-		magFreq2MagPhase(aFFTBuffer, aSamples, aSamplerate);
+		magFreq2MagPhase(aFFTBuffer, aSamples, aSamplerate, aChannel);
 		magPhase2Comp(aFFTBuffer, aSamples);
 	}
 

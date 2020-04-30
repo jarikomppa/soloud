@@ -31,6 +31,7 @@ char * loadFile(const char *fn, int &len)
 
 unsigned short* outbuf = 0;
 int outbuf_idx = 0;
+int debug = 0;
 
 void write_short(unsigned short v)
 {
@@ -149,6 +150,7 @@ public:
         if (((unsigned int*)b)[0] != 'PIHC' && ((unsigned int*)b)[1] != 'ENUT') // 'CHIP' 'TUNE'
         {
             printf("Unknown header in %s\n", fname);
+            delete[] b;
             return -1;
         }
 
@@ -186,7 +188,7 @@ public:
             return;
         }
         printf("- Decompressing\n");
-        unsigned char* u = new unsigned char[(kchunks-1) * 1024 + lastchunk];
+        unsigned char* u = new unsigned char[kchunks * 1024];
 
         int inputofs = 0;
         for (int i = 0; i < kchunks; i++)
@@ -220,7 +222,14 @@ public:
         int i;
         for (i = 0; i < kchunks; i++)
         {
-            printf("\r- Chunk%04d/%d", i, kchunks);
+            if (debug)
+            {
+                printf("- Chunk%4d/%d", i, kchunks);
+            }
+            else
+            {
+                printf("\r- Chunk%4d/%d", i, kchunks);
+            }
             if (i == 0)
             {
                 o = ::optimize(data, 1024, 0);
@@ -231,11 +240,14 @@ public:
                 o = ::optimize(data + ((i - 1) * 1024), 1024 * 2, 1024);
                 cd = ::compress(o, data + ((i - 1) * 1024), 1024 * 2, 1024, &sz, &dt);
             }
+            if (debug) printf(" %d bytes\n", (int)sz);
             memcpy(ob + datasize, cd, sz);
             datasize += sz;
             free(o);
             free(cd);
         }
+        delete[] data;
+        data = ob;
     }
 
     void find_shortest_delay()
@@ -302,17 +314,20 @@ public:
             regval[i] = -1;
 
         int skipped_regwrites = 0;
-
         int looppos_adjust = 0;
+        int written_regwrites = 0;
+        int written_delays = 0;
+        int found_delays = 0;
 
         unsigned short* d = (unsigned short*)data;
+        int delay = 0;
         for (int i = 0; i < totalsize / 2; i++)
         {
             if (i < (looppos / 2)) looppos_adjust -= 2;
-            int delay = 0;
             if (d[i] & 0x8000)
-            {
+            {                
                 // delay opcode
+                found_delays++;
                 unsigned short dt = d[i] ^ 0x8000;
                 delay += dt;
                 if (combine_small_delays)
@@ -320,11 +335,13 @@ public:
                     if (dt > min_delay * 2 || delay > 1000)
                     {
                         int wc = write_delay(delay);
+                        written_delays++;
                         if (i < (looppos / 2)) looppos_adjust += 2 * wc;
                         delay = 0;
                     }
                 }
                 else
+                {
                     if (convert_delay_to_50hz)
                     {
                         // nop - we'll combine multiple frame delays if able
@@ -332,9 +349,11 @@ public:
                     else
                     {
                         int wc = write_delay(delay);
+                        written_delays++;
                         if (i < (looppos / 2)) looppos_adjust += 2 * wc;
                         delay = 0;
                     }
+                }
             }
             else
             {
@@ -349,6 +368,7 @@ public:
                         if (delay >= emuspeed / 50) // flush delays at least 50Hz
                         {
                             int wc = write_delay(delay);
+                            written_delays++;
                             if (i < (looppos / 2)) looppos_adjust += 2 * wc;
                             delay = 0;
                         }
@@ -364,10 +384,12 @@ public:
                                 frames++;
                             }
                             int wc = write_delay(frames);
+                            written_delays++;
                             if (i < (looppos / 2)) looppos_adjust += 2 * wc;
                         }
                     }
                     write_short(d[i]);
+                    written_regwrites++;
                     if (i < (looppos / 2)) looppos_adjust += 2;
                 }
                 else
@@ -377,7 +399,8 @@ public:
             }
         }
         delete[] regval;
-        printf("- Skipped %d regwrites\n", skipped_regwrites);
+        printf("- Skipped %d regwrites and reduced %d delays\n", skipped_regwrites, found_delays - written_delays);
+        printf("- Written delays:%d, regwrites:%d\n", written_delays, written_regwrites);
         printf("- Reg writes/delay opcodes after processing %d -> %d (%+d) bytes\n", totalsize, outbuf_idx * 2, outbuf_idx * 2 - totalsize);
 
         totalsize = outbuf_idx * 2;
@@ -401,6 +424,11 @@ public:
     void save(const char* filename)
     {
         FILE* f = fopen(filename, "wb");
+        if (!f)
+        {
+            printf("Unable to save %s\n", filename);
+            exit(-1);
+        }
         fwrite(header, 1, hdrsize, f);
         fwrite(data, 1, datasize, f);
         fclose(f);
@@ -429,6 +457,11 @@ int main(int parc, char ** pars)
             if (_stricmp(pars[i], "-u") == 0)
             {
                 compressed = 0;
+            }
+            else
+            if (_stricmp(pars[i], "-d") == 0)
+            {
+                debug = 1;
             }
             else
             {
@@ -464,7 +497,8 @@ int main(int parc, char ** pars)
             "Usage:\n"
             "%s [options] infilename outfilename\n"
             "Options:\n"
-            "-u output uncompressed song data\n\n", pars[0]);
+            "-u output uncompressed song data\n"
+            "-d print diagnostic info\n\n", pars[0]);
         return 1;
     }
 

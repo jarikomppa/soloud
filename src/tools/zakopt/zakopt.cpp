@@ -83,7 +83,8 @@ public:
     int flags;
     int kchunks;
     int lastchunk;
-    int looppos;
+    int loopchunk;
+    int loopbyte;
     int emuspeed;
     int chipspeed;
     int totalsize;
@@ -125,7 +126,9 @@ public:
         printf("1k chunks    :%8d\n", kchunks);
         printf("Last chunk   :%8d bytes\n", lastchunk);
         printf("Total size   :%8d bytes\n", totalsize);
-        printf("Loop position:%8d bytes\n", looppos);
+        printf("Loop chunk   :%8d\n", loopchunk);
+        printf("Loop byte    :%8d\n", loopbyte);
+        printf("Loop ofs     :%8d\n", loopchunk * 1024 + loopbyte);
         printf("Emu speed    :%8d Hz\n", emuspeed);
         printf("Chip speed   :%8d Hz\n", chipspeed);
         char* stringptr = (char*)header + 28;
@@ -160,7 +163,8 @@ public:
         flags = *(unsigned char*)(b + 11);
         kchunks = *(unsigned short*)(b + 12);
         lastchunk = *(unsigned short*)(b + 14);
-        looppos = *(unsigned int*)(b + 16);
+        loopchunk = *(unsigned short*)(b + 16);
+        loopbyte = *(unsigned short*)(b + 18);
         emuspeed = *(unsigned int*)(b + 20);
         chipspeed = *(unsigned int*)(b + 24);
         totalsize = (kchunks - 1) * 1024 + lastchunk;
@@ -320,6 +324,7 @@ public:
         int found_delays = 0;
 
         unsigned short* d = (unsigned short*)data;
+        int looppos = loopchunk * 1024 + loopbyte;
         int delay = 0;
         for (int i = 0; i < totalsize / 2; i++)
         {
@@ -417,7 +422,8 @@ public:
         data = (unsigned char*)outbuf;
         outbuf = 0;
         looppos += looppos_adjust;
-        *(unsigned int*)(header + 16) = looppos;
+        *(unsigned short*)(header + 16) = looppos / 1024;
+        *(unsigned short*)(header + 18) = looppos % 1024;
         printf("- Loop position moved %+d bytes\n", looppos_adjust);
     }
 

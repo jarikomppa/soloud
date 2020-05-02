@@ -151,7 +151,7 @@ namespace SoLoud
 		int kchunks = aFile->read16();
 		int lastchunk = aFile->read16();
 		mLength = (kchunks - 1) * 1024 + lastchunk;
-		mLooppos = aFile->read32();
+		mLooppos = aFile->read16() * 1024 + aFile->read16();
 		mCpuspeed = aFile->read32();
 		mChipspeed = aFile->read32();
 		mYm = false;

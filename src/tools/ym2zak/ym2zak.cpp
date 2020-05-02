@@ -176,8 +176,15 @@ int main(int parc, char ** pars)
     for (int i = 0; i < 16; i++)
         oldvalue[i] = -1;
 
+    int looppos = 0;
+    int dataofs = ftell(f);
+
     for (int frame = 0; frame < frames; frame++)
     {
+        if (frame == loop)
+        {
+            looppos = ftell(f) - dataofs;
+        }
         // delay one frame
         write_word(f, 0x8001);
         songdatasize += 2;
@@ -200,6 +207,8 @@ int main(int parc, char ** pars)
     if (songdatasize & 1023) chunks++;
     write_word(f, chunks); // number of 1024 chunks of song data
     write_word(f, lastchunk); // bytes in last chunk
+    write_word(f, looppos / 1024); // loop chunk
+    write_word(f, looppos % 1024); // loop byte
 
     fclose(f);
     printf("%s written.\n", temp);

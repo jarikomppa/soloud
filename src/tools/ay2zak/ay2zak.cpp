@@ -119,8 +119,13 @@ int main(int argc, char **args)
 	for (int i = 0; i < 256; i++)
 		oldvalue[i] = -1;
 
+	int looppos = 0;
+	int eventofs = ftell(f);
+
 	for (unsigned int i = 0; i < pl->dumpsize; i++)
 	{
+		if (i == pl->loop)
+			looppos = ftell(f) - eventofs;
 		// Don't ignore envelope register rewrites
 		if ((pl->dump[i].num & 0xf) != 13 && oldvalue[pl->dump[i].num] == pl->dump[i].val)
 		{
@@ -165,6 +170,10 @@ int main(int argc, char **args)
 	if (songdatasize & 1023) chunks++;
 	write_word(f, chunks); // number of 1024 chunks of song data
 	write_word(f, lastchunk); // bytes in last chunk
+	if (!pl->loop_enabled)
+		looppos = 0;
+	write_word(f, looppos / 1024); // loop chunk
+	write_word(f, looppos % 1024); // loop byte
 
 	fclose(f);
 	printf(

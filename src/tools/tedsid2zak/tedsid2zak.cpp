@@ -117,7 +117,8 @@ void finalize()
 	if (songdatasize & 1023) chunks++;
 	write_word(outfile, chunks); // number of 1024 chunks of song data
 	write_word(outfile, lastchunk); // bytes in last chunk
-	write_dword(outfile, looppoint);
+	write_word(outfile, looppoint / 1024);
+	write_word(outfile, looppoint % 1024);
 
 	fclose(outfile);
 }

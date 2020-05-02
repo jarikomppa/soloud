@@ -289,7 +289,7 @@ public:
         printf("- Minimum delay between commands %d\n", min_delay);
     }
 
-    void optimize()
+    int optimize()
     {
         delete[] outbuf;
         outbuf_idx = 0;
@@ -406,7 +406,11 @@ public:
         delete[] regval;
         printf("- Skipped %d regwrites and reduced %d delays\n", skipped_regwrites, found_delays - written_delays);
         printf("- Written delays:%d, regwrites:%d\n", written_delays, written_regwrites);
-        printf("- Reg writes/delay opcodes after processing %d -> %d (%+d) bytes\n", totalsize, outbuf_idx * 2, outbuf_idx * 2 - totalsize);
+
+        int delta = outbuf_idx * 2 - totalsize;
+
+        printf("- Reg writes/delay opcodes after processing %d -> %d (%+d) bytes\n", totalsize, outbuf_idx * 2, delta);
+
 
         totalsize = outbuf_idx * 2;
         // Remember the actual size of last chunk
@@ -425,6 +429,7 @@ public:
         *(unsigned short*)(header + 16) = looppos / 1024;
         *(unsigned short*)(header + 18) = looppos % 1024;
         printf("- Loop position moved %+d bytes\n", looppos_adjust);
+        return delta;
     }
 
     void save(const char* filename)
@@ -458,7 +463,7 @@ int main(int parc, char ** pars)
 
     for (int i = 1; i < parc; i++)
     {
-        if (pars[i][0] == '-')
+        if (pars[i][0] == '-' && pars[i][2] == 0)
         {
             if (_stricmp(pars[i], "-u") == 0)
             {
@@ -522,9 +527,10 @@ int main(int parc, char ** pars)
 
     zak.decompress();
 
-    zak.find_shortest_delay();
-    
-    zak.optimize();
+    do
+    {
+        zak.find_shortest_delay();
+    } while (zak.optimize());
 
     if (compressed)
         zak.compress();

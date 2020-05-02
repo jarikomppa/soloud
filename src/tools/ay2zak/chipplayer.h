@@ -54,7 +54,7 @@ class ChipPlayer
 struct REG_OUT
 {
    unsigned char num, val;
-   unsigned int time;
+   uint64_t time;
 };
 
 #endif // _CHIPPLAYER_H_INCLUDED

@@ -110,7 +110,7 @@ int main(int argc, char **args)
 	write_word(f, ofs);
 	fseek(f, 0, SEEK_END);
 
-	unsigned int lasttime = 0;
+	uint64_t lasttime = 0;
 	int delaycount = 0;
 	int regwritecount = 0;
 	int duplicatecount = 0;
@@ -141,17 +141,24 @@ int main(int argc, char **args)
 			}
 			if (pl->dump[i].time != lasttime)
 			{
-				int td = pl->dump[i].time - lasttime;
-				while (td > 0)
+				uint64_t td = pl->dump[i].time - lasttime;
+				if (td > 1774400 * 2)
 				{
-					// Write time delay info (15 bits; highest bit on)
-					unsigned short to = 0x7fff;
-					if (td < to) to = td;
-					td -= to;
-					//printf("%d\n", to);
-					to |= 0x8000;
-					fwrite(&to, 1, 2, f);
-					delaycount++;
+					printf("over 2 sec delay (%3.3f), skipping\n", td / 1774400.0f);
+				}
+				else
+				{
+					while (td > 0)
+					{
+						// Write time delay info (15 bits; highest bit on)
+						unsigned short to = 0x7fff;
+						if (td < to) to = (unsigned short)td;
+						td -= to;
+						//printf("%d\n", to);
+						to |= 0x8000;
+						fwrite(&to, 1, 2, f);
+						delaycount++;
+					}
 				}
 			}
 			lasttime = pl->dump[i].time;
@@ -185,4 +192,5 @@ int main(int argc, char **args)
 
 	delete song;
 	delete pl;
+	return 0;
 }

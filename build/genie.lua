@@ -850,62 +850,6 @@ end
 
 if (WITH_TOOLS == 1) then
 
-	project "tedsid2zak"
-		kind "ConsoleApp"
-		language "C++"
-		files {
-		  "../src/tools/tedsid2zak/**.cpp"
-		}
-		targetname "tedsid2zak"
-end
-
--- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
-
-if (WITH_TOOLS == 1) then
-
-	project "ay2zak"
-		kind "ConsoleApp"
-		language "C++"
-		files {
-		  "../src/tools/ay2zak/*.c*"
-		}
-		targetname "ay2zak"
-end
-
--- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
-
-if (WITH_TOOLS == 1) then
-
-	project "ym2zak"
-		kind "ConsoleApp"
-		language "C++"
-		files {
-		  "../src/tools/ym2zak/*.c*"
-		}
-		targetname "ym2zak"
-end
-
--- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
-
-if (WITH_TOOLS == 1) then
-
-	project "zakopt"
-		kind "ConsoleApp"
-		language "C++"
-		files {
-		  "../src/tools/zakopt/*.c*"
-		}
-	includedirs {
-	  "../include"
-    }
-
-		targetname "zakopt"
-end
-
--- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
-
-if (WITH_TOOLS == 1) then
-
 	project "resamplerlab"
 		kind "ConsoleApp"
 		language "C++"

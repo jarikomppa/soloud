@@ -79,7 +79,7 @@ try:
 			soloud_dll = ctypes.CDLL("%s/%s" %(os.path.dirname(os.path.abspath(__file__)), filename))
 			break
 		except FileNotFoundError:
-			# on wondows, we get explicit an FileNotFoundError
+			# on windows, we get an explicit FileNotFoundError
 			continue
 		except OSError as e:
 			# but on linux, we don't
@@ -160,7 +160,7 @@ def fix_default_param(defparam, classname):
     if (classname + '::') == defparam[0:len(classname)+2:]:
         return defparam[len(classname)+2::]
     elif defparam.startswith('Soloud::'):
-        defparam = 'Soloud.%s'%(defparam[8:])
+        return 'Soloud.%s'%(defparam[8:])
     if defparam[len(defparam)-1] == "f":
         return defparam[0:len(defparam)-1]
     return defparam

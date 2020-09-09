@@ -45,6 +45,15 @@ painless as possible.
 
 Yes! This DLL can be used from non-c++ environments through the "C" interface. SoLoud comes with wrappers for Python, Ruby, c#, BlitzMax and others.
 
+### How do I know if a sound has finished playing?
+
+
+This is actually two separate questions.
+
+First, you may be asking when is SoLoud done with a sound? The default behavior is to deallocate the instance after sound has stopped playing, and thus you can simply check if your audio handle is still valid. If it's not, the sound is done.
+
+Second, you may be asking when the sound has come out of the speakers. This is trickier, because the backend may take a while for the sound to come out. The audio is generally sent to audio hardware in buffers, and those buffers may be relatively large. As a completely random example, let's say we're playing with 4096 sample buffers at 44.1kHz. We get unlucky and we need to wait for the whole buffer to play after SoLoud is done with it. With these assumptions, the audio is out of the system after approximately (4096/44100)*1000 = 93ms.
+
 ### What's the animal in the logo?
 
 
@@ -80,6 +89,7 @@ fork of libmodplug.
 
 ### Why did SoLoud move to libmodplug?
 
+
 Originally SoLoud used a public domain fork of modplug, but as time went on it became
 increasingly clear that instead of supporting SoLoud the author would have had to support
 modplug. At the same time better supported forks of modplug existed, so SoLoud was
@@ -87,12 +97,14 @@ divorced from the modplug code, while making it possible to use modplug if neede
 
 ### Can SoLoud do HRTF?
 
+
 Currently, no. Pull requests are welcome =)
 
 All joking aside, there's no simple place to plug this in currently. It's a TODO item
 for the future.
 
 ### What about surround speakers?
+
 
 Yes. SoLoud supports 1, 2, 4, 5.1 and 7.1 configurations.
 

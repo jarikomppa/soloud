@@ -1,7 +1,7 @@
 #include "sndbuffer.h"
 #include "sndrender.h"
 
-#include "malloc.h"
+#include <stdlib.h>
 #include "memory.h"
 
 SNDBUFFER::SNDBUFFER(unsigned aSize) {

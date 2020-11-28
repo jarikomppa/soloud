@@ -2,7 +2,7 @@
 #include "sndrender.h"
 
 #include <stdlib.h>
-#include "memory.h"
+#include <memory.h>
 
 SNDBUFFER::SNDBUFFER(unsigned aSize) {
         read_position = 0;

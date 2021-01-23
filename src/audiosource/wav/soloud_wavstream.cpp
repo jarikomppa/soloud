@@ -346,8 +346,8 @@ namespace SoLoud
 		{
 			int sample_number = (int)floor(mSamplerate * aSeconds);
 			stb_vorbis_seek(mCodec.mOgg, sample_number);
-			// Since the position that we just seek to might not be *exactly*
-			// the position we returned, we're re-calculating the position just
+			// Since the position that we just sought to might not be *exactly*
+			// the position we asked for, we're re-calculating the position just
 			// for the sake of correctness.
 			int newSampleOffset = stb_vorbis_get_sample_offset(mCodec.mOgg);
 			double newPosition = float(newSampleOffset / mSamplerate);

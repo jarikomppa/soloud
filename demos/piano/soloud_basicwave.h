@@ -1,6 +1,6 @@
 /*
 SoLoud audio engine
-Copyright (c) 2013 Jari Komppa
+Copyright (c) 2013-2021 Jari Komppa
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -44,14 +44,6 @@ namespace SoLoud
 	class Basicwave : public AudioSource
 	{
 	public:
-		enum WAVEFORMS
-		{
-			SINE,
-			TRIANGLE,
-			SQUARE,
-			SAW,
-			INVERSESAW
-		};
 		float mFreq;
 		int mWaveform;
 		Basicwave();

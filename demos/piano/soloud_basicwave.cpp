@@ -1,6 +1,6 @@
 /*
 SoLoud audio engine
-Copyright (c) 2013-2014 Jari Komppa
+Copyright (c) 2013-2021 Jari Komppa
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -23,13 +23,8 @@ freely, subject to the following restrictions:
 */
 
 #include "soloud_basicwave.h"
+#include "soloud_misc.h"
 
-static float my_fabs(float x)
-{
-    if (x < 0)
-        return -x;
-    return x;
-}
 
 namespace SoLoud
 {
@@ -43,43 +38,11 @@ namespace SoLoud
 	unsigned int BasicwaveInstance::getAudio(float *aBuffer, unsigned int aSamplesToRead, unsigned int aBufferSize)
 	{
 		unsigned int i;
-		switch (mParent->mWaveform)
+		int waveform = mParent->mWaveform;
+		for (i = 0; i < aSamplesToRead; i++)
 		{
-			case Basicwave::SINE:
-				for (i = 0; i < aSamplesToRead; i++)
-				{
-					aBuffer[i] = (float)sin(mParent->mFreq * mOffset * M_PI * 2);
-					mOffset++;
-				}
-				break;
-			case Basicwave::SAW:
-				for (i = 0; i < aSamplesToRead; i++)
-				{
-					aBuffer[i] = (1 - (float)fmod(mParent->mFreq * mOffset, 1)) * 2 - 1;
-					mOffset++;
-				}
-				break;				
-			case Basicwave::INVERSESAW:
-				for (i = 0; i < aSamplesToRead; i++)
-				{
-					aBuffer[i] = ((float)fmod(mParent->mFreq * mOffset, 1)) * 2 - 1;
-					mOffset++;
-				}
-				break;				
-			case Basicwave::SQUARE:
-				for (i = 0; i < aSamplesToRead; i++)
-				{
-					aBuffer[i] = ((float)fmod(mParent->mFreq * mOffset, 1.0f) > 0.5f) ? -1.0f : 1.0f;
-					mOffset++;
-				}
-				break;
-			case Basicwave::TRIANGLE:
-				for (i = 0; i < aSamplesToRead; i++)
-				{
-					aBuffer[i] = my_fabs(0.5f - (float)fmod(mParent->mFreq * mOffset, 1)) * 4 - 1;
-					mOffset++;
-				}
-				break;
+			aBuffer[i] = SoLoud::Misc::generateWaveform(waveform, fmod(mParent->mFreq * mOffset,1));
+			mOffset++;
 		}
 		return aSamplesToRead;
 	}
@@ -93,7 +56,7 @@ namespace SoLoud
 	Basicwave::Basicwave()
 	{
 		setSamplerate(44100);
-		mWaveform = SQUARE;
+		mWaveform = SoLoud::Soloud::WAVE_SQUARE;
 	}
 
 	Basicwave::~Basicwave()

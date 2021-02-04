@@ -34,6 +34,7 @@ namespace SoLoud
 	class BasicwaveInstance : public AudioSourceInstance
 	{
 		Basicwave *mParent;
+		float mFreq;
 		int mOffset;
 	public:
 		BasicwaveInstance(Basicwave *aParent);
@@ -50,6 +51,7 @@ namespace SoLoud
 		virtual ~Basicwave();
 		void setSamplerate(float aSamplerate);
 		void setWaveform(int aWaveform);
+		void setFreq(float aFreq);
 		virtual AudioSourceInstance *createInstance();
 	};
 };

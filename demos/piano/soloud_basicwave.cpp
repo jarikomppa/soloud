@@ -33,6 +33,7 @@ namespace SoLoud
 	{
 		mParent = aParent;
 		mOffset = 0;
+		mFreq = aParent->mFreq;
 	}
 
 	unsigned int BasicwaveInstance::getAudio(float *aBuffer, unsigned int aSamplesToRead, unsigned int aBufferSize)
@@ -41,7 +42,7 @@ namespace SoLoud
 		int waveform = mParent->mWaveform;
 		for (i = 0; i < aSamplesToRead; i++)
 		{
-			aBuffer[i] = SoLoud::Misc::generateWaveform(waveform, fmod(mParent->mFreq * mOffset,1));
+			aBuffer[i] = SoLoud::Misc::generateWaveform(waveform, fmod(mFreq * (float)mOffset, 1.0f));
 			mOffset++;
 		}
 		return aSamplesToRead;
@@ -68,6 +69,11 @@ namespace SoLoud
 	{
 		mBaseSamplerate = aSamplerate;
 		mFreq = (float)(440 / mBaseSamplerate);
+	}
+
+	void Basicwave::setFreq(float aFreq)
+	{
+		mFreq = aFreq / mBaseSamplerate;
 	}
 
 	void Basicwave::setWaveform(int aWaveform)

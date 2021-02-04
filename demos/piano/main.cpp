@@ -32,6 +32,8 @@ freely, subject to the following restrictions:
 #include "soloud_wav.h"
 #include "soloud_padsynth.h"
 #include "soloud_basicwave.h"
+#include "soloud_ay.h"
+
 
 #include "soloud_bassboostfilter.h"
 #include "soloud_biquadresonantfilter.h"
@@ -53,8 +55,9 @@ struct plonked
 	float mRel;
 };
 
-SoLoud::Soloud gSoloud;			// SoLoud engine core
-SoLoud::Basicwave gWave;		// Simple wave audio source
+SoLoud::Soloud gSoloud;
+SoLoud::Basicwave gWave;
+SoLoud::Ay gAy;
 SoLoud::Wav gLoadedWave;
 SoLoud::Wav gPadsynth;
 SoLoud::Bus gBus;
@@ -99,17 +102,22 @@ void plonk(float rel, float vol = 0x50)
 	{
 	default:
 	case 0:
+		gWave.setFreq(440.0f * rel * 2);
 		handle = gBus.play(gWave, 0);
 		break;
 	case 1:
 		handle = gBus.play(gPadsynth, 0);
+		gSoloud.setRelativePlaySpeed(handle, 2 * rel);
 		break;
 	case 2:
 		handle = gBus.play(gLoadedWave, 0);
-		break;	
-	}
+		gSoloud.setRelativePlaySpeed(handle, 2 * rel);
+		break;
+	case 3:
+		handle = gBus.play(gAy, 0);
+		break;
+	}	
 	gSoloud.fadeVolume(handle, vol, gAttack);
-	gSoloud.setRelativePlaySpeed(handle, 2 * rel);
 	gPlonked[i].mHandle = handle;
 	gPlonked[i].mRel = rel;
 }
@@ -229,25 +237,24 @@ int DemoEntry(int argc, char *argv[])
 void waveform_window()
 {
 	ONCE(ImGui::SetNextWindowPos(ImVec2(320, 20)));
+	ONCE(ImGui::SetNextWindowSize(ImVec2(200, 350)));
 	ImGui::Begin("Waveform");
 
-#define WAVEBUTTON(x, xb, xs)\
-	if (ImGui::RadioButton(xb, gWaveSelect == x))\
-	{\
-		gWaveSelect = x;\
-		gWave.setWaveform(x);\
-		say(xs);\
+	if (ImGui::Combo("Wave", &gWaveSelect,
+		"Square wave\x00"
+		"Saw wave\x00"
+		"Sine wave\x00"
+		"Triangle wave\x00"
+		"Bounce wave\x00"
+		"Jaws wave\x00"
+		"Humps wave\x00"
+		"Antialized square wave\x00"
+		"Antialiazed sawe wave\x00"
+		"\x00"))
+	{
+		gWave.setWaveform(gWaveSelect);
 	}
 
-	WAVEBUTTON(SoLoud::Soloud::WAVE_SQUARE, "Square", "Square wave");
-	WAVEBUTTON(SoLoud::Soloud::WAVE_SAW, "Saw", "Saw wave");
-	WAVEBUTTON(SoLoud::Soloud::WAVE_SIN, "Sin", "Sine wave");
-	WAVEBUTTON(SoLoud::Soloud::WAVE_TRIANGLE, "Triangle", "Triangle wave");
-	WAVEBUTTON(SoLoud::Soloud::WAVE_BOUNCE, "Bounce", "Bounce wave");
-	WAVEBUTTON(SoLoud::Soloud::WAVE_JAWS, "Jaws", "Jaws wave");
-	WAVEBUTTON(SoLoud::Soloud::WAVE_HUMPS, "Humps", "Humps wave");
-	WAVEBUTTON(SoLoud::Soloud::WAVE_FSQUARE, "AA Square", "Antialized square wave");
-	WAVEBUTTON(SoLoud::Soloud::WAVE_FSAW, "AA Saw", "Antialiazed sawe wave");
 	ImGui::End();
 }
 
@@ -255,6 +262,7 @@ void info_window()
 {
 	float* buf = gSoloud.getWave();
 	float* fft = gSoloud.calcFFT();
+
 	ONCE(ImGui::SetNextWindowPos(ImVec2(500, 20)));
 	ImGui::Begin("Output");
 	ImGui::PlotLines("##Wave", buf, 256, 0, "Wave", -1, 1, ImVec2(264, 80));
@@ -412,6 +420,7 @@ void DemoMainloop()
 		"Basic wave\x00"
 		"Padsynth\x00"
 		"Basic sample\x00"
+		"Ay\x00"
 		"\x00"))
 	{
 	}

@@ -132,22 +132,6 @@ void unplonk(float rel)
 	gPlonked[i].mHandle = 0;
 }
 
-void replonk(float vol = 0x50)
-{
-	int i = 0;
-	while (i < 128 && gPlonked[i].mHandle != 0) i++;
-	if (i == 128) return;
-
-	vol = (vol + 10) / (float)(0x7f + 10);
-	vol *= vol;
-	for (i = 0; i < 128; i++)
-	{
-		if (gPlonked[i].mHandle != 0)
-		{	
-			gSoloud.fadeVolume(gPlonked[i].mHandle, vol, 0.1);
-		}
-	}
-}
 
 void say(const char *text)
 {
@@ -173,11 +157,6 @@ void midicallback(double deltatime, std::vector< unsigned char > *message, void 
 	if (((*message)[0] & 0xf0) == 0x80)
 	{
 		unplonk((float)pow(0.943875f, 0x3c - (*message)[1]));
-	}
-	// aftertouch
-	if (((*message)[0] & 0xf0) == 0xd0)
-	{
-		replonk((float)(*message)[1]);
 	}
 }
 
@@ -255,6 +234,11 @@ void waveform_window()
 		gWave.setWaveform(gWaveSelect);
 	}
 
+	ImGui::DragFloat("Attack", &gWave.mADSR.mA, 0.01f);
+	ImGui::DragFloat("Decay", &gWave.mADSR.mD, 0.01f);
+	ImGui::DragFloat("Sustain", &gWave.mADSR.mS, 0.01f);
+	ImGui::DragFloat("Release", &gRelease, 0.01f);
+
 	ImGui::End();
 }
 
@@ -263,7 +247,7 @@ void info_window()
 	float* buf = gSoloud.getWave();
 	float* fft = gSoloud.calcFFT();
 
-	ONCE(ImGui::SetNextWindowPos(ImVec2(500, 20)));
+	ONCE(ImGui::SetNextWindowPos(ImVec2(520, 20)));
 	ImGui::Begin("Output");
 	ImGui::PlotLines("##Wave", buf, 256, 0, "Wave", -1, 1, ImVec2(264, 80));
 	ImGui::PlotHistogram("##FFT", fft, 256 / 2, 0, "FFT", 0, 10, ImVec2(264, 80), 8);

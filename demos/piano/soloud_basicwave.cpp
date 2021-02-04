@@ -34,16 +34,19 @@ namespace SoLoud
 		mParent = aParent;
 		mOffset = 0;
 		mFreq = aParent->mFreq;
+		mT = 0;
 	}
 
 	unsigned int BasicwaveInstance::getAudio(float *aBuffer, unsigned int aSamplesToRead, unsigned int aBufferSize)
 	{
 		unsigned int i;
 		int waveform = mParent->mWaveform;
+		float d = 1.0f / mSamplerate;
 		for (i = 0; i < aSamplesToRead; i++)
 		{
-			aBuffer[i] = SoLoud::Misc::generateWaveform(waveform, fmod(mFreq * (float)mOffset, 1.0f));
+			aBuffer[i] = SoLoud::Misc::generateWaveform(waveform, fmod(mFreq * (float)mOffset, 1.0f)) * mParent->mADSR.val(mT, 10000000000000.0f);
 			mOffset++;
+			mT += d;
 		}
 		return aSamplesToRead;
 	}

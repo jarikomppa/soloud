@@ -1,7 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <memory.h>
-#include <malloc.h>
 #include "chipplayer.h"
 #include "soloud_file.h"
 #include "soloud_ay.h"

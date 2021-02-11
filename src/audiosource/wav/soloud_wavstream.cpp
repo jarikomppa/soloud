@@ -349,8 +349,8 @@ namespace SoLoud
 			// Since the position that we just sought to might not be *exactly*
 			// the position we asked for, we're re-calculating the position just
 			// for the sake of correctness.
-			int newSampleOffset = stb_vorbis_get_sample_offset(mCodec.mOgg);
-			double newPosition = float(newSampleOffset / mSamplerate);
+			mOffset = stb_vorbis_get_sample_offset(mCodec.mOgg);
+			double newPosition = float(mOffset / mSamplerate);
 			mStreamPosition = newPosition;
 			return 0;
 		} else {

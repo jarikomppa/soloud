@@ -351,7 +351,7 @@ namespace SoLoud
 			// for the sake of correctness.
 			int newSampleOffset = stb_vorbis_get_sample_offset(mCodec.mOgg);
 			double newPosition = float(newSampleOffset / mSamplerate);
-			mStreamTime = mStreamPosition = newPosition;
+			mStreamPosition = newPosition;
 			return 0;
 		} else {
 			return AudioSourceInstance::seek(aSeconds, mScratch, mScratchSize);

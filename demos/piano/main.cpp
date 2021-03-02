@@ -114,7 +114,8 @@ void plonk(float rel, float vol = 0x50)
 		gSoloud.setRelativePlaySpeed(handle, 2 * rel);
 		break;
 	case 3:
-		handle = gBus.play(gAy, 0);
+		gWave.setFreq(440.0f * rel * 2, true);
+		handle = gBus.play(gWave, 0);
 		break;
 	}	
 	gSoloud.fadeVolume(handle, vol, gAttack);
@@ -233,6 +234,39 @@ void waveform_window()
 	{
 		gWave.setWaveform(gWaveSelect);
 	}
+
+	ImGui::DragFloat("Attack", &gWave.mADSR.mA, 0.01f);
+	ImGui::DragFloat("Decay", &gWave.mADSR.mD, 0.01f);
+	ImGui::DragFloat("Sustain", &gWave.mADSR.mS, 0.01f);
+	ImGui::DragFloat("Release", &gRelease, 0.01f);
+
+	ImGui::End();
+}
+
+void superwave_window()
+{
+	ONCE(ImGui::SetNextWindowPos(ImVec2(320, 20)));
+	ONCE(ImGui::SetNextWindowSize(ImVec2(200, 350)));
+	ImGui::Begin("Superwave");
+
+	ImGui::DragFloat("Scale", &gWave.mSuperwaveScale, 0.01f);
+	ImGui::DragFloat("Detune", &gWave.mSuperwaveDetune, 0.001f);
+
+	if (ImGui::Combo("Wave", &gWaveSelect,
+		"Square wave\x00"
+		"Saw wave\x00"
+		"Sine wave\x00"
+		"Triangle wave\x00"
+		"Bounce wave\x00"
+		"Jaws wave\x00"
+		"Humps wave\x00"
+		"Antialized square wave\x00"
+		"Antialiazed sawe wave\x00"
+		"\x00"))
+	{
+		gWave.setWaveform(gWaveSelect);
+	}
+
 
 	ImGui::DragFloat("Attack", &gWave.mADSR.mA, 0.01f);
 	ImGui::DragFloat("Decay", &gWave.mADSR.mD, 0.01f);
@@ -404,7 +438,7 @@ void DemoMainloop()
 		"Basic wave\x00"
 		"Padsynth\x00"
 		"Basic sample\x00"
-		"Ay\x00"
+		"Superwave\x00"
 		"\x00"))
 	{
 	}
@@ -428,6 +462,9 @@ void DemoMainloop()
 			break;
 		case 1:
 			padsynth_window();
+			break;
+		case 3:
+			superwave_window();
 			break;
 		}
 	}

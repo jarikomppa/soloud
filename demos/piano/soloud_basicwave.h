@@ -49,12 +49,15 @@ namespace SoLoud
 	public:
 		ADSR mADSR;
 		float mFreq;
+		float mSuperwaveScale;
+		float mSuperwaveDetune;
 		int mWaveform;
+		bool mSuperwave;
 		Basicwave();
 		virtual ~Basicwave();
 		void setSamplerate(float aSamplerate);
 		void setWaveform(int aWaveform);
-		void setFreq(float aFreq);
+		void setFreq(float aFreq, bool aSupewave = false);
 		virtual AudioSourceInstance *createInstance();
 	};
 };

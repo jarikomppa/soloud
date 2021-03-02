@@ -42,11 +42,30 @@ namespace SoLoud
 		unsigned int i;
 		int waveform = mParent->mWaveform;
 		float d = 1.0f / mSamplerate;
-		for (i = 0; i < aSamplesToRead; i++)
+		if (!mParent->mSuperwave)
 		{
-			aBuffer[i] = SoLoud::Misc::generateWaveform(waveform, fmod(mFreq * (float)mOffset, 1.0f)) * mParent->mADSR.val(mT, 10000000000000.0f);
-			mOffset++;
-			mT += d;
+			for (i = 0; i < aSamplesToRead; i++)
+			{
+				aBuffer[i] = SoLoud::Misc::generateWaveform(waveform, fmod(mFreq * (float)mOffset, 1.0f)) * mParent->mADSR.val(mT, 10000000000000.0f);
+				mOffset++;
+				mT += d;
+			}
+		}
+		else
+		{
+			for (i = 0; i < aSamplesToRead; i++)
+			{
+				aBuffer[i] = SoLoud::Misc::generateWaveform(waveform, fmod(mFreq * (float)mOffset, 1.0f)) * mParent->mADSR.val(mT, 10000000000000.0f);
+				float f = mFreq * (float)mOffset;
+				for (int j = 0; j < 3; j++)
+				{
+					f *= 2;
+					aBuffer[i] += SoLoud::Misc::generateWaveform(waveform, fmod(mParent->mSuperwaveDetune * f, 1.0f)) * mParent->mADSR.val(mT, 10000000000000.0f) * mParent->mSuperwaveScale;
+				}
+				mOffset++;
+				mT += d;
+			}
+
 		}
 		return aSamplesToRead;
 	}
@@ -61,6 +80,9 @@ namespace SoLoud
 	{
 		setSamplerate(44100);
 		mWaveform = SoLoud::Soloud::WAVE_SQUARE;
+		mSuperwave = false;
+		mSuperwaveScale = 0.25f;
+		mSuperwaveDetune = 1.0f;
 	}
 
 	Basicwave::~Basicwave()
@@ -74,9 +96,10 @@ namespace SoLoud
 		mFreq = (float)(440 / mBaseSamplerate);
 	}
 
-	void Basicwave::setFreq(float aFreq)
+	void Basicwave::setFreq(float aFreq, bool aSuperwave)
 	{
 		mFreq = aFreq / mBaseSamplerate;
+		mSuperwave = aSuperwave;
 	}
 
 	void Basicwave::setWaveform(int aWaveform)

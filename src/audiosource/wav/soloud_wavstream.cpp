@@ -344,13 +344,13 @@ namespace SoLoud
 	{
 		if (mCodec.mOgg)
 		{
-			int sample_number = (int)floor(mSamplerate * aSeconds);
-			stb_vorbis_seek(mCodec.mOgg, sample_number);
+			int pos = (int)floor(mBaseSamplerate * aSeconds);
+			stb_vorbis_seek(mCodec.mOgg, pos);
 			// Since the position that we just sought to might not be *exactly*
 			// the position we asked for, we're re-calculating the position just
 			// for the sake of correctness.
 			mOffset = stb_vorbis_get_sample_offset(mCodec.mOgg);
-			double newPosition = float(mOffset / mSamplerate);
+			double newPosition = float(mOffset / mBaseSamplerate);
 			mStreamPosition = newPosition;
 			return 0;
 		} else {

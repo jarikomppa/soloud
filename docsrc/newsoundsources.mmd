@@ -67,6 +67,12 @@ The audio instance is meant as the "play head" for a sound source. Most
 of the data should be in the audio source, while audio instance may
 contain more logic.
 
+Note that the audio instance may be used not from the main thread but 
+from an extra thread (depending on the backend used). This can have an impact 
+if you want to change audio parameters during playback because you have 
+to syncronize the access to the underlaying data.
+
+
 ### AudioSourceInstance.getAudio()
 
 

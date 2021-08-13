@@ -19,6 +19,7 @@ add_custom_command (OUTPUT "${CMAKE_CURRENT_SOURCE_DIR}/../scripts/soloud_codege
 add_custom_command (OUTPUT "${CMAKE_CURRENT_SOURCE_DIR}/../glue/soloud.cs"
         COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/../scripts/gen_cs.py"
         DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/../scripts/soloud_codegen.py"
+        DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/../scripts/gen_cs.py"
         )
 add_custom_target (generate_glue_cs ALL DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/../glue/soloud.cs")
 install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/../glue/soloud.cs" DESTINATION glue)
@@ -29,6 +30,7 @@ install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/../glue/soloud.cs" DESTINATION glue)
 add_custom_command (OUTPUT "${CMAKE_CURRENT_SOURCE_DIR}/../glue/soloud.rb"
         COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/../scripts/gen_ruby.py"
         DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/../scripts/soloud_codegen.py"
+        DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/../scripts/gen_ruby.py"
         )
 add_custom_target (generate_glue_ruby ALL DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/../glue/soloud.rb")
 install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/../glue/soloud.rb" DESTINATION glue)
@@ -39,6 +41,7 @@ install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/../glue/soloud.rb" DESTINATION glue)
 add_custom_command (OUTPUT "${CMAKE_CURRENT_SOURCE_DIR}/../glue/soloud.py"
         COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/../scripts/gen_python.py"
         DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/../scripts/soloud_codegen.py"
+        DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/../scripts/gen_python.py"
         )
 add_custom_target(generate_glue_python ALL DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/../glue/soloud.py")
 install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/../glue/soloud.py" DESTINATION glue)

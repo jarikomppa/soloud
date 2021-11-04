@@ -40,6 +40,9 @@ namespace SoLoud
 #define MINIAUDIO_IMPLEMENTATION
 #define MA_NO_NULL
 #define MA_NO_DECODING
+#define MA_NO_WAV
+#define MA_NO_FLAC
+#define MA_NO_MP3
 #include "miniaudio.h"
 #include <math.h>
 
@@ -61,7 +64,7 @@ namespace SoLoud
     result miniaudio_init(SoLoud::Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer, unsigned int aChannels)
     {
         ma_device_config config = ma_device_config_init(ma_device_type_playback);
-        config.bufferSizeInFrames = 128;
+        config.periodSizeInFrames = 128;
         config.playback.format    = ma_format_f32;
         config.playback.channels  = aChannels;
         config.sampleRate         = aSamplerate;
@@ -73,7 +76,7 @@ namespace SoLoud
             return UNKNOWN_ERROR;
         }
 
-        aSoloud->postinit_internal(gDevice.sampleRate, gDevice.playback.internalBufferSizeInFrames, aFlags, gDevice.playback.channels);
+        aSoloud->postinit_internal(gDevice.sampleRate, gDevice.playback.internalPeriodSizeInFrames, aFlags, gDevice.playback.channels);
 
         aSoloud->mBackendCleanupFunc = soloud_miniaudio_deinit;
 

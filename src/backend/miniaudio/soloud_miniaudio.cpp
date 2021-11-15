@@ -64,7 +64,7 @@ namespace SoLoud
     result miniaudio_init(SoLoud::Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer, unsigned int aChannels)
     {
         ma_device_config config = ma_device_config_init(ma_device_type_playback);
-        config.periodSizeInFrames = aBuffer;
+        //config.periodSizeInFrames = aBuffer; // setting to aBuffer (like 2048) causes miniaudio to crash; let's just use the default.
         config.playback.format    = ma_format_f32;
         config.playback.channels  = aChannels;
         config.sampleRate         = aSamplerate;

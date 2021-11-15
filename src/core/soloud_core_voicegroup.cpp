@@ -39,7 +39,7 @@ namespace SoLoud
 		{
 			if (mVoiceGroup[i] == NULL)
 			{
-				mVoiceGroup[i] = new unsigned int[16];
+				mVoiceGroup[i] = new unsigned int[17];
 				if (mVoiceGroup[i] == NULL)
 				{
 					unlockAudioMutex_internal();

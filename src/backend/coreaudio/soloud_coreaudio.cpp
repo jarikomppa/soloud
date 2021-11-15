@@ -55,7 +55,27 @@ namespace SoLoud
 		AudioQueueStop(audioQueue, true);
 		AudioQueueDispose(audioQueue, false);
 	}
+
+	result soloud_coreaudio_pause(SoLoud::Soloud *aSoloud)
+	{
+		if (!audioQueue)
+			return UNKNOWN_ERROR;
+
+		AudioQueuePause(audioQueue);			// TODO: Error code
+
+		return 0;
+	}
+
+	result soloud_coreaudio_resume(SoLoud::Soloud *aSoloud)
+	{
+		if (!audioQueue)
+			return UNKNOWN_ERROR;
 	
+		AudioQueueStart(audioQueue, nil);		// TODO: Error code
+
+		return 0;
+	}
+
 	static void coreaudio_mutex_lock(void *mutex)
 	{
 		Thread::lockMutex(mutex);
@@ -77,6 +97,8 @@ namespace SoLoud
 	{
 		aSoloud->postinit_internal(aSamplerate, aBuffer, aFlags, 2);
 		aSoloud->mBackendCleanupFunc = soloud_coreaudio_deinit;
+		aSoloud->mBackendPauseFunc = soloud_coreaudio_pause;
+		aSoloud->mBackendResumeFunc = soloud_coreaudio_resume;
 
 		AudioStreamBasicDescription audioFormat;
 		audioFormat.mSampleRate = aSamplerate;
@@ -122,6 +144,6 @@ namespace SoLoud
 
         aSoloud->mBackendString = "CoreAudio";
 		return 0;
-	}	
+	}
 };
 #endif

@@ -176,7 +176,7 @@ namespace SoLoud
 			getAudio(mScratch, samples, samples);
 			samples_to_discard -= samples;
 		}
-		mStreamPosition = offset;
+		mStreamPosition = aSeconds;
 		return SO_NO_ERROR;
 	}
 

@@ -191,6 +191,9 @@ namespace SoLoud
 
 	void Soloud::deinit()
 	{
+		// Make sure no audio operation is currently pending
+		lockAudioMutex_internal();
+		unlockAudioMutex_internal();
 		SOLOUD_ASSERT(!mInsideAudioThreadMutex);
 		stopAll();
 		if (mBackendCleanupFunc)

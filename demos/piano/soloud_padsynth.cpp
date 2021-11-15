@@ -94,7 +94,7 @@ PADsynth::PADsynth(int aSampleCount, float aSamplerate, int aHarmonicsCount)
 	int i;
 	for (i = 0; i < mHarmonicsCount; i++) 
 		mHarmonics[i] = 0.0f;
-	mHarmonics[1]=1.0;//default, the first harmonic has the amplitude 1.0
+	mHarmonics[1] = 1.0f;//default, the first harmonic has the amplitude 1.0
 
     mFreqAmp = new float[mSampleCount / 2];
 };
@@ -132,7 +132,7 @@ float PADsynth::profile(float fi, float bwi)
     return (float)exp(-x) / bwi;
 };
 
-void PADsynth::synth(float f,float bw,float bwscale,float *smp)
+void PADsynth::synth(float f, float bw, float bwscale, float *smp)
 {
     int i, nh;
     

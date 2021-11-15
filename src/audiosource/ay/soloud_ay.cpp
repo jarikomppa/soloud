@@ -101,17 +101,13 @@ namespace SoLoud
 	{
 		if (!aMem || aLength == 0)
 			return INVALID_PARAMETER;
-		MemoryFile *mf = new MemoryFile;
-		if (!mf)
-			return OUT_OF_MEMORY;
-		int res = mf->openMem(aMem, aLength, aCopy, aTakeOwnership);
+		MemoryFile mf;
+		int res = mf.openMem(aMem, aLength, aCopy, aTakeOwnership);
 		if (res != SO_NO_ERROR)
 		{
-			delete mf;
 			return res;
 		}
-		res = loadFile(mf);
-		delete mf;
+		res = loadFile(&mf);
 		return res;
 	}
 
@@ -119,17 +115,14 @@ namespace SoLoud
 	{
 		if (!aFilename)
 			return INVALID_PARAMETER;
-		DiskFile *df = new DiskFile;
-		if (!df) return OUT_OF_MEMORY;
-		int res = df->open(aFilename);
+		DiskFile df;
+		int res = df.open(aFilename);
 		if (res != SO_NO_ERROR)
 		{
-			delete df;
 			return res;
 		}
-		res = loadFile(df);
+		res = loadFile(&df);
 
-		delete df;
 		return res;
 	}
 

@@ -68,7 +68,7 @@ namespace SoLoud
 			if (p1 < 0) p1 = 0;
 			if (p0 < 0) p0 = 0;
 			if (p3 > 7) p3 = 7;
-			float v = (i % (aSamples / 16)) / (float)(aSamples / 16);
+			float v = (float)(i % (aSamples / 16)) / (float)(aSamples / 16);
 			aFFTBuffer[p * 2] *= catmullrom(v, mParam[p0 + 1], mParam[p1 + 1], mParam[p2 + 1], mParam[p3 + 1]);
 		}
 		memset(aFFTBuffer + aSamples, 0, sizeof(float) * aSamples);

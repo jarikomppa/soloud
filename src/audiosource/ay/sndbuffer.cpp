@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include "sndbuffer.h"
 #include "sndrender.h"
-#include "memory.h"
+#include <memory.h>
 
 SNDBUFFER::SNDBUFFER(unsigned aSize) {
         read_position = 0;

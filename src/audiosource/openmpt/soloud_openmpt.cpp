@@ -101,10 +101,7 @@ namespace SoLoud
 
 	result Openmpt::loadFile(File *aFile)
 	{
-		if (mData)
-		{
-			delete[] mData;
-		}
+		delete[] mData;
 
 		mDataLen = aFile->length();
 		mData = new char[mDataLen];

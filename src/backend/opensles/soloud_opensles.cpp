@@ -48,10 +48,10 @@ namespace SoLoud
 // Error logging.
 #if defined( __ANDROID__ ) 
 #  include <android/log.h>
-#  define LOG_ERROR( _msg ) \
-   __android_log_print( ANDROID_LOG_ERROR, "SoLoud", _msg )
-#  define LOG_INFO( _msg ) \
-   __android_log_print( ANDROID_LOG_INFO, "SoLoud", _msg )
+#  define LOG_ERROR(...) \
+   __android_log_print( ANDROID_LOG_ERROR, "SoLoud", __VA_ARGS__ )
+#  define LOG_INFO(...) \
+   __android_log_print( ANDROID_LOG_INFO, "SoLoud", __VA_ARGS__ )
 
 #else
    printf( _msg )
@@ -172,7 +172,7 @@ namespace SoLoud
 	{
 		Soloud *soloud = static_cast<Soloud*>(context);
 		BackendData *data = static_cast<BackendData*>(soloud->mBackendData);
-		if( event & SL_PLAYEVENT_HEADATEND )
+		if (event & SL_PLAYEVENT_HEADATEND && data->buffersQueued > 0)
 		{
 			data->buffersQueued--;
 		}
@@ -275,17 +275,10 @@ namespace SoLoud
 
 		aSoloud->mBackendData = data;		// Must be set before callback
 
-		// Begin playing.
-		{
-			const int bufferSizeBytes = data->bufferSize * data->channels * sizeof(short);
-			(*data->playerBufferQueue)->Enqueue(data->playerBufferQueue, data->outputBuffers[0], bufferSizeBytes);
-			data->activeBuffer = (data->activeBuffer + 1) % NUM_BUFFERS;
-
-			(*data->player)->RegisterCallback(data->player, soloud_opensles_play_callback, aSoloud);
-			(*data->player)->SetCallbackEventsMask(data->player, SL_PLAYEVENT_HEADATEND);
-			(*data->player)->SetPlayState(data->player, SL_PLAYSTATE_PLAYING);
-
-		}
+		// Register callback
+		(*data->player)->RegisterCallback(data->player, soloud_opensles_play_callback, aSoloud);
+		(*data->player)->SetCallbackEventsMask(data->player, SL_PLAYEVENT_HEADATEND);
+		(*data->player)->SetPlayState(data->player, SL_PLAYSTATE_PLAYING);
 
 		//
 		aSoloud->postinit_internal(aSamplerate,data->bufferSize,aFlags,2);

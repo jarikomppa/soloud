@@ -46,7 +46,7 @@ namespace SoLoud
 		{
 			for (i = 0; i < aSamplesToRead; i++)
 			{
-				aBuffer[i] = SoLoud::Misc::generateWaveform(waveform, fmod(mFreq * (float)mOffset, 1.0f)) * mParent->mADSR.val(mT, 10000000000000.0f);
+				aBuffer[i] = SoLoud::Misc::generateWaveform(waveform, (float)fmod(mFreq * (float)mOffset, 1.0f)) * mParent->mADSR.val(mT, 10000000000000.0f);
 				mOffset++;
 				mT += d;
 			}
@@ -55,12 +55,12 @@ namespace SoLoud
 		{
 			for (i = 0; i < aSamplesToRead; i++)
 			{
-				aBuffer[i] = SoLoud::Misc::generateWaveform(waveform, fmod(mFreq * (float)mOffset, 1.0f)) * mParent->mADSR.val(mT, 10000000000000.0f);
+				aBuffer[i] = SoLoud::Misc::generateWaveform(waveform, (float)fmod(mFreq * (float)mOffset, 1.0f)) * mParent->mADSR.val(mT, 10000000000000.0f);
 				float f = mFreq * (float)mOffset;
 				for (int j = 0; j < 3; j++)
 				{
 					f *= 2;
-					aBuffer[i] += SoLoud::Misc::generateWaveform(waveform, fmod(mParent->mSuperwaveDetune * f, 1.0f)) * mParent->mADSR.val(mT, 10000000000000.0f) * mParent->mSuperwaveScale;
+					aBuffer[i] += SoLoud::Misc::generateWaveform(waveform, (float)fmod(mParent->mSuperwaveDetune * f, 1.0f)) * mParent->mADSR.val(mT, 10000000000000.0f) * mParent->mSuperwaveScale;
 				}
 				mOffset++;
 				mT += d;

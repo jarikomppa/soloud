@@ -82,6 +82,7 @@ namespace SoLoud
 
 	WavStreamInstance::WavStreamInstance(WavStream *aParent)
 	{
+		mOggFrameSize = 0;
 		mParent = aParent;
 		mOffset = 0;
 		mCodec.mOgg = 0;
@@ -239,6 +240,7 @@ namespace SoLoud
 	unsigned int WavStreamInstance::getAudio(float *aBuffer, unsigned int aSamplesToRead, unsigned int aBufferSize)
 	{			
 		unsigned int offset = 0;
+		float tmp[512 * MAX_CHANNELS];
 		if (mFile == NULL)
 			return 0;
 		switch (mParent->mFiletype)
@@ -249,7 +251,6 @@ namespace SoLoud
 
 				for (i = 0; i < aSamplesToRead; i += 512)
 				{
-					float tmp[512 * MAX_CHANNELS];
 					unsigned int blockSize = (aSamplesToRead - i) > 512 ? 512 : aSamplesToRead - i;
 					offset += (unsigned int)drflac_read_pcm_frames_f32(mCodec.mFlac, blockSize, tmp);
 
@@ -271,7 +272,6 @@ namespace SoLoud
 
 				for (i = 0; i < aSamplesToRead; i += 512)
 				{
-					float tmp[512 * MAX_CHANNELS];
 					unsigned int blockSize = (aSamplesToRead - i) > 512 ? 512 : aSamplesToRead - i;
 					offset += (unsigned int)drmp3_read_pcm_frames_f32(mCodec.mMp3, blockSize, tmp);
 
@@ -320,7 +320,6 @@ namespace SoLoud
 
 				for (i = 0; i < aSamplesToRead; i += 512)
 				{
-					float tmp[512 * MAX_CHANNELS];
 					unsigned int blockSize = (aSamplesToRead - i) > 512 ? 512 : aSamplesToRead - i;
 					offset += (unsigned int)drwav_read_pcm_frames_f32(mCodec.mWav, blockSize, tmp);
 

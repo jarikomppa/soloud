@@ -116,6 +116,8 @@ namespace SoLoud
 		mAudioThreadMutex = NULL;
 		mPostClipScaler = 0;
 		mBackendCleanupFunc = NULL;
+		mBackendPauseFunc = NULL;
+		mBackendResumeFunc = NULL;
 		mChannels = 2;		
 		mStreamTime = 0;
 		mLastClockedTime = 0;
@@ -565,6 +567,23 @@ namespace SoLoud
 			return UNKNOWN_ERROR;
 		return 0;
 	}
+
+	result Soloud::pause()
+	{
+		if (mBackendPauseFunc)
+			return mBackendPauseFunc(this);
+
+		return NOT_IMPLEMENTED;
+	}
+
+	result Soloud::resume()
+	{
+		if (mBackendResumeFunc)
+			return mBackendResumeFunc(this);
+
+		return NOT_IMPLEMENTED;
+	}
+
 
 	void Soloud::postinit_internal(unsigned int aSamplerate, unsigned int aBufferSize, unsigned int aFlags, unsigned int aChannels)
 	{		

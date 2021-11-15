@@ -106,6 +106,7 @@ namespace SoLoud
 	typedef void (*mutexCallFunction)(void *aMutexPtr);
 	typedef void (*soloudCallFunction)(Soloud *aSoloud);
 	typedef unsigned int result;
+	typedef result (*soloudResultFunction)(Soloud *aSoloud);
 	typedef unsigned int handle;
 	typedef double time;
 };
@@ -165,6 +166,10 @@ namespace SoLoud
 		// Called by SoLoud to shut down the back-end. If NULL, not called. Should be set by back-end.
 		soloudCallFunction mBackendCleanupFunc;
 
+		// Some backends like CoreAudio on iOS must be paused/resumed in some cases. On incoming call as instance.
+		soloudResultFunction mBackendPauseFunc;
+		soloudResultFunction mBackendResumeFunc;
+
 		// CTor
 		Soloud();
 		// DTor
@@ -223,6 +228,9 @@ namespace SoLoud
 
 		// Initialize SoLoud. Must be called before SoLoud can be used.
 		result init(unsigned int aFlags = Soloud::CLIP_ROUNDOFF, unsigned int aBackend = Soloud::AUTO, unsigned int aSamplerate = Soloud::AUTO, unsigned int aBufferSize = Soloud::AUTO, unsigned int aChannels = 2);
+
+		result pause();
+		result resume();
 
 		// Deinitialize SoLoud. Must be called before shutting down.
 		void deinit();

@@ -30,10 +30,12 @@ freely, subject to the following restrictions:
 typedef void * (*dll_openmpt_module_create_from_memory)(const void * filedata, size_t filesize, void *logfunc, void * user, void * ctls);
 typedef void (*dll_openmpt_module_destroy)(void * mod);
 typedef int (*dll_openmpt_module_read_float_stereo)(void * mod, int samplerate, size_t count, float * left, float * right);
+typedef void (*dll_openmpt_module_set_repeat_count)(void* mod, int repeat_count);
 
 static dll_openmpt_module_create_from_memory d_openmpt_module_create_from_memory = NULL;
 static dll_openmpt_module_destroy d_openmpt_module_destroy = NULL;
 static dll_openmpt_module_read_float_stereo d_openmpt_module_read_float_stereo = NULL;
+static dll_openmpt_module_set_repeat_count d_openmpt_module_set_repeat_count = NULL;
 
 #ifdef WINDOWS_VERSION
 #include <windows.h>
@@ -98,11 +100,14 @@ static int load_dll()
 		d_openmpt_module_create_from_memory = (dll_openmpt_module_create_from_memory)getDllProc(dll, "openmpt_module_create_from_memory");
 		d_openmpt_module_destroy = (dll_openmpt_module_destroy)getDllProc(dll, "openmpt_module_destroy");
 		d_openmpt_module_read_float_stereo = (dll_openmpt_module_read_float_stereo)getDllProc(dll, "openmpt_module_read_float_stereo");
+		d_openmpt_module_set_repeat_count = (dll_openmpt_module_set_repeat_count)getDllProc(dll, "openmpt_module_set_repeat_count");
+
 
 
 		if (d_openmpt_module_create_from_memory &&
 			d_openmpt_module_destroy &&
-			d_openmpt_module_read_float_stereo)
+			d_openmpt_module_read_float_stereo &&
+			d_openmpt_module_set_repeat_count)
 		{
 			return 1;
 		}
@@ -129,4 +134,10 @@ int openmpt_module_read_float_stereo(void * mod, int samplerate, size_t count, f
 	if (load_dll())
 		return d_openmpt_module_read_float_stereo(mod, samplerate, count, left, right);
 	return 0;
+}
+
+void openmpt_module_set_repeat_count(void* mod, int repeat_count)
+{
+	if (load_dll())
+		d_openmpt_module_set_repeat_count(mod, repeat_count);
 }

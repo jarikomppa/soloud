@@ -340,6 +340,25 @@ namespace SoLoud
 		return aSamplesToRead;
 	}
 
+	result WavStreamInstance::seek(double aSeconds, float* mScratch, unsigned int mScratchSize)
+	{
+		if (mCodec.mOgg)
+		{
+			int pos = (int)floor(mBaseSamplerate * aSeconds);
+			stb_vorbis_seek(mCodec.mOgg, pos);
+			// Since the position that we just sought to might not be *exactly*
+			// the position we asked for, we're re-calculating the position just
+			// for the sake of correctness.
+			mOffset = stb_vorbis_get_sample_offset(mCodec.mOgg);
+			double newPosition = float(mOffset / mBaseSamplerate);
+			mStreamPosition = newPosition;
+			return 0;
+		}
+		else {
+			return AudioSourceInstance::seek(aSeconds, mScratch, mScratchSize);
+		}
+	}
+
 	result WavStreamInstance::rewind()
 	{
 		switch (mParent->mFiletype)

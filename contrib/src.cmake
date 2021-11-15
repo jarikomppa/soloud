@@ -13,7 +13,6 @@ set (TARGET_HEADERS
 	${HEADER_PATH}/soloud_bassboostfilter.h
 	${HEADER_PATH}/soloud_biquadresonantfilter.h
 	${HEADER_PATH}/soloud_bus.h
-	${HEADER_PATH}/soloud_c.h
 	${HEADER_PATH}/soloud_dcremovalfilter.h
 	${HEADER_PATH}/soloud_echofilter.h
 	${HEADER_PATH}/soloud_error.h
@@ -274,6 +273,18 @@ set (TARGET_SOURCES
 	${BACKENDS_SOURCES}
 	${FILTERS_SOURCES}
 )
+
+if (SOLOUD_C_API)
+	set (TARGET_SOURCES
+		${TARGET_SOURCES}
+		${SOURCE_PATH}/c_api/soloud.def
+		${SOURCE_PATH}/c_api/soloud_c.cpp
+	)
+	set (TARGET_HEADERS
+		${TARGET_HEADERS}
+		${HEADER_PATH}/soloud_c.h
+	)
+endif()
 
 if (SOLOUD_DYNAMIC)
 	add_library(${TARGET_NAME} ${TARGET_SOURCES})

@@ -244,6 +244,17 @@ if (SOLOUD_BACKEND_WASAPI)
 	)
 endif()
 
+
+if (SOLOUD_BACKEND_MINIAUDIO)
+	add_definitions (-DWITH_MINIAUDIO)
+	
+	set (BACKENDS_SOURCES
+		${BACKENDS_SOURCES}
+		${BACKENDS_PATH}/miniaudio/soloud_miniaudio.cpp
+	)
+
+endif()
+
 # Filters
 set (FILTERS_PATH ${SOURCE_PATH}/filter)
 set (FILTERS_SOURCES

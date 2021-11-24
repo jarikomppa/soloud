@@ -33,6 +33,7 @@ freely, subject to the following restrictions:
 #include "soloud.h"
 #include "soloud_speech.h"
 #include "soloud_wav.h"
+#include "soloud_duckfilter.h"
 
 namespace radiogaga
 {
@@ -49,6 +50,8 @@ namespace radiogaga
 
 	SoLoud::handle gSpeechqueuehandle;
 	SoLoud::handle gIntrohandle;
+
+	SoLoud::DuckFilter gDuckFilter;
 
 	const char *phrase[19] =
 	{
@@ -78,7 +81,7 @@ namespace radiogaga
 		gSoloud.init();
 		gSoloud.setVisualizationEnable(1);
 
-		gSoloud.play(gSpeechBus, 0.5f);
+		SoLoud::handle speechBusHandle = gSoloud.play(gSpeechBus, 0.5f);
 
 		gSoloud.play(gMusicBus);
 
@@ -112,6 +115,9 @@ namespace radiogaga
 
 		gSpeechBus.setVisualizationEnable(1);
 		gMusicBus.setVisualizationEnable(1);
+
+		gDuckFilter.setParams(&gSoloud, speechBusHandle);
+		gMusicBus.setFilter(0, &gDuckFilter);
 
 		gIntro.setText("Eat, Sleep, Rave, Repeat");
 		gIntro.setLooping(true);

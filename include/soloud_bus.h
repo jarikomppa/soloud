@@ -33,10 +33,11 @@ namespace SoLoud
 
 	class BusInstance : public AudioSourceInstance
 	{
+	public:
 		Bus *mParent;
 		unsigned int mScratchSize;
 		AlignedFloatBuffer mScratch;
-	public:
+
 		// Approximate volume for channels.
 		float mVisualizationChannelVolume[MAX_CHANNELS];
 		// Mono-mixed wave data for visualization and for visualization FFT input

@@ -171,7 +171,7 @@ if (SOLOUD_BACKEND_ALSA)
     set (BACKENDS_SOURCES              
         ${BACKENDS_SOURCES} 
         ${BACKENDS_PATH}/alsa/soloud_alsa.cpp
-    )                                              
+    )                                       
 
     find_library (ALSA_LIBRARY asound)
     set (LINK_LIBRARIES
@@ -242,6 +242,22 @@ if (SOLOUD_BACKEND_WASAPI)
 		${BACKENDS_SOURCES}
 		${BACKENDS_PATH}/wasapi/soloud_wasapi.cpp
 	)
+endif()
+
+
+if (SOLOUD_BACKEND_MINIAUDIO)
+	add_definitions (-DWITH_MINIAUDIO)
+	
+	set (BACKENDS_SOURCES
+		${BACKENDS_SOURCES}
+		${BACKENDS_PATH}/miniaudio/soloud_miniaudio.cpp
+	)
+
+	set (BACKENDS_SOURCES
+		${BACKENDS_SOURCES}
+		${BACKENDS_PATH}/miniaudio/miniaudio.h
+	)
+
 endif()
 
 # Filters

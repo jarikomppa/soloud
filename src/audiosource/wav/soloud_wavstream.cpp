@@ -344,19 +344,45 @@ namespace SoLoud
 		if (mCodec.mOgg)
 		{
 			int pos = (int)floor(mBaseSamplerate * aSeconds);
-			stb_vorbis_seek(mCodec.mOgg, pos);
-			// Since the position that we just sought to might not be *exactly*
-			// the position we asked for, we're re-calculating the position just
-			// for the sake of correctness.
-			mOffset = stb_vorbis_get_sample_offset(mCodec.mOgg);
-			double newPosition = float(mOffset / mBaseSamplerate);
-			mStreamPosition = newPosition;
-			return 0;
+			double newPosition;
+
+			switch (mParent->mFiletype)
+			{
+			case WAVSTREAM_OGG:
+				stb_vorbis_seek(mCodec.mOgg, pos);
+				// Since the position that we just sought to might not be *exactly*
+				// the position we asked for, we're re-calculating the position just
+				// for the sake of correctness.
+				mOffset = stb_vorbis_get_sample_offset(mCodec.mOgg);
+				newPosition = float(mOffset / mBaseSamplerate);
+				mStreamPosition = newPosition;
+				return 0;
+			case WAVSTREAM_FLAC:
+				drflac_seek_to_pcm_frame(mCodec.mFlac, pos);
+				mOffset = pos;
+				mStreamPosition = float(pos / mBaseSamplerate);
+				return 0;
+			case WAVSTREAM_MP3:
+				drmp3_seek_to_pcm_frame(mCodec.mMp3, pos);
+				mOffset = pos;
+				mStreamPosition = float(pos / mBaseSamplerate);
+				return 0;
+			case WAVSTREAM_WAV:
+				drwav_seek_to_pcm_frame(mCodec.mWav, pos);
+				mOffset = pos;
+				mStreamPosition = float(pos / mBaseSamplerate);
+				return 0;
+			default:
+				break;
+			}
 		}
 		else {
 			return AudioSourceInstance::seek(aSeconds, mScratch, mScratchSize);
 		}
+
+		return NOT_IMPLEMENTED;
 	}
+
 
 	result WavStreamInstance::rewind()
 	{

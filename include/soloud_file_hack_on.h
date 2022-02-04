@@ -43,8 +43,8 @@ extern int Soloud_Filehack_fread(void *dst, int s, int c, Soloud_Filehack *f);
 extern int Soloud_Filehack_fseek(Soloud_Filehack *f, int idx, int base);
 extern int Soloud_Filehack_ftell(Soloud_Filehack *f);
 extern int Soloud_Filehack_fclose(Soloud_Filehack *f);
-extern Soloud_Filehack * Soloud_Filehack_fopen(const char *aFilename, char *aMode);
-extern int Soloud_Filehack_fopen_s(Soloud_Filehack **f, const char* aFilename, char* aMode);
+extern Soloud_Filehack * Soloud_Filehack_fopen(const char *aFilename, const char *aMode);
+extern int Soloud_Filehack_fopen_s(Soloud_Filehack **f, const char* aFilename, const char* aMode);
 
 #ifdef __cplusplus
 }

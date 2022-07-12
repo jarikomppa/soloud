@@ -9,8 +9,6 @@ set (CMAKE_POSITION_INDEPENDENT_CODE ON)
 include_directories (../include)
 
 include (Configure.cmake)
-#INCLUDE (InstallIncludes.cmake)
-#INCLUDE (InstallStaticData.cmake)
 
 if (UNIX AND NOT WIN32 AND NOT APPLE)
 	if (CMAKE_SIZEOF_VOID_P MATCHES "8")
@@ -36,4 +34,6 @@ IF (SOLOUD_GENERATE_GLUE)
 	include (gen_glue.cmake)
 endif ()
 
-include (InstallExport)
+IF (SOLOUD_INSTALL)
+	include (InstallExport)
+endif ()

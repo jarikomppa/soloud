@@ -7,6 +7,9 @@ print_option_status (SOLOUD_DYNAMIC "Build dynamic library")
 option (SOLOUD_STATIC "Set to ON to build static SoLoud" ON)
 print_option_status (SOLOUD_STATIC "Build static library")
 
+option (SOLOUD_INSTALL "Set to ON for generating an INSTALL target" ON)
+print_option_status (SOLOUD_INSTALL "Generate INSTALL target")
+
 option (SOLOUD_C_API "Set to ON to include the C API" OFF)
 print_option_status (SOLOUD_C_API "Build C API")
 

@@ -22,7 +22,9 @@ add_custom_command (OUTPUT "${CMAKE_CURRENT_SOURCE_DIR}/../glue/soloud.cs"
         DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/../scripts/gen_cs.py"
         )
 add_custom_target (generate_glue_cs ALL DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/../glue/soloud.cs")
-install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/../glue/soloud.cs" DESTINATION glue)
+if (SOLOUD_INSTALL)
+        install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/../glue/soloud.cs" DESTINATION glue)
+endif ()
 
 ###############################################################################
 # Python API
@@ -33,7 +35,9 @@ add_custom_command (OUTPUT "${CMAKE_CURRENT_SOURCE_DIR}/../glue/soloud.rb"
         DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/../scripts/gen_ruby.py"
         )
 add_custom_target (generate_glue_ruby ALL DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/../glue/soloud.rb")
-install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/../glue/soloud.rb" DESTINATION glue)
+if (SOLOUD_INSTALL)
+        install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/../glue/soloud.rb" DESTINATION glue)
+endif ()
 
 ###############################################################################
 # Ruby API
@@ -44,4 +48,6 @@ add_custom_command (OUTPUT "${CMAKE_CURRENT_SOURCE_DIR}/../glue/soloud.py"
         DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/../scripts/gen_python.py"
         )
 add_custom_target(generate_glue_python ALL DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/../glue/soloud.py")
-install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/../glue/soloud.py" DESTINATION glue)
+if (SOLOUD_INSTALL)
+        install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/../glue/soloud.py" DESTINATION glue)
+endif ()

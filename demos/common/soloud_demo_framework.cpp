@@ -53,6 +53,9 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
+const int cgWindowWidth = 800;
+const int cgWindowsHeight = 400;
+
 int gPressed[256], gWasPressed[256];
 int gMouseX = 0;
 int gMouseY = 0;
@@ -550,7 +553,7 @@ void UpdateImGui()
 	ImGuiIO& io = ImGui::GetIO();
 
 	// Setup resolution (every frame to accommodate for window resizing)
-	io.DisplaySize = ImVec2((float)800, (float)400); 
+    io.DisplaySize = ImVec2((float)cgWindowWidth, (float)cgWindowsHeight);
 
 	// Setup time step
 	static double time = 0.0f;
@@ -609,8 +612,8 @@ void DemoInit()
 		"",
 		SDL_WINDOWPOS_CENTERED,
 		SDL_WINDOWPOS_CENTERED,
-		800,
-		400,
+        cgWindowWidth,
+        cgWindowsHeight,
 		flags);
 
 	SDL_GLContext glcontext = SDL_GL_CreateContext(gSDLWindow);
@@ -618,7 +621,7 @@ void DemoInit()
 	SDL_GL_SetSwapInterval(1);
 
 
-	glViewport(0, 0, 800, 400);
+    glViewport(0, 0, cgWindowWidth, cgWindowsHeight);
 
 	// set window title
 	SDL_SetWindowTitle(gSDLWindow, "http://soloud-audio.com");
@@ -714,7 +717,7 @@ void DemoUpdateStart()
 	}
 	glClearColor(0.2f, 0.2f, 0.4f, 0);
 	glClear(GL_COLOR_BUFFER_BIT);
-	DemoTexQuad(desktop_tex, 0, 0, 800, 400);
+    DemoTexQuad(desktop_tex, 0, 0, cgWindowWidth, cgWindowsHeight);
 	UpdateImGui();
 
 	gMouseX = gUIState.mousex;

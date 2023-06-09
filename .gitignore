@@ -35,3 +35,4 @@ scripts/soloud_codegen.py
 glue/rpgmaker_soloud.rb
 *.lastcodeanalysissucceeded
 *.bak
+CMakeLists.txt.user

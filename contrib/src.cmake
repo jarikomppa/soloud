@@ -2,12 +2,21 @@ set(SOLOUD_PUBLIC_HEADERS_DIR ${SOLOUD_ROOT_DIRECTORY}/include)
 set(SOLOUD_SOURCE_PATH_DIR ${SOLOUD_ROOT_DIRECTORY}/src)
 
 #Stub the existence of the libraries
-add_library(soloud STATIC)
-add_library(soloud-dynamic SHARED)
+if(SOLOUD_STATIC)
+	add_library(soloud STATIC)
+endif()
+
+if(SOLOUD_DYNAMIC)
+	add_library(soloud-dynamic SHARED)
+endif()
 
 function(apply_to_soloud_libraries FUNCTION_NAME)
+if(SOLOUD_STATIC)
 	cmake_language(CALL ${FUNCTION_NAME} soloud ${ARGN})
+endif()
+if(SOLOUD_DYNAMIC)
 	cmake_language(CALL ${FUNCTION_NAME} soloud-dynamic ${ARGN})
+endif()
 endfunction()
 
 set(LINK_LIBRARIES)

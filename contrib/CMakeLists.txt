@@ -18,13 +18,13 @@ print_option_status (SOLOUD_STATIC "Build static library")
 option (SOLOUD_BUILD_DEMOS "Set to ON for building demos" ON)
 print_option_status (SOLOUD_BUILD_DEMOS "Build demos")
 
-option (SOLOUD_ENABLE_BACKEND_NULL "Set to ON for building NULL backend" ON)
+option (SOLOUD_ENABLE_BACKEND_NULL "Set to ON for building NULL backend" OFF)
 print_option_status (SOLOUD_ENABLE_BACKEND_NULL "NULL backend")
 
 option (SOLOUD_ENABLE_BACKEND_SDL2 "Set to ON for building SDL2 backend" ON)
 print_option_status (SOLOUD_BACKEND_SDL2 "SDL2 backend")
 
-option(SOLOUD_ENABLE_BACKEND_ALSA "Set to ON for building the ALSA backend" ON)
+option(SOLOUD_ENABLE_BACKEND_ALSA "Set to ON for building the ALSA backend" OFF)
 print_option_status (SOLOUD_ENABLE_BACKEND_ALSA "ALSA backend")
 
 option (SOLOUD_BACKEND_COREAUDIO "Set to ON for building CoreAudio backend" OFF)

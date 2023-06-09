@@ -1,7 +1,8 @@
 cmake_minimum_required (VERSION 3.0)
 project (SoLoud)
 
-set (CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake;${CMAKE_MODULE_PATH}")
+#set (CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake;${CMAKE_MODULE_PATH}")
+list(APPEND CMAKE_MODULE_PATH  ${PROJECT_SOURCE_DIR}/cmake)
 set (CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 include (OptionDependentOnPackage)
@@ -14,14 +15,17 @@ option (SOLOUD_STATIC "Set to ON to build static SoLoud" ON)
 print_option_status (SOLOUD_STATIC "Build static library")
 
 # TODO:
-option (SOLOUD_BUILD_DEMOS "Set to ON for building demos" OFF)
+option (SOLOUD_BUILD_DEMOS "Set to ON for building demos" ON)
 print_option_status (SOLOUD_BUILD_DEMOS "Build demos")
 
 option (SOLOUD_ENABLE_BACKEND_NULL "Set to ON for building NULL backend" ON)
 print_option_status (SOLOUD_ENABLE_BACKEND_NULL "NULL backend")
 
-option (SOLOUD_BACKEND_SDL2 "Set to ON for building SDL2 backend" OFF)
+option (SOLOUD_ENABLE_BACKEND_SDL2 "Set to ON for building SDL2 backend" ON)
 print_option_status (SOLOUD_BACKEND_SDL2 "SDL2 backend")
+
+option(SOLOUD_ENABLE_BACKEND_ALSA "Set to ON for building the ALSA backend" ON)
+print_option_status (SOLOUD_ENABLE_BACKEND_ALSA "ALSA backend")
 
 option (SOLOUD_BACKEND_COREAUDIO "Set to ON for building CoreAudio backend" OFF)
 print_option_status (SOLOUD_BACKEND_COREAUDIO "CoreAudio backend")

@@ -15,52 +15,53 @@ set(SOLOUD_SOURCES)
 ######################################
 #Core
 ######################################
+set(SOLOUD_CORE_SOURCE_DIR ${SOLOUD_SOURCE_PATH_DIR}/core)
 set(SOLOUD_CORE_SOURCES
 	${SOLOUD_PUBLIC_HEADERS_DIR}/soloud.h
-	${SOLOUD_SOURCE_PATH_DIR}/soloud.cpp
+	${SOLOUD_CORE_SOURCE_DIR}/soloud.cpp
 	${SOLOUD_PUBLIC_HEADERS_DIR}/soloud_audiosource.h
-	${SOLOUD_SOURCE_PATH_DIR}/soloud_audiosource.cpp
+	${SOLOUD_CORE_SOURCE_DIR}/soloud_audiosource.cpp
 	${SOLOUD_PUBLIC_HEADERS_DIR}/soloud_bassboostfilter.h
 	${SOLOUD_PUBLIC_HEADERS_DIR}/soloud_biquadresonantfilter.h
 	${SOLOUD_PUBLIC_HEADERS_DIR}/soloud_bus.h
-	${SOLOUD_SOURCE_PATH_DIR}/soloud_bus.cpp
+	${SOLOUD_CORE_SOURCE_DIR}/soloud_bus.cpp
 	${SOLOUD_PUBLIC_HEADERS_DIR}/soloud_c.h
-	${SOLOUD_SOURCE_PATH_DIR}/soloud_core_3d.cpp
-	${SOLOUD_SOURCE_PATH_DIR}/soloud_core_basicops.cpp
-	${SOLOUD_SOURCE_PATH_DIR}/soloud_core_faderops.cpp
-	${SOLOUD_SOURCE_PATH_DIR}/soloud_core_filterops.cpp
-	${SOLOUD_SOURCE_PATH_DIR}/soloud_core_getters.cpp
-	${SOLOUD_SOURCE_PATH_DIR}/soloud_core_setters.cpp
-	${SOLOUD_SOURCE_PATH_DIR}/soloud_core_voicegroup.cpp
-	${SOLOUD_SOURCE_PATH_DIR}/soloud_core_voiceops.cpp
+	${SOLOUD_CORE_SOURCE_DIR}/soloud_core_3d.cpp
+	${SOLOUD_CORE_SOURCE_DIR}/soloud_core_basicops.cpp
+	${SOLOUD_CORE_SOURCE_DIR}/soloud_core_faderops.cpp
+	${SOLOUD_CORE_SOURCE_DIR}/soloud_core_filterops.cpp
+	${SOLOUD_CORE_SOURCE_DIR}/soloud_core_getters.cpp
+	${SOLOUD_CORE_SOURCE_DIR}/soloud_core_setters.cpp
+	${SOLOUD_CORE_SOURCE_DIR}/soloud_core_voicegroup.cpp
+	${SOLOUD_CORE_SOURCE_DIR}/soloud_core_voiceops.cpp
 	${SOLOUD_PUBLIC_HEADERS_DIR}/soloud_dcremovalfilter.h
 	${SOLOUD_PUBLIC_HEADERS_DIR}/soloud_echofilter.h
 	${SOLOUD_PUBLIC_HEADERS_DIR}/soloud_error.h
 	${SOLOUD_PUBLIC_HEADERS_DIR}/soloud_fader.h
-	${SOLOUD_SOURCE_PATH_DIR}/soloud_fader.cpp
+	${SOLOUD_CORE_SOURCE_DIR}/soloud_fader.cpp
 	${SOLOUD_PUBLIC_HEADERS_DIR}/soloud_fft.h
-	${SOLOUD_SOURCE_PATH_DIR}/soloud_fft.cpp
+	${SOLOUD_CORE_SOURCE_DIR}/soloud_fft.cpp
 	${SOLOUD_PUBLIC_HEADERS_DIR}/soloud_fftfilter.h
-	${SOLOUD_SOURCE_PATH_DIR}/soloud_fft_lut.cpp
+	${SOLOUD_CORE_SOURCE_DIR}/soloud_fft_lut.cpp
 	${SOLOUD_PUBLIC_HEADERS_DIR}/soloud_file.h
-	${SOLOUD_SOURCE_PATH_DIR}/soloud_file.cpp
+	${SOLOUD_CORE_SOURCE_DIR}/soloud_file.cpp
 	${SOLOUD_PUBLIC_HEADERS_DIR}/soloud_file_hack_off.h
 	${SOLOUD_PUBLIC_HEADERS_DIR}/soloud_file_hack_on.h
 	${SOLOUD_PUBLIC_HEADERS_DIR}/soloud_filter.h
-	${SOLOUD_SOURCE_PATH_DIR}/soloud_filter.cpp
+	${SOLOUD_CORE_SOURCE_DIR}/soloud_filter.cpp
 	${SOLOUD_PUBLIC_HEADERS_DIR}/soloud_flangerfilter.h
 	${SOLOUD_PUBLIC_HEADERS_DIR}/soloud_internal.h
 	${SOLOUD_PUBLIC_HEADERS_DIR}/soloud_lofifilter.h
 	${SOLOUD_PUBLIC_HEADERS_DIR}/soloud_monotone.h
 	${SOLOUD_PUBLIC_HEADERS_DIR}/soloud_openmpt.h
 	${SOLOUD_PUBLIC_HEADERS_DIR}/soloud_queue.h
-	${SOLOUD_SOURCE_PATH_DIR}/soloud_queue.cpp
+	${SOLOUD_CORE_SOURCE_DIR}/soloud_queue.cpp
 	${SOLOUD_PUBLIC_HEADERS_DIR}/soloud_robotizefilter.h
 	${SOLOUD_PUBLIC_HEADERS_DIR}/soloud_sfxr.h
 	${SOLOUD_PUBLIC_HEADERS_DIR}/soloud_speech.h
 	${SOLOUD_PUBLIC_HEADERS_DIR}/soloud_tedsid.h
 	${SOLOUD_PUBLIC_HEADERS_DIR}/soloud_thread.h
-	${SOLOUD_SOURCE_PATH_DIR}/soloud_thread.cpp
+	${SOLOUD_CORE_SOURCE_DIR}/soloud_thread.cpp
 	${SOLOUD_PUBLIC_HEADERS_DIR}/soloud_vic.h
 	${SOLOUD_PUBLIC_HEADERS_DIR}/soloud_vizsn.h
 	${SOLOUD_PUBLIC_HEADERS_DIR}/soloud_wav.h
@@ -100,7 +101,7 @@ list(APPEND SOLOUD_SOURCES ${SOLOUD_AUDIOSOURCES_SOURCES})
 ######################################
 #Filters
 ######################################
-set (SOLOUD_FILTERS_PATH_DIR ${SOURCE_PATH}/filter)
+set (SOLOUD_FILTERS_PATH_DIR ${SOLOUD_SOURCE_PATH_DIR}/filter)
 set (SOLOUD_FILTERS_SOURCES
 	${SOLOUD_FILTERS_PATH_DIR}/soloud_bassboostfilter.cpp
 	${SOLOUD_FILTERS_PATH_DIR}/soloud_biquadresonantfilter.cpp
@@ -109,9 +110,21 @@ set (SOLOUD_FILTERS_SOURCES
 	${SOLOUD_FILTERS_PATH_DIR}/soloud_fftfilter.cpp
 	${SOLOUD_FILTERS_PATH_DIR}/soloud_flangerfilter.cpp
 	${SOLOUD_FILTERS_PATH_DIR}/soloud_lofifilter.cpp
+	${SOLOUD_FILTERS_PATH_DIR}/soloud_robotizefilter.cpp
+	${SOLOUD_FILTERS_PATH_DIR}/soloud_waveshaperfilter.cpp
 )
 source_group ("Filters" FILES ${SOLOUD_FILTERS_SOURCES})
 list(APPEND SOLOUD_SOURCES ${SOLOUD_FILTERS_SOURCES})
+
+############################################
+#C API
+############################################
+set(SOLOUD_C_API_SOURCE_DIR ${SOLOUD_SOURCE_PATH_DIR}/c_api)
+set(SOLOUD_C_API_SOURCES
+	${SOLOUD_C_API_SOURCE_DIR}/soloud_c.cpp
+	)
+source_group("C API" FILES ${SOLOUD_C_API_SOURCES})
+list(APPEND SOLOUD_SOURCES ${SOLOUD_C_API_SOURCES})
 
 ############################################
 #Backends
@@ -120,16 +133,33 @@ set(SOLOUD_BACKENDS_SOURCE_DIR ${SOLOUD_SOURCE_PATH_DIR}/backend)
 set(SOLOUD_BACKENDS_SOURCES)
 
 if(SOLOUD_ENABLE_BACKEND_NULL)
-
-	add_definitions(-DWITH_NULL)
 	list(APPEND SOLOUD_BACKENDS_SOURCES ${SOLOUD_BACKENDS_SOURCE_DIR}/null/soloud_null.cpp)
+	apply_to_soloud_libraries(target_compile_definitions PUBLIC WITH_NULL=1)
+endif()
+
+if(SOLOUD_ENABLE_BACKEND_SDL2)
+	list(APPEND SOLOUD_BACKENDS_SOURCES ${SOLOUD_BACKENDS_SOURCE_DIR}/sdl2_static/soloud_sdl2_static.cpp)
+
+	find_package (SDL2 REQUIRED)
+	apply_to_soloud_libraries(target_include_directories PUBLIC ${SDL2_INCLUDE_DIR})
+	apply_to_soloud_libraries(target_link_libraries PUBLIC ${SDL2_LIBRARY})
+	apply_to_soloud_libraries(target_compile_definitions PUBLIC WITH_SDL2_STATIC=1)
+endif()
+
+if(SOLOUD_ENABLE_BACKEND_ALSA)
+	list(APPEND SOLOUD_BACKENDS_SOURCES ${SOLOUD_BACKENDS_SOURCE_DIR}/alsa/soloud_alsa.cpp)
+	find_package(ALSA REQUIRED)
+	apply_to_soloud_libraries(target_include_directories PUBLIC ${ALSA_INCLUDE_DIRS})
+	apply_to_soloud_libraries(target_link_libraries PUBLIC ${ALSA_LIBRARIES})
+
+	apply_to_soloud_libraries(target_compile_definitions PUBLIC WITH_ALSA=1)
 endif()
 
 
 if (SOLOUD_BACKEND_COREAUDIO)
-	if (NOT APPLE)
-		message (FATAL_ERROR "CoreAudio backend can be enabled only on Apple!")
-	endif ()
+	if(NOT APPLE)
+		message(FATAL_ERROR "CoreAudio backend can be enabled only on Apple!")
+	endif()
 
 	add_definitions (-DWITH_COREAUDIO)
 
@@ -172,20 +202,14 @@ if (SOLOUD_BACKEND_WASAPI)
 endif()
 
 
-if (SOLOUD_BACKEND_SDL2)
-	find_package (SDL2 REQUIRED)
-	# target_include_directories(${TARGET_NAME} PUBLIC ${SDL2_INCLUDE_DIR})
-	# target_compile_definitions(${TARGET_NAME} PUBLIC WITH_SDL2_STATIC=1)
-	# target_link_libraries(${TARGET_NAME} PUBLIC ${SDL2_LIBRARY})
-	list(APPEND SOLOUD_BACKENDS_SOURCES ${SOLOUD_BACKENDS_SOURCE_DIR}/sdl2_static/soloud_sdl2_static.cpp)
-endif()
-
 
 source_group ("Backends" FILES ${SOLOUD_BACKENDS_SOURCES})
 list(APPEND SOLOUD_SOURCES ${SOLOUD_BACKENDS_SOURCES})
-apply_to_soloud_libraries(target_sources ${SOLOUD_SOURCES})
+#Apply the source filess
+apply_to_soloud_libraries(target_sources PUBLIC ${SOLOUD_SOURCES})
+apply_to_soloud_libraries(target_include_directories PUBLIC ${SOLOUD_ROOT_DIRECTORY}/include)
 
 
-target_link_libraries (${TARGET_NAME} PUBLIC ${LINK_LIBRARIES})
-target_include_directories(${TARGET_NAME} PUBLIC ${SOLOUD_ROOT_DIRECTORY}/include)
+# target_link_libraries (${TARGET_NAME} PUBLIC ${LINK_LIBRARIES})
+# target_include_directories(${TARGET_NAME} PUBLIC ${SOLOUD_ROOT_DIRECTORY}/include)
 

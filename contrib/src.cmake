@@ -5,21 +5,22 @@ set(SOLOUD_SOURCE_PATH_DIR ${SOLOUD_ROOT_DIRECTORY}/src)
 if(SOLOUD_STATIC)
 	add_library(soloud STATIC)
 endif()
-
 if(SOLOUD_DYNAMIC)
 	add_library(soloud-dynamic SHARED)
+	set_target_properties(soloud-dynamic
+						PROPERTIES
+						POSITION_INDEPENDENT_CODE ON)
 endif()
 
 function(apply_to_soloud_libraries FUNCTION_NAME)
-if(SOLOUD_STATIC)
-	cmake_language(CALL ${FUNCTION_NAME} soloud ${ARGN})
-endif()
-if(SOLOUD_DYNAMIC)
-	cmake_language(CALL ${FUNCTION_NAME} soloud-dynamic ${ARGN})
-endif()
+	if(SOLOUD_STATIC)
+		cmake_language(CALL ${FUNCTION_NAME} soloud ${ARGN})
+	endif()
+	if(SOLOUD_DYNAMIC)
+		cmake_language(CALL ${FUNCTION_NAME} soloud-dynamic ${ARGN})
+	endif()
 endfunction()
 
-set(LINK_LIBRARIES)
 set(SOLOUD_SOURCES)
 ######################################
 #Core
@@ -157,68 +158,51 @@ endif()
 
 if(SOLOUD_ENABLE_BACKEND_ALSA)
 	list(APPEND SOLOUD_BACKENDS_SOURCES ${SOLOUD_BACKENDS_SOURCE_DIR}/alsa/soloud_alsa.cpp)
+
 	find_package(ALSA REQUIRED)
 	apply_to_soloud_libraries(target_include_directories PUBLIC ${ALSA_INCLUDE_DIRS})
 	apply_to_soloud_libraries(target_link_libraries PUBLIC ${ALSA_LIBRARIES})
-
 	apply_to_soloud_libraries(target_compile_definitions PUBLIC WITH_ALSA=1)
 endif()
 
-
-if (SOLOUD_BACKEND_COREAUDIO)
+if (SOLOUD_ENABLE_BACKEND_COREAUDIO)
 	if(NOT APPLE)
 		message(FATAL_ERROR "CoreAudio backend can be enabled only on Apple!")
 	endif()
 
-	add_definitions (-DWITH_COREAUDIO)
-
 	list(APPEND SOLOUD_BACKENDS_SOURCES ${SOLOUD_BACKENDS_SOURCE_DIR}/coreaudio/soloud_coreaudio.cpp)
 
 	find_library (AUDIOTOOLBOX_FRAMEWORK AudioToolbox)
-	set (LINK_LIBRARIES
-		${LINK_LIBRARIES}
-		${AUDIOTOOLBOX_FRAMEWORK}
-	)
+	apply_to_soloud_libraries(target_link_libraries PUBLIC ${AUDIOTOOLBOX_FRAMEWORK})
+	apply_to_soloud_libraries(target_compile_definitions PUBLIC WITH_COREAUDIO=1)
 endif()
 
-
-if (SOLOUD_BACKEND_OPENSLES)
-	add_definitions (-DWITH_OPENSLES)
-
+if (SOLOUD_ENABLE_BACKEND_OPENSLES)
 	list(APPEND SOLOUD_BACKENDS_SOURCES ${SOLOUD_BACKENDS_SOURCE_DIR}/opensles/soloud_opensles.cpp)
 
 	find_library (OPENSLES_LIBRARY OpenSLES)
-	set (LINK_LIBRARIES
-		${LINK_LIBRARIES}
-		${OPENSLES_LIBRARY}
-	)
+	apply_to_soloud_libraries(target_link_libraries PUBLIC ${OPENSLES_LIBRARY})
+	apply_to_soloud_libraries(target_compile_definitions PUBLIC WITH_OPENSLES=1)
 endif()
 
-
-if (SOLOUD_BACKEND_XAUDIO2)
-	add_definitions (-DWITH_XAUDIO2)
+if (SOLOUD_ENABLE_BACKEND_XAUDIO2)
 	list(APPEND SOLOUD_BACKENDS_SOURCES ${SOLOUD_BACKENDS_SOURCE_DIR}/xaudio2/soloud_xaudio2.cpp)
+	apply_to_soloud_libraries(target_compile_definitions PUBLIC WITH_XAUDIO2=1)
 endif()
 
-if (SOLOUD_BACKEND_WINMM)
-	add_definitions (-DWITH_WINMM)
+if (SOLOUD_ENABLE_BACKEND_WINMM)
 	list(APPEND SOLOUD_BACKENDS_SOURCES ${SOLOUD_BACKENDS_SOURCE_DIR}/winmm/soloud_winmm.cpp)
+	apply_to_soloud_libraries(target_compile_definitions PUBLIC WITH_WINMM=1)
 endif()
 
-if (SOLOUD_BACKEND_WASAPI)
-	add_definitions (-DWITH_WASAPI)
+if (SOLOUD_ENABLE_BACKEND_WASAPI)
 	list(APPEND SOLOUD_BACKENDS_SOURCES ${SOLOUD_BACKENDS_SOURCE_DIR}/wasapi/soloud_wasapi.cpp)
+	apply_to_soloud_libraries(target_compile_definitions PUBLIC WITH_WASAPI=1)
 endif()
-
-
 
 source_group ("Backends" FILES ${SOLOUD_BACKENDS_SOURCES})
 list(APPEND SOLOUD_SOURCES ${SOLOUD_BACKENDS_SOURCES})
-#Apply the source filess
+
+#Apply the source files
 apply_to_soloud_libraries(target_sources PUBLIC ${SOLOUD_SOURCES})
 apply_to_soloud_libraries(target_include_directories PUBLIC ${SOLOUD_ROOT_DIRECTORY}/include)
-
-
-# target_link_libraries (${TARGET_NAME} PUBLIC ${LINK_LIBRARIES})
-# target_include_directories(${TARGET_NAME} PUBLIC ${SOLOUD_ROOT_DIRECTORY}/include)
-

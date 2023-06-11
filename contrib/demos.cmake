@@ -6,6 +6,7 @@ set(SOLOUD_DEMO_DIRECTORY ${SOLOUD_ROOT_DIRECTORY}/demos)
 ##############################
 set(SOLOUD_DEMO_COMMON ${SOLOUD_DEMO_DIRECTORY}/common)
 
+set(OpenGL_GL_PREFERENCE "GLVND")
 find_package(OpenGL)
 
 set(SOLOUD_DEMO_GLEW_DIR ${SOLOUD_DEMO_COMMON}/glew/GL)

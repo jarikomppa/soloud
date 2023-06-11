@@ -1,67 +1,64 @@
 cmake_minimum_required (VERSION 3.0)
-project (SoLoud)
+project(SoLoud)
 
-#set (CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake;${CMAKE_MODULE_PATH}")
 list(APPEND CMAKE_MODULE_PATH  ${PROJECT_SOURCE_DIR}/cmake)
-set (CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-include (OptionDependentOnPackage)
-include (PrintOptionStatus)
+include(OptionDependentOnPackage)
+include(PrintOptionStatus)
 
-option (SOLOUD_DYNAMIC "Set to ON to build dynamic SoLoud" OFF)
+option(SOLOUD_DYNAMIC "Set to ON to build dynamic SoLoud" OFF)
 print_option_status (SOLOUD_DYNAMIC "Build dynamic library")
 
-option (SOLOUD_STATIC "Set to ON to build static SoLoud" ON)
+option(SOLOUD_STATIC "Set to ON to build static SoLoud" ON)
 print_option_status (SOLOUD_STATIC "Build static library")
 
-# TODO:
-option (SOLOUD_BUILD_DEMOS "Set to ON for building demos" ON)
-print_option_status (SOLOUD_BUILD_DEMOS "Build demos")
-
-option (SOLOUD_ENABLE_BACKEND_NULL "Set to ON for building NULL backend" OFF)
-print_option_status (SOLOUD_ENABLE_BACKEND_NULL "NULL backend")
-
-option (SOLOUD_ENABLE_BACKEND_SDL2 "Set to ON for building SDL2 backend" ON)
-print_option_status (SOLOUD_BACKEND_SDL2 "SDL2 backend")
-
+option(SOLOUD_BUILD_DEMOS "Set to ON for building demos" OFF)
+option(SOLOUD_ENABLE_BACKEND_NULL "Set to ON for building NULL backend" ON)
+option(SOLOUD_ENABLE_BACKEND_SDL2 "Set to ON for building SDL2 backend" OFF)
 option(SOLOUD_ENABLE_BACKEND_ALSA "Set to ON for building the ALSA backend" OFF)
+option(SOLOUD_ENABLE_BACKEND_COREAUDIO "Set to ON for building CoreAudio backend" OFF)
+option(SOLOUD_ENABLE_BACKEND_OPENSLES "Set to ON for building OpenSLES backend" OFF)
+option(SOLOUD_ENABLE_BACKEND_XAUDIO2 "Set to ON for building XAudio2 backend" OFF)
+option(SOLOUD_ENABLE_BACKEND_WINMM "Set to ON for building WINMM backend" OFF)
+option(SOLOUD_ENABLE_BACKEND_WASAPI "Set to ON for building WASAPI backend" OFF)
+option(SOLOUD_AUTO_DETECT_BACKENDS "Attempt to enable backends based on what is available" ON)
+
+if(SOLOUD_AUTO_DETECT_BACKENDS)
+	find_package(SDL2)
+	set(SOLOUD_ENABLE_BACKEND_SDL2 ${SDL2_FOUND})
+	find_package(ALSA)
+	set(SOLOUD_ENABLE_BACKEND_ALSA ${ALSA_FOUND})
+
+	if(APPLE)
+		set(SOLOUD_BACKEND_COREAUDIO ON)
+	endif()
+
+	find_package(OpenSLES)
+	set(SOLOUD_ENABLE_BACKEND_OPENSLES ${OPENSLES_FOUND})
+endif()
+
+if(SOLOUD_BUILD_DEMOS)
+	set(SOLOUD_STATIC ON)
+endif()
+
+print_option_status (SOLOUD_BUILD_DEMOS "Build demos")
+print_option_status (SOLOUD_AUTO_DETECT_BACKENDS "Auto Detect Backends")
+print_option_status (SOLOUD_ENABLE_BACKEND_NULL "NULL backend")
+print_option_status (SOLOUD_BACKEND_SDL2 "SDL2 backend")
 print_option_status (SOLOUD_ENABLE_BACKEND_ALSA "ALSA backend")
-
-option (SOLOUD_BACKEND_COREAUDIO "Set to ON for building CoreAudio backend" OFF)
 print_option_status (SOLOUD_BACKEND_COREAUDIO "CoreAudio backend")
-
-option (SOLOUD_BACKEND_OPENSLES "Set to ON for building OpenSLES backend" OFF)
 print_option_status (SOLOUD_BACKEND_OPENSLES "OpenSLES backend")
-
-option (SOLOUD_BACKEND_XAUDIO2 "Set to ON for building XAudio2 backend" OFF)
 print_option_status (SOLOUD_BACKEND_XAUDIO2 "XAudio2 backend")
-
-option (SOLOUD_BACKEND_WINMM "Set to ON for building WINMM backend" OFF)
 print_option_status (SOLOUD_BACKEND_WINMM "WINMM backend")
-
-option (SOLOUD_BACKEND_WASAPI "Set to ON for building WASAPI backend" OFF)
 print_option_status (SOLOUD_BACKEND_WASAPI "WASAPI backend")
 
 #Establish some basic mappings to filesystem directories
 get_filename_component(SOLOUD_ROOT_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/.." ABSOLUTE)
 
-#INCLUDE (InstallIncludes.cmake)
-#INCLUDE (InstallStaticData.cmake)
-
-if (UNIX AND NOT WIN32 AND NOT APPLE)
-	if (CMAKE_SIZEOF_VOID_P MATCHES "8")
-		set (LIB_POSTFIX "64" CACHE STRING "suffix for 32/64 dir placement")
-		mark_as_advanced (LIB_POSTFIX)
-	endif ()
-endif ()
-if (NOT DEFINED LIB_POSTFIX)
-	set (LIB_POSTFIX "")
-endif ()
-
 include (src.cmake)
 
 # Demos
-IF (SOLOUD_BUILD_DEMOS)
+if(SOLOUD_BUILD_DEMOS)
 	include (demos.cmake)
 endif ()
 

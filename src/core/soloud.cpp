@@ -384,6 +384,25 @@ namespace SoLoud
 		}
 #endif
 
+#if defined(WITH_PIPEWIRE)
+        if (!inited &&
+            (aBackend == Soloud::PIPEWIRE ||
+            aBackend == Soloud::AUTO))
+        {
+            if (aBufferSize == Soloud::AUTO) buffersize = 2048;
+
+            int ret = pipewire_init(this, aFlags, samplerate, buffersize, aChannels);
+            if (ret == 0)
+            {
+                inited = 1;
+                mBackendID = Soloud::PIPEWIRE;
+            }
+
+            if (ret != 0 && aBackend != Soloud::AUTO)
+                return ret;
+        }
+#endif
+
 #if defined(WITH_OSS)
 		if (!inited &&
 			(aBackend == Soloud::OSS ||

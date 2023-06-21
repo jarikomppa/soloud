@@ -175,17 +175,18 @@ namespace SoLoud
 			WINMM,
 			XAUDIO2,
 			WASAPI,
-			ALSA,
+            ALSA,
 			OSS,
 			OPENAL,
 			COREAUDIO,
 			OPENSLES,
 			VITA_HOMEBREW,
 			NULLDRIVER,
-			BACKEND_MAX,
+            PIPEWIRE,
+            BACKEND_MAX,
 		};
 
-		enum FLAGS
+        enum FLAGS
 		{
 			// Use round-off clipper
 			CLIP_ROUNDOFF = 1,

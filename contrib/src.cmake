@@ -165,6 +165,14 @@ if(SOLOUD_ENABLE_BACKEND_ALSA)
 	apply_to_soloud_libraries(target_compile_definitions PUBLIC WITH_ALSA=1)
 endif()
 
+if(SOLOUD_ENABLE_BACKEND_PIPEWIRE)
+    list(APPEND SOLOUD_BACKENDS_SOURCES ${SOLOUD_BACKENDS_SOURCE_DIR}/pipewire/soloud_pipewire.cpp)
+
+    find_package(PipeWire REQUIRED)
+    apply_to_soloud_libraries(target_link_libraries PUBLIC PipeWire::PipeWire)
+    apply_to_soloud_libraries(target_compile_definitions PUBLIC WITH_PIPEWIRE=1)
+endif()
+
 if (SOLOUD_ENABLE_BACKEND_COREAUDIO)
 	if(NOT APPLE)
 		message(FATAL_ERROR "CoreAudio backend can be enabled only on Apple!")

@@ -178,8 +178,17 @@ namespace SoLoud
             }
 
             constexpr static const struct pw_stream_events cs_StreamSoloudData ={
-                    PW_VERSION_STREAM_EVENTS,
+                    .destroy = nullptr,
+                    .state_changed = nullptr,
+                    .control_info = nullptr,
+                    .io_changed = nullptr,
+                    .param_changed = nullptr,
+                    .add_buffer = nullptr,
+                    .remove_buffer = nullptr,
                     .process = PipewireMixSoloudData,
+                    .drained = nullptr,
+                    .command = nullptr,
+                    .trigger_done = nullptr
             };
 
         protected:

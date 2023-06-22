@@ -74,7 +74,6 @@ namespace SoLoud
 
             bool StartProcessing()
             {
-
                 //Ensure that a previous stream is not already running
                 StopProcessing();
                 m_PipewireLoop = pw_thread_loop_new("SoLoud Pipewire Thread", nullptr);

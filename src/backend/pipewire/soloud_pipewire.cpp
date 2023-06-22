@@ -21,11 +21,7 @@ freely, subject to the following restrictions:
    3. This notice may not be removed or altered from any source
    distribution.
 */
-#include <stdlib.h>
-
 #include "soloud.h"
-#include "soloud_thread.h"
-
 #if !defined(WITH_PIPEWIRE)
 
 namespace SoLoud
@@ -37,29 +33,28 @@ namespace SoLoud
 }
 
 #else
+#include "soloud_thread.h"
 
 #include "pipewire/pipewire.h"
-#include <vector>
-#include <memory>
-
-#include <math.h>
 #include <spa/param/audio/format-utils.h>
 
 namespace SoLoud
 {
-    static void PipewireMixSoloudData(void *userdata);
-    static const struct pw_stream_events cs_StreamSoloudData ={
-            PW_VERSION_STREAM_EVENTS,
-            .process = PipewireMixSoloudData,
-    };
-
     class PipeWireBackendState
     {
         public:
-            PipeWireBackendState() = default;
+            PipeWireBackendState()
+            {
+                m_PipewireParameterPODWrapper = spa_pod_builder();
+                m_PipewireParameterPODWrapper.data = m_PipewireParameterBuffer;
+                m_PipewireParameterPODWrapper.size = c_PipewireParameterBufferSize;
+
+                m_PODParameters[0] = nullptr;
+            }
+
             ~PipeWireBackendState()
             {
-                StopStream();
+                StopProcessing();
             }
 
             bool SetSoloudEngineInstance(Soloud* connectedEngine)
@@ -68,32 +63,20 @@ namespace SoLoud
                 return true;
             }
 
-            bool SetAudioBufferSize(const std::size_t newSize)
-            {
-                m_MixedBuffer.resize(newSize);
-                m_MixedBuffer.shrink_to_fit();
-                //Reinitialize the POD Wrapper
-                m_MixedBufferPipewirePODWrapper = spa_pod_builder();
-                m_MixedBufferPipewirePODWrapper.data = m_MixedBuffer.data();
-                m_MixedBufferPipewirePODWrapper.size = m_MixedBuffer.size();
-
-                return true;
-            }
-
             bool SetOutputStream(unsigned int newNumberOfChannels, unsigned int newSampleRate)
             {
                 m_OutputAudioStreamInformation = SPA_AUDIO_INFO_RAW_INIT();
-                ;
                 m_OutputAudioStreamInformation.format = SPA_AUDIO_FORMAT_F32;
                 m_OutputAudioStreamInformation.channels = newNumberOfChannels;
                 m_OutputAudioStreamInformation.rate = newSampleRate;
                 return true;
             }
 
-            bool StartSteam()
+            bool StartProcessing()
             {
+
                 //Ensure that a previous stream is not already running
-                StopStream();
+                StopProcessing();
                 m_PipewireLoop = pw_thread_loop_new("SoLoud Pipewire Thread", nullptr);
                 m_PipewirePlaybackProperties = pw_properties_new(PW_KEY_MEDIA_TYPE, "Audio",
                                                                  PW_KEY_MEDIA_CATEGORY, "Playback",
@@ -107,21 +90,23 @@ namespace SoLoud
                                                            &cs_StreamSoloudData,
                                                            this);
 
-                m_PODParameters.emplace_back(spa_format_audio_raw_build(&m_MixedBufferPipewirePODWrapper, SPA_PARAM_EnumFormat, &m_OutputAudioStreamInformation));
+                m_PODParameters[0] = spa_format_audio_raw_build(&m_PipewireParameterPODWrapper,
+                                                                SPA_PARAM_EnumFormat,
+                                                                &m_OutputAudioStreamInformation);
 
                 int errorCode = pw_stream_connect(m_OutputAudioStream,
                                   PW_DIRECTION_OUTPUT,
                                   PW_ID_ANY,
                                   static_cast<pw_stream_flags>(PW_STREAM_FLAG_AUTOCONNECT | PW_STREAM_FLAG_MAP_BUFFERS | PW_STREAM_FLAG_RT_PROCESS),
-                                  m_PODParameters.data(),
-                                  m_PODParameters.size());
+                                  m_PODParameters,
+                                  c_PODParametersSize);
 
                 pw_thread_loop_start(m_PipewireLoop);
 
                 return false;
             }
 
-            bool StopStream()
+            bool StopProcessing()
             {
                 if(m_OutputAudioStream != nullptr)
                 {
@@ -135,70 +120,106 @@ namespace SoLoud
                     m_PipewireLoop = nullptr;
                 }
 
+                if(m_PipewirePlaybackProperties)
+                {
+                    pw_properties_free(m_PipewirePlaybackProperties);
+                    m_PipewirePlaybackProperties = nullptr;
+                }
+
+                m_PODParameters[0] = nullptr;
+
                 return true;
             }
 
-        //protected:
+            bool clear()
+            {
+                m_SoundLoadEngineInstance = nullptr;
+                m_DesiredBufferSize = 0;
+                return true;
+            }
 
-        std::vector<float> m_MixedBuffer;
-        struct spa_pod_builder m_MixedBufferPipewirePODWrapper;
-        struct pw_thread_loop *m_PipewireLoop{nullptr}; //Used to grab data to run
+            bool SetDesiredBufferSize(unsigned int newDesiredBufferSize)
+            {
+                m_DesiredBufferSize = newDesiredBufferSize;
+                return true;
+            }
 
-        struct pw_properties *m_PipewirePlaybackProperties{nullptr};
+            const uint32_t& GetNumerOfPlaybackChannels() const
+            {
+                return m_OutputAudioStreamInformation.channels;
+            }
 
-        struct pw_stream *m_OutputAudioStream{nullptr};
-        struct spa_audio_info_raw m_OutputAudioStreamInformation{};
-        std::vector<const struct spa_pod*> m_PODParameters;
+            static void PipewireMixSoloudData(void *userdata)
+            {
+                PipeWireBackendState* soloudPipewireState = reinterpret_cast<PipeWireBackendState*>(userdata);
 
-        Soloud* m_SoundLoadEngineInstance{nullptr};
+                struct pw_buffer *pipewireBuffer;
+                int numberOfFrames, stride;
+                float* destinationBuffer;
 
-        double m_PipewireDemoAccumulator{0};
+                if ((pipewireBuffer = pw_stream_dequeue_buffer(soloudPipewireState->m_OutputAudioStream)) == NULL)
+                {
+                        pw_log_warn("out of buffers: %m");
+                        return;
+                }
 
+                if ((destinationBuffer = reinterpret_cast<float*>(pipewireBuffer->buffer->datas[0].data)) == NULL)
+                        return;
+
+                stride = sizeof(float) * soloudPipewireState->GetNumerOfPlaybackChannels();
+                numberOfFrames = soloudPipewireState->m_DesiredBufferSize / stride;
+
+                soloudPipewireState->m_SoundLoadEngineInstance->mix(destinationBuffer, numberOfFrames);
+
+                pipewireBuffer->buffer->datas[0].chunk->offset = 0;
+                pipewireBuffer->buffer->datas[0].chunk->stride = stride;
+                pipewireBuffer->buffer->datas[0].chunk->size = numberOfFrames * stride;
+
+                int output = pw_stream_queue_buffer(soloudPipewireState->m_OutputAudioStream, pipewireBuffer);
+            }
+
+            constexpr static const struct pw_stream_events cs_StreamSoloudData ={
+                    PW_VERSION_STREAM_EVENTS,
+                    .process = PipewireMixSoloudData,
+            };
+
+        protected:
+            static const size_t c_PipewireParameterBufferSize = 1024;
+            uint8_t m_PipewireParameterBuffer[c_PipewireParameterBufferSize];
+            struct spa_pod_builder m_PipewireParameterPODWrapper;
+            struct pw_thread_loop *m_PipewireLoop{nullptr}; //Used to grab data to run
+
+            struct pw_properties *m_PipewirePlaybackProperties{nullptr};
+
+            struct pw_stream *m_OutputAudioStream{nullptr};
+            struct spa_audio_info_raw m_OutputAudioStreamInformation{};
+
+            static const unsigned int c_PODParametersSize = 1;
+            const struct spa_pod* m_PODParameters[c_PODParametersSize];
+
+            Soloud* m_SoundLoadEngineInstance{nullptr};
+            unsigned int m_DesiredBufferSize{0};
     };
 
-    static void PipewireMixSoloudData(void *userdata)
+    static PipeWireBackendState s_PipewireState;
+
+    static void pipewire_init_deinit(SoLoud::Soloud *aSoloud)
     {
-        PipeWireBackendState* soloudPipewireState = reinterpret_cast<PipeWireBackendState*>(userdata);
-
-        struct pw_buffer *b;
-        int n_frames, stride;
-        float *dst, val;
-
-        if ((b = pw_stream_dequeue_buffer(soloudPipewireState->m_OutputAudioStream)) == NULL) {
-                pw_log_warn("out of buffers: %m");
-                return;
-        }
-
-        if ((dst = reinterpret_cast<float*>(b->buffer->datas[0].data)) == NULL)
-                return;
-
-        const int maxDatas = b->buffer->n_datas;
-        const int maxSize = b->buffer->datas->maxsize;
-        stride = sizeof(float) * soloudPipewireState->m_OutputAudioStreamInformation.channels;
-        n_frames = b->buffer->datas[0].maxsize / stride;
-
-        memset(dst, 0, b->buffer->datas[0].maxsize);
-        soloudPipewireState->m_SoundLoadEngineInstance->mix(dst, n_frames);
-
-        b->buffer->datas[0].chunk->offset = 0;
-        b->buffer->datas[0].chunk->stride = stride;
-        b->buffer->datas[0].chunk->size = n_frames * stride;
-
-        int output = pw_stream_queue_buffer(soloudPipewireState->m_OutputAudioStream, b);
+        s_PipewireState.StopProcessing();
     }
 
-    static std::unique_ptr<PipeWireBackendState> s_PipewireState;
     result pipewire_init(Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer, unsigned int aChannels)
     {
         pw_init(nullptr, nullptr); //Initialize the pipewire api
-        s_PipewireState = std::make_unique<PipeWireBackendState>();
-        s_PipewireState->SetSoloudEngineInstance(aSoloud);
-        //Set the Audio Buffer size
-        s_PipewireState->SetAudioBufferSize(aBuffer);
-        s_PipewireState->SetOutputStream(aChannels, aSamplerate);
+        s_PipewireState.SetSoloudEngineInstance(aSoloud);
+        s_PipewireState.SetDesiredBufferSize(aBuffer);
+        s_PipewireState.SetOutputStream(aChannels, aSamplerate);
 
         aSoloud->postinit(aSamplerate, aBuffer * aChannels, aFlags, aChannels);
-        s_PipewireState->StartSteam();
+        aSoloud->mBackendCleanupFunc = pipewire_init_deinit;
+        aSoloud->mBackendString = "Pipewire";
+        //aSoloud->mBackendData;
+        s_PipewireState.StartProcessing();
 
         return SO_NO_ERROR;
     }

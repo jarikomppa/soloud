@@ -48,20 +48,19 @@ namespace SoLoud
 {
     struct ALSAData
     {
-        float *buffer;
-        short *sampleBuffer;
-        snd_pcm_t *alsaDeviceHandle;
-        Soloud *soloud;
-        int samples;
-        int channels;
-        bool audioProcessingDone;
+        float *buffer = NULL;
+        short *sampleBuffer = NULL;
+        snd_pcm_t *alsaDeviceHandle = NULL;
+        Soloud *soloud = NULL;
+        int samples = 0;
+        int channels = 0;
+        bool audioProcessingDone = false;
         Thread::ThreadHandle threadHandle;
     };
 
 
     static void alsaThread(void *aParam)
     {
-        
         ALSAData *data = static_cast<ALSAData*>(aParam);
         while (!data->audioProcessingDone) 
         {            
@@ -71,11 +70,12 @@ namespace SoLoud
                 data->sampleBuffer[i] = static_cast<short>(floor(data->buffer[i] 
                                                           * static_cast<float>(0x7fff)));
             }
+
+            snd_pcm_wait(data->alsaDeviceHandle, -1);
             if (snd_pcm_writei(data->alsaDeviceHandle, data->sampleBuffer, data->samples) == -EPIPE)
                 snd_pcm_prepare(data->alsaDeviceHandle);
-                
         }
-        
+
     }
 
     static void alsaCleanup(Soloud *aSoloud)
@@ -108,11 +108,10 @@ namespace SoLoud
     result alsa_init(Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer, unsigned int aChannels)
     {
         ALSAData *data = new ALSAData;
-        memset(data, 0, sizeof(ALSAData));
         aSoloud->mBackendData = data;
         aSoloud->mBackendCleanupFunc = alsaCleanup;
         data->samples = aBuffer;
-        data->channels = 2;
+        data->channels = aChannels;
         data->soloud = aSoloud;
 
         int rc;
@@ -131,7 +130,7 @@ namespace SoLoud
 
         snd_pcm_hw_params_set_access(handle, params, SND_PCM_ACCESS_RW_INTERLEAVED);
         snd_pcm_hw_params_set_format(handle, params, SND_PCM_FORMAT_S16_LE);
-        snd_pcm_hw_params_set_channels(handle, params, 2);
+        snd_pcm_hw_params_set_channels(handle, params, aChannels);
         snd_pcm_hw_params_set_buffer_size(handle, params, aBuffer);
         
         unsigned int val = aSamplerate;

@@ -83,7 +83,8 @@ namespace SoLoud
             bool SetOutputStream(unsigned int newNumberOfChannels, unsigned int newSampleRate)
             {
                 m_OutputAudioStreamInformation = SPA_AUDIO_INFO_RAW_INIT();
-                m_OutputAudioStreamInformation.format = SPA_AUDIO_FORMAT_S16;
+                ;
+                m_OutputAudioStreamInformation.format = SPA_AUDIO_FORMAT_F32;
                 m_OutputAudioStreamInformation.channels = newNumberOfChannels;
                 m_OutputAudioStreamInformation.rate = newSampleRate;
                 return true;
@@ -101,7 +102,7 @@ namespace SoLoud
                                                                  nullptr);
 
                 m_OutputAudioStream = pw_stream_new_simple(pw_thread_loop_get_loop(m_PipewireLoop),
-                                                           "audio-src",
+                                                           "Soloud",
                                                            m_PipewirePlaybackProperties,
                                                            &cs_StreamSoloudData,
                                                            this);
@@ -139,7 +140,7 @@ namespace SoLoud
 
         //protected:
 
-        std::vector<uint8_t> m_MixedBuffer;
+        std::vector<float> m_MixedBuffer;
         struct spa_pod_builder m_MixedBufferPipewirePODWrapper;
         struct pw_thread_loop *m_PipewireLoop{nullptr}; //Used to grab data to run
 
@@ -159,60 +160,34 @@ namespace SoLoud
     {
         PipeWireBackendState* soloudPipewireState = reinterpret_cast<PipeWireBackendState*>(userdata);
 
-#if 1
-        //Fake out soloud to think stuff is happening
-        static bool firstRun{true};
-        static std::vector<float> fakeBuffer;
-        if(firstRun)
-        {
-            firstRun = false;
-            //fakeBuffer.resize(soloudPipewireState->m_MixedBuffer.size());
-            fakeBuffer.resize(soloudPipewireState->m_MixedBuffer.size() * soloudPipewireState->m_OutputAudioStreamInformation.channels);
-            fakeBuffer.shrink_to_fit();
-        }
-
-        soloudPipewireState->m_SoundLoadEngineInstance->mix(fakeBuffer.data(), soloudPipewireState->m_MixedBuffer.size());
-
         struct pw_buffer *b;
-        struct spa_buffer *buf;
-        int i, c, n_frames, stride;
-        int16_t *dst, val;
+        int n_frames, stride;
+        float *dst, val;
 
         if ((b = pw_stream_dequeue_buffer(soloudPipewireState->m_OutputAudioStream)) == NULL) {
                 pw_log_warn("out of buffers: %m");
                 return;
         }
 
-        buf = b->buffer;
-        if ((dst = reinterpret_cast<int16_t*>(buf->datas[0].data)) == NULL)
+        if ((dst = reinterpret_cast<float*>(b->buffer->datas[0].data)) == NULL)
                 return;
 
-        stride = sizeof(int16_t) * soloudPipewireState->m_OutputAudioStreamInformation.channels;
-        n_frames = buf->datas[0].maxsize / stride;
+        const int maxDatas = b->buffer->n_datas;
+        const int maxSize = b->buffer->datas->maxsize;
+        stride = sizeof(float) * soloudPipewireState->m_OutputAudioStreamInformation.channels;
+        n_frames = b->buffer->datas[0].maxsize / stride;
 
-        constexpr const float M_PI_M2 = ( M_PI + M_PI );
-        for (i = 0; i < n_frames; i++) {
-                soloudPipewireState->m_PipewireDemoAccumulator += M_PI_M2 * 440 / soloudPipewireState->m_OutputAudioStreamInformation.rate;
-                if (soloudPipewireState->m_PipewireDemoAccumulator >= M_PI_M2)
-                        soloudPipewireState->m_PipewireDemoAccumulator -= M_PI_M2;
+        memset(dst, 0, b->buffer->datas[0].maxsize);
+        soloudPipewireState->m_SoundLoadEngineInstance->mix(dst, n_frames);
 
-                constexpr const float c_DefaultVolume = 0.7;
-                val = sin(soloudPipewireState->m_PipewireDemoAccumulator) * c_DefaultVolume * 16767.f;
-                for (c = 0; c < soloudPipewireState->m_OutputAudioStreamInformation.channels; c++)
-                        *dst++ = val;
-        }
-
-        buf->datas[0].chunk->offset = 0;
-        buf->datas[0].chunk->stride = stride;
-        buf->datas[0].chunk->size = n_frames * stride;
+        b->buffer->datas[0].chunk->offset = 0;
+        b->buffer->datas[0].chunk->stride = stride;
+        b->buffer->datas[0].chunk->size = n_frames * stride;
 
         int output = pw_stream_queue_buffer(soloudPipewireState->m_OutputAudioStream, b);
-#endif
-
     }
 
     static std::unique_ptr<PipeWireBackendState> s_PipewireState;
-
     result pipewire_init(Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer, unsigned int aChannels)
     {
         pw_init(nullptr, nullptr); //Initialize the pipewire api

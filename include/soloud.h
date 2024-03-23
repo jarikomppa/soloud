@@ -194,6 +194,7 @@ namespace SoLoud
 			MINIAUDIO,
 			NOSOUND,
 			NULLDRIVER,
+			SDL3,
 			BACKEND_MAX,
 		};
 

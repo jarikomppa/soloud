@@ -1,3 +1,6 @@
-[submodule "ext/libmodplug"]
-	path = ext/libmodplug
-	url = https://github.com/jarikomppa/libmodplug.git
+# [submodule "vendor/libmodplug"]
+# 	path = vendor/libmodplug
+# 	url = https://github.com/jarikomppa/libmodplug.git
+[submodule "vendor/portaudio"]
+	path = vendor/portaudio
+	url = https://github.com/Leif-Rydenfalk/portaudio

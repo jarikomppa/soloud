@@ -8,6 +8,7 @@ file(GLOB_RECURSE SOURCES
     "src/audiosource/*.c" "src/audiosource/*.cpp" "src/audiosource/*.h" "src/audiosource/*.hpp"
     "src/filter/*.c" "src/filter/*.cpp" "src/filter/*.h" "src/filter/*.hpp"
     "src/core/*.c" "src/core/*.cpp" "src/core/*.h" "src/core/*.hpp"
+    "src/c_api/*.c" "src/c_api/*.cpp" "src/c_api/*.h" "src/c_api/*.hpp"
     # "src/tools/*.c" "src/tools/*.cpp" "src/tools/*.h" "src/tools/*.hpp"
     ## We use the portaudio backend
     "src/backend/portaudio/*.c" "src/backend/portaudio/*.cpp" "src/backend/portaudio/*.h" "src/backend/portaudio/*.hpp"

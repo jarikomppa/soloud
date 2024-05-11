@@ -1,9 +1,6 @@
 # [submodule "vendor/libmodplug"]
 # 	path = vendor/libmodplug
 # 	url = https://github.com/jarikomppa/libmodplug.git
-[submodule "vendor/portaudio"]
-	path = vendor/portaudio
-	url = https://github.com/Leif-Rydenfalk/portaudio
 [submodule "vendor/miniaudio"]
 	path = vendor/miniaudio
 	url = https://github.com/mackron/miniaudio.git

@@ -1,7 +1,9 @@
 ### So loud CMakeLists.txt
-project(SoLoud)
 cmake_minimum_required(VERSION 3.5)
+project(SoLoud)
 set(CMAKE_CXX_STANDARD 17)
+
+set(USE_PORTAUDIO 1)
 
 # Add the SoLoud source files
 file(GLOB_RECURSE SOURCES 
@@ -13,6 +15,10 @@ file(GLOB_RECURSE SOURCES
     ## We use the portaudio backend
     "src/backend/portaudio/*.c" "src/backend/portaudio/*.cpp" "src/backend/portaudio/*.h" "src/backend/portaudio/*.hpp"
 )
+
+if (USE_PORTAUDIO)
+    add_compile_definitions(WITH_PORTAUDIO)
+endif()
 
 # Add the SoLoud include directory
 include_directories("include")

@@ -47,8 +47,6 @@ freely, subject to the following restrictions:
 #endif
 #endif
 
-#define WITH_PORTAUDIO
-
 #ifdef WITH_SDL
 #undef WITH_SDL2
 #undef WITH_SDL1

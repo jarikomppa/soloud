@@ -18,14 +18,6 @@ file(GLOB_RECURSE SOURCES
     "src/backend/miniaudio/*.c" "src/backend/miniaudio/*.cpp" "src/backend/miniaudio/*.h" "src/backend/miniaudio/*.hpp"
 )
 
-if (USE_PORTAUDIO)
-    add_compile_definitions(WITH_PORTAUDIO)
-endif()
-
-if (USE_MINIAUDIO)
-    add_compile_definitions(WITH_MINIAUDIO)
-endif()
-
 # Add the SoLoud include directory
 include_directories("include")
 
@@ -33,8 +25,14 @@ include_directories("include")
 add_library(SoLoud ${SOURCES})
 
 if (USE_PORTAUDIO)
+    add_compile_definitions(WITH_PORTAUDIO)
     add_subdirectory(vendor/portaudio)
     include_directories(vendor/portaudio/include)
+endif()
+
+if (USE_MINIAUDIO)
+    add_compile_definitions(WITH_MINIAUDIO)
+    include_directories(vendor/miniaudio)
 endif()
 
 # Add the SoLoud library to the include directories

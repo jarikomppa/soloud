@@ -32,9 +32,10 @@ include_directories("include")
 # Create the SoLoud library
 add_library(SoLoud ${SOURCES})
 
-# PortAudio is required for SoLoud
-add_subdirectory(vendor/portaudio)
-include_directories(vendor/portaudio/include)
+if (USE_PORTAUDIO)
+    add_subdirectory(vendor/portaudio)
+    include_directories(vendor/portaudio/include)
+endif()
 
 # Add the SoLoud library to the include directories
 target_include_directories(SoLoud PUBLIC "include")

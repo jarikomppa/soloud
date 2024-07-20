@@ -907,6 +907,37 @@ end
 
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 
+  project "console"
+	kind "ConsoleApp"
+	language "C++"
+	files {
+	  "../demos/console/**.c*",
+	  "../src/c_api/soloud_c.cpp"
+	  }
+	includedirs {
+	  "../include"
+	}
+
+		links {"SoloudStatic"}
+		if (not os.is("windows")) then
+		  links { "pthread" }
+		  links { "dl" }
+		end
+if (WITH_ALSA == 1) then
+	links {"asound"}
+end
+if (WITH_JACK == 1) then
+	links { "jack" }
+end
+if (WITH_COREAUDIO == 1) then
+	links {"AudioToolbox.framework"}
+end
+
+
+		targetname "console"
+
+-- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
+
 	project "SoloudDynamic"
 		kind "SharedLib"
 		targetdir "../lib"

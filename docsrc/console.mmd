@@ -1,0 +1,84 @@
+## Console
+
+
+In very niche situations, where you can hear the device but where
+custom binary doesn't fit the bill, you can use the console to
+basically run the "C" API through a console-like interface.
+
+An example of this situation is SoLoud running on the Raspberry Pi
+inside a ZX Spectrum Next. Applications on the Next can send console
+commands to the Pi, triggering SoLoud commands.
+
+Most of the existing interfaces can be used via the console, but 
+some do not make much sense.
+
+Note that the console is case insensitive.
+
+### Using console
+
+Console's sources can be found under "demos/console". The "generated.inc"
+file is created with a "gen_console.py" in the scripts directory, but
+you only need to run that if you have extended SoLoud and want to expose
+the new functionality in the console.
+
+The general syntax for console commands is
+
+    DESTINATION OBJECT FUNCTION PARAM PARAM PARAM...
+    
+Where DESTINATION is variable name that gets set to the return value,
+OBJECT is a SoLoud class, FUNCTION is a function within said 
+class, followed by zero to however many parameters are required.
+The first parameter is likely an object of the OBJECT type.
+
+Mixing up variables and/or overwriting object handles is an easy way
+to cause a crash. While the console tries to give meaningful error messages
+where possible, there is no type checking.
+
+The console also has a help function that lists available objects, 
+functions and function signatures. Additionally you can list currently 
+existing variables, set and unset them.
+
+### Console Example
+
+The console commands mirror the "C" API.
+
+\pagebreak
+
+As an example, here's a simple example in the "C" API:
+
+    Soloud *soloud = Soloud_create();
+    Speech *speech = Speech_create();
+
+    Speech_setText(speech, "Hello c-api");
+
+    Soloud_init(soloud);
+
+    Soloud_setGlobalVolume(soloud, 4);
+    Soloud_play(soloud, speech);
+
+    // ...
+
+    Soloud_deinit(soloud);
+        
+    Speech_destroy(speech);
+    Soloud_destroy(soloud);
+        
+Converted to console commands, this becomes:
+
+    sl soloud create
+    sp speech create
+
+    0 speech settext sp "hello console"
+
+    0 soloud init sl
+
+    0 soloud setglobalvolume sl 4
+    0 soloud play sl sp
+
+    // ...
+
+    0 soloud deinit sl
+        
+    0 speech destroy sp
+    0 soloud destroy sl
+

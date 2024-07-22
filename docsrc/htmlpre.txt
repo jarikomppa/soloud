@@ -46,6 +46,7 @@ ga('send', 'pageview');
 <br>
 <a href="foreign_interface.html">Foreign Interfaces</a><br>
 <a href="c_api.html">"C"-api / DLL</a><br>
+<a href="console.html">Console</a><br>
 <a href="python_api.html">Python-api</a><br>
 <a href="ruby_api.html">Ruby-api</a><br>
 <a href="rpgmaker_api.html">RPGMaker-api</a><br>

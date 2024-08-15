@@ -26,6 +26,10 @@ distribution.
 #include <string.h>
 #include <math.h>
 
+#ifndef _stricmp
+#define _stricmp strcasecmp
+#endif
+
 #define VERSION "SoLoud Lookup Table Generator (c)2015 Jari Komppa http://iki.fi/sol/"
 
 #define OUTDIR "../src/core/"

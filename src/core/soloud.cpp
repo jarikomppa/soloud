@@ -164,7 +164,7 @@ namespace SoLoud
 		m3dVelocity[1] = 0;
 		m3dVelocity[2] = 0;		
 		m3dSoundSpeed = 343.3f;
-		mMaxActiveVoices = 16;
+		mMaxActiveVoices = 0;
 		mHighestVoice = 0;
 		mResampleData = NULL;
 		mResampleDataOwner = NULL;
@@ -599,6 +599,7 @@ namespace SoLoud
 		if (mScratchSize < 4096) mScratchSize = 4096;
 		mScratch.init(mScratchSize * MAX_CHANNELS);
 		mOutputScratch.init(mScratchSize * MAX_CHANNELS);
+		mMaxActiveVoices = 16;
 		mResampleData = new float*[mMaxActiveVoices * 2];
 		mResampleDataOwner = new AudioSourceInstance*[mMaxActiveVoices];
 		mResampleDataBuffer.init(mMaxActiveVoices * 2 * SAMPLE_GRANULARITY * MAX_CHANNELS);

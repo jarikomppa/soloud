@@ -165,13 +165,13 @@ if (SOLOUD_BACKEND_SDL2)
 
 endif()
 
-if (SOLOUD_BACKEND_ALSA)                     
-    add_definitions (-DWITH_ALSA)                
-                                           
-    set (BACKENDS_SOURCES              
-        ${BACKENDS_SOURCES} 
+if (SOLOUD_BACKEND_ALSA)
+    add_definitions (-DWITH_ALSA)
+
+    set (BACKENDS_SOURCES
+        ${BACKENDS_SOURCES}
         ${BACKENDS_PATH}/alsa/soloud_alsa.cpp
-    )                                              
+    )
 
     find_library (ALSA_LIBRARY asound)
     set (LINK_LIBRARIES
@@ -296,5 +296,7 @@ endif()
 
 target_link_libraries (${TARGET_NAME} ${LINK_LIBRARIES})
 
-include (Install)
-INSTALL(FILES ${TARGET_HEADERS} DESTINATION include/${TARGET_NAME})
+if (SOLOUD_INSTALL)
+	include (Install)
+	INSTALL(FILES ${TARGET_HEADERS} DESTINATION include/${TARGET_NAME})
+endif ()

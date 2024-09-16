@@ -53,6 +53,9 @@ namespace SoLoud
 		result loadmp3(MemoryFile *aReader);
 		result loadflac(MemoryFile *aReader);
 		result testAndLoadFile(MemoryFile *aReader);
+		
+		Wav& operator=(const Wav&);
+		Wav(const Wav&);
 	public:
 		float *mData;
 		unsigned int mSampleCount;

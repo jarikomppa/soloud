@@ -68,7 +68,7 @@ freely, subject to the following restrictions:
 #endif
 
 #if !defined(DISABLE_SIMD)
-#if defined(__x86_64__) || defined( _M_X64 ) || defined( __i386 ) || defined( _M_IX86 )
+#if defined(__x86_64__) || (defined( _M_X64 ) && !defined(_M_ARM64EC))|| defined( __i386 ) || defined( _M_IX86 )
 #define SOLOUD_SSE_INTRINSICS
 #endif
 #endif

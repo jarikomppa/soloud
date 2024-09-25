@@ -6598,11 +6598,11 @@ IMPLEMENTATION
 #endif
 
 /* Architecture Detection */
-#if defined(__x86_64__) || defined(_M_X64)
+#if defined(__x86_64__) || (defined(_M_X64) && !defined(_M_ARM64EC))
 #define MA_X64
 #elif defined(__i386) || defined(_M_IX86)
 #define MA_X86
-#elif defined(__arm__) || defined(_M_ARM)
+#elif defined(__arm__) || defined(_M_ARM) || defined(_M_ARM64) || defined(_M_ARM64EC)
 #define MA_ARM
 #endif
 
@@ -6669,7 +6669,7 @@ IMPLEMENTATION
 #endif
 
 #if defined(MA_ARM)
-    #if !defined(MA_NO_NEON) && (defined(__ARM_NEON) || defined(__aarch64__) || defined(_M_ARM64))
+    #if !defined(MA_NO_NEON) && (defined(__ARM_NEON) || defined(__aarch64__) || defined(_M_ARM64) || defined(_M_ARM64EC))
         #define MA_SUPPORT_NEON
     #endif
 

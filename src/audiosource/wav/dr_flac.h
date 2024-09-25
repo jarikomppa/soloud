@@ -2754,11 +2754,20 @@ static DRFLAC_INLINE drflac_uint32 drflac__clz_lzcnt(drflac_cache_t x)
     to know how to fix the inlined assembly for correctness sake, however.
     */
 
-#if defined(_MSC_VER) /*&& !defined(__clang__)*/    /* <-- Intentionally wanting Clang to use the MSVC __lzcnt64/__lzcnt intrinsics due to above ^. */
-    #ifdef DRFLAC_64BIT
-        return (drflac_uint32)__lzcnt64(x);
-    #else
-        return (drflac_uint32)__lzcnt(x);
+#if defined(_MSC_VER)
+    #if defined(_M_X64) && !defined(_M_ARM64EC) /*&& !defined(__clang__)*/    /* <-- Intentionally wanting Clang to use the MSVC __lzcnt64/__lzcnt intrinsics due to above ^. */
+        #ifdef DRFLAC_64BIT
+            return (drflac_uint32)__lzcnt64(x);
+        #else
+            return (drflac_uint32)__lzcnt(x);
+        #endif
+    #elif defined(_M_ARM64) || defined(_M_ARM64EC)
+        unsigned long index;
+        drflac_uint32 d = sizeof(uint64_t) * CHAR_BIT;
+        if (_BitScanReverse64(&index, x)) {
+            d = d - 1 - index;
+        }
+        return d;
     #endif
 #else
     #if defined(__GNUC__) || defined(__clang__)

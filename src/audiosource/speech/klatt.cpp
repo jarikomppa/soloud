@@ -97,7 +97,7 @@ enum ELEMENTS
 
 #define PHONEME_COUNT 53
 #define AMP_ADJ 14
-#define StressDur(e,s) (s,((e->mDU + e->mUD)/2))
+#define StressDur(e,s) ((void)s,((e->mDU + e->mUD)/2))
 
 
 

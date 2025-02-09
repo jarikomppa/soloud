@@ -954,6 +954,9 @@ end
 		}
 
 		links {"SoloudStatic"}
+if (WITH_ALSA == 1) then
+		links {"asound"}
+end
 
 if (os.is("Windows")) then
 	linkoptions { "/DEF:\"../../src/c_api/soloud.def\"" }

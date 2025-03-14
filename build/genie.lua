@@ -1,5 +1,6 @@
 local WITH_SDL = 0
 local WITH_SDL2 = 0
+local WITH_SDL3 = 0
 local WITH_SDL_STATIC = 0
 local WITH_SDL2_STATIC = 0
 local WITH_PORTAUDIO = 0
@@ -30,6 +31,7 @@ end
 
 local sdl_root       = "/libraries/sdl"
 local sdl2_root      = "/libraries/sdl2"
+local sdl3_root      = "/libraries/sdl3"
 local dxsdk_root     = os.getenv("DXSDK_DIR") and os.getenv("DXSDK_DIR") or "C:/Program Files (x86)/Microsoft DirectX SDK (June 2010)"
 local portaudio_root = "/libraries/portaudio"
 local openal_root    = "/libraries/openal"
@@ -40,6 +42,9 @@ local sdl_include       = sdl_root .. "/include"
 local sdl2_include      = sdl2_root .. "/include"
 local sdl2_lib_x86      = sdl2_root .. "/lib/x86"
 local sdl2_lib_x64      = sdl2_root .. "/lib/x64"
+local sdl3_include      = sdl3_root .. "/include"
+local sdl3_lib_x86      = sdl3_root .. "/lib/x86"
+local sdl3_lib_x64      = sdl3_root .. "/lib/x64"
 local dxsdk_include     = dxsdk_root .. "/include"
 local portaudio_include = portaudio_root .. "/include"
 local openal_include    = openal_root .. "/include"
@@ -67,6 +72,11 @@ newoption {
 newoption {
 	trigger		  = "with-sdl2",
 	description = "Include SDL2 backend in build"
+}
+
+newoption {
+	trigger		  = "with-sdl3",
+	description = "Include SDL3 backend in build"
 }
 
 newoption {
@@ -107,6 +117,11 @@ newoption {
 newoption {
 	trigger		  = "with-sdl2static-only",
 	description = "Only include sdl2 that doesn't use dyndll in build"
+}
+
+newoption {
+	trigger		  = "with-sdl3-only",
+	description = "Only include sdl3 in build"
 }
 
 newoption {
@@ -157,6 +172,7 @@ newoption {
 if _OPTIONS["soloud-devel"] then
     WITH_SDL = 0
     WITH_SDL2 = 1
+	WITH_SDL3 = 0
     WITH_SDL_STATIC = 0
     WITH_SDL2_STATIC = 0
     WITH_PORTAUDIO = 1
@@ -178,6 +194,7 @@ end
 
 if _OPTIONS["with-common-backends"] then
     WITH_SDL = 1
+	WITH_SDL3 = 0
     WITH_SDL_STATIC = 0
     WITH_SDL2_STATIC = 0
     WITH_PORTAUDIO = 1
@@ -221,6 +238,10 @@ if _OPTIONS["with-sdl2"] then
 	WITH_SDL2 = 1
 end
 
+if _OPTIONS["with-sdl3"] then
+	WITH_SDL3 = 1
+end
+
 if _OPTIONS["with-wasapi"] then
 	WITH_WASAPI = 1
 end
@@ -232,6 +253,7 @@ end
 if _OPTIONS["with-sdl-only"] then
 	WITH_SDL = 1
 	WITH_SDL2 = 0
+	WITH_SDL3 = 0
 	WITH_SDL_STATIC = 0
 	WITH_SDL2_STATIC = 0
 	WITH_PORTAUDIO = 0
@@ -247,6 +269,23 @@ end
 if _OPTIONS["with-sdl2-only"] then
 	WITH_SDL = 0
 	WITH_SDL2 = 1
+	WITH_SDL3 = 0
+	WITH_SDL_STATIC = 0
+	WITH_SDL2_STATIC = 0
+	WITH_PORTAUDIO = 0
+	WITH_OPENAL = 0
+	WITH_XAUDIO2 = 0
+	WITH_WINMM = 0
+	WITH_WASAPI = 0
+	WITH_OSS = 0
+	WITH_NOSOUND = 0
+	WITH_MINIAUDIO = 0
+end
+
+if _OPTIONS["with-sdl3-only"] then
+	WITH_SDL = 0
+	WITH_SDL2 = 0
+	WITH_SDL3 = 1
 	WITH_SDL_STATIC = 0
 	WITH_SDL2_STATIC = 0
 	WITH_PORTAUDIO = 0
@@ -262,6 +301,7 @@ end
 if _OPTIONS["with-sdlstatic-only"] then
 	WITH_SDL = 0
 	WITH_SDL2 = 0
+	WITH_SDL3 = 0
 	WITH_SDL_STATIC = 1
 	WITH_PORTAUDIO = 0
 	WITH_OPENAL = 0
@@ -276,6 +316,7 @@ end
 if _OPTIONS["with-sdl2static-only"] then
 	WITH_SDL = 0
 	WITH_SDL2 = 0
+	WITH_SDL3 = 0
 	WITH_SDL_STATIC = 0
 	WITH_SDL2_STATIC = 1
 	WITH_PORTAUDIO = 0
@@ -291,6 +332,7 @@ end
 if _OPTIONS["with-sdl2static-only"] then
 	WITH_SDL = 0
 	WITH_SDL2 = 0
+	WITH_SDL3 = 0
 	WITH_SDL_STATIC = 0
 	WITH_SDL2_STATIC = 1
 	WITH_PORTAUDIO = 0
@@ -306,6 +348,7 @@ end
 if _OPTIONS["with-vita-homebrew-only"] then
 	WITH_SDL = 0
 	WITH_SDL2 = 0
+	WITH_SDL3 = 0
 	WITH_SDL_STATIC = 0
 	WITH_SDL2_STATIC = 0
 	WITH_PORTAUDIO = 0
@@ -331,6 +374,7 @@ end
 if _OPTIONS["with-jack-only"] then
 	WITH_SDL = 0
 	WITH_SDL2 = 0
+	WITH_SDL3 = 0
 	WITH_SDL_STATIC = 0
 	WITH_SDL2_STATIC = 0
 	WITH_PORTAUDIO = 0
@@ -354,6 +398,7 @@ end
 if _OPTIONS["with-miniaudio-only"] then
 	WITH_SDL = 0
 	WITH_SDL2 = 0
+	WITH_SDL3 = 0
 	WITH_SDL_STATIC = 0
 	WITH_SDL2_STATIC = 0
 	WITH_PORTAUDIO = 0
@@ -373,6 +418,7 @@ end
 if _OPTIONS["with-native-only"] then
 	WITH_SDL = 0
 	WITH_SDL2 = 0
+	WITH_SDL3 = 0
 	WITH_SDL_STATIC = 0
 	WITH_SDL2_STATIC = 0
 	WITH_PORTAUDIO = 0
@@ -400,6 +446,7 @@ print ("")
 print ("Active options:")
 print ("WITH_SDL        = ", WITH_SDL)
 print ("WITH_SDL2       = ", WITH_SDL2)
+print ("WITH_SDL3       = ", WITH_SDL3)
 print ("WITH_PORTAUDIO  = ", WITH_PORTAUDIO)
 print ("WITH_OPENAL     = ", WITH_OPENAL)
 print ("WITH_XAUDIO2    = ", WITH_XAUDIO2)
@@ -603,6 +650,31 @@ if (WITH_SDL2 == 1 or WITH_SDL2STATIC) then
 end
 -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
 
+if (WITH_SDL3 == 1) then
+
+	project "SoloudDemoCommon"
+		kind "StaticLib"
+		targetdir "../lib"
+		language "C++"
+
+	files {
+	  "../demos/common/**.c*",
+	  "../demos/common/imgui/**.c*",
+	  "../demos/common/glew/GL/**.c*"
+	  }
+	includedirs {
+	  "../include",
+	  "../demos/common",
+	  "../demos/common/imgui",
+	  "../demos/common/glew",
+	  sdl3_include
+	}
+	defines { "GLEW_STATIC" }
+
+		targetname "solouddemocommon"
+end
+-- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< -- 8< --
+
 	project "SoloudStatic"
 		kind "StaticLib"
 		targetdir "../lib"
@@ -712,6 +784,17 @@ if (WITH_SDL2 == 1) then
 	includedirs {
 	  "../include",
 	  sdl2_include
+	}
+end
+
+if (WITH_SDL3 == 1) then
+		defines { "WITH_SDL3" }
+	files {
+	  "../src/backend/sdl/**.c*"
+	  }
+	includedirs {
+	  "../include",
+	  sdl3_include
 	}
 end
 

@@ -41,7 +41,7 @@ freely, subject to the following restrictions:
 //#define FLOATING_POINT_DEBUG
 
 
-#if !defined(WITH_SDL2) && !defined(WITH_SDL1) && !defined(WITH_PORTAUDIO) && \
+#if !defined(WITH_SDL3) && !defined(WITH_SDL2) && !defined(WITH_SDL1) && !defined(WITH_PORTAUDIO) && \
    !defined(WITH_OPENAL) && !defined(WITH_XAUDIO2) && !defined(WITH_WINMM) && \
    !defined(WITH_WASAPI) && !defined(WITH_OSS) && !defined(WITH_SDL1_STATIC) && \
    !defined(WITH_SDL2_STATIC) && !defined(WITH_ALSA) && !defined(WITH_OPENSLES) && \
@@ -204,8 +204,8 @@ namespace SoLoud
 		mAudioThreadMutex = NULL;
 	}
 
-	result Soloud::init(unsigned int aFlags, unsigned int aBackend, unsigned int aSamplerate, unsigned int aBufferSize, unsigned int aChannels)
-	{		
+	result Soloud::init(unsigned int aFlags, unsigned int aBackend, unsigned int aSamplerate, unsigned int aBufferSize, unsigned int aChannels, void const * clientData)
+	{
 		if (aBackend >= BACKEND_MAX || aChannels == 3 || aChannels == 5 || aChannels == 7 || aChannels > MAX_CHANNELS)
 			return INVALID_PARAMETER;
 
@@ -254,6 +254,33 @@ namespace SoLoud
 			{
 				inited = 1;
 				mBackendID = Soloud::SDL2;
+			}
+
+			if (ret != 0 && aBackend != Soloud::AUTO)
+				return ret;
+		}
+#endif
+
+#if defined(WITH_SDL3)
+		if (!inited &&
+			(aBackend == Soloud::SDL3 ||
+			aBackend == Soloud::AUTO))
+		{
+			if (aBufferSize == Soloud::AUTO) buffersize = 2048;
+
+			int ret = sdl3_init(
+				this,
+				aFlags,
+				samplerate,
+				buffersize,
+				aChannels,
+				clientData
+			);
+
+			if (ret == 0)
+			{
+				inited = 1;
+				mBackendID = Soloud::SDL3;
 			}
 
 			if (ret != 0 && aBackend != Soloud::AUTO)
@@ -587,7 +614,6 @@ namespace SoLoud
 		return NOT_IMPLEMENTED;
 	}
 
-
 	void Soloud::postinit_internal(unsigned int aSamplerate, unsigned int aBufferSize, unsigned int aFlags, unsigned int aChannels)
 	{		
 		mGlobalVolume = 1;
@@ -602,7 +628,7 @@ namespace SoLoud
 		mResampleData = new float*[mMaxActiveVoices * 2];
 		mResampleDataOwner = new AudioSourceInstance*[mMaxActiveVoices];
 		mResampleDataBuffer.init(mMaxActiveVoices * 2 * SAMPLE_GRANULARITY * MAX_CHANNELS);
-		unsigned int i;		
+		unsigned int i;
 		for (i = 0; i < mMaxActiveVoices * 2; i++)
 			mResampleData[i] = mResampleDataBuffer.mData + (SAMPLE_GRANULARITY * MAX_CHANNELS * i);
 		for (i = 0; i < mMaxActiveVoices; i++)
@@ -1171,7 +1197,7 @@ namespace SoLoud
 							c += 4;
 						}
 					}
-					
+
 					// If buffer size or samples to read are not divisible by 4, handle leftovers
 					for (j = c; j < aSamplesToRead; j++)
 					{
@@ -2192,7 +2218,7 @@ namespace SoLoud
 
 		if (mActiveVoiceDirty)
 			calcActiveVoices_internal();
-	
+
 		mixBus_internal(mOutputScratch.mData, aSamples, aStride, mScratch.mData, 0, (float)mSamplerate, mChannels, mResampler);
 
 		for (i = 0; i < FILTERS_PER_STREAM; i++)
@@ -2204,7 +2230,7 @@ namespace SoLoud
 		}
 
 		unlockAudioMutex_internal();
-		
+
 		// Note: clipping channels*aStride, not channels*aSamples, so we're possibly clipping some unused data.
 		// The buffers should be large enough for it, we just may do a few bytes of unneccessary work.
 		clip_internal(mOutputScratch, mScratch, aStride, globalVolume[0], globalVolume[1]);
@@ -2316,5 +2342,4 @@ namespace SoLoud
 			Thread::unlockMutex(mAudioThreadMutex);
 		}
 	}
-
 };

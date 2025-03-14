@@ -48,10 +48,12 @@ freely, subject to the following restrictions:
 #endif
 
 #ifdef WITH_SDL
+#undef WITH_SDL3
 #undef WITH_SDL2
 #undef WITH_SDL1
 #define WITH_SDL1
 #define WITH_SDL2
+#define WITH_SDL3
 #endif
 
 #ifdef WITH_SDL_STATIC
@@ -194,6 +196,7 @@ namespace SoLoud
 			MINIAUDIO,
 			NOSOUND,
 			NULLDRIVER,
+			SDL3,
 			BACKEND_MAX,
 		};
 
@@ -227,7 +230,7 @@ namespace SoLoud
 		};
 
 		// Initialize SoLoud. Must be called before SoLoud can be used.
-		result init(unsigned int aFlags = Soloud::CLIP_ROUNDOFF, unsigned int aBackend = Soloud::AUTO, unsigned int aSamplerate = Soloud::AUTO, unsigned int aBufferSize = Soloud::AUTO, unsigned int aChannels = 2);
+		result init(unsigned int aFlags = Soloud::CLIP_ROUNDOFF, unsigned int aBackend = Soloud::AUTO, unsigned int aSamplerate = Soloud::AUTO, unsigned int aBufferSize = Soloud::AUTO, unsigned int aChannels = 2, void const * clientData = NULL);
 
 		result pause();
 		result resume();

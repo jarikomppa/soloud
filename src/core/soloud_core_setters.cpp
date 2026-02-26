@@ -124,7 +124,7 @@ namespace SoLoud
 	}
 
 	void Soloud::setChannelVolume(handle aVoiceHandle, unsigned int aChannel, float aVolume)
-	{		
+	{
 		FOR_ALL_VOICES_PRE
 			if (mVoice[ch]->mChannels > aChannel)
 			{
@@ -249,5 +249,4 @@ namespace SoLoud
 		m3dSpeakerPosition[3 * aChannel + 2] = aZ;
 		return SO_NO_ERROR;
 	}
-
 }

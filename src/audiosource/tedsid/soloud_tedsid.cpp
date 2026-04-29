@@ -163,6 +163,7 @@ namespace SoLoud
 		return res;
 	}
 
+
 	result TedSid::loadFile(File *aFile)
 	{
 		if (aFile == NULL)
@@ -173,8 +174,10 @@ namespace SoLoud
 		if (aFile->length() < 34) return FILE_LOAD_FAILED;
 
 		aFile->seek(0);
-		if (aFile->read32() != 'PIHC') return FILE_LOAD_FAILED; // CHIP
-		if (aFile->read32() != 'ENUT') return FILE_LOAD_FAILED; // TUNE
+		// if (aFile->read32() != 'PIHC') return FILE_LOAD_FAILED; // CHIP
+		// if (aFile->read32() != 'ENUT') return FILE_LOAD_FAILED; // TUNE
+		if (aFile->read4ByteHeader("CHIP")) return FILE_LOAD_FAILED; // CHIP
+		if (aFile->read4ByteHeader("TUNE")) return FILE_LOAD_FAILED; // TUNE
 		int dataofs = aFile->read16();
 		int chiptype = aFile->read8();
 		// check if this file is for sid, ted, or combination of several

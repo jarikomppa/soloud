@@ -46,6 +46,17 @@ namespace SoLoud
 		virtual unsigned int pos() = 0;
 		virtual FILE * getFilePtr() { return 0; }
 		virtual const unsigned char * getMemPtr() { return 0; }
+
+		bool read4ByteHeader(const char* header) {
+			unsigned int i = this->read32();
+			const unsigned char* pI = (const unsigned char*)(&i);
+			const unsigned char* pH = (const unsigned char*)header;
+			return (pI[0] == pH[0]
+				&& pI[1] == pH[1]
+				&& pI[2] == pH[2]
+				&& pI[3] == pH[3]
+				);
+		}
 	};
 
 	class DiskFile : public File

@@ -97,7 +97,7 @@ enum ELEMENTS
 
 #define PHONEME_COUNT 53
 #define AMP_ADJ 14
-#define StressDur(e,s) (s,((e->mDU + e->mUD)/2))
+//#define StressDur(e,s) (s,((e->mDU + e->mUD)/2))
 
 
 
@@ -759,7 +759,9 @@ int klatt::phone_to_elm(char *aPhoneme, int aCount, darray *aElement)
 				if (!(p->mFeat & ELM_FEATURE_VWL))
 					stress = 0;
 
-				int stressdur = StressDur(p,stress);
+			    // #define StressDur(e,s) (s,((e->mDU + e->mUD)/2))
+				// int stressdur = StressDur(p,stress);
+				int stressdur = (p->mDU + p->mUD)/2;
 
 				t += stressdur;
 
